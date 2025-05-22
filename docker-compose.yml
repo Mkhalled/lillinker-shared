@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: lillinker-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lillinker}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lillinker123}
+      POSTGRES_DB: ${POSTGRES_DB:-lillinker_dev}
+      POSTGRES_MULTIPLE_DATABASES: lillinker_dev,lillinker_test
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-lillinker}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    name: lillinker_postgres_data

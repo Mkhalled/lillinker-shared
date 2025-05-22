@@ -1,0 +1,20 @@
+'use client';
+
+import { useSession } from 'next-auth/react';
+
+const CompanyAdminDashboard = () => {
+  const { data: session } = useSession();
+
+  return (
+    <div>
+      <h1 className="text-2xl font-semibold text-gray-900">
+        Welcome, {session?.user?.firstname} {session?.user?.lastname}
+      </h1>
+      <p className="mt-2 text-gray-600">
+        This is the Company Admin Dashboard. More features coming soon.
+      </p>
+    </div>
+  );
+};
+
+export default CompanyAdminDashboard;

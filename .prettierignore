@@ -1,0 +1,31 @@
+# Dependencies
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Build output
+.next
+out
+dist
+build
+
+# Cache
+.cache
+.eslintcache
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db 

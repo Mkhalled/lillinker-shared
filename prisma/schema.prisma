@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Permission model - Represents individual permissions in the system
+model Permission {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique  // e.g., "company.manage"
+  displayName String    // e.g., "Manage Company"
+  description String?   // Detailed description of the permission
+  scope       String?   // Optional scope for the permission (e.g., "company", "platform")
+  isSystem    Boolean   @default(false)  // Whether the permission is system-defined
+  roles       RolePermission[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("permissions")
+}
+
+// Role model - Represents user roles with metadata
+model Role {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique  // e.g., "COMPANY_ADMIN"
+  displayName String    // e.g., "Company Administrator"
+  description String?   // Detailed description of the role
+  isSystem    Boolean   @default(false)  // Whether the role is system-defined
+  users       User[]
+  permissions RolePermission[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("roles")
+}
+
+// Junction table for Role-Permission many-to-many relationship
+model RolePermission {
+  id           Int       @id @default(autoincrement())
+  roleId       Int
+  role         Role      @relation(fields: [roleId], references: [id])
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// User model - Base user entity for all platform users
+model User {
+  id            String    @id @default(cuid())
+  firstname     String
+  lastname      String
+  username      String    @unique
+  email         String    @unique
+  password      String
+  phone         String?
+  isActive      Boolean   @default(false)  // Default to false until email is verified
+  roleId        Int       // Reference to role instead of enum
+  role          Role      @relation(fields: [roleId], references: [id])
+  emailVerified Boolean   @default(false)  // Must be true for account to be active
+  
+  // NextAuth fields
+  image         String?   // Profile image URL
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Pseudonym fields
+  pseudonym     String?   @unique  // Generated pseudonym for consultants
+  pseudonymGeneratedAt DateTime?   // When the pseudonym was generated
+  
+  // Email verification
+  emailVerificationToken String?   @unique  // Token for email verification
+  emailVerificationTokenExpiresAt DateTime? // Token expiration time
+  
+  // Relations
+  companyId     String?
+  company       Company?  @relation(fields: [companyId], references: [id])
+  
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([companyId])
+  @@index([roleId])
+  @@map("users")
+}
+
+// NextAuth models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// Company model - Represents both parent companies and subsidiaries
+model Company {
+  id              String    @id @default(cuid())
+  name            String
+  siret           String    @unique  // French business registration number
+  type            String    // Company type/legal structure
+  description     String?
+  dateFondation   DateTime  // Company founding date
+  capital         Float     // Company capital
+  logo            String?   // URL to company logo
+  isActive        Boolean   @default(false)  // Default to false until email is verified
+  
+  // Pseudonym fields
+  pseudonym       String?   @unique  // Generated pseudonym for anonymous interactions
+  pseudonymGeneratedAt DateTime?     // When the pseudonym was generated
+  
+  // Email verification
+  emailVerificationToken String?   @unique  // Token for email verification
+  emailVerificationTokenExpiresAt DateTime? // Token expiration time
+  
+  // Address information
+  address         String
+  city            String
+  postalCode      String
+  country         String
+  
+  // Contact information
+  phone           String
+  email           String    @unique
+  
+  // Business metrics
+  managementCosts Float     // Cost of management services
+  numberPorted    Int       // Number of ported employees
+  
+  // Company hierarchy
+  parentCompanyId String?   // Reference to parent company
+  parentCompany   Company?  @relation("CompanyHierarchy", fields: [parentCompanyId], references: [id])
+  subsidiaries    Company[] @relation("CompanyHierarchy")
+  
+  // Relations
+  users           User[]    // Users associated with this company (at least one required)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([parentCompanyId])
+  @@map("companies")
+} 

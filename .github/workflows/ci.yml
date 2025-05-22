@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: lillinker
+          POSTGRES_PASSWORD: lillinker123
+          POSTGRES_DB: lillinker_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm prisma:generate
+
+      - name: Run TypeScript checks
+        run: pnpm type-check
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Run Prettier checks
+        run: pnpm format:check
+
+      - name: Setup test environment
+        run: |
+          cp .env.test .env
+          echo "DATABASE_URL=\"postgresql://lillinker:lillinker123@localhost:5432/lillinker_test?schema=public\"" >> .env
+
+      - name: Run database migrations
+        run: pnpm prisma:migrate
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Build project
+        run: pnpm build
+
+  # Add deployment job later when needed
+  # deploy:
+  #   needs: quality-checks
+  #   if: github.ref == 'refs/heads/main'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     # Add deployment steps here
