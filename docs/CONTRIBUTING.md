@@ -24,8 +24,8 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
    - Click the "Fork" button on the GitHub repository page
    - Clone your forked repository:
      ```bash
-     git clone https://github.com/your-username/lillinker-platform.git
-     cd lillinker-platform
+     git clone https://github.com/your-username/lillinker-shared.git
+     cd lillinker-shared
      ```
 
 2. **Set Up Development Environment**

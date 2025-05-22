@@ -17,7 +17,7 @@ const logger = createLogger({
     format.json()
   ),
   defaultMeta: {
-    service: 'lillinker-platform',
+    service: 'lillinker-shared',
     environment: process.env.NODE_ENV || 'development',
   },
   transports: [

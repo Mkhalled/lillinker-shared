@@ -14,8 +14,8 @@ This document outlines the setup process for the Lillinker platform development 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/Mkhalled/lillinker-platform.git
-cd lillinker-platform
+git clone https://github.com/Mkhalled/lillinker-shared.git
+cd lillinker-shared
 ```
 
 2. Install dependencies:
@@ -42,7 +42,7 @@ The application will be available at http://localhost:3000 (or the next availabl
 ## Project Structure
 
 ```
-lillinker-platform/
+lillinker-shared/
 ├── .github/               # GitHub Actions workflows
 ├── docs/                  # Project documentation
 │   ├── technical/        # Technical documentation

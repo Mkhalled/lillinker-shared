@@ -35,8 +35,8 @@ A modern, scalable platform for connecting freelancers with umbrella companies.
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/Mkhalled/lillinker-platform.git
-   cd lillinker-platform
+   git clone https://github.com/Mkhalled/lillinker-shared.git
+   cd lillinker-shared
    ```
 
 2. Install dependencies:
