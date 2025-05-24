@@ -1,8 +1,7 @@
 'use client';
-import React, { useState, ReactNode } from 'react';
+import React, { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import { menuAdmin } from '@/components/Sidebar/menus/menuAdmin';
 import { MenuGroup } from '@/types/menu';
 
 export default function DefaultLayout({

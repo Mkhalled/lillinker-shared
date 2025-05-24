@@ -186,6 +186,7 @@ async function main() {
         roleId: platformAdminRole.id,
         isActive: true,
         emailVerified: true,
+        
         pseudonym: `PLATFORM_ADMIN_${Date.now()}`,
         pseudonymGeneratedAt: new Date(),
       },
