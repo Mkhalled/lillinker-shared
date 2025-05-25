@@ -1,18 +1,18 @@
 'use client';
+import React, { useEffect, useState } from 'react';
 import 'jsvectormap/dist/jsvectormap.css';
 import 'flatpickr/dist/flatpickr.min.css';
 import '../css/satoshi.css';
 import '../css/style.css';
 
-import React, { useEffect, useState } from 'react';
 import Loader from '@/components/common/Loader';
 import { Providers } from '@/components/providers';
 
-export default function RootLayout({
+const RootLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   // const pathname = usePathname();
@@ -30,4 +30,6 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;
