@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, ChangeEvent, FormEvent } from "react";
-
-type Role = "Freelance" | "Entreprise";
+import Link from "next/link";
+import Input from '../form/input/InputField';
+import Label from '../form/Label';
+import Button from '../ui/button/Button';
+type Role = "CONSULTANT" | "COMPANY_ADMIN";
 
 interface FormData {
   firstname: string;
@@ -16,7 +19,7 @@ interface FormData {
 }
 
 export default function SignupForm() {
-  const [role, setRole] = useState<Role>("Freelance");
+  const [role, setRole] = useState<Role>("CONSULTANT");
   const [formData, setFormData] = useState<FormData>({
     firstname: "",
     lastname: "",
@@ -27,7 +30,7 @@ export default function SignupForm() {
     siret: "",
     type: "",
   });
-
+    const [loading, setLoading] = useState(false);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -38,9 +41,36 @@ export default function SignupForm() {
   };
 
   const handleSubmit = (e: FormEvent) => {
+    setLoading(true);
     e.preventDefault();
-    console.log("Submitted data:", formData);
-    // Add API call here
+    const data = {
+      ...formData,
+      role,
+    };
+    fetch("/api/auth/register-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to register user");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("User registered successfully:", data);
+        // Redirect or show success message
+      })
+      .catch((error) => {
+        console.error("Error registering user:", error);
+        // Show error message
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -50,114 +80,114 @@ export default function SignupForm() {
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Créer un compte</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex justify-center space-x-6 mb-6">
-          <label className="flex items-center cursor-pointer">
+          <Label className="flex items-center cursor-pointer">
             <input
               type="radio"
-              value="Freelance"
-              checked={role === "Freelance"}
+              value="CONSULTANT"
+              checked={role === "CONSULTANT"}
               onChange={handleRoleChange}
               className="h-4 w-4 text-blue-600"
             />
             <span className="ml-2 text-gray-700">Freelance</span>
-          </label>
-          <label className="flex items-center cursor-pointer">
+          </Label>
+          <Label className="flex items-center cursor-pointer">
             <input
               type="radio"
-              value="Entreprise"
-              checked={role === "Entreprise"}
+              value="COMPANY_ADMIN"
+              checked={role === "COMPANY_ADMIN"}
               onChange={handleRoleChange}
               className="h-4 w-4 text-blue-600"
             />
             <span className="ml-2 text-gray-700">Entreprise</span>
-          </label>
+          </Label>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
-            <input
+            <Label className="block text-sm font-medium text-gray-700 mb-1">Prénom</Label>
+            <Input
               type="text"
               name="firstname"
-              value={formData.firstname}
+              defaultValue={formData.firstname}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
-            <input
+            <Label className="block text-sm font-medium text-gray-700 mb-1">Nom</Label>
+            <Input
               type="text"
               name="lastname"
-              value={formData.lastname}
+              defaultValue={formData.lastname}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
+            <Label className="block text-sm font-medium text-gray-700 mb-1">Email</Label>
+            <Input
               type="email"
               name="email"
-              value={formData.email}
+              defaultValue={formData.email}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
-            <input
+            <Label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</Label>
+            <Input
               type="tel"
               name="phone"
-              value={formData.phone}
+              defaultValue={formData.phone}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className={role === "Entreprise" ? "" : "md:col-span-2"}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-            <input
+          <div className={role === "COMPANY_ADMIN" ? "" : "md:col-span-2"}>
+            <Label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</Label>
+            <Input
               type="password"
               name="password"
-              value={formData.password}
+              defaultValue={formData.password}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          {role === "Entreprise" && (
+          {role === "COMPANY_ADMIN" && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nom de l'entreprise</label>
-                <input
+                <Label className="block text-sm font-medium text-gray-700 mb-1">Nom de l'entreprise</Label>
+                <Input
                   type="text"
                   name="companyName"
-                  value={formData.companyName}
+                  defaultValue={formData.companyName}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">SIRET</label>
-                <input
+                <Label className="block text-sm font-medium text-gray-700 mb-1">SIRET</Label>
+                <Input
                   type="text"
                   name="siret"
-                  value={formData.siret}
+                  defaultValue={formData.siret}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Type d'entreprise</label>
-                <input
+                <Label className="block text-sm font-medium text-gray-700 mb-1">Type d'entreprise</Label>
+                <Input
                   type="text"
                   name="type"
-                  value={formData.type}
+                  defaultValue={formData.type}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -166,19 +196,18 @@ export default function SignupForm() {
           )}
         </div>
 
-        <button 
-          type="submit" 
+        <Button 
           className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 mt-6"
         >
-          S'inscrire
-        </button>
+          {loading ? 'Connexion...' : 'Sign Up'}
+        </Button>
       </form>
     <div className="text-center mt-4">
         <p className="text-sm text-gray-600">
             Vous avez déjà un compte ?{" "}
-            <a href="/login" className="text-blue-600 hover:underline font-medium">
+            <Link href="/login" className="text-blue-600 hover:underline font-medium">
                 Se connecter
-            </a>
+            </Link>
         </p>
     </div>
     </div>
