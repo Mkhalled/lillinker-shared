@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   try {
     logger.info('Starting user registration process');
     const body = await req.json();
-    logger.debug('Received registration request', { email: body.email, role: body.role });
+    logger.debug('Received registration request', { ...body   });
 
     const validationResult = validateUserRegistrationWithError(body);
     if (!validationResult.success) {

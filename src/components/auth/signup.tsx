@@ -16,6 +16,7 @@ interface FormData {
   companyName?: string;
   siret?: string;
   type?: string;
+  username: string;
 }
 
 export default function SignupForm() {
@@ -29,11 +30,13 @@ export default function SignupForm() {
     companyName: "",
     siret: "",
     type: "",
+    username: "",
   });
     const [loading, setLoading] = useState(false);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, username: prev.email.split('@')[0] })); 
   };
 
   const handleRoleChange = (e: ChangeEvent<HTMLInputElement>) => {
