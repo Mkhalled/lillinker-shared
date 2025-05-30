@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { AuthService } from '@/services/auth.service';
 import { validateUserRegistrationWithError } from '@/validations/user.validation';
+import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
+
 
 export async function POST(req: Request) {
   try {
@@ -26,7 +29,18 @@ export async function POST(req: Request) {
     });
 
     try {
-      const result = await AuthService.registerUser(validatedData);
+      const hashedPassword =  await bcrypt.hash(validatedData.password, 10);
+       const emailVerificationToken = uuidv4(); // random UUID token
+      const emailVerificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // now + 24 hours
+      const userInput = {
+        ...validatedData,
+        password: hashedPassword, 
+        isActive: false,
+        emailVerified: false,
+        emailVerificationToken,
+        emailVerificationTokenExpiresAt
+      };
+      const result = await AuthService.registerUser(userInput);
 
       logger.info('User registration completed successfully', {
         userId: result.id,

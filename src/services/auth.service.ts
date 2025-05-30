@@ -37,7 +37,7 @@ export class AuthService {
     const userData = {
       ...data,
       roleId: role.id,
-      isActive: true,
+      isActive: false,
       emailVerified: false,
       ...(data.role !== RoleEnum.CONSULTANT && {
         companyId: (data as { companyId: string }).companyId,
