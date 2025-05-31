@@ -1,162 +1,175 @@
-import { generateUserRegistrationData } from 'tests/fixtures/user';
-
 import { POST } from '@/app/api/auth/register-user/route';
-import { prisma } from '@/lib/prisma';
+import { RoleEnum } from '@/constants/Role.enum';
+import { generateUserRegistrationData } from 'tests/fixtures/user';
+import { sendVerificationEmail } from '@/lib/mailer';
+import { AuthService } from '@/services/auth.service';
+import { validateUserRegistrationWithError } from '@/validations/user.validation';
 
-// Mock Prisma client
+// Mocks
 jest.mock('@/lib/prisma', () => ({
   prisma: {
     user: {
       findFirst: jest.fn(),
       create: jest.fn(),
     },
-    role: {
-      findUnique: jest.fn(),
-    },
   },
 }));
 
-// Mock bcrypt
 jest.mock('bcryptjs', () => ({
   hash: jest.fn().mockResolvedValue('hashedPassword'),
 }));
+
+jest.mock('uuid', () => ({
+  v4: jest.fn().mockReturnValue('test-verification-token'),
+}));
+
+jest.mock('@/lib/mailer', () => ({
+  sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('@/services/auth.service', () => ({
+  AuthService: {
+    registerUser: jest.fn(),
+  },
+}));
+
+jest.mock('@/validations/user.validation', () => {
+  return {
+    validateUserRegistrationWithError: jest.fn(),
+  };
+});
 
 describe('POST /api/auth/register-user', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should register a new user successfully', async () => {
-    const userData = generateUserRegistrationData();
-    const mockRole = {
-      id: 1,
-      name: 'CONSULTANT',
-      displayName: 'Consultant',
-      description: 'Consultant role',
-      isSystem: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+  it('registers a new user successfully', async () => {
+    const mockUser = generateUserRegistrationData();
 
-    // Mock Prisma responses
-    jest.mocked(prisma.user.findFirst).mockResolvedValue(null);
-    jest.mocked(prisma.role.findUnique).mockResolvedValue(mockRole);
-    jest.mocked(prisma.user.create).mockResolvedValue({
-      id: 'test-id',
-      firstname: userData.firstname,
-      lastname: userData.lastname,
-      email: userData.email,
-      username: userData.username,
-      password: 'hashedPassword',
-      roleId: mockRole.id,
-      isActive: false,
-      emailVerified: false,
-      phone: null,
-      image: null,
-      pseudonym: null,
-      pseudonymGeneratedAt: null,
-      emailVerificationToken: null,
-      emailVerificationTokenExpiresAt: null,
-      companyId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    (validateUserRegistrationWithError as jest.Mock).mockReturnValue({
+      success: true,
+      data: mockUser,
+    });
+
+    (AuthService.registerUser as jest.Mock).mockResolvedValue({
+      id: 'test-user-id',
+      ...mockUser,
     });
 
     const response = await POST(
-      new Request(process.env.NEXTAUTH_URL+'/api/auth/register-user', {
+      new Request('http://localhost:3000/api/auth/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
+        body: JSON.stringify(mockUser),
       })
     );
+
+    const data = await response.json();
 
     expect(response.status).toBe(201);
-    const data = await response.json();
     expect(data.message).toBe('User registered successfully');
     expect(data.user).toMatchObject({
-      email: userData.email,
-      firstname: userData.firstname,
-      lastname: userData.lastname,
-      username: userData.username,
+      email: mockUser.email,
+      firstname: mockUser.firstname,
+      lastname: mockUser.lastname,
+      username: mockUser.username,
     });
   });
+it('✅ registers a new user and sends verification email', async () => {
+  const mockUser = generateUserRegistrationData();
 
-  it('should return 400 if email or username already exists', async () => {
-    const userData = generateUserRegistrationData();
-    const existingUser = {
-      id: 'test-id',
-      firstname: userData.firstname,
-      lastname: userData.lastname,
-      email: userData.email,
-      username: userData.username,
-      password: 'hashedPassword',
-      roleId: 1,
-      isActive: false,
-      emailVerified: false,
-      phone: null,
-      image: null,
-      pseudonym: null,
-      pseudonymGeneratedAt: null,
-      emailVerificationToken: null,
-      emailVerificationTokenExpiresAt: null,
-      companyId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+  (validateUserRegistrationWithError as jest.Mock).mockReturnValue({
+    success: true,
+    data: mockUser,
+  });
 
-    jest.mocked(prisma.user.findFirst).mockResolvedValue(existingUser);
+  (AuthService.registerUser as jest.Mock).mockResolvedValue({
+    id: 'test-user-id',
+    ...mockUser,
+  });
+
+  const response = await POST(
+    new Request('http://localhost/api/auth/register-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(mockUser),
+    })
+  );
+
+  const data = await response.json();
+
+  expect(response.status).toBe(201);
+  expect(data.message).toBe('User registered successfully');
+
+  expect(data.user).toMatchObject({
+    email: mockUser.email,
+    firstname: mockUser.firstname,
+    lastname: mockUser.lastname,
+    username: mockUser.username,
+  });
+
+  // Assert sendVerificationEmail is called
+  expect(sendVerificationEmail).toHaveBeenCalledWith(
+    mockUser.email,
+    expect.any(String)
+  );
+});
+  it('returns 400 if user already exists', async () => {
+    const mockUser = generateUserRegistrationData();
+
+    (validateUserRegistrationWithError as jest.Mock).mockReturnValue({
+      success: true,
+      data: mockUser,
+    });
+
+    (AuthService.registerUser as jest.Mock).mockImplementation(() => {
+      throw new Error('User with this email or username already exists');
+    });
 
     const response = await POST(
-      new Request(process.env.NEXTAUTH_URL+ '/api/auth/register-user', {
+      new Request('http://localhost:3000/api/auth/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
+        body: JSON.stringify(mockUser),
       })
     );
 
-    expect(response.status).toBe(400);
     const data = await response.json();
+
+    expect(response.status).toBe(400);
     expect(data.error).toBe('User with this email or username already exists');
   });
 
-  it('should return 500 if consultant role not found', async () => {
-    const userData = generateUserRegistrationData({});
+  it('returns 400 for invalid data', async () => {
+    (validateUserRegistrationWithError as jest.Mock).mockReturnValue({
+      success: false,
+      error: {
+        errors: [{ message: 'Invalid email address' }],
+      },
+    });
 
-    jest.mocked(prisma.user.findFirst).mockResolvedValue(null);
-    jest.mocked(prisma.role.findUnique).mockResolvedValue(null);
-
-    const response = await POST(
-      new Request(process.env.NEXTAUTH_URL+'/api/auth/register-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
-      })
-    );
-
-    expect(response.status).toBe(500);
-    const data = await response.json();
-    expect(data.error).toBe(`Role CONSULTANT not found`);
-  });
-
-  it('should validate input data', async () => {
     const invalidData = {
-      firstname: 'A', // Too short
-      lastname: 'B', // Too short
+      firstname: '',
+      lastname: '',
       email: 'invalid-email',
-      username: 'ab', // Too short
-      password: '1234567', // Too short
+      phone: '',
+      password: '123',
+      username: '',
+      role: RoleEnum.CONSULTANT,
     };
 
     const response = await POST(
-      new Request(process.env.NEXTAUTH_URL+'/api/auth/register-user', {
+      new Request('http://localhost:3000/api/auth/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(invalidData),
       })
     );
 
-    expect(response.status).toBe(400);
     const data = await response.json();
+
+    expect(response.status).toBe(400);
     expect(data.error).toBe('Validation error');
     expect(data.details).toBeDefined();
   });

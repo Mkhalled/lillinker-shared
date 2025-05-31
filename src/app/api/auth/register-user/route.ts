@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       const result = await AuthService.registerUser(userInput);
             // send email verification token
         await sendVerificationEmail(validatedData.email, emailVerificationToken);
-        
+
       logger.info('User registration completed successfully', {
         userId: result.id,
         email: result.email,
