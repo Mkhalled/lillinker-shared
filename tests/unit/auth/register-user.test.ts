@@ -63,7 +63,7 @@ describe('POST /api/auth/register-user', () => {
     });
 
     const response = await POST(
-      new Request('http://localhost:3000/api/auth/register-user', {
+      new Request(process.env.NEXTAUTH_URL+'/api/auth/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
@@ -107,7 +107,7 @@ describe('POST /api/auth/register-user', () => {
     jest.mocked(prisma.user.findFirst).mockResolvedValue(existingUser);
 
     const response = await POST(
-      new Request('http://localhost:3000/api/auth/register-user', {
+      new Request(process.env.NEXTAUTH_URL+ '/api/auth/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
@@ -126,7 +126,7 @@ describe('POST /api/auth/register-user', () => {
     jest.mocked(prisma.role.findUnique).mockResolvedValue(null);
 
     const response = await POST(
-      new Request('http://localhost:3000/api/auth/register-user', {
+      new Request(process.env.NEXTAUTH_URL+'/api/auth/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
@@ -148,7 +148,7 @@ describe('POST /api/auth/register-user', () => {
     };
 
     const response = await POST(
-      new Request('http://localhost:3000/api/auth/register-user', {
+      new Request(process.env.NEXTAUTH_URL+'/api/auth/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(invalidData),
