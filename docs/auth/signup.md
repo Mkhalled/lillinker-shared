@@ -23,6 +23,14 @@ Passwords are hashed using `bcryptjs`, and users must verify their email via a t
    - User is stored with `isActive: false`, `emailVerified: false`
 4. Returns `201 Created` with the new user (excluding password)
 
+## 📧 Email Verification
+
+After user registration, an email with a verification token is sent using Nodemailer:
+
+1. A unique token is generated using `uuid` and stored with the user record
+2. An email is composed with:
+    - Verification link containing the token (`/verify-email?token=UUID`)
+
 ---
 
 ## 📁 Related Code
@@ -44,6 +52,7 @@ Make sure the following are configured:
 
 - Database connected via AuthService
 - Logging is correctly set up (`lib/logger`)
+- Mail service provider is included in .env file
 ---
 
 ## 🛡 Roles
