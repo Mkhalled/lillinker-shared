@@ -20,3 +20,13 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     html: `<p>Please verify your email:</p><a href="${verifyUrl}">${verifyUrl}</a>`,
   });
 };
+
+export const accountActivationEmail = async (email: string, fullName: string) => {
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject: "Votre compte est activé",
+    html: `<p>Bonjour ${fullName}\n Vous pouvez maintenant accéder à votre espace avec vos identifiants.
+</p>`,
+  });
+}
