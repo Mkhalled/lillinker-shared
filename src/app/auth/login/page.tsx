@@ -43,10 +43,23 @@ const LoginPage = () => {
       const role = session.user?.role;
 
       // Redirect based on role
-      switch (role) {
-        case 'PLATFORM_ADMIN':
-          router.push('/admin/dashboard');
-          break;
+      if (role === 'PLATFORM_ADMIN') {
+        router.push('/admin/dashboard');
+      } else {
+        // Check if profile is complete
+        let hasCompleteProfile = 
+          session.user?.username && 
+          session.user?.pseudonym && 
+          session.user?.image && 
+          session.user?.phone;
+        if (role === "COMPANY_ADMIN"){
+          hasCompleteProfile = hasCompleteProfile && session.user?.companyId;
+        }
+        if (!hasCompleteProfile) {
+          router.push('/profile-completion');
+        } else {
+          // Redirect based on role
+          switch (role) {
         case 'COMPANY_ADMIN':
           router.push('/company/admin/dashboard');
           break;
@@ -58,6 +71,8 @@ const LoginPage = () => {
           break;
         default:
           router.push('/');
+          }
+        }
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');

@@ -14,6 +14,9 @@ declare module 'next-auth' {
       firstname: string;
       lastname: string;
       username: string;
+      pseudonym: string;
+      image: string;
+      phone: string;
       role: string;
       roleId: number;
       companyId: string | null;
@@ -42,6 +45,10 @@ type AuthUser = {
   companyId: string | null;
   isActive: boolean;
   emailVerified: boolean;
+  pseudonym: string;
+  image: string;
+  phone: string;
+  
 };
 
 export const authOptions: NextAuthOptions = {
@@ -99,6 +106,9 @@ export const authOptions: NextAuthOptions = {
           companyId: user.companyId,
           isActive: user.isActive,
           emailVerified: user.emailVerified,
+          pseudonym: user.pseudonym || '',
+          image: user.image || '',
+          phone: user.phone || '',
         };
 
         return authUser;
@@ -113,6 +123,9 @@ export const authOptions: NextAuthOptions = {
         token.roleId = authUser.roleId;
         token.companyId = authUser.companyId;
         token.username = authUser.username;
+        token.pseudonym = authUser.pseudonym;
+        token.image = authUser.image;
+        token.phone = authUser.phone;
       }
       return token;
     },
@@ -125,6 +138,9 @@ export const authOptions: NextAuthOptions = {
         session.user.isActive = true; // We only get here if user is active
         session.user.emailVerified = true; // We only get here if email is verified
         session.user.username = token.username as string;
+        session.user.pseudonym = token.pseudonym as string;
+        session.user.image = token.image as string;
+        session.user.phone = token.phone as string;
       }
       return session;
     },
