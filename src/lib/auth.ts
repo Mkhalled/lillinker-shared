@@ -75,11 +75,11 @@ export const authOptions: NextAuthOptions = {
         }
 
         if (!user.isActive) {
-          throw new Error('Account is not active');
+          throw new Error("Votre compte est en cours de validation par l'administrateur");
         }
 
         if (!user.emailVerified) {
-          throw new Error('Email not verified');
+          throw new Error('Veuillez valider votre email');
         }
 
         const isValid = await compare(credentials.password, user.password);
