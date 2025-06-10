@@ -5,7 +5,7 @@ import Link from "next/link";
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import Button from '@/components/ui/button/Button';
-type Role = "CONSULTANT" | "COMPANY_ADMIN";
+import { RoleEnum } from "@/constants/Role.enum";
 
 interface FormData {
   firstname: string;
@@ -20,7 +20,7 @@ interface FormData {
 }
 
 export default function SignupForm() {
-  const [role, setRole] = useState<Role>("CONSULTANT");
+  const [role, setRole] = useState<RoleEnum>(RoleEnum.CONSULTANT);
   const [formData, setFormData] = useState<FormData>({
     firstname: "",
     lastname: "",
@@ -40,7 +40,7 @@ export default function SignupForm() {
   };
 
   const handleRoleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setRole(e.target.value as Role);
+    setRole(e.target.value as RoleEnum);
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -86,8 +86,8 @@ export default function SignupForm() {
           <Label className="flex items-center cursor-pointer">
             <input
               type="radio"
-              value="CONSULTANT"
-              checked={role === "CONSULTANT"}
+              value={RoleEnum.CONSULTANT}
+              checked={role === RoleEnum.CONSULTANT}
               onChange={handleRoleChange}
               className="h-4 w-4 text-blue-600"
             />
@@ -96,8 +96,8 @@ export default function SignupForm() {
           <Label className="flex items-center cursor-pointer">
             <input
               type="radio"
-              value="COMPANY_ADMIN"
-              checked={role === "COMPANY_ADMIN"}
+              value={RoleEnum.COMPANY_ADMIN}
+              checked={role === RoleEnum.COMPANY_ADMIN}
               onChange={handleRoleChange}
               className="h-4 w-4 text-blue-600"
             />

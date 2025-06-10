@@ -1,39 +1,37 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import {accountActivationEmail} from "@/lib/mailer";
-const prisma = new PrismaClient();
+import { UserDAO } from "@/dao/user.dao";
+import { logger } from "@/lib/logger";
+
 const secret = process.env.NEXTAUTH_SECRET!;
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    logger.info("HIT: /api/admin/users/[id] PUT request", { userId: params.id });
     const token = await getToken({ req, secret });
-
     if (!token) {
+      logger.warn("Unauthorized access attempt", { userId: params.id });
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
     if (token.role !== "PLATFORM_ADMIN") {
+      logger.warn("Access denied for user", { userId: token.id, role: token.role });
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
     const userId =params.id;
 
-        await prisma.user.update({
-        where: { id: userId },
-        data: { isActive : true },
-        });
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-            select: { firstname: true,lastname : true, email: true }
-        });
+        await UserDAO.update(userId, { isActive: true });
+        const user = await UserDAO.findUserBasicInfoById(userId);
         if (user) {
             const fullName = `${user.firstname} ${user.lastname}`;
             await accountActivationEmail( user.email, fullName);
         }
+        logger.info("User account activated successfully", { userId });
     return NextResponse.json({ message: "Account Activated successfully" }, { status: 200 });
   } catch (error) {
-    console.error("API Error:", error);
+    logger.error("API Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -88,4 +88,13 @@ export class UserDAO {
     logger.info('User deleted successfully', { userId: user.id });
     return user;
   }
+  static async findUserBasicInfoById(userId: string): Promise<{ firstname: string, lastname: string, email: string } | null> {
+    logger.debug('Searching for user basic info by ID', { userId });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { firstname: true, lastname: true, email: true }
+    });
+    logger.debug('User basic info search result', { found: !!user, userId });
+    return user;
+  }
 }
