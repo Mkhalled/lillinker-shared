@@ -28,6 +28,9 @@ export interface AuthUser {
   firstname: string;
   lastname: string;
   username: string;
+  pseudonym: string;
+  image: string;
+  phone: string;
   role: string;
   roleId: number;
   companyId: string | null;

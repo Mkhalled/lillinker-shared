@@ -97,4 +97,26 @@ export class UserDAO {
     logger.debug('User basic info search result', { found: !!user, userId });
     return user;
   }
+  static async findInactiveVerifiedUsers() {
+    logger.debug('Searching for inactive but verified users');
+    const users = await prisma.user.findMany({
+      where: {
+        emailVerified: true,
+        isActive: false
+      },
+      select: {
+        firstname: true, 
+        lastname: true, 
+        email: true,
+        role: {
+          select: {
+            name: true 
+          }
+        },      
+        company: true    
+      }
+    });
+    logger.debug('Found inactive verified users', { count: users.length });
+    return users;
+  }
 }

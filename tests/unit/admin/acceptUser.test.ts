@@ -1,19 +1,15 @@
 // mock environment variables
 process.env.NEXTAUTH_SECRET = 'test-secret';
 
-// mock PrismaClient
-jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn().mockImplementation(() => ({
-    user: {
-      update: jest.fn().mockResolvedValue({}),
-      findUnique: jest.fn().mockResolvedValue({
-        firstname: 'John',
-        lastname: 'Doe',
-        email: 'john@example.com'
-      })
-    },
-  })),
-}));
+// Integrate centralized Prisma mocks
+jest.mock('@prisma/client', () => {
+  const actual = jest.requireActual('@prisma/client');
+  const { mockPrisma } = require('../../mocks/prisma');
+  const prisma = mockPrisma(new actual.PrismaClient());
+  return {
+    PrismaClient: jest.fn(() => prisma),
+  };
+});
 
 // mock token
 jest.mock('next-auth/jwt', () => ({

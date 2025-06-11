@@ -157,7 +157,7 @@ describe('AuthService', () => {
       expect(UserDAO.create).toHaveBeenCalledWith({
         ...consultantData,
         roleId: mockConsultantRole.id,
-        isActive: true,
+        isActive: false,
         emailVerified: false,
       });
     });
@@ -176,7 +176,7 @@ describe('AuthService', () => {
       expect(UserDAO.create).toHaveBeenCalledWith({
         ...adminData,
         roleId: mockAdminRole.id,
-        isActive: true,
+        isActive: false,
         emailVerified: false,
       });
     });
@@ -195,7 +195,7 @@ describe('AuthService', () => {
       expect(UserDAO.create).toHaveBeenCalledWith({
         ...managerData,
         roleId: mockManagerRole.id,
-        isActive: true,
+        isActive: false,
         emailVerified: false,
       });
     });

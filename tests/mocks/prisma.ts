@@ -50,6 +50,15 @@ export const mockPrisma = (prisma: PrismaClient) => {
 
   prisma.user.findMany = jest.fn().mockResolvedValue([generateUserData()]);
 
+  prisma.user.update = jest.fn().mockImplementation(({ where, data }) => {
+    // Merge the update data with a generated user
+    return Promise.resolve({
+      ...generateUserData({ ...data, id: where.id }),
+      ...data,
+      id: where.id,
+    });
+  });
+
   // Role mocks
   prisma.role.findUnique = jest.fn().mockImplementation(args => {
     const role = generateRoleData();
