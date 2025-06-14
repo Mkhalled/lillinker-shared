@@ -88,11 +88,13 @@ export class UserDAO {
     logger.info('User deleted successfully', { userId: user.id });
     return user;
   }
-  static async findUserBasicInfoById(userId: string): Promise<{ firstname: string, lastname: string, email: string } | null> {
+  static async findUserBasicInfoById(
+    userId: string
+  ): Promise<{ firstname: string; lastname: string; email: string } | null> {
     logger.debug('Searching for user basic info by ID', { userId });
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { firstname: true, lastname: true, email: true }
+      select: { firstname: true, lastname: true, email: true },
     });
     logger.debug('User basic info search result', { found: !!user, userId });
     return user;
@@ -102,19 +104,19 @@ export class UserDAO {
     const users = await prisma.user.findMany({
       where: {
         emailVerified: true,
-        isActive: false
+        isActive: false,
       },
       select: {
-        firstname: true, 
-        lastname: true, 
+        firstname: true,
+        lastname: true,
         email: true,
         role: {
           select: {
-            name: true 
-          }
-        },      
-        company: true    
-      }
+            name: true,
+          },
+        },
+        company: true,
+      },
     });
     logger.debug('Found inactive verified users', { count: users.length });
     return users;

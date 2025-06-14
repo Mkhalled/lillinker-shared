@@ -7,12 +7,11 @@ import { sendVerificationEmail } from '@/lib/mailer';
 import { AuthService } from '@/services/auth.service';
 import { validateUserRegistrationWithError } from '@/validations/user.validation';
 
-
 export async function POST(req: Request) {
   try {
     logger.info('Starting user registration process');
     const body = await req.json();
-    logger.debug('Received registration request', { ...body   });
+    logger.debug('Received registration request', { ...body });
 
     const validationResult = validateUserRegistrationWithError(body);
     if (!validationResult.success) {
@@ -30,21 +29,21 @@ export async function POST(req: Request) {
     });
 
     try {
-      const hashedPassword =  await bcrypt.hash(validatedData.password, 10);
-       const emailVerificationToken = uuidv4(); // random UUID token
+      const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+      const emailVerificationToken = uuidv4(); // random UUID token
       const emailVerificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // now + 24 hours
-        // register the user
+      // register the user
       const userInput = {
         ...validatedData,
-        password: hashedPassword, 
+        password: hashedPassword,
         isActive: false,
         emailVerified: false,
         emailVerificationToken,
-        emailVerificationTokenExpiresAt
+        emailVerificationTokenExpiresAt,
       };
       const result = await AuthService.registerUser(userInput);
-            // send email verification token
-        await sendVerificationEmail(validatedData.email, emailVerificationToken);
+      // send email verification token
+      await sendVerificationEmail(validatedData.email, emailVerificationToken);
 
       logger.info('User registration completed successfully', {
         userId: result.id,

@@ -5,7 +5,6 @@ import { JWT } from 'next-auth/jwt';
 import { authOptions } from '@/lib/auth';
 import { CustomSession, CustomUser } from 'tests/types/auth';
 
-
 // Mock Prisma client
 jest.mock('@/lib/prisma', () => ({
   prisma: {
@@ -55,13 +54,13 @@ describe('NextAuth Callbacks', () => {
       });
 
       expect(token).toEqual({
-       companyId: "test-company",
-          image: undefined,
+        companyId: 'test-company',
+        image: undefined,
         phone: undefined,
-        pseudonym : undefined,
-        role: "CONSULTANT",
+        pseudonym: undefined,
+        role: 'CONSULTANT',
         roleId: 1,
-      username: "johndoe",
+        username: 'johndoe',
       });
     });
 
@@ -106,7 +105,7 @@ describe('NextAuth Callbacks', () => {
         pseudonym: undefined,
         role: undefined,
         roleId: undefined,
-        username: "johndoe",
+        username: 'johndoe',
       });
     });
   });
@@ -123,13 +122,13 @@ describe('NextAuth Callbacks', () => {
       const session = await authOptions.callbacks?.session?.({
         session: {
           user: {
-          id: '1',
+            id: '1',
             email: 'test@example.com',
             firstname: 'John',
             lastname: 'Doe',
             username: 'johndoe',
             role: 'CONSULTANT',
-            phone: "77686768",
+            phone: '77686768',
             roleId: 1,
             companyId: 'test-company',
             isActive: true,
@@ -143,20 +142,20 @@ describe('NextAuth Callbacks', () => {
         trigger: 'update',
       });
 
-           expect(session).toEqual({
+      expect(session).toEqual({
         user: {
-          companyId: "test-company",
-          email: "test@example.com",
+          companyId: 'test-company',
+          email: 'test@example.com',
           emailVerified: true,
-          firstname: "John",
-          id: "1",
+          firstname: 'John',
+          id: '1',
           image: undefined,
           isActive: true,
-          lastname: "Doe",
+          lastname: 'Doe',
           phone: undefined,
           pseudonym: undefined,
-          role: "CONSULTANT",
-          roleId: 1
+          role: 'CONSULTANT',
+          roleId: 1,
         },
         expires: expect.any(String),
       });
@@ -190,13 +189,13 @@ describe('NextAuth Callbacks', () => {
       expect(session).toEqual({
         user: {
           companyId: undefined,
-          email: "test@example.com",
+          email: 'test@example.com',
           emailVerified: true,
-          firstname: "John",
+          firstname: 'John',
           id: undefined,
           image: undefined,
           isActive: true,
-          lastname: "Doe",
+          lastname: 'Doe',
           phone: undefined,
           pseudonym: undefined,
           role: undefined,

@@ -1,4 +1,3 @@
-
 # Contributing to Lillinker
 
 Thank you for your interest in contributing to Lillinker! This document provides guidelines and instructions for contributing to our project.

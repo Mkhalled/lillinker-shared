@@ -10,7 +10,6 @@ import { MenuGroup } from '@/types/menu';
 
 import useLocalStorage from '../../hooks/useLocalStorage';
 
-
 export interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (arg: boolean) => void;

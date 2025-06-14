@@ -26,6 +26,7 @@ When a user registers, we:
 4. Send an email with a verification link containing the token
 
 verification link api:
+
 ```
 https://localhost:3000/api/auth/verify-email?token=abc123def456
 ```
@@ -41,7 +42,6 @@ The verification endpoint handles several error cases:
 - **Missing Token**: If no token is provided in the URL
 - **Invalid Token**: If the token doesn't match any user in the database
 - **Expired Token**: If the token has passed its expiration time
-
 
 ## User Experience
 

@@ -130,7 +130,7 @@ export default [
       },
     },
   },
-   {
+  {
     ignores: ['.next/**/*'],
   },
 ];

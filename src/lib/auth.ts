@@ -48,7 +48,6 @@ type AuthUser = {
   pseudonym: string;
   image: string;
   phone: string;
-  
 };
 
 export const authOptions: NextAuthOptions = {

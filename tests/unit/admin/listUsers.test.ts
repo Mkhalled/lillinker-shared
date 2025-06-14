@@ -18,7 +18,6 @@ jest.mock('next-auth/jwt', () => ({
   getToken: jest.fn(),
 }));
 
-
 import { getToken } from 'next-auth/jwt';
 
 const mockGetToken = getToken as jest.Mock;
@@ -57,7 +56,7 @@ describe('Admin Users API Route', () => {
     const req = createMockNextRequest();
     logger.debug('Calling GET with request');
     const res = await GET(req);
-    
+
     logger.debug(`Response status: ${res.status}`);
     expect(res.status).toBe(401);
     const responseBody = await res.json();
@@ -65,7 +64,7 @@ describe('Admin Users API Route', () => {
     expect(responseBody).toEqual({ error: 'Not authenticated' });
     expect(mockGetToken).toHaveBeenCalledWith({
       req,
-      secret: 'test-secret'
+      secret: 'test-secret',
     });
   });
 
@@ -102,12 +101,12 @@ describe('Admin Users API Route', () => {
 
     logger.debug(`Response status: ${res.status}`);
     expect(res.status).toBe(200);
-    
+
     const responseData = await res.json();
     logger.debug(`Response data: ${JSON.stringify(responseData)}`);
     expect(responseData).toEqual({
       message: 'Welcome admin!',
-      users: mockUsers
+      users: mockUsers,
     });
   });
 

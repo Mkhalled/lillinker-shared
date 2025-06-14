@@ -5,7 +5,6 @@ import { useState } from 'react';
 
 import ClickOutside from '../../components/ClickOutside';
 
-
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { data: session } = useSession();

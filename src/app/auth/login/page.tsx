@@ -47,12 +47,12 @@ const LoginPage = () => {
         router.push('/admin/dashboard');
       } else {
         // Check if profile is complete
-        let hasCompleteProfile = 
-          session.user?.username && 
-          session.user?.pseudonym && 
-          session.user?.image && 
+        let hasCompleteProfile =
+          session.user?.username &&
+          session.user?.pseudonym &&
+          session.user?.image &&
           session.user?.phone;
-        if (role === "COMPANY_ADMIN"){
+        if (role === 'COMPANY_ADMIN') {
           hasCompleteProfile = hasCompleteProfile && session.user?.companyId;
         }
         if (!hasCompleteProfile) {
@@ -60,17 +60,17 @@ const LoginPage = () => {
         } else {
           // Redirect based on role
           switch (role) {
-        case 'COMPANY_ADMIN':
-          router.push('/company/admin/dashboard');
-          break;
-        case 'COMPANY_MANAGER':
-          router.push('/company/manager/dashboard');
-          break;
-        case 'CONSULTANT':
-          router.push('/consultant/dashboard');
-          break;
-        default:
-          router.push('/');
+            case 'COMPANY_ADMIN':
+              router.push('/company/admin/dashboard');
+              break;
+            case 'COMPANY_MANAGER':
+              router.push('/company/manager/dashboard');
+              break;
+            case 'CONSULTANT':
+              router.push('/consultant/dashboard');
+              break;
+            default:
+              router.push('/');
           }
         }
       }

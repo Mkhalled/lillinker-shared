@@ -29,20 +29,20 @@ After user registration, an email with a verification token is sent using Nodema
 
 1. A unique token is generated using `uuid` and stored with the user record
 2. An email is composed with:
-    - Verification link containing the token (`/verify-email?token=UUID`)
+   - Verification link containing the token (`/verify-email?token=UUID`)
 
 ---
 
 ## 📁 Related Code
 
-| File | Responsibility |
-|------|----------------|
-| `/api/auth/register-user` | Main API route to register users |
-| `/services/auth.service.ts` | Handles database logic for creating users |
-| `/validations/user.validation.ts` | Zod schema for input validation |
-| `/lib/logger.ts` | Logging utility |
-| `bcryptjs` | Password hashing |
-| `uuid` | Token generation for email verification |
+| File                              | Responsibility                            |
+| --------------------------------- | ----------------------------------------- |
+| `/api/auth/register-user`         | Main API route to register users          |
+| `/services/auth.service.ts`       | Handles database logic for creating users |
+| `/validations/user.validation.ts` | Zod schema for input validation           |
+| `/lib/logger.ts`                  | Logging utility                           |
+| `bcryptjs`                        | Password hashing                          |
+| `uuid`                            | Token generation for email verification   |
 
 ---
 
@@ -53,6 +53,7 @@ Make sure the following are configured:
 - Database connected via AuthService
 - Logging is correctly set up (`lib/logger`)
 - Mail service provider is included in .env file
+
 ---
 
 ## 🛡 Roles

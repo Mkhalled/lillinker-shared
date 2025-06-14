@@ -41,5 +41,5 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, menuGroups }) =
       {/* <!-- ===== Page Wrapper End ===== --> */}
     </>
   );
-}
-export default DefaultLayout
+};
+export default DefaultLayout;

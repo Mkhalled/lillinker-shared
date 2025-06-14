@@ -1,5 +1,5 @@
-import { UserDAO } from "@/dao/user.dao";
-import { prisma } from "@/lib/prisma";
+import { UserDAO } from '@/dao/user.dao';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -17,15 +17,18 @@ export async function GET(req: Request) {
   }
 
   const now = new Date();
-  if (!user.emailVerificationTokenExpiresAt || now > new Date(user.emailVerificationTokenExpiresAt)) {
+  if (
+    !user.emailVerificationTokenExpiresAt ||
+    now > new Date(user.emailVerificationTokenExpiresAt)
+  ) {
     return new Response(JSON.stringify({ message: 'Token expired' }), { status: 400 });
   }
 
   await UserDAO.update(user.id, {
-      emailVerified: true,
-      emailVerificationToken: null,
-      emailVerificationTokenExpiresAt: null,
-    });
+    emailVerified: true,
+    emailVerificationToken: null,
+    emailVerificationTokenExpiresAt: null,
+  });
 
   return new Response(JSON.stringify({ message: 'Email verified successfully' }), { status: 200 });
 }

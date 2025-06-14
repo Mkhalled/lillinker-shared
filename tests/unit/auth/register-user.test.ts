@@ -109,10 +109,7 @@ describe('POST /api/auth/register-user', () => {
     });
 
     // Assert sendVerificationEmail is called
-    expect(sendVerificationEmail).toHaveBeenCalledWith(
-      mockUser.email,
-      expect.any(String)
-    );
+    expect(sendVerificationEmail).toHaveBeenCalledWith(mockUser.email, expect.any(String));
   });
   it('returns 400 if user already exists', async () => {
     const mockUser = generateUserRegistrationData();

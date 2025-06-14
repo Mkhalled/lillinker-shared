@@ -18,7 +18,7 @@ jest.mock('next-auth/jwt', () => ({
 
 // mock email function
 jest.mock('@/lib/mailer', () => ({
-  accountActivationEmail: jest.fn().mockResolvedValue(true)
+  accountActivationEmail: jest.fn().mockResolvedValue(true),
 }));
 
 import { getToken } from 'next-auth/jwt';
@@ -54,7 +54,7 @@ describe('Accept user API Route', () => {
     expect(await res.json()).toEqual({ error: 'Not authenticated' });
     expect(mockGetToken).toHaveBeenCalledWith({
       req,
-      secret: 'test-secret'
+      secret: 'test-secret',
     });
   });
 
@@ -78,7 +78,7 @@ describe('Accept user API Route', () => {
     expect(res.status).toBe(200);
     const responseData = await res.json();
     expect(responseData).toEqual({
-      message: 'Account Activated successfully'
+      message: 'Account Activated successfully',
     });
   });
 
