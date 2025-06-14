@@ -1,11 +1,12 @@
+import bcrypt from 'bcryptjs';
 import { NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
 
 import { logger } from '@/lib/logger';
+import { sendVerificationEmail } from '@/lib/mailer';
 import { AuthService } from '@/services/auth.service';
 import { validateUserRegistrationWithError } from '@/validations/user.validation';
-import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
-import { sendVerificationEmail } from '@/lib/mailer';
+
 
 export async function POST(req: Request) {
   try {

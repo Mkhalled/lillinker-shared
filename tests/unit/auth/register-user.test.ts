@@ -1,9 +1,9 @@
 import { POST } from '@/app/api/auth/register-user/route';
 import { RoleEnum } from '@/constants/Role.enum';
-import { generateUserRegistrationData } from 'tests/fixtures/user';
 import { sendVerificationEmail } from '@/lib/mailer';
 import { AuthService } from '@/services/auth.service';
 import { validateUserRegistrationWithError } from '@/validations/user.validation';
+import { generateUserRegistrationData } from 'tests/fixtures/user';
 
 // Mocks
 jest.mock('@/lib/prisma', () => {

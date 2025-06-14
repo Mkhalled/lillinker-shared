@@ -1,8 +1,9 @@
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import {accountActivationEmail} from "@/lib/mailer";
+import { getToken } from "next-auth/jwt";
+
 import { UserDAO } from "@/dao/user.dao";
 import { logger } from "@/lib/logger";
+import {accountActivationEmail} from "@/lib/mailer";
 
 const secret = process.env.NEXTAUTH_SECRET!;
 

@@ -26,6 +26,7 @@ const mockGetToken = getToken as jest.Mock;
 
 // start testing
 import { PUT } from '@/app/api/admin/users/[id]/route';
+
 import { NextRequest } from 'next/server';
 
 function createMockNextRequest(cookie: string = '') {

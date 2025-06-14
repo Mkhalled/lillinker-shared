@@ -1,16 +1,16 @@
 'use client';
 import React, { useState } from 'react';
-import Sidebar from '@/components/Sidebar';
+
 import Header from '@/components/Header';
+import Sidebar from '@/components/Sidebar';
 import { MenuGroup } from '@/types/menu';
 
-export default function DefaultLayout({
-  children,
-  menuGroups,
-}: {
+type DefaultLayoutProps = {
   children: React.ReactNode;
   menuGroups: MenuGroup[];
-}) {
+};
+
+const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, menuGroups }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <>
@@ -42,3 +42,4 @@ export default function DefaultLayout({
     </>
   );
 }
+export default DefaultLayout

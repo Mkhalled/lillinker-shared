@@ -1,12 +1,15 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
-import SidebarItem from '@/components/Sidebar/SidebarItem';
+import Link from 'next/link';
+import React from 'react';
+
 import ClickOutside from '@/components/ClickOutside';
-import useLocalStorage from '../../hooks/useLocalStorage';
+import SidebarItem from '@/components/Sidebar/SidebarItem';
 import { MenuGroup } from '@/types/menu';
+
+import useLocalStorage from '../../hooks/useLocalStorage';
+
 
 export interface SidebarProps {
   sidebarOpen: boolean;

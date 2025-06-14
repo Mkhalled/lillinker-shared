@@ -1,10 +1,10 @@
+import { Session } from 'next-auth';
 import { AdapterUser } from 'next-auth/adapters';
 import { JWT } from 'next-auth/jwt';
 
+import { authOptions } from '@/lib/auth';
 import { CustomSession, CustomUser } from 'tests/types/auth';
 
-import { authOptions } from '@/lib/auth';
-import { Session } from 'next-auth';
 
 // Mock Prisma client
 jest.mock('@/lib/prisma', () => ({

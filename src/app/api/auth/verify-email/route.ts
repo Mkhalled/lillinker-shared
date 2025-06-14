@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
 import { UserDAO } from "@/dao/user.dao";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);

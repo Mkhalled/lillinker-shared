@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, ChangeEvent, FormEvent } from "react";
 import Link from "next/link";
+import { useState, ChangeEvent, FormEvent } from "react";
+
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import Button from '@/components/ui/button/Button';
@@ -19,7 +20,7 @@ interface FormData {
   username: string;
 }
 
-export default function SignupForm() {
+const SignupForm : React.FC = () => {
   const [role, setRole] = useState<RoleEnum>(RoleEnum.CONSULTANT);
   const [formData, setFormData] = useState<FormData>({
     firstname: "",
@@ -164,7 +165,7 @@ export default function SignupForm() {
           {role === "COMPANY_ADMIN" && (
             <>
               <div>
-                <Label className="block text-sm font-medium text-gray-700 mb-1">Nom de l'entreprise</Label>
+                <Label className="block text-sm font-medium text-gray-700 mb-1">Nom de l&apos;entreprise</Label>
                 <Input
                   type="text"
                   name="companyName"
@@ -186,7 +187,7 @@ export default function SignupForm() {
               </div>
 
               <div className="md:col-span-2">
-                <Label className="block text-sm font-medium text-gray-700 mb-1">Type d'entreprise</Label>
+                <Label className="block text-sm font-medium text-gray-700 mb-1">Type d&apos;entreprise</Label>
                 <Input
                   type="text"
                   name="type"
@@ -217,3 +218,4 @@ export default function SignupForm() {
    </div>
   );
 }
+export default SignupForm;

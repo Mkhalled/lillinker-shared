@@ -1,5 +1,6 @@
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+
 import { UserDAO } from "@/dao/user.dao";
 import { logger } from "@/lib/logger";
 const secret = process.env.NEXTAUTH_SECRET!;
