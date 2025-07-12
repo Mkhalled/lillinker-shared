@@ -19,7 +19,7 @@ model User {
   email          String           @unique
   role           Role
   status         Boolean          @default(true)
-  
+  phone_number   String?
   // NextAuth fields preserved
   image          String?
   accounts       Account[]
@@ -88,8 +88,8 @@ model PlatformService {
   user_id          Int
   label            String
   description      String?         @db.Text
-  is_required      Boolean
   data_type        DataType
+  requires_data  Boolean         @default(false)
   data_label       String
   data_description String?         @db.Text
   choices          Json?
@@ -104,9 +104,8 @@ model PlatformService {
 enum DataType {
   TEXT
   NUMBER
-  BOOLEAN
   SELECT
-  DATE
+  RADIO
 }
 
 enum ServiceStatus {
@@ -163,6 +162,7 @@ model FreelanceRequestOption {
   id                  Int             @id @default(autoincrement())
   freelance_request_id Int
   service_option_id   Int
+  is_required      Boolean         @default(false)
   request             FreelanceRequest @relation(fields: [freelance_request_id], references: [id])
   serviceOption       CompanyService   @relation(fields: [service_option_id], references: [id])
 

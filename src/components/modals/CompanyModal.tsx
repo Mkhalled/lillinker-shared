@@ -15,8 +15,6 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
     companyName: "",
     siret: "",
     description: "",
-    logo: null as File | null,
-
     // Step 2: Consultants and fees
     consultantCount: "",
     managementFeeRate: "",
@@ -37,14 +35,10 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
       dataLabel?: string
       dataDescription?: string
       choices?: string[]
-    }>,
-
-    // Step 5: Subscription
-    subscriptionType: "",
-    subscriptionPeriod: "",
+    }>
   })
 
-  const totalSteps = 6
+  const totalSteps = 5
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
@@ -123,7 +117,7 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
   }
 
   const handleComplete = () => {
-    setCurrentStep(6)
+    setCurrentStep(5)
   }
 
   const renderStep = () => {
@@ -161,14 +155,6 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
                 rows={4}
                 required
               />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Logo de la société</label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-600">Cliquez pour télécharger votre logo</p>
-                <p className="text-xs text-gray-500 mt-1">PNG, JPG jusqu'à 2MB</p>
-              </div>
             </div>
           </div>
         )
@@ -338,10 +324,10 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
                                 onChange={(e) => updateService(service.id, "dataType", e.target.value)}
                               >
                                 <option value="">Sélectionnez le type</option>
-                                <option value="text">Texte libre</option>
-                                <option value="number">Numérique</option>
-                                <option value="choice">Choix unique</option>
-                                <option value="multiple">Choix multiple</option>
+                                <option value="TEXT">Texte libre</option>
+                                <option value="NUMBER">Numérique</option>
+                                <option value="RADIO">Choix unique</option>
+                                <option value="SELECT">Choix multiple</option>
                               </select>
                             </div>
                             <div className="space-y-2">
@@ -408,108 +394,6 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
 
       case 5:
         return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium mb-4">Choisissez votre abonnement</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div
-                  className={`border-2 rounded-lg p-6 cursor-pointer transition-colors ${
-                    formData.subscriptionType === "basic" ? "border-blue-500 bg-blue-50" : "border-gray-200"
-                  }`}
-                  onClick={() => setFormData((prev) => ({ ...prev, subscriptionType: "basic" }))}
-                >
-                  <div className="flex items-center space-x-2 mb-4">
-                    <input
-                      type="radio"
-                      name="subscription"
-                      value="basic"
-                      checked={formData.subscriptionType === "basic"}
-                      onChange={() => setFormData((prev) => ({ ...prev, subscriptionType: "basic" }))}
-                    />
-                    <label className="font-medium">Formule Basic</label>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-2xl font-bold">
-                      49€<span className="text-sm font-normal">/mois</span>
-                    </p>
-                    <ul className="text-sm space-y-1 text-gray-600">
-                      <li>• Jusqu'à 10 réponses par mois</li>
-                      <li>• Tableau de bord standard</li>
-                      <li>• Support email</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div
-                  className={`border-2 rounded-lg p-6 cursor-pointer transition-colors ${
-                    formData.subscriptionType === "premium" ? "border-blue-500 bg-blue-50" : "border-gray-200"
-                  }`}
-                  onClick={() => setFormData((prev) => ({ ...prev, subscriptionType: "premium" }))}
-                >
-                  <div className="flex items-center space-x-2 mb-4">
-                    <input
-                      type="radio"
-                      name="subscription"
-                      value="premium"
-                      checked={formData.subscriptionType === "premium"}
-                      onChange={() => setFormData((prev) => ({ ...prev, subscriptionType: "premium" }))}
-                    />
-                    <label className="font-medium">Formule Premium</label>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-2xl font-bold">
-                      99€<span className="text-sm font-normal">/mois</span>
-                    </p>
-                    <ul className="text-sm space-y-1 text-gray-600">
-                      <li>• Réponses illimitées</li>
-                      <li>• Tableau de bord avancé</li>
-                      <li>• Support prioritaire</li>
-                      <li>• Statistiques détaillées</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {formData.subscriptionType && (
-              <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-700">Période de facturation</label>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      name="period"
-                      value="monthly"
-                      checked={formData.subscriptionPeriod === "monthly"}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, subscriptionPeriod: e.target.value }))}
-                    />
-                    <span>Mensuel</span>
-                  </label>
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      name="period"
-                      value="yearly"
-                      checked={formData.subscriptionPeriod === "yearly"}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, subscriptionPeriod: e.target.value }))}
-                    />
-                    <span>Annuel (2 mois offerts)</span>
-                  </label>
-                </div>
-              </div>
-            )}
-
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-sm text-amber-800">
-                <strong>Important :</strong> Votre compte sera en attente d'activation par un administrateur. Vous
-                pourrez commencer à utiliser la plateforme une fois votre compte validé.
-              </p>
-            </div>
-          </div>
-        )
-
-      case 6:
-        return (
           <div className="space-y-6 text-center">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
             <div>
@@ -546,8 +430,6 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
       case 4:
         return "Services et options"
       case 5:
-        return "Choix de l'abonnement"
-      case 6:
         return "Demande envoyée"
       default:
         return ""
@@ -563,10 +445,8 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
       case 3:
         return formData.adminFirstName && formData.adminLastName && formData.adminEmail && formData.adminPhone
       case 4:
-        return true // Services are optional
+        return true 
       case 5:
-        return formData.subscriptionType && formData.subscriptionPeriod
-      case 6:
         return true
       default:
         return false
@@ -613,7 +493,6 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
               {currentStep === 2 && "Informations sur vos consultants et tarifs"}
               {currentStep === 3 && "Coordonnées de l'administrateur du compte"}
               {currentStep === 4 && "Définissez les services que vous proposez"}
-              {currentStep === 5 && "Sélectionnez votre formule d'abonnement"}
               {currentStep === 6 && "Votre demande a été transmise"}
             </p>
           </div>
@@ -622,7 +501,7 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
             {renderStep()}
           </div>
 
-          {currentStep < 6 && (
+          {currentStep < 5 && (
             <div className="flex justify-between">
               <Button 
                 variant="outline" 
@@ -634,7 +513,7 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
                 <span>Précédent</span>
               </Button>
 
-              {currentStep < 5 ? (
+              {currentStep < 3 ? (
                 <Button 
                   onClick={handleNext} 
                   disabled={!isStepValid()}
@@ -656,7 +535,7 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
             </div>
           )}
 
-          {currentStep === 6 && (
+          {currentStep === 5 && (
             <div className="flex justify-center">
               <Button 
                 onClick={onClose}

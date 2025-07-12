@@ -11,7 +11,6 @@ const mockServiceOptions = [
     label: "Assurance RC Pro",
     description: "Assurance responsabilité civile professionnelle",
     requiresData: false,
-    companyName: "PortagePro",
   },
   {
     id: 2,
@@ -366,15 +365,15 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
             <div>
               <h3 className="text-xl font-semibold mb-2 text-gray-900">Merci pour votre demande !</h3>
               <p className="text-gray-600 mb-4">
-                Nous avons bien reçu vos informations. Notre équipe va analyser votre profil et vous contacter dans les plus brefs délais.
+              Vous avez reçu un email pour confirmer votre email et créer votre mot de passe.
               </p>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
-                <h4 className="font-medium text-blue-900 mb-2">Prochaines étapes :</h4>
-                <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• Analyse de votre profil par notre équipe</li>
-                  <li>• Mise en relation avec les sociétés de portage adaptées</li>
-                  <li>• Contact sous 24-48h selon la priorité indiquée</li>
-                </ul>
+              <h4 className="font-medium text-blue-900 mb-2">Prochaines étapes :</h4>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Ajouter un mot de passe</li>
+                <li>• L'administration acceptera votre demande</li>
+                <li>• Vous pourrez accéder à des réponses des entreprises</li>
+              </ul>
               </div>
             </div>
           </div>

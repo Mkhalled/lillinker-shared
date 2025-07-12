@@ -15,6 +15,7 @@ interface UserCreateData {
   last_name: string;
   email: string;
   password: string;
+  phone_number: string;
   role: 'ADMIN' | 'COMPANY' | 'FREELANCE' | 'MANAGER';
   status: boolean;
 }
@@ -89,6 +90,7 @@ async function main(): Promise<void> {
       first_name: 'Admin',
       last_name: 'Plateforme',
       email: 'admin@lillinker.com',
+       phone_number: '0123456789',
       role: 'ADMIN',
       status: true,
     });
@@ -99,6 +101,7 @@ async function main(): Promise<void> {
       last_name: 'Commercial',
       email: 'directeur@sta-portage.com',
       role: 'COMPANY',
+       phone_number: '0123456789',
       status: true,
     });
 
@@ -107,6 +110,7 @@ async function main(): Promise<void> {
       last_name: 'Commercial',
       email: 'commercial@itg-portage.com',
       role: 'COMPANY',
+      phone_number: '0123456789',
       status: true,
     });
 
@@ -137,6 +141,7 @@ async function main(): Promise<void> {
       first_name: 'Marie',
       last_name: 'Dubois',
       email: 'marie.dubois@example.com',
+       phone_number: '0123456789',
       role: 'FREELANCE',
       status: true,
     });
@@ -145,6 +150,7 @@ async function main(): Promise<void> {
       first_name: 'Pierre',
       last_name: 'Martin',
       email: 'pierre.martin@example.com',
+       phone_number: '0123456789',
       role: 'FREELANCE',
       status: true,
     });
@@ -170,6 +176,7 @@ async function main(): Promise<void> {
       last_name: 'Laurent',
       email: 'sophie.laurent@sta-portage.com',
       role: 'MANAGER',
+       phone_number: '0123456789',
       status: true,
     });
 
@@ -187,7 +194,6 @@ async function main(): Promise<void> {
         user_id: adminUser.id,
         label: 'Taux de Gestion',
         description: 'Pourcentage prélevé par la société de portage sur le chiffre d\'affaires du consultant',
-        is_required: true,
         data_type: 'NUMBER',
         data_label: 'Taux de gestion (%)',
         data_description: 'Indiquez le taux de gestion appliqué (généralement entre 5% et 12%)',
@@ -200,7 +206,6 @@ async function main(): Promise<void> {
         user_id: adminUser.id,
         label: 'Services Inclus',
         description: 'Services additionnels proposés par la société de portage',
-        is_required: false,
         data_type: 'SELECT',
         data_label: 'Services proposés',
         data_description: 'Sélectionnez les services inclus dans votre offre',
@@ -221,7 +226,6 @@ async function main(): Promise<void> {
         user_id: adminUser.id,
         label: 'Délai de Paiement',
         description: 'Délai de versement du salaire après facturation client',
-        is_required: true,
         data_type: 'SELECT',
         data_label: 'Délai de paiement',
         data_description: 'Délai habituel pour le versement du salaire',
@@ -235,7 +239,6 @@ async function main(): Promise<void> {
         user_id: adminUser.id,
         label: 'Frais de Dossier',
         description: 'Frais d\'ouverture et de gestion du dossier consultant',
-        is_required: false,
         data_type: 'NUMBER',
         data_label: 'Frais de dossier (€)',
         data_description: 'Montant des frais d\'ouverture de dossier',
@@ -308,6 +311,7 @@ async function main(): Promise<void> {
       data: {
         freelance_request_id: freelanceRequest1.id,
         service_option_id: companyService1.id,
+        is_required: false,
       },
     });
 
@@ -315,6 +319,7 @@ async function main(): Promise<void> {
       data: {
         freelance_request_id: freelanceRequest1.id,
         service_option_id: companyService2.id,
+        is_required: true,
       },
     });
 
@@ -322,6 +327,7 @@ async function main(): Promise<void> {
       data: {
         freelance_request_id: freelanceRequest2.id,
         service_option_id: companyService1.id,
+        is_required: true,
       },
     });
 
