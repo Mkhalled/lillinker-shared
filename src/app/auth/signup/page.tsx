@@ -5,7 +5,7 @@ import { useState, ChangeEvent, FormEvent } from 'react';
 
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
-import Button from '@/components/ui/button/Button';
+import {Button} from '@/components/ui/button/Button';
 import { RoleEnum } from '@/constants/Role.enum';
 
 interface FormData {
