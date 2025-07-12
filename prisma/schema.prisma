@@ -10,94 +10,184 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Permission model - Represents individual permissions in the system
-model Permission {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique  // e.g., "company.manage"
-  displayName String    // e.g., "Manage Company"
-  description String?   // Detailed description of the permission
-  scope       String?   // Optional scope for the permission (e.g., "company", "platform")
-  isSystem    Boolean   @default(false)  // Whether the permission is system-defined
-  roles       RolePermission[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  @@map("permissions")
-}
-
-// Role model - Represents user roles with metadata
-model Role {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique  // e.g., "COMPANY_ADMIN"
-  displayName String    // e.g., "Company Administrator"
-  description String?   // Detailed description of the role
-  isSystem    Boolean   @default(false)  // Whether the role is system-defined
-  users       User[]
-  permissions RolePermission[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  @@map("roles")
-}
-
-// Junction table for Role-Permission many-to-many relationship
-model RolePermission {
-  id           Int       @id @default(autoincrement())
-  roleId       Int
-  role         Role      @relation(fields: [roleId], references: [id])
-  permissionId Int
-  permission   Permission @relation(fields: [permissionId], references: [id])
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  @@unique([roleId, permissionId])
-  @@map("role_permissions")
-}
-
-// User model - Base user entity for all platform users
+// User model
 model User {
-  id            String    @id @default(cuid())
-  firstname     String
-  lastname      String
-  username      String    @unique
-  email         String    @unique
-  password      String
-  phone         String?
-  isActive      Boolean   @default(false)  // Default to false until email is verified
-  roleId        Int       // Reference to role instead of enum
-  role          Role      @relation(fields: [roleId], references: [id])
-  emailVerified Boolean   @default(false)  // Must be true for account to be active
+  id             Int              @id @default(autoincrement())
+  first_name     String
+  last_name      String
+  password       String
+  email          String           @unique
+  role           Role
+  status         Boolean          @default(true)
   
-  // NextAuth fields
-  image         String?   // Profile image URL
-  accounts      Account[]
-  sessions      Session[]
-  
-  // Pseudonym fields
-  pseudonym     String?   @unique  // Generated pseudonym for consultants
-  pseudonymGeneratedAt DateTime?   // When the pseudonym was generated
-  
-  // Email verification
-  emailVerificationToken String?   @unique  // Token for email verification
-  emailVerificationTokenExpiresAt DateTime? // Token expiration time
+  // NextAuth fields preserved
+  image          String?
+  accounts       Account[]
+  sessions       Session[]
   
   // Relations
-  companyId     String?
-  company       Company?  @relation(fields: [companyId], references: [id])
-  
-  // Timestamps
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  platforms      PlatformService[]
+  freelance      Freelance?
+  ownedCompany   Company?         @relation("CompanyAdmin")
+  managedCompanies CompanyManager[] @relation("CompanyManagers")
 
-  @@index([companyId])
-  @@index([roleId])
   @@map("users")
 }
 
-// NextAuth models
+enum Role {
+  ADMIN
+  COMPANY
+  FREELANCE
+  MANAGER
+}
+
+// Freelance model
+model Freelance {
+  id           Int               @id @default(autoincrement())
+  freelance_id Int               @unique
+  metier       String
+  user         User              @relation(fields: [freelance_id], references: [id])
+  requests     FreelanceRequest[]
+
+  @@map("freelances")
+}
+
+// Company model
+model Company {
+  id                Int             @id @default(autoincrement())
+  admin_user_id     Int             @unique
+  name              String
+  description       String?         @db.Text
+  logo              String?         @db.Text
+  siret             Int
+  consultant_count  Int
+  management_fees   Float
+  admin             User            @relation("CompanyAdmin", fields: [admin_user_id], references: [id])
+  managers          CompanyManager[]
+  services          CompanyService[]
+  responses         CompanyResponse[]
+
+  @@map("companies")
+}
+
+// CompanyManager model
+model CompanyManager {
+  id          Int      @id @default(autoincrement())
+  company_id  Int
+  user_id     Int
+  company     Company  @relation(fields: [company_id], references: [id])
+  user        User     @relation("CompanyManagers", fields: [user_id], references: [id])
+  
+  @@unique([company_id, user_id])
+  @@map("company_managers")
+}
+
+// PlatformService model
+model PlatformService {
+  id               Int             @id @default(autoincrement())
+  user_id          Int
+  label            String
+  description      String?         @db.Text
+  is_required      Boolean
+  data_type        DataType
+  data_label       String
+  data_description String?         @db.Text
+  choices          Json?
+  status           ServiceStatus
+  user             User            @relation(fields: [user_id], references: [id])
+  companyServices  CompanyService[]
+  companyResponses CompanyResponse[]
+
+  @@map("platform_services")
+}
+
+enum DataType {
+  TEXT
+  NUMBER
+  BOOLEAN
+  SELECT
+  DATE
+}
+
+enum ServiceStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+// CompanyService model
+model CompanyService {
+  id              Int                    @id @default(autoincrement())
+  company_id      Int
+  service_id      Int
+  is_active       Boolean
+  company         Company                @relation(fields: [company_id], references: [id])
+  service         PlatformService        @relation(fields: [service_id], references: [id])
+  requestOptions  FreelanceRequestOption[]
+
+  @@map("company_services")
+}
+
+// FreelanceRequest model
+model FreelanceRequest {
+  id              Int                    @id @default(autoincrement())
+  freelance_id    Int
+  mission_status  MissionStatus
+  client_name     String?
+  client_address  String?
+  client_sector   String?
+  priority        Priority
+  tjm             Float
+  days            Float
+  freelance       Freelance              @relation(fields: [freelance_id], references: [id])
+  options         FreelanceRequestOption[]
+  responses       CompanyResponse[]
+
+  @@map("freelance_requests")
+}
+
+enum MissionStatus {
+  OPEN
+  CLOSED
+  PENDING
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+// FreelanceRequestOption model
+model FreelanceRequestOption {
+  id                  Int             @id @default(autoincrement())
+  freelance_request_id Int
+  service_option_id   Int
+  request             FreelanceRequest @relation(fields: [freelance_request_id], references: [id])
+  serviceOption       CompanyService   @relation(fields: [service_option_id], references: [id])
+
+  @@map("freelance_request_options")
+}
+
+// CompanyResponse model
+model CompanyResponse {
+  id                  Int             @id @default(autoincrement())
+  request_id          Int
+  company_id          Int
+  platform_service_id Int
+  management_fees     Float
+  response_data       Json
+  request             FreelanceRequest @relation(fields: [request_id], references: [id])
+  company             Company         @relation(fields: [company_id], references: [id])
+  platformService     PlatformService @relation(fields: [platform_service_id], references: [id])
+
+  @@map("company_responses")
+}
+
+// NextAuth models preserved as-is
 model Account {
   id                String  @id @default(cuid())
-  userId            String
+  userId            Int
   type              String
   provider          String
   providerAccountId String
@@ -118,59 +208,9 @@ model Account {
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       String
+  userId       Int
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
-
-// Company model - Represents both parent companies and subsidiaries
-model Company {
-  id              String    @id @default(cuid())
-  name            String
-  siret           String    @unique  // French business registration number
-  type            String    // Company type/legal structure
-  description     String?
-  dateFondation   DateTime  // Company founding date
-  capital         Float     // Company capital
-  logo            String?   // URL to company logo
-  isActive        Boolean   @default(false)  // Default to false until email is verified
-  
-  // Pseudonym fields
-  pseudonym       String?   @unique  // Generated pseudonym for anonymous interactions
-  pseudonymGeneratedAt DateTime?     // When the pseudonym was generated
-  
-  // Email verification
-  emailVerificationToken String?   @unique  // Token for email verification
-  emailVerificationTokenExpiresAt DateTime? // Token expiration time
-  
-  // Address information
-  address         String
-  city            String
-  postalCode      String
-  country         String
-  
-  // Contact information
-  phone           String
-  email           String    @unique
-  
-  // Business metrics
-  managementCosts Float     // Cost of management services
-  numberPorted    Int       // Number of ported employees
-  
-  // Company hierarchy
-  parentCompanyId String?   // Reference to parent company
-  parentCompany   Company?  @relation("CompanyHierarchy", fields: [parentCompanyId], references: [id])
-  subsidiaries    Company[] @relation("CompanyHierarchy")
-  
-  // Relations
-  users           User[]    // Users associated with this company (at least one required)
-  
-  // Timestamps
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  @@index([parentCompanyId])
-  @@map("companies")
-} 
