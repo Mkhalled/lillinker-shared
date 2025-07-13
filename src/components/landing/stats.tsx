@@ -1,4 +1,4 @@
-export default function Stats() {
+export const Stats = () => {
   const stats = [
     { number: "1200+", label: "Projects done" },
     { number: "2354+", label: "Happy Clients" },

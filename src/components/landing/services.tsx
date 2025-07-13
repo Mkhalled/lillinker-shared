@@ -48,7 +48,7 @@ export const Services = () =>{
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Transparence Totale</h3>
                   <p className="text-gray-600">
-                    Bénéficiez d'une transparence complète sur les tarifs, les services et les conditions de chaque
+                    Bénéficiez d&apos;une transparence complète sur les tarifs, les services et les conditions de chaque
                     société de portage.
                   </p>
                 </div>
@@ -61,7 +61,7 @@ export const Services = () =>{
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Best Service</h3>
                   <p className="text-gray-600">
-                    Profitez d'un service client exceptionnel avec des conseillers experts disponibles pour vous
+                    Profitez d&apos;un service client exceptionnel avec des conseillers experts disponibles pour vous
                     accompagner.
                   </p>
                 </div>

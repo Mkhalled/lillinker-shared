@@ -197,8 +197,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Prénom *</label>
+                <label htmlFor="prenom" className="text-sm font-medium text-gray-700">Prénom *</label>
                 <input
+                id='prenom'
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.firstName}
                   onChange={(e) => setFormData((prev) => ({ ...prev, firstName: e.target.value }))}
@@ -207,8 +208,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Nom *</label>
+                <label htmlFor="nom" className="text-sm font-medium text-gray-700">Nom *</label>
                 <input
+                id='nom'
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.lastName}
                   onChange={(e) => setFormData((prev) => ({ ...prev, lastName: e.target.value }))}
@@ -218,8 +220,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Email *</label>
+              <label htmlFor="email" className="text-sm font-medium text-gray-700">Email *</label>
               <input
+              id='email'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="email"
                 value={formData.email}
@@ -229,8 +232,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Téléphone *</label>
+              <label htmlFor="phone" className="text-sm font-medium text-gray-700">Téléphone *</label>
               <input
+              id='phone'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.phone}
                 onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
@@ -239,8 +243,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Métier *</label>
+              <label htmlFor="metier" className="text-sm font-medium text-gray-700">Métier *</label>
               <select
+              id='metier'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.profession}
                 onChange={(e) => setFormData((prev) => ({ ...prev, profession: e.target.value }))}
@@ -261,8 +266,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         return (
           <div className="space-y-4">
             <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700">Avez-vous une mission actuellement ? *</label>
-              <div className="space-y-2">
+              <label htmlFor="mission" className="text-sm font-medium text-gray-700">Avez-vous une mission actuellement ? *</label>
+              <div id='mission' className="space-y-2">
                 <label className="flex items-center space-x-2">
                   <input
                     type="radio"
@@ -294,7 +299,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                     onChange={(e) => setFormData((prev) => ({ ...prev, hasMission: e.target.value }))}
                     className="text-blue-600"
                   />
-                  <span>Oui, j'ai une mission en cours</span>
+                  <span>Oui, j&apos;ai une mission en cours</span>
                 </label>
               </div>
             </div>
@@ -305,8 +310,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                   <em>Les informations client sont optionnelles mais peuvent aider à mieux vous accompagner.</em>
                 </p>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Nom du client</label>
+                  <label htmlFor="client" className="text-sm font-medium text-gray-700">Nom du client</label>
                   <input
+                  id='client'
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={formData.clientName}
                     onChange={(e) => setFormData((prev) => ({ ...prev, clientName: e.target.value }))}
@@ -314,8 +320,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Adresse du client</label>
+                  <label  htmlFor="address" className="text-sm font-medium text-gray-700">Adresse du client</label>
                   <input
+                  id='address'
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={formData.clientAddress}
                     onChange={(e) => setFormData((prev) => ({ ...prev, clientAddress: e.target.value }))}
@@ -323,8 +330,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Secteur d'activité</label>
+                  <label htmlFor="field" className="text-sm font-medium text-gray-700">Secteur d&apos;activité</label>
                   <select
+                  id='field'
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={formData.clientSector}
                     onChange={(e) => setFormData((prev) => ({ ...prev, clientSector: e.target.value }))}
@@ -344,8 +352,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             {/* TJM and Days - always shown */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">TJM souhaité (€) *</label>
+                <label htmlFor="tjm" className="text-sm font-medium text-gray-700">TJM souhaité (€) *</label>
                 <input
+                id='tjm'
                   type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.tjm}
@@ -356,8 +365,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Nombre de jours par semaine *</label>
+                <label htmlFor="day" className="text-sm font-medium text-gray-700">Nombre de jours par semaine *</label>
                 <input
+                id='day'
                   type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.days}
@@ -512,8 +522,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         return (
           <div className="space-y-4">
             <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700">Quelle est la priorité de votre demande ? *</label>
-              <div className="space-y-2">
+              <label htmlFor="first" className="text-sm font-medium text-gray-700">Quelle est la priorité de votre demande ? *</label>
+              <div id='first' className="space-y-2">
                 <label className="flex items-center space-x-2">
                   <input
                     type="radio"
@@ -524,7 +534,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                     className="text-blue-600"
                   />
                   <span className="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
-                  <span>Urgent - J'ai besoin d'une réponse rapidement</span>
+                  <span>Urgent - J&apos;ai besoin d&apos;une réponse rapidement</span>
                 </label>
                 <label className="flex items-center space-x-2">
                   <input
@@ -568,7 +578,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
               <h4 className="font-medium text-blue-900 mb-2">Prochaines étapes :</h4>
               <ul className="text-sm text-blue-800 space-y-1">
                 <li>• Ajouter un mot de passe</li>
-                <li>• L'administration acceptera votre demande</li>
+                <li>• L&apos;administration acceptera votre demande</li>
                 <li>• Vous pourrez accéder à des réponses des entreprises</li>
               </ul>
               </div>

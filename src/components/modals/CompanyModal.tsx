@@ -256,8 +256,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         return (
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Nom de la société *</label>
+              <label className="text-sm font-medium text-gray-700" htmlFor="nom">Nom de la société *</label>
               <input
+              id='nom'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.companyName}
                 onChange={(e) => setFormData((prev) => ({ ...prev, companyName: e.target.value }))}
@@ -266,8 +267,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">SIRET *</label>
+              <label htmlFor="siret" className="text-sm font-medium text-gray-700">SIRET *</label>
               <input
+              id='siret'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.siret}
                 onChange={(e) => setFormData((prev) => ({ ...prev, siret: e.target.value }))}
@@ -276,8 +278,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Description de la société *</label>
+              <label htmlFor="desc" className="text-sm font-medium text-gray-700">Description de la société *</label>
               <textarea
+              id='desc'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.description}
                 onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
@@ -293,8 +296,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         return (
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Nombre actuel de consultants portés *</label>
+              <label htmlFor="consu" className="text-sm font-medium text-gray-700">Nombre actuel de consultants portés *</label>
               <input
+              id='consu'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="number"
                 value={formData.consultantCount}
@@ -304,8 +308,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Taux de frais de gestion (%) *</label>
+              <label htmlFor="fees" className="text-sm font-medium text-gray-700">Taux de frais de gestion (%) *</label>
               <input
+              id='fees'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="number"
                 step="0.1"
@@ -314,7 +319,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 placeholder="8.5"
                 required
               />
-              <p className="text-sm text-gray-600">Taux standard appliqué sur le chiffre d'affaires</p>
+              <p className="text-sm text-gray-600">Taux standard appliqué sur le chiffre d&apos;affaires</p>
             </div>
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <h4 className="font-medium text-blue-900 mb-2">Fonctionnalité future</h4>
@@ -331,8 +336,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Prénom de l'administrateur *</label>
+                <label htmlFor="prenom" className="text-sm font-medium text-gray-700">Prénom de l&apos;administrateur *</label>
                 <input
+                id='prenom'
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.adminFirstName}
                   onChange={(e) => setFormData((prev) => ({ ...prev, adminFirstName: e.target.value }))}
@@ -341,8 +347,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Nom de l'administrateur *</label>
+                <label htmlFor="name" className="text-sm font-medium text-gray-700">Nom de l&apos;administrateur *</label>
                 <input
+                id='name'
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.adminLastName}
                   onChange={(e) => setFormData((prev) => ({ ...prev, adminLastName: e.target.value }))}
@@ -352,8 +359,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Email de l'administrateur *</label>
+              <label htmlFor="email" className="text-sm font-medium text-gray-700">Email de l&apos;administrateur *</label>
               <input
+              id='email'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="email"
                 value={formData.adminEmail}
@@ -363,8 +371,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Téléphone de l'administrateur *</label>
+              <label htmlFor="phone" className="text-sm font-medium text-gray-700">Téléphone de l&apos;administrateur *</label>
               <input
+              id='phone'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.adminPhone}
                 onChange={(e) => setFormData((prev) => ({ ...prev, adminPhone: e.target.value }))}
@@ -459,7 +468,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
               {formData.newServices.length === 0 ? (
                 <div className="text-center py-6 text-gray-500 border border-gray-200 rounded-lg bg-gray-50">
-                  <p className="text-sm">Aucun nouveau service créé. Cliquez sur "Nouveau service" pour en ajouter un.</p>
+                  <p className="text-sm">Aucun nouveau service créé. Cliquez sur &apos;Nouveau service&apos; pour en ajouter un.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -480,8 +489,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Libellé du service *</label>
+                            <label htmlFor="service" className="text-sm font-medium text-gray-700">Libellé du service *</label>
                             <input
+                            id='service'
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                               value={service.label}
                               onChange={(e) => updateNewService(service.id, "label", e.target.value)}
@@ -489,8 +499,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                             />
                           </div>
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Description</label>
+                            <label htmlFor="description" className="text-sm font-medium text-gray-700">Description</label>
                             <input
+                            id='description'
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                               value={service.description}
                               onChange={(e) => updateNewService(service.id, "description", e.target.value)}
@@ -515,8 +526,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                           <div className="pl-6 space-y-4 border-l-2 border-gray-200">
                             <div className="grid grid-cols-2 gap-4">
                               <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700">Type de données</label>
+                                <label htmlFor="type" className="text-sm font-medium text-gray-700">Type de données</label>
                                 <select
+                                id='type'
                                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                   value={service.dataType}
                                   onChange={(e) => updateNewService(service.id, "dataType", e.target.value)}
@@ -528,8 +540,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                                 </select>
                               </div>
                               <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700">Label du champ</label>
+                                <label htmlFor="label" className="text-sm font-medium text-gray-700">Label du champ</label>
                                 <input
+                                id='label'
                                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                   value={service.dataLabel}
                                   onChange={(e) => updateNewService(service.id, "dataLabel", e.target.value)}
@@ -538,8 +551,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                               </div>
                             </div>
                             <div className="space-y-2">
-                              <label className="text-sm font-medium text-gray-700">Description du champ</label>
+                              <label htmlFor="champ" className="text-sm font-medium text-gray-700">Description du champ</label>
                               <input
+                              id='champ'
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={service.dataDescription}
                                 onChange={(e) => updateNewService(service.id, "dataDescription", e.target.value)}
@@ -550,7 +564,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                             {(service.dataType === "RADIO" || service.dataType === "SELECT") && (
                               <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                  <label className="text-sm font-medium text-gray-700">Valeurs possibles</label>
+                                  <label htmlFor="value" className="text-sm font-medium text-gray-700">Valeurs possibles</label>
                                   <button
                                     type="button"
                                     onClick={() => addChoiceToNewService(service.id)}
@@ -563,6 +577,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                                 {service.choices.map((choice, choiceIndex) => (
                                   <div key={choiceIndex} className="flex items-center space-x-2">
                                     <input
+                                    id='value'
                                       className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                       value={choice}
                                       onChange={(e) => updateNewServiceChoice(service.id, choiceIndex, e.target.value)}
@@ -613,7 +628,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               <h3 className="text-xl font-semibold mb-2 text-gray-900">Vérifiez votre adresse email !</h3>
               <p className="text-gray-600 mb-4">
               Un email de vérification a été envoyé à <strong>{formData.adminEmail}</strong>. 
-              Cliquez sur le lien dans l'email pour vérifier votre adresse et définir votre mot de passe.
+              Cliquez sur le lien dans l&apos;email pour vérifier votre adresse et définir votre mot de passe.
               </p>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
               <h4 className="font-medium text-blue-900 mb-2">Prochaines étapes :</h4>
@@ -660,13 +675,15 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 3:
         return formData.adminFirstName && formData.adminLastName && formData.adminEmail && formData.adminPhone
       case 4:
-        const hasSelectedServices = formData.selectedPlatformServices.length > 0
+       {
+         const hasSelectedServices = formData.selectedPlatformServices.length > 0
         const hasValidNewServices = formData.newServices.some(service => 
           service.label.trim() !== "" &&
           (!service.requiresData || 
            (service.dataLabel.trim() !== "" && service.dataType.trim() !== ""))
         )
         return hasSelectedServices || hasValidNewServices 
+       }
       case 5:
         return true
       default:
@@ -761,7 +778,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                     </>
                   ) : (
                     <>
-                      <span>Finaliser l'inscription</span>
+                      <span>Finaliser l&apos;inscription</span>
                       <CheckCircle className="h-4 w-4" />
                     </>
                   )}
