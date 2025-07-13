@@ -2,7 +2,6 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { compare } from 'bcryptjs';
 import { NextAuthOptions } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-
 import { prisma } from './prisma';
 
 // Extend the built-in session types
@@ -11,17 +10,13 @@ declare module 'next-auth' {
     user: {
       id: string;
       email: string;
-      firstname: string;
-      lastname: string;
-      username: string;
-      pseudonym: string;
-      image: string;
-      phone: string;
+      first_name: string;
+      last_name: string;
       role: string;
-      roleId: number;
-      companyId: string | null;
-      isActive: boolean;
-      emailVerified: boolean;
+      phone_number?: string;
+      status: boolean;
+      email_verified: boolean;
+      image?: string;
     };
   }
 }
@@ -29,25 +24,21 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
   interface JWT {
     role: string;
-    roleId: number;
-    companyId: string | null;
+    status: boolean;
+    email_verified: boolean;
   }
 }
 
 type AuthUser = {
   id: string;
   email: string;
-  firstname: string;
-  lastname: string;
-  username: string;
+  first_name: string;
+  last_name: string;
   role: string;
-  roleId: number;
-  companyId: string | null;
-  isActive: boolean;
-  emailVerified: boolean;
-  pseudonym: string;
-  image: string;
-  phone: string;
+  phone_number?: string;
+  status: boolean;
+  email_verified: boolean;
+  image?: string;
 };
 
 export const authOptions: NextAuthOptions = {
@@ -73,19 +64,18 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
-          include: { role: true },
         });
 
         if (!user) {
           throw new Error('User not found');
         }
 
-        if (!user.isActive) {
-          throw new Error("Votre compte est en cours de validation par l'administrateur");
+        if (!user.status) {
+          throw new Error("Your account is being validated by the administrator");
         }
 
-        if (!user.emailVerified) {
-          throw new Error('Veuillez valider votre email');
+        if (!user.email_verified) {
+          throw new Error('Please verify your email address');
         }
 
         const isValid = await compare(credentials.password, user.password);
@@ -95,19 +85,15 @@ export const authOptions: NextAuthOptions = {
         }
 
         const authUser: AuthUser = {
-          id: user.id,
+          id: user.id.toString(),
           email: user.email,
-          firstname: user.firstname,
-          lastname: user.lastname,
-          username: user.username,
-          role: user.role.name,
-          roleId: user.roleId,
-          companyId: user.companyId,
-          isActive: user.isActive,
-          emailVerified: user.emailVerified,
-          pseudonym: user.pseudonym || '',
-          image: user.image || '',
-          phone: user.phone || '',
+          first_name: user.first_name,
+          last_name: user.last_name,
+          role: user.role,
+          phone_number: user.phone_number || undefined,
+          status: user.status,
+          email_verified: user.email_verified,
+          image: user.image || undefined,
         };
 
         return authUser;
@@ -119,12 +105,8 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         const authUser = user as AuthUser;
         token.role = authUser.role;
-        token.roleId = authUser.roleId;
-        token.companyId = authUser.companyId;
-        token.username = authUser.username;
-        token.pseudonym = authUser.pseudonym;
-        token.image = authUser.image;
-        token.phone = authUser.phone;
+        token.status = authUser.status;
+        token.email_verified = authUser.email_verified;
       }
       return token;
     },
@@ -132,14 +114,8 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.sub!;
         session.user.role = token.role as string;
-        session.user.roleId = token.roleId as number;
-        session.user.companyId = token.companyId as string | null;
-        session.user.isActive = true; // We only get here if user is active
-        session.user.emailVerified = true; // We only get here if email is verified
-        session.user.username = token.username as string;
-        session.user.pseudonym = token.pseudonym as string;
-        session.user.image = token.image as string;
-        session.user.phone = token.phone as string;
+        session.user.status = token.status as boolean;
+        session.user.email_verified = token.email_verified as boolean;
       }
       return session;
     },

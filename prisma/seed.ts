@@ -15,9 +15,10 @@ interface UserCreateData {
   last_name: string;
   email: string;
   password: string;
-  phone_number: string;
+  phone_number?: string;
   role: 'ADMIN' | 'COMPANY' | 'FREELANCE' | 'MANAGER';
   status: boolean;
+  email_verified?: boolean;
 }
 
 interface CompanyCreateData {
@@ -25,7 +26,7 @@ interface CompanyCreateData {
   name: string;
   description: string;
   logo: string;
-  siret: number;
+  siret: string;
   consultant_count: number;
   management_fees: number;
 }
@@ -90,9 +91,10 @@ async function main(): Promise<void> {
       first_name: 'Admin',
       last_name: 'Plateforme',
       email: 'admin@lillinker.com',
-       phone_number: '0123456789',
+      phone_number: '+33123456789',
       role: 'ADMIN',
       status: true,
+      email_verified: true, // Admin is pre-verified
     });
 
     // Create company admin users for each portage company
@@ -101,8 +103,9 @@ async function main(): Promise<void> {
       last_name: 'Commercial',
       email: 'directeur@sta-portage.com',
       role: 'COMPANY',
-       phone_number: '0123456789',
+      phone_number: '+33123456790',
       status: true,
+      email_verified: true, // Company admins are pre-verified
     });
 
     const itgAdminUser = await createUser({
@@ -110,8 +113,9 @@ async function main(): Promise<void> {
       last_name: 'Commercial',
       email: 'commercial@itg-portage.com',
       role: 'COMPANY',
-      phone_number: '0123456789',
+      phone_number: '+33123456791',
       status: true,
+      email_verified: true, // Company admins are pre-verified
     });
 
     // Create the main portage company
@@ -120,7 +124,7 @@ async function main(): Promise<void> {
       name: 'STA Portage',
       description: 'Société de portage salarial spécialisée dans l\'accompagnement des freelances et consultants indépendants',
       logo: 'https://lillinker.com/logos/sta-portage.png',
-      siret: 123456789,
+      siret: "123456789",
       consultant_count: 150,
       management_fees: 8.5,
     });
@@ -131,7 +135,7 @@ async function main(): Promise<void> {
       name: 'ITG Portage',
       description: 'Société de portage salarial pour les métiers du numérique et de l\'IT',
       logo: 'https://lillinker.com/logos/itg-portage.png',
-      siret: 234567890,
+      siret: "234567890",
       consultant_count: 200,
       management_fees: 7.8,
     });
@@ -141,18 +145,20 @@ async function main(): Promise<void> {
       first_name: 'Marie',
       last_name: 'Dubois',
       email: 'marie.dubois@example.com',
-       phone_number: '0123456789',
+      phone_number: '+33123456792',
       role: 'FREELANCE',
       status: true,
+      email_verified: false, // Freelancer needs to verify email
     });
 
     const freelanceUser2 = await createUser({
       first_name: 'Pierre',
       last_name: 'Martin',
       email: 'pierre.martin@example.com',
-       phone_number: '0123456789',
+      phone_number: '+33123456793',
       role: 'FREELANCE',
       status: true,
+      email_verified: true, // This freelancer has verified email
     });
 
     // Create freelance profiles
@@ -176,8 +182,9 @@ async function main(): Promise<void> {
       last_name: 'Laurent',
       email: 'sophie.laurent@sta-portage.com',
       role: 'MANAGER',
-       phone_number: '0123456789',
+      phone_number: '+33123456794',
       status: true,
+      email_verified: true, // Manager is pre-verified
     });
 
     // Create company manager relationship
@@ -195,6 +202,7 @@ async function main(): Promise<void> {
         label: 'Taux de Gestion',
         description: 'Pourcentage prélevé par la société de portage sur le chiffre d\'affaires du consultant',
         data_type: 'NUMBER',
+        requires_data: true,
         data_label: 'Taux de gestion (%)',
         data_description: 'Indiquez le taux de gestion appliqué (généralement entre 5% et 12%)',
         status: 'ACTIVE',
@@ -207,6 +215,7 @@ async function main(): Promise<void> {
         label: 'Services Inclus',
         description: 'Services additionnels proposés par la société de portage',
         data_type: 'SELECT',
+        requires_data: false,
         data_label: 'Services proposés',
         data_description: 'Sélectionnez les services inclus dans votre offre',
         choices: [
@@ -227,6 +236,7 @@ async function main(): Promise<void> {
         label: 'Délai de Paiement',
         description: 'Délai de versement du salaire après facturation client',
         data_type: 'SELECT',
+        requires_data: true,
         data_label: 'Délai de paiement',
         data_description: 'Délai habituel pour le versement du salaire',
         choices: ['15 jours', '30 jours', '45 jours', '60 jours'],
@@ -240,8 +250,36 @@ async function main(): Promise<void> {
         label: 'Frais de Dossier',
         description: 'Frais d\'ouverture et de gestion du dossier consultant',
         data_type: 'NUMBER',
+        requires_data: false,
         data_label: 'Frais de dossier (€)',
         data_description: 'Montant des frais d\'ouverture de dossier',
+        status: 'ACTIVE',
+      },
+    });
+
+    const platformService5 = await prisma.platformService.create({
+      data: {
+        user_id: adminUser.id,
+        label: 'Type de Contrat',
+        description: 'Type de contrat de portage proposé',
+        data_type: 'RADIO',
+        requires_data: true,
+        data_label: 'Type de contrat',
+        data_description: 'Sélectionnez le type de contrat de portage',
+        choices: ['CDI', 'CDD', 'Freelance'],
+        status: 'ACTIVE',
+      },
+    });
+
+    const platformService6 = await prisma.platformService.create({
+      data: {
+        user_id: adminUser.id,
+        label: 'Description des Services',
+        description: 'Description détaillée des services proposés par la société de portage',
+        data_type: 'TEXT',
+        requires_data: false,
+        data_label: 'Description des services',
+        data_description: 'Décrivez en détail les services que vous proposez aux consultants',
         status: 'ACTIVE',
       },
     });
@@ -392,7 +430,14 @@ async function main(): Promise<void> {
       freelanceUser1: freelanceUser1.id,
       freelanceUser2: freelanceUser2.id,
       managerUser: managerUser.id,
-      platformServices: [platformService1.id, platformService2.id, platformService3.id, platformService4.id],
+      platformServices: [
+        platformService1.id, 
+        platformService2.id, 
+        platformService3.id, 
+        platformService4.id, 
+        platformService5.id,
+        platformService6.id
+      ],
       freelanceRequests: [freelanceRequest1.id, freelanceRequest2.id],
     });
   } catch (e) {

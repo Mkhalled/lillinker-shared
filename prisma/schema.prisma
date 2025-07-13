@@ -20,6 +20,12 @@ model User {
   role           Role
   status         Boolean          @default(true)
   phone_number   String?
+  email_verified        Boolean   @default(false)
+  verification_token    String?   @unique
+  verification_token_expires DateTime?
+  reset_token          String?   @unique
+  reset_token_expires  DateTime?
+  created_at     DateTime         @default(now())
   // NextAuth fields preserved
   image          String?
   accounts       Account[]
@@ -59,7 +65,7 @@ model Company {
   name              String
   description       String?         @db.Text
   logo              String?         @db.Text
-  siret             Int
+  siret             String?         @unique
   consultant_count  Int
   management_fees   Float
   admin             User            @relation("CompanyAdmin", fields: [admin_user_id], references: [id])
