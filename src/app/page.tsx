@@ -1,6 +1,6 @@
 "use client"
 
-import About from "@/components/landing/about"
+import {About} from "@/components/landing/about"
 import BrandLogos from "@/components/landing/brand-logos"
 import Features from "@/components/landing/features"
 import Footer from "@/components/landing/footer"
@@ -10,7 +10,7 @@ import Services from "@/components/landing/services"
 import Stats from "@/components/landing/stats"
 
 
-export default function Home() {
+const Home = () => {
   return (
     <main className="min-h-screen bg-white">
       <Header />
@@ -22,5 +22,7 @@ export default function Home() {
       <Stats />
       <Footer />
     </main>
-  )
-}
+  );
+};
+
+export default Home;

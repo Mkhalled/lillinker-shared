@@ -1,8 +1,10 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Button } from "../ui/button/Button"
-import { ChevronLeft, ChevronRight, CheckCircle, Plus, Trash2, X, Building2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, CheckCircle, Plus, Trash2, X, Building2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+
+import { Button } from '../ui/button/Button';
 
 interface PlatformService {
   id: number
@@ -26,7 +28,7 @@ interface CompanyModalProps {
   onClose: () => void
 }
 
-export default function CompanyModal({ onClose }: CompanyModalProps) {
+const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -781,5 +783,7 @@ export default function CompanyModal({ onClose }: CompanyModalProps) {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default CompanyModal;

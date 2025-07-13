@@ -1,5 +1,6 @@
-import { hasRequiredRole } from '@/lib/auth/role-based-access';
 import { prisma } from '@/lib/prisma';
+
+import { hasRequiredRole } from '@/lib/auth/role-based-access';
 
 // Mock Prisma client
 jest.mock('@/lib/prisma', () => ({

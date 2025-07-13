@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
-export default function SetPasswordPage() {
+const SetPasswordPage = () => {
     const [formData, setFormData] = useState({
         password: '',
         confirmPassword: '',
@@ -136,4 +136,6 @@ export default function SetPasswordPage() {
             </div>
         </div>
     );
-}
+};
+
+export default SetPasswordPage;

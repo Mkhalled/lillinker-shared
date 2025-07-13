@@ -52,8 +52,15 @@ export const FreelanceOnboardingSchema = z.object({
   tjm: z.number().min(1, 'Daily rate (TJM) is required'),
   days: z.number().min(0.5, 'Days must be at least 0.5'),
   
-  // Service requirements
-  required_services: z.array(z.number()).optional(),
+  // Service requirements - array of service objects with required flags
+  selected_services: z.array(z.object({
+    serviceId: z.number(),
+    isRequired: z.boolean(),
+    responseData: z.string().optional(),
+  })).optional(),
+  
+  // Service responses (for backward compatibility, will be merged with selected_services)
+  service_responses: z.record(z.string(), z.string()).optional(),
 });
 
 export const SetPasswordSchema = z.object({

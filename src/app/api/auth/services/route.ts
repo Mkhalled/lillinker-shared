@@ -1,9 +1,21 @@
 import { NextResponse } from 'next/server';
-import { AuthService } from '@/services/auth.service';
+
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const services = await AuthService.getAvailableServices();
+    const services = await prisma.companyService.findMany({
+      where: {
+        is_active: true,
+        service: {
+          status: 'ACTIVE',
+        },
+      },
+      include: {
+        service: true,
+        company: true,
+      },
+    });
 
     return NextResponse.json({
       success: true,

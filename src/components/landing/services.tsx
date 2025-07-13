@@ -1,7 +1,7 @@
 import { Compass, Eye, Users } from "lucide-react"
 import Image from "next/image"
 
-export default function Services() {
+export const Services = () =>{
   return (
     <section className="py-20 bg-gradient-to-br from-[var(--primary-light)] to-blue-50">
       <div className="container mx-auto px-6 sm:px-8 lg:px-12">

@@ -1,7 +1,9 @@
-import { hash } from 'bcryptjs';
 import { randomBytes } from 'crypto';
-import { prisma } from '@/lib/prisma';
+
+import { hash } from 'bcryptjs';
+
 import { sendVerificationEmail } from '@/lib/mailer';
+import { prisma } from '@/lib/prisma';
 import type { 
   InitialRegistration, 
   CompanyOnboarding, 
@@ -138,20 +140,41 @@ export class AuthService {
       });
 
       // Create freelance request options if services are specified
-      if (data.required_services && data.required_services.length > 0) {
+      if (data.selected_services && data.selected_services.length > 0) {
+        // For each selected service, try to find company services or create a pending option
         const requestOptions = await Promise.all(
-          data.required_services.map(serviceId =>
-            tx.freelanceRequestOption.create({
-              data: {
-                freelance_request_id: freelanceRequest.id,
-                service_option_id: serviceId,
-                is_required: true,
+          data.selected_services.map(async (selectedService) => {
+            // Find any company service that offers this platform service
+            const companyService = await tx.companyService.findFirst({
+              where: {
+                service_id: selectedService.serviceId,
+                is_active: true,
               },
-            })
-          )
+            });
+
+            if (companyService) {
+              // Create option with existing company service
+              return tx.freelanceRequestOption.create({
+                data: {
+                  freelance_request_id: freelanceRequest.id,
+                  service_option_id: companyService.id,
+                  is_required: selectedService.isRequired,
+                  response_data: selectedService.responseData ? { data: selectedService.responseData } : undefined,
+                },
+              });
+            } else {
+              // For now, we'll skip services without company providers
+              // In the future, you might want to create a "pending" system
+              console.log(`No company service found for platform service ${selectedService.serviceId}`);
+              return null;
+            }
+          })
         );
 
-        return { freelance, freelanceRequest, requestOptions };
+        // Filter out null values
+        const validRequestOptions = requestOptions.filter(option => option !== null);
+
+        return { freelance, freelanceRequest, requestOptions: validRequestOptions };
       }
 
       return { freelance, freelanceRequest, requestOptions: [] };

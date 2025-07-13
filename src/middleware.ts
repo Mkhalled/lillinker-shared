@@ -1,4 +1,5 @@
-import { withAuth, NextAuthMiddlewareOptions } from 'next-auth/middleware';
+import { withAuth } from 'next-auth/middleware';
+import type { NextAuthMiddlewareOptions } from 'next-auth/middleware';
 
 // Define role types
 type Role = 'PLATFORM_ADMIN' | 'COMPANY_ADMIN' | 'COMPANY_MANAGER' | 'CONSULTANT';

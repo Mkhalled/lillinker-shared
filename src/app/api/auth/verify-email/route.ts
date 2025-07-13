@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AuthService } from '@/services/auth.service';
+
 import { SetPasswordSchema } from '@/lib/validations/auth.validation';
+import { AuthService } from '@/services/auth.service';
 
 export async function POST(request: NextRequest) {
   try {

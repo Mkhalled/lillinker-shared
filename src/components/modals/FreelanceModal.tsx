@@ -1,50 +1,32 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Button } from "../ui/button/Button"
-import { ChevronLeft, ChevronRight, CheckCircle, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, CheckCircle, X, Building2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
-// Mock service options from companies
-const mockServiceOptions = [
-  {
-    id: 1,
-    label: "Assurance RC Pro",
-    description: "Assurance responsabilité civile professionnelle",
-    requiresData: false,
-  },
-  {
-    id: 2,
-    label: "Formation comptabilité",
-    description: "Formation aux bases de la comptabilité freelance",
-    requiresData: true,
-    dataType: "text",
-    dataLabel: "Niveau actuel",
-    dataDescription: "Décrivez votre niveau actuel en comptabilité",
-  },
-  {
-    id: 3,
-    label: "Mutuelle santé",
-    description: "Complémentaire santé adaptée aux freelances",
-    requiresData: true,
-    dataType: "choice",
-    dataLabel: "Situation familiale",
-    dataDescription: "Sélectionnez votre situation",
-    choices: ["Célibataire", "En couple", "Avec enfants"],
-  },
-  {
-    id: 4,
-    label: "Accompagnement juridique",
-    description: "Support juridique pour vos contrats",
-    requiresData: false,
-  },
-]
+
+import { Button } from '../ui/button/Button';
+
+interface PlatformService {
+  id: number
+  label: string
+  description: string | null
+  data_type: string
+  requires_data: boolean
+  data_label: string
+  data_description: string | null
+  choices: any
+  status: string
+}
 
 interface FreelanceModalProps {
   onClose: () => void
 }
 
-export default function FreelanceModal({ onClose }: FreelanceModalProps) {
+const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const [currentStep, setCurrentStep] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [platformServices, setPlatformServices] = useState<PlatformService[]>([])
   const [formData, setFormData] = useState({
     // Step 1: Personal info
     firstName: "",
@@ -58,16 +40,39 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
     clientName: "",
     clientAddress: "",
     clientSector: "",
+    tjm: "",
+    days: "",
 
     // Step 3: Services
-    selectedServices: [] as number[],
-    serviceData: {} as Record<number, string>,
+    selectedServices: [] as {
+      serviceId: number;
+      isRequired: boolean;
+      responseData?: string;
+    }[],
 
     // Step 4: Priority
     priority: "",
   })
 
   const totalSteps = 5
+
+  // Fetch platform services when component mounts
+  useEffect(() => {
+    const fetchPlatformServices = async () => {
+      try {
+        const response = await fetch('/api/platform-services')
+        if (response.ok) {
+          const data = await response.json()
+          setPlatformServices(data.data || [])
+        }
+      } catch (error) {
+        console.error('Error fetching platform services:', error)
+        setError('Erreur lors du chargement des services')
+      }
+    }
+
+    fetchPlatformServices()
+  }, [])
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
@@ -82,24 +87,107 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
   }
 
   const handleServiceToggle = (serviceId: number) => {
+    setFormData((prev) => {
+      const existingServiceIndex = prev.selectedServices.findIndex(s => s.serviceId === serviceId)
+      
+      if (existingServiceIndex >= 0) {
+        // Remove service
+        return {
+          ...prev,
+          selectedServices: prev.selectedServices.filter(s => s.serviceId !== serviceId)
+        }
+      } else {
+        // Add service
+        return {
+          ...prev,
+          selectedServices: [...prev.selectedServices, { serviceId, isRequired: false }]
+        }
+      }
+    })
+  }
+
+  const handleServiceRequiredChange = (serviceId: number, isRequired: boolean) => {
     setFormData((prev) => ({
       ...prev,
-      selectedServices: prev.selectedServices.includes(serviceId)
-        ? prev.selectedServices.filter((id) => id !== serviceId)
-        : [...prev.selectedServices, serviceId],
+      selectedServices: prev.selectedServices.map(s => 
+        s.serviceId === serviceId ? { ...s, isRequired } : s
+      )
     }))
   }
 
   const handleServiceDataChange = (serviceId: number, value: string) => {
     setFormData((prev) => ({
       ...prev,
-      serviceData: { ...prev.serviceData, [serviceId]: value },
+      selectedServices: prev.selectedServices.map(s => 
+        s.serviceId === serviceId ? { ...s, responseData: value } : s
+      )
     }))
   }
 
-  const handleComplete = () => {
-    // Just show completion message
-    setCurrentStep(5)
+  const handleComplete = async () => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      // Step 1: Initial registration (create user) - same as CompanyModal
+      const signupResponse = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          role: "FREELANCE",
+          phone_number: formData.phone,
+        }),
+      })
+
+      if (!signupResponse.ok) {
+        const errorData = await signupResponse.json()
+        throw new Error(errorData.error || 'Registration failed')
+      }
+
+      const signupData = await signupResponse.json()
+
+      // Step 2: Freelance onboarding - same pattern as CompanyModal
+      const onboardingData = {
+        userId: signupData.userId,
+        metier: formData.profession,
+        mission_status: formData.hasMission === 'yes' ? 'OPEN' : 'CLOSED',
+        priority: formData.priority === 'urgent' ? 'HIGH' : 
+                 formData.priority === 'medium' ? 'MEDIUM' : 'LOW',
+        tjm: parseFloat(formData.tjm) || 0,
+        days: parseFloat(formData.days) || 0,
+        selected_services: formData.selectedServices,
+        // Only include client fields if they have values
+        ...(formData.clientName && { client_name: formData.clientName }),
+        ...(formData.clientAddress && { client_address: formData.clientAddress }),
+        ...(formData.clientSector && { client_sector: formData.clientSector }),
+      }
+
+      const onboardingResponse = await fetch('/api/auth/onboarding/freelance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(onboardingData),
+      })
+
+      if (!onboardingResponse.ok) {
+        const errorData = await onboardingResponse.json()
+        throw new Error(errorData.error || 'Freelance onboarding failed')
+      }
+
+      // Show success step
+      setCurrentStep(5)
+    } catch (error) {
+      console.error('Registration error:', error)
+      setError(error instanceof Error ? error.message : 'Une erreur est survenue')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const renderStep = () => {
@@ -213,13 +301,16 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
 
             {formData.hasMission === "yes" && (
               <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+                <p className="text-sm text-gray-600 mb-3">
+                  <em>Les informations client sont optionnelles mais peuvent aider à mieux vous accompagner.</em>
+                </p>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Nom du client</label>
                   <input
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={formData.clientName}
                     onChange={(e) => setFormData((prev) => ({ ...prev, clientName: e.target.value }))}
-                    placeholder="Nom de l'entreprise"
+                    placeholder="Nom de l'entreprise (optionnel)"
                   />
                 </div>
                 <div className="space-y-2">
@@ -228,7 +319,7 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={formData.clientAddress}
                     onChange={(e) => setFormData((prev) => ({ ...prev, clientAddress: e.target.value }))}
-                    placeholder="Adresse complète"
+                    placeholder="Adresse complète (optionnel)"
                   />
                 </div>
                 <div className="space-y-2">
@@ -238,7 +329,7 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
                     value={formData.clientSector}
                     onChange={(e) => setFormData((prev) => ({ ...prev, clientSector: e.target.value }))}
                   >
-                    <option value="">Sélectionnez le secteur</option>
+                    <option value="">Sélectionnez le secteur (optionnel)</option>
                     <option value="tech">Technologie</option>
                     <option value="finance">Finance</option>
                     <option value="retail">Commerce</option>
@@ -249,6 +340,35 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
                 </div>
               </div>
             )}
+
+            {/* TJM and Days - always shown */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">TJM souhaité (€) *</label>
+                <input
+                  type="number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.tjm}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, tjm: e.target.value }))}
+                  placeholder="500"
+                  min="0"
+                  step="10"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Nombre de jours par semaine *</label>
+                <input
+                  type="number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.days}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, days: e.target.value }))}
+                  placeholder="5"
+                  min="1"
+                  max="7"
+                  step="0.5"
+                />
+              </div>
+            </div>
           </div>
         )
 
@@ -257,56 +377,133 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
           <div className="space-y-4">
             <div>
               <h3 className="font-medium mb-3">Sélectionnez les services qui vous intéressent :</h3>
-              <div className="space-y-3">
-                {mockServiceOptions.map((service) => (
-                  <div key={service.id} className="border rounded-lg p-4">
-                    <div className="flex items-start space-x-3">
-                      <input
-                        type="checkbox"
-                        id={`service-${service.id}`}
-                        checked={formData.selectedServices.includes(service.id)}
-                        onChange={() => handleServiceToggle(service.id)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <label htmlFor={`service-${service.id}`} className="font-medium cursor-pointer">
-                          {service.label}
-                        </label>
-                        <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+              
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm mb-4">
+                  {error}
+                </div>
+              )}
 
-                        {formData.selectedServices.includes(service.id) && service.requiresData && (
-                          <div className="mt-3 space-y-2">
-                            <label className="text-sm font-medium">{service.dataLabel}</label>
-                            {service.dataType === "text" && (
-                              <textarea
-                                placeholder={service.dataDescription}
-                                value={formData.serviceData[service.id] || ""}
-                                onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                rows={3}
-                              />
+              {platformServices.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <Building2 className="h-12 w-12 mx-auto mb-2 text-gray-400" />
+                  <p>Aucun service disponible pour le moment</p>
+                </div>
+              ) : (
+                <div className="max-h-96 overflow-y-auto space-y-3">
+                  {platformServices.map((service) => {
+                    const selectedService = formData.selectedServices.find(s => s.serviceId === service.id)
+                    const isSelected = !!selectedService
+                    
+                    return (
+                      <div key={service.id} className="border rounded-lg p-4 bg-white">
+                        <div className="flex items-start space-x-3">
+                          <input
+                            type="checkbox"
+                            id={`service-${service.id}`}
+                            checked={isSelected}
+                            onChange={() => handleServiceToggle(service.id)}
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <label htmlFor={`service-${service.id}`} className="font-medium cursor-pointer">
+                              {service.label}
+                            </label>
+                            {service.description && (
+                              <p className="text-sm text-gray-600 mt-1">{service.description}</p>
                             )}
-                            {service.dataType === "choice" && service.choices && (
-                              <select
-                                value={formData.serviceData[service.id] || ""}
-                                onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              >
-                                <option value="">{service.dataDescription}</option>
-                                {service.choices.map((choice) => (
-                                  <option key={choice} value={choice}>
-                                    {choice}
-                                  </option>
-                                ))}
-                              </select>
+                            
+                            {/* Service Type and Requirements Info */}
+                            <div className="flex items-center gap-2 mt-2">
+                              <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">
+                                {service.data_type}
+                              </span>
+                              {service.requires_data && (
+                                <span className="text-xs px-2 py-1 bg-orange-100 text-orange-600 rounded">
+                                  Données requises
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Required checkbox for selected services */}
+                            {isSelected && (
+                              <div className="mt-3 pl-4 border-l-2 border-blue-200">
+                                <label className="flex items-center space-x-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedService?.isRequired || false}
+                                    onChange={(e) => handleServiceRequiredChange(service.id, e.target.checked)}
+                                    className="text-blue-600"
+                                  />
+                                  <span className="text-sm text-gray-700">Ce service est <strong>obligatoire</strong> pour moi</span>
+                                </label>
+
+                                {/* Data input for services that require data */}
+                                {service.requires_data && (
+                                  <div className="mt-3">
+                                    <label className="text-sm font-medium text-gray-700 block mb-1">
+                                      {service.data_label}
+                                    </label>
+                                    {service.data_description && (
+                                      <p className="text-xs text-gray-500 mb-2">{service.data_description}</p>
+                                    )}
+                                    
+                                    {service.data_type === 'TEXT' && (
+                                      <input
+                                        type="text"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        value={selectedService?.responseData || ""}
+                                        onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
+                                        placeholder="Votre réponse..."
+                                      />
+                                    )}
+                                    
+                                    {service.data_type === 'NUMBER' && (
+                                      <input
+                                        type="number"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        value={selectedService?.responseData || ""}
+                                        onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
+                                        placeholder="Entrez un nombre..."
+                                      />
+                                    )}
+                                    
+                                    {(service.data_type === 'SELECT' || service.data_type === 'RADIO') && service.choices && (
+                                      <select
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        value={selectedService?.responseData || ""}
+                                        onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
+                                      >
+                                        <option value="">Sélectionnez une option</option>
+                                        {(service.choices as string[]).map((choice, index) => (
+                                          <option key={index} value={choice}>
+                                            {choice}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             )}
                           </div>
-                        )}
+                        </div>
                       </div>
-                    </div>
+                    )
+                  })}
+                </div>
+              )}
+              
+              {/* Selection Summary */}
+              {formData.selectedServices.length > 0 && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mt-4">
+                  <h5 className="font-medium text-blue-900 mb-2">Résumé de votre sélection</h5>
+                  <div className="space-y-1 text-sm text-blue-800">
+                    <p>• {formData.selectedServices.length} service(s) sélectionné(s)</p>
+                    <p>• {formData.selectedServices.filter(s => s.isRequired).length} service(s) obligatoire(s)</p>
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         )
@@ -408,7 +605,9 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
       case 2:
         return (
           formData.hasMission &&
-          (formData.hasMission !== "yes" || (formData.clientName && formData.clientAddress && formData.clientSector))
+          formData.tjm &&
+          formData.days
+          // Client information is completely optional, no validation needed
         )
       case 3:
         return true // Optional step
@@ -484,7 +683,7 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
               {currentStep < 4 ? (
                 <Button 
                   onClick={handleNext} 
-                  disabled={!isStepValid()}
+                  disabled={!isStepValid() || isLoading}
                   className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <span>Suivant</span>
@@ -493,10 +692,10 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
               ) : (
                 <Button 
                   onClick={handleComplete}
-                  disabled={!isStepValid()}
+                  disabled={!isStepValid() || isLoading}
                   className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  <span>Envoyer ma demande</span>
+                  <span>{isLoading ? 'Envoi en cours...' : 'Envoyer ma demande'}</span>
                   <CheckCircle className="h-4 w-4" />
                 </Button>
               )}
@@ -516,5 +715,7 @@ export default function FreelanceModal({ onClose }: FreelanceModalProps) {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default FreelanceModal;

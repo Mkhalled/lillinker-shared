@@ -1,4 +1,4 @@
-export default function BrandLogos() {
+export const BrandLogos = () => {
   const brands = [
     { name: "Brand One", color: "bg-blue-500" },
     { name: "Brand Two", color: "bg-[var(--primary-color)]" },

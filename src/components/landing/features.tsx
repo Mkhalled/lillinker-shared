@@ -1,6 +1,6 @@
-import { Shield, Zap, Users, Award, Clock, Star } from "lucide-react"
+import { Shield, Zap, Users, Award, Clock, Star } from 'lucide-react';
 
-export default function Features() {
+const Features = () => {
   const features = [
     {
       icon: Shield,
@@ -67,5 +67,7 @@ export default function Features() {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
+
+export default Features;

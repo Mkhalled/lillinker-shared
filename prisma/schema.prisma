@@ -169,6 +169,7 @@ model FreelanceRequestOption {
   freelance_request_id Int
   service_option_id   Int
   is_required      Boolean         @default(false)
+  response_data    Json?
   request             FreelanceRequest @relation(fields: [freelance_request_id], references: [id])
   serviceOption       CompanyService   @relation(fields: [service_option_id], references: [id])
 

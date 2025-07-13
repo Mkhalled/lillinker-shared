@@ -1,11 +1,12 @@
-"use client"
+'use client';
 
-import { useState } from 'react'
-import { Button } from "../ui/button/Button"
-import FreelanceModal from "../modals/FreelanceModal"
-import CompanyModal from "../modals/CompanyModal"
+import { useState } from 'react';
 
-export default function Hero() {
+import CompanyModal from '../modals/CompanyModal';
+import FreelanceModal from '../modals/FreelanceModal';
+import { Button } from '../ui/button/Button';
+
+const Hero = () => {
   const [showFreelanceModal, setShowFreelanceModal] = useState(false)
   const [showCompanyModal, setShowCompanyModal] = useState(false)
 
@@ -77,5 +78,7 @@ export default function Hero() {
         <CompanyModal onClose={() => setShowCompanyModal(false)} />
       )}
     </>
-  )
-}
+  );
+};
+
+export default Hero;

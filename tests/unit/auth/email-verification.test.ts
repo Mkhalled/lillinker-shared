@@ -1,5 +1,6 @@
-import { verifyEmail } from '@/lib/auth/email-verification';
 import { prisma } from '@/lib/prisma';
+
+import { verifyEmail } from '@/lib/auth/email-verification';
 
 // Mock the Prisma client
 

@@ -1,11 +1,13 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import Link from "next/link"
-import { Menu, X } from "lucide-react"
-import { Button } from "../ui/button/Button"
+import { Menu, X } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
 
-export default function Header() {
+
+import { Button } from '../ui/button/Button';
+
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const toggleMenu = () => {
@@ -110,5 +112,7 @@ export default function Header() {
         )}
       </div>
     </header>
-  )
-}
+  );
+};
+
+export default Header;
