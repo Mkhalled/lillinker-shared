@@ -16,7 +16,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new Error('User with this email already exists');
+      throw new Error('Un utilisateur avec cette adresse e-mail existe déjà');
     }
 
     // Generate verification token
@@ -68,7 +68,7 @@ export class AuthService {
           requires_data: data.requires_data,
           data_label: data.data_label,
           data_description: data.data_description,
-          choices: data.choices ? JSON.stringify(data.choices) : JSON.stringify({}),
+          choices: data.choices ? data.choices :{},
           status: 'PENDING',
         },
       });
@@ -131,7 +131,7 @@ export class AuthService {
     });
   }
 
-  static async finalizeRegistration(userId: number, userRole: string) {
+  static async finalizeRegistration(userId: number) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -173,7 +173,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new Error('Invalid or expired verification token');
+      throw new Error('Token de vérification invalide ou expiré');
     }
 
     const hashedPassword = await hash(password, 12);
@@ -185,11 +185,10 @@ export class AuthService {
         email_verified: true,
         verification_token: null,
         verification_token_expires: null,
-        status: true, // Activate account after email verification
       },
     });
 
-    return { success: true, message: 'Email verified and password set successfully' };
+    return { success: true, message: 'Email vérifié et mot de passe défini avec succès' };
   }
 
   static async getAvailableServices() {

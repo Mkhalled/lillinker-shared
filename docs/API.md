@@ -6,11 +6,11 @@
 **Request Body:**
 ```json
 {
-  "first_name": "John",
-  "last_name": "Doe",
-  "email": "john.doe@example.com",
+  "first_name": "Marie",
+  "last_name": "Dubois",
+  "email": "marie.dubois@portagesalarial.fr",
   "role": "COMPANY",
-  "phone_number": "+1234567890"
+  "phone_number": "+33123456789"
 }
 ```
 
@@ -26,25 +26,25 @@
 
 ---
 
-## 2A. Company Onboarding
+## 2A. Company Onboarding (Société de Portage Salarial)
 **Endpoint:** `POST /api/auth/onboarding/company`
 
 **Request Body:**
 ```json
 {
   "userId": 1,
-  "company_name": "Tech Solutions Inc",
-  "company_description": "Leading technology consulting company",
+  "company_name": "Portage Solutions Pro",
+  "company_description": "Société de portage salarial spécialisée dans l'accompagnement des freelances IT",
   "siret": 12345678901234,
-  "consultant_count": 25,
-  "management_fees": 15.5,
-  "service_label": "Software Development Consulting",
-  "service_description": "Full-stack development services",
+  "consultant_count": 150,
+  "management_fees": 8.5,
+  "service_label": "Portage Salarial IT & Digital",
+  "service_description": "Services de portage salarial pour freelances du secteur numérique avec accompagnement personnalisé",
   "data_type": "SELECT",
   "requires_data": true,
-  "data_label": "Technology Stack",
-  "data_description": "Select your preferred technology stack",
-  "choices": ["React/Node.js", "Vue/Laravel", "Angular/.NET", "Python/Django"]
+  "data_label": "Spécialisation Métier",
+  "data_description": "Sélectionnez votre domaine d'expertise principal",
+  "choices": ["Développement Web", "Data Science", "DevOps", "Cybersécurité", "UX/UI Design", "Gestion de Projet IT"]
 }
 ```
 
@@ -57,13 +57,13 @@
     "company": {
       "id": 1,
       "admin_user_id": 1,
-      "name": "Tech Solutions Inc",
+      "name": "Portage Solutions Pro",
       "siret": 12345678901234
     },
     "platformService": {
       "id": 1,
       "user_id": 1,
-      "label": "Software Development Consulting",
+      "label": "Portage Salarial IT & Digital",
       "status": "PENDING"
     },
     "companyService": {
@@ -85,14 +85,14 @@
 ```json
 {
   "userId": 2,
-  "metier": "Full Stack Developer",
+  "metier": "Développeur Full Stack",
   "mission_status": "OPEN",
-  "client_name": "ABC Corporation",
-  "client_address": "123 Business St, City, State",
-  "client_sector": "Technology",
+  "client_name": "Banque Digitale Solutions",
+  "client_address": "15 Avenue des Champs-Élysées, 75008 Paris",
+  "client_sector": "Services Financiers",
   "priority": "HIGH",
-  "tjm": 650.00,
-  "days": 20.0,
+  "tjm": 550.00,
+  "days": 25.0,
   "required_services": [1, 2]
 }
 ```
@@ -106,14 +106,14 @@
     "freelance": {
       "id": 1,
       "freelance_id": 2,
-      "metier": "Full Stack Developer"
+      "metier": "Développeur Full Stack"
     },
     "freelanceRequest": {
       "id": 1,
       "freelance_id": 1,
       "mission_status": "OPEN",
-      "tjm": 650.00,
-      "days": 20.0
+      "tjm": 550.00,
+      "days": 25.0
     },
     "requestOptions": [
       {
@@ -135,7 +135,7 @@
 
 ---
 
-## 3. Get Available Services (for Freelance onboarding)
+## 3. Get Available Services (pour l'onboarding Freelance)
 **Endpoint:** `GET /api/auth/services`
 
 **Response:**
@@ -150,13 +150,29 @@
       "is_active": true,
       "service": {
         "id": 1,
-        "label": "Software Development Consulting",
-        "description": "Full-stack development services",
+        "label": "Portage Salarial IT & Digital",
+        "description": "Services de portage salarial pour freelances du secteur numérique",
         "status": "ACTIVE"
       },
       "company": {
         "id": 1,
-        "name": "Tech Solutions Inc"
+        "name": "Portage Solutions Pro"
+      }
+    },
+    {
+      "id": 2,
+      "company_id": 2,
+      "service_id": 2,
+      "is_active": true,
+      "service": {
+        "id": 2,
+        "label": "Portage Premium Consultants",
+        "description": "Accompagnement haut de gamme pour consultants seniors",
+        "status": "ACTIVE"
+      },
+      "company": {
+        "id": 2,
+        "name": "Lillinker Portage Elite"
       }
     }
   ]
@@ -172,8 +188,8 @@
 ```json
 {
   "token": "abc123def456ghi789jkl012mno345pqr678stu901vwx234yz",
-  "password": "SecurePassword123!",
-  "confirmPassword": "SecurePassword123!"
+  "password": "Portage2024!",
+  "confirmPassword": "Portage2024!"
 }
 ```
 
@@ -193,8 +209,8 @@
 **Request Body:**
 ```json
 {
-  "email": "john.doe@example.com",
-  "password": "SecurePassword123!",
+  "email": "marie.dubois@portagesalarial.fr",
+  "password": "Portage2024!",
   "csrfToken": "your-csrf-token"
 }
 ```
@@ -210,20 +226,20 @@
 
 ## Testing Flow
 
-### For Company Registration:
-1. **POST** `/api/auth/register` with company data
-2. **POST** `/api/auth/onboarding/company` with company details
-3. Check email for verification link
-4. **POST** `/api/auth/verify-email` with token and password
-5. **POST** `/api/auth/signin/credentials` to login
+### Pour l'inscription Société de Portage:
+1. **POST** `/api/auth/register` avec les données de la société
+2. **POST** `/api/auth/onboarding/company` avec les détails de la société de portage
+3. Vérifier l'email pour le lien de vérification
+4. **POST** `/api/auth/verify-email` avec le token et mot de passe
+5. **POST** `/api/auth/signin/credentials` pour se connecter
 
-### For Freelance Registration:
-1. **POST** `/api/auth/register` with freelance data
-2. **GET** `/api/auth/services` to get available services (optional)
-3. **POST** `/api/auth/onboarding/freelance` with freelance details
-4. Check email for verification link
-5. **POST** `/api/auth/verify-email` with token and password
-6. **POST** `/api/auth/signin/credentials` to login
+### Pour l'inscription Freelance:
+1. **POST** `/api/auth/register` avec les données freelance
+2. **GET** `/api/auth/services` pour obtenir les services disponibles (optionnel)
+3. **POST** `/api/auth/onboarding/freelance` avec les détails de mission
+4. Vérifier l'email pour le lien de vérification
+5. **POST** `/api/auth/verify-email` avec le token et mot de passe
+6. **POST** `/api/auth/signin/credentials` pour se connecter
 
 ---
 
@@ -232,14 +248,14 @@
 **400 Bad Request:**
 ```json
 {
-  "error": "User with this email already exists"
+  "error": "Un utilisateur avec cet email existe déjà"
 }
 ```
 
 **500 Internal Server Error:**
 ```json
 {
-  "error": "Internal server error"
+  "error": "Erreur serveur interne"
 }
 ```
 
@@ -248,14 +264,14 @@
 ## Environment Variables Required
 
 ```env
-DATABASE_URL="postgresql://username:password@localhost:5432/dbname"
+DATABASE_URL="postgresql://username:password@localhost:5432/lillinker_db"
 NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key-here"
-EMAIL_SERVER_HOST="smtp.example.com"
+NEXTAUTH_SECRET="lillinker-secret-key-2024"
+EMAIL_SERVER_HOST="smtp.gmail.com"
 EMAIL_SERVER_PORT="587"
-EMAIL_SERVER_USER="your-email@example.com"
+EMAIL_SERVER_USER="noreply@lillinker.fr"
 EMAIL_SERVER_PASSWORD="your-email-password"
-EMAIL_FROM="your-email@example.com"
+EMAIL_FROM="noreply@lillinker.fr"
 ```
 
 ---

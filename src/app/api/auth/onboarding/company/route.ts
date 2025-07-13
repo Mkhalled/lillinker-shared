@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Finalize registration and send verification email
-    await AuthService.finalizeRegistration(parseInt(userId), 'COMPANY');
+    await AuthService.finalizeRegistration(parseInt(userId));
 
     return NextResponse.json({
       success: true,
