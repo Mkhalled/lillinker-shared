@@ -18,14 +18,25 @@ export const CompanyOnboardingSchema = z.object({
   consultant_count: z.number().min(1, 'Consultant count must be at least 1'),
   management_fees: z.number().min(0, 'Management fees must be positive'),
   
-  // Service data
-  service_label: z.string().min(2, 'Service label is required'),
+  // Selected platform services
+  selected_services: z.array(z.number()).optional(),
+  
+  // New service data (optional - only if creating a new service)
+  service_label: z.string().optional(),
   service_description: z.string().optional(),
-  data_type: z.enum(['TEXT', 'NUMBER', 'SELECT', 'RADIO']),
-  requires_data: z.boolean().default(false),
-  data_label: z.string().min(1, 'Data label is required'),
+  data_type: z.enum(['TEXT', 'NUMBER', 'SELECT', 'RADIO']).optional(),
+  requires_data: z.boolean().optional(),
+  data_label: z.string().optional(),
   data_description: z.string().optional(),
   choices: z.array(z.string()).optional(),
+}).refine((data) => {
+  // Either must have selected services OR provide new service data
+  const hasSelectedServices = data.selected_services && data.selected_services.length > 0;
+  const hasNewService = data.service_label && data.service_label.trim() !== '';
+  return hasSelectedServices || hasNewService;
+}, {
+  message: "Must select at least one service or create a new service",
+  path: ["selected_services"],
 });
 
 export const FreelanceOnboardingSchema = z.object({

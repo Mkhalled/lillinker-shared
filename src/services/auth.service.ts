@@ -58,31 +58,58 @@ export class AuthService {
         },
       });
 
-      // Create platform service with pending status
-      const platformService = await tx.platformService.create({
-        data: {
-          user_id: userId,
-          label: data.service_label,
-          description: data.service_description,
-          data_type: data.data_type,
-          requires_data: data.requires_data,
-          data_label: data.data_label,
-          data_description: data.data_description,
-          choices: data.choices ? data.choices :{},
-          status: 'PENDING',
-        },
-      });
+      const results = {
+        company,
+        platformService: null as any,
+        companyServices: [] as any[],
+      };
 
-      // Create company service linking
-      const companyService = await tx.companyService.create({
-        data: {
-          company_id: company.id,
-          service_id: platformService.id,
-          is_active: false, // Will be activated when platform service is approved
-        },
-      });
+      // Handle selected existing platform services
+      if (data.selected_services && data.selected_services.length > 0) {
+        const companyServices = await Promise.all(
+          data.selected_services.map(serviceId =>
+            tx.companyService.create({
+              data: {
+                company_id: company.id,
+                service_id: serviceId,
+                is_active: true, // Active since these are existing approved services
+              },
+            })
+          )
+        );
+        results.companyServices = companyServices;
+      }
 
-      return { company, platformService, companyService };
+      // Handle new service creation if provided
+      if (data.service_label && data.service_label.trim() !== '') {
+        const platformService = await tx.platformService.create({
+          data: {
+            user_id: userId,
+            label: data.service_label,
+            description: data.service_description || '',
+            data_type: data.data_type!,
+            requires_data: data.requires_data || false,
+            data_label: data.data_label || '',
+            data_description: data.data_description || '',
+            choices: data.choices && data.choices.length > 0 ? data.choices : undefined,
+            status: 'PENDING',
+          },
+        });
+
+        // Create company service linking for new service
+        const companyService = await tx.companyService.create({
+          data: {
+            company_id: company.id,
+            service_id: platformService.id,
+            is_active: false, // Will be activated when platform service is approved
+          },
+        });
+
+        results.platformService = platformService;
+        results.companyServices.push(companyService);
+      }
+
+      return results;
     });
   }
 

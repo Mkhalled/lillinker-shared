@@ -52,7 +52,8 @@ export const config = {
      * - images
      * - public folder
      * - auth routes
+     * - public API routes
      */
-    '/((?!_next/static|_next/image|favicon.ico|images|public|auth|$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|images|public|auth|api/auth|api/platform-services|$).*)',
   ],
 };

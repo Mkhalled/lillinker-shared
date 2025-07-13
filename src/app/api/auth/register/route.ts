@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = InitialRegistrationSchema.parse(body);
 
-    const { user, verificationToken } = await AuthService.initiateRegistration(validatedData);
+    const { user } = await AuthService.initiateRegistration(validatedData);
 
     return NextResponse.json({
       success: true,
