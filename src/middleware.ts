@@ -2,14 +2,14 @@ import { withAuth } from 'next-auth/middleware';
 import type { NextAuthMiddlewareOptions } from 'next-auth/middleware';
 
 // Define role types
-type Role = 'PLATFORM_ADMIN' | 'COMPANY_ADMIN' | 'COMPANY_MANAGER' | 'CONSULTANT';
+type Role = 'ADMIN' | 'COMPANY' | 'MANAGER' | 'FREELANCE';
 
 // Define protected routes and their allowed roles
 const protectedRoutes: Record<string, Role[]> = {
-  '/admin': ['PLATFORM_ADMIN'],
-  '/company/admin': ['COMPANY_ADMIN'],
-  '/company/manager': ['COMPANY_MANAGER'],
-  '/consultant': ['CONSULTANT'],
+  '/admin': ['ADMIN'],
+  '/company/admin': ['COMPANY'],
+  '/company/manager': ['MANAGER'],
+  '/consultant': ['FREELANCE'],
 };
 
 const authOptions: NextAuthMiddlewareOptions = {

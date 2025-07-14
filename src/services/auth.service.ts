@@ -2,8 +2,8 @@ import { randomBytes } from 'crypto';
 
 import { hash } from 'bcryptjs';
 
-import { sendVerificationEmail } from '@/lib/mailer';
 import { logger } from '@/lib/logger';
+import { sendVerificationEmail } from '@/lib/mailer';
 import { prisma } from '@/lib/prisma';
 import type { 
   InitialRegistration, 

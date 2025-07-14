@@ -26,6 +26,22 @@ const LoginPage = () => {
     const password = formData.get('password') as string;
 
     try {
+      // First validate credentials with our custom API
+      const validateResponse = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!validateResponse.ok) {
+        const errorData = await validateResponse.json();
+        setError(errorData.error || 'Authentication failed');
+        return;
+      }
+
+      // If validation passes, proceed with NextAuth sign-in
       const result = await signIn('credentials', {
         email,
         password,
@@ -33,7 +49,12 @@ const LoginPage = () => {
       });
 
       if (result?.error) {
-        setError(result.error);
+        setError('Échec de l\'authentification. Veuillez réessayer.');
+        return;
+      }
+
+      if (!result?.ok) {
+        setError('Échec de l\'authentification. Veuillez réessayer.');
         return;
       }
 
@@ -43,7 +64,7 @@ const LoginPage = () => {
       const role = session.user?.role;
 
       // Redirect based on role
-      if (role === 'PLATFORM_ADMIN') {
+      if (role === 'ADMIN') {
         router.push('/admin/dashboard');
       } else {
         // Check if profile is complete
@@ -52,7 +73,7 @@ const LoginPage = () => {
           session.user?.pseudonym &&
           session.user?.image &&
           session.user?.phone;
-        if (role === 'COMPANY_ADMIN') {
+        if (role === 'COMPANY') {
           hasCompleteProfile = hasCompleteProfile && session.user?.companyId;
         }
         if (!hasCompleteProfile) {
@@ -60,13 +81,13 @@ const LoginPage = () => {
         } else {
           // Redirect based on role
           switch (role) {
-            case 'COMPANY_ADMIN':
+            case 'COMPANY':
               router.push('/company/admin/dashboard');
               break;
-            case 'COMPANY_MANAGER':
+            case 'MANAGER':
               router.push('/company/manager/dashboard');
               break;
-            case 'CONSULTANT':
+            case 'FREELANCE':
               router.push('/consultant/dashboard');
               break;
             default:
@@ -75,7 +96,8 @@ const LoginPage = () => {
         }
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      console.error('Login error:', err);
+      setError('Une erreur inattendue s\'est produite. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }

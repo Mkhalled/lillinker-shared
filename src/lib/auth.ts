@@ -66,11 +66,11 @@ export const authOptions: NextAuthOptions = {
         };
 
         try {
-          logger.info('Login attempt started', logContext);
+          logger.info('NextAuth authorize started', logContext);
 
           if (!credentials?.email || !credentials?.password) {
-            logger.warn('Login attempt with missing credentials', logContext);
-            throw new Error('Invalid credentials');
+            logger.warn('NextAuth authorize with missing credentials', logContext);
+            return null;
           }
 
           const user = await prisma.user.findUnique({
@@ -78,11 +78,11 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!user) {
-            logger.warn('Login attempt with non-existent email', logContext);
-            throw new Error('User not found');
+            logger.warn('NextAuth authorize with non-existent email', logContext);
+            return null;
           }
 
-          logger.debug('User found for login attempt', {
+          logger.debug('User found for NextAuth authorize', {
             ...logContext,
             userId: user.id,
             emailVerified: user.email_verified,
@@ -90,33 +90,25 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
           });
 
-          if (!user.status) {
-            logger.warn('Login blocked - account not validated by administrator', {
+          // Basic checks - detailed validation is done in our custom API
+          if (!user.status || !user.email_verified) {
+            logger.warn('NextAuth authorize blocked - user not ready', {
               ...logContext,
               userId: user.id,
-              reason: 'account_not_validated',
+              status: user.status,
+              emailVerified: user.email_verified,
             });
-            throw new Error("Your account is being validated by the administrator");
-          }
-
-          if (!user.email_verified) {
-            logger.warn('Login blocked - email not verified', {
-              ...logContext,
-              userId: user.id,
-              reason: 'email_not_verified',
-            });
-            throw new Error('Please verify your email address');
+            return null;
           }
 
           const isValid = await compare(credentials.password, user.password);
 
           if (!isValid) {
-            logger.warn('Login attempt with invalid password', {
+            logger.warn('NextAuth authorize with invalid password', {
               ...logContext,
               userId: user.id,
-              reason: 'invalid_password',
             });
-            throw new Error('Invalid password');
+            return null;
           }
 
           const authUser: AuthUser = {
@@ -131,7 +123,7 @@ export const authOptions: NextAuthOptions = {
             image: user.image || undefined,
           };
 
-          logger.info('Login successful', {
+          logger.info('NextAuth authorize successful', {
             ...logContext,
             userId: user.id,
             role: user.role,
@@ -140,7 +132,7 @@ export const authOptions: NextAuthOptions = {
 
           return authUser;
         } catch (error) {
-          logger.error('Login failed', error as Error, logContext);
+          logger.error('NextAuth authorize failed', error as Error, logContext);
           return null;
         }
       },

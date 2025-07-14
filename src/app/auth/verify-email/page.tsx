@@ -1,5 +1,7 @@
 'use client';
 
+import { Lock } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -27,7 +29,12 @@ const SetPasswordPage = () => {
         setSuccess('');
         
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            setError('Les mots de passe ne correspondent pas.');
+            return;
+        }
+
+        if (formData.password.length < 8) {
+            setError('Le mot de passe doit contenir au moins 8 caractères.');
             return;
         }
 
@@ -50,7 +57,7 @@ const SetPasswordPage = () => {
                 throw new Error(data.error || 'Failed to set password');
             }
 
-            setSuccess('Your password has been set and email verified successfully.');
+            setSuccess('Votre mot de passe a été défini et votre email vérifié avec succès.');
             setTimeout(() => {
                 router.push('/auth/login?message=account-ready');
             }, 2000);
@@ -66,75 +73,93 @@ const SetPasswordPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-sm">
-                <div className="mb-6">
-                    <h1 className="text-2xl font-bold mb-2">Set Your Password</h1>
-                    <p className="text-gray-500">Create a secure password for your account</p>
+        <main className="flex min-h-screen w-full flex-col items-center justify-center bg-gray-50 text-center p-4">
+            <div className="w-full max-w-md">
+                
+                <div className="flex justify-center text-[var(--primary-color)]">
+                    <Lock className="h-16 w-16" />
                 </div>
                 
-                {error && (
-                    <div className="p-3 bg-red-50 border border-red-200 rounded-md mb-4">
-                        <p className="text-red-600 text-sm">{error}</p>
-                    </div>
-                )}
+                <h1 className="mt-6 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                    Définir un nouveau mot de passe
+                </h1>
                 
-                {success && (
-                    <div className="p-3 bg-green-50 border border-green-200 rounded-md mb-4">
-                        <p className="text-green-700 text-sm">{success}</p>
-                    </div>
-                )}
-                
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium mb-1">
-                            Password
-                        </label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={formData.password}
-                            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                            placeholder="Enter your password"
-                            required
-                            minLength={8}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                            Password must be at least 8 characters long
+                {success ? (
+                    <div className="mt-10">
+                        <p className="text-lg text-gray-800">
+                            Votre mot de passe a été défini et votre email vérifié avec succès !
                         </p>
+                        <div className="mt-6">
+                            <Link
+                                href="/auth/login"
+                                className="rounded-md bg-[var(--primary-color)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-color)] transition-colors"
+                            >
+                                Se connecter
+                            </Link>
+                        </div>
                     </div>
+                ) : (
+                    <>
+                        <p className="mt-4 text-base text-gray-600">
+                            Veuillez saisir votre nouveau mot de passe ci-dessous.
+                        </p>
+                        <form className="mt-10 space-y-4" onSubmit={handleSubmit}>
+                            <div>
+                                <label htmlFor="password" className="sr-only">
+                                    Nouveau mot de passe
+                                </label>
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    required
+                                    value={formData.password}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                                    className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2.5 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)] sm:text-sm"
+                                    placeholder="Nouveau mot de passe"
+                                />
+                            </div>
+                            
+                            <div>
+                                <label htmlFor="confirm-password" className="sr-only">
+                                    Confirmer le mot de passe
+                                </label>
+                                <input
+                                    id="confirm-password"
+                                    name="confirm-password"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    required
+                                    value={formData.confirmPassword}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                                    className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2.5 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)] sm:text-sm"
+                                    placeholder="Confirmer le mot de passe"
+                                />
+                            </div>
 
-                    <div>
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">
-                            Confirm Password
-                        </label>
-                        <input
-                            id="confirmPassword"
-                            type="password"
-                            value={formData.confirmPassword}
-                            onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                            placeholder="Confirm your password"
-                            required
-                            minLength={8}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                    </div>
+                            {error && (
+                                <p className="text-sm text-red-600 text-left">{error}</p>
+                            )}
 
-                    <button 
-                        type="submit" 
-                        disabled={isLoading}
-                        className={`w-full py-3 px-4 rounded-md text-sm font-medium text-white transition-colors ${
-                            isLoading 
-                                ? 'bg-gray-400 cursor-not-allowed' 
-                                : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
-                        }`}
-                    >
-                        {isLoading ? 'Setting Password...' : 'Set Password & Verify Email'}
-                    </button>
-                </form>
+                            <div className="pt-2">
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className={`w-full rounded-md px-4 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-color)] transition-colors ${
+                                        isLoading 
+                                            ? 'bg-gray-400 cursor-not-allowed' 
+                                            : 'bg-[var(--primary-color)] hover:opacity-90 cursor-pointer'
+                                    }`}
+                                >
+                                    {isLoading ? 'Définition du mot de passe...' : 'Mettre à jour le mot de passe'}
+                                </button>
+                            </div>
+                        </form>
+                    </>
+                )}
             </div>
-        </div>
+        </main>
     );
 };
 
