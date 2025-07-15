@@ -19,6 +19,7 @@ declare module 'next-auth' {
       status: boolean;
       email_verified: boolean;
       image?: string;
+      created_at: string;
     };
   }
 }
@@ -28,6 +29,10 @@ declare module 'next-auth/jwt' {
     role: string;
     status: boolean;
     email_verified: boolean;
+    first_name: string;
+    last_name: string;
+    phone_number?: string;
+    created_at: string;
   }
 }
 
@@ -41,6 +46,7 @@ type AuthUser = {
   status: boolean;
   email_verified: boolean;
   image?: string;
+  created_at: string;
 };
 
 export const authOptions: NextAuthOptions = {
@@ -121,13 +127,16 @@ export const authOptions: NextAuthOptions = {
             status: user.status,
             email_verified: user.email_verified,
             image: user.image || undefined,
+            created_at: user.created_at.toISOString(),
           };
 
           logger.info('NextAuth authorize successful', {
             ...logContext,
             userId: user.id,
             role: user.role,
-            firstName: user.first_name,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            phone_number: user.phone_number,
           });
 
           return authUser;
@@ -145,6 +154,9 @@ export const authOptions: NextAuthOptions = {
         token.role = authUser.role;
         token.status = authUser.status;
         token.email_verified = authUser.email_verified;
+        token.last_name = authUser.last_name;
+        token.first_name = authUser.first_name;
+        token.phone_number = authUser.phone_number;
 
         logger.debug('JWT token created', {
           operation: 'jwt_callback',
@@ -161,6 +173,9 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as string;
         session.user.status = token.status as boolean;
         session.user.email_verified = token.email_verified as boolean;
+        session.user.first_name = token.first_name;
+        session.user.last_name = token.last_name;
+        session.user.phone_number = token.phone_number;
 
         logger.debug('Session created', {
           operation: 'session_callback',

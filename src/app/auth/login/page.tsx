@@ -69,11 +69,7 @@ const LoginPage = () => {
         router.push('/admin/dashboard');
       } else {
         // Check if profile is complete
-        let hasCompleteProfile =
-          session.user?.username &&
-          session.user?.pseudonym &&
-          session.user?.image &&
-          session.user?.phone;
+        let hasCompleteProfile = session.user?.phone_number;
         if (role === 'COMPANY') {
           hasCompleteProfile = hasCompleteProfile && session.user?.companyId;
         }
