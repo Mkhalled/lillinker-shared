@@ -48,18 +48,6 @@ export async function POST(request: NextRequest) {
       role: user.role,
     });
 
-    if (!user.status) {
-      logger.warn('Login API blocked - account not validated by administrator', {
-        ...extendedLogContext,
-        userId: user.id,
-        reason: 'account_not_validated',
-      });
-      return NextResponse.json(
-        { error: 'Votre compte est en cours de validation par l\'administrateur' },
-        { status: 403 }
-      );
-    }
-
     if (!user.email_verified) {
       logger.warn('Login API blocked - email not verified', {
         ...extendedLogContext,
@@ -68,6 +56,18 @@ export async function POST(request: NextRequest) {
       });
       return NextResponse.json(
         { error: 'Veuillez vérifier votre adresse email' },
+        { status: 403 }
+      );
+    }
+
+    if (!user.status) {
+      logger.warn('Login API blocked - account not validated by administrator', {
+        ...extendedLogContext,
+        userId: user.id,
+        reason: 'account_not_validated',
+      });
+      return NextResponse.json(
+        { error: 'Votre compte est en cours de validation par l\'administrateur' },
         { status: 403 }
       );
     }
