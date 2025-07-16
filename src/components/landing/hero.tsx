@@ -5,7 +5,7 @@ import { useState } from 'react';
 import CompanyModal from '../modals/CompanyModal';
 import FreelanceModal from '../modals/FreelanceModal';
 import { Button } from '../ui/button/Button';
-
+import Image from "next/image"
 const Hero = () => {
   const [showFreelanceModal, setShowFreelanceModal] = useState(false)
   const [showCompanyModal, setShowCompanyModal] = useState(false)
@@ -53,7 +53,7 @@ const Hero = () => {
 
             <div className="relative">
               <div className="relative bg-white rounded-2xl shadow-2xl p-8">
-                <img
+                <Image
                   src="/images/landing/1.png"
                   alt="Team collaboration illustration"
                   className="w-full h-auto rounded-lg"
