@@ -1,9 +1,14 @@
 'use client';
 
-import { Lock } from 'lucide-react';
+import { ChevronLeftIcon, EyeIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
+
+import Input from '@/components/form/input/InputField';
+import Label from '@/components/form/Label';
+import {Button} from '@/components/ui/button/Button';
+import { EyeCloseIcon } from '@/icons';
 
 const SetPasswordPage = () => {
     const [formData, setFormData] = useState({
@@ -13,6 +18,8 @@ const SetPasswordPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
@@ -73,93 +80,160 @@ const SetPasswordPage = () => {
     }
 
     return (
-        <main className="flex min-h-screen w-full flex-col items-center justify-center bg-gray-50 text-center p-4">
-            <div className="w-full max-w-md">
-                
-                <div className="flex justify-center text-[var(--primary-color)]">
-                    <Lock className="h-16 w-16" />
+        <div className="flex h-screen">
+            {/* Left side - Form */}
+            <div className="flex flex-col w-full md:w-1/2 bg-white">
+                <div className="w-full max-w-md sm:pt-10 mx-auto mb-5 px-6">
+                    <Link
+                        href="/auth/login"
+                        className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                    >
+                        <ChevronLeftIcon className="w-4 h-4 mr-2" />
+                        Retour à la connexion
+                    </Link>
                 </div>
                 
-                <h1 className="mt-6 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                    Définir un nouveau mot de passe
-                </h1>
-                
-                {success ? (
-                    <div className="mt-10">
-                        <p className="text-lg text-gray-800">
-                            Votre mot de passe a été défini et votre email vérifié avec succès !
-                        </p>
-                        <div className="mt-6">
-                            <Link
-                                href="/auth/login"
-                                className="rounded-md bg-[var(--primary-color)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-color)] transition-colors"
-                            >
-                                Se connecter
-                            </Link>
+                <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto px-6">
+                    <div>
+                        <div className="mb-5 sm:mb-8">
+                            <h1 className="mb-2 font-semibold text-gray-800 text-2xl dark:text-white/90">
+                                {success ? 'Mot de passe défini!' : 'Définir votre mot de passe'}
+                            </h1>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                {success 
+                                    ? 'Votre mot de passe a été défini avec succès. Vous pouvez maintenant vous connecter.'
+                                    : 'Créez un mot de passe sécurisé pour finaliser votre compte!'
+                                }
+                            </p>
                         </div>
+                        
+                        {success ? (
+                            <div className="space-y-6">
+                                <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg">
+                                    Votre mot de passe a été défini et votre email vérifié avec succès !
+                                </div>
+                                
+                                <div>
+                                    <Button 
+                                        onClick={() => router.push('/auth/login')}
+                                        className="w-full text-white bg-blue-600 hover:bg-blue-700" 
+                                        size="sm"
+                                    >
+                                        Se connecter
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <form onSubmit={handleSubmit}>
+                                    <div className="space-y-6">
+                                        {error && (
+                                            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+                                                {error}
+                                            </div>
+                                        )}
+                                        
+                                        <div>
+                                            <Label>
+                                                Nouveau mot de passe <span className="text-red-500">*</span>
+                                            </Label>
+                                            <div className="relative">
+                                                <Input
+                                                    name="password"
+                                                    type={showPassword ? "text" : "password"}
+                                                    placeholder="Entrez votre nouveau mot de passe"
+                                                    defaultValue={formData.password}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                                                />
+                                                <span
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                                                >
+                                                    {showPassword ? (
+                                                        <EyeIcon className="w-4 h-4 text-gray-500" />
+                                                    ) : (
+                                                        <EyeCloseIcon className="w-4 h-4 fill-gray-500" />
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <Label>
+                                                Confirmer le mot de passe <span className="text-red-500">*</span>
+                                            </Label>
+                                            <div className="relative">
+                                                <Input
+                                                    name="confirmPassword"
+                                                    type={showConfirmPassword ? "text" : "password"}
+                                                    placeholder="Confirmez votre mot de passe"
+                                                    defaultValue={formData.confirmPassword}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                                                />
+                                                <span
+                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                                                >
+                                                    {showConfirmPassword ? (
+                                                        <EyeIcon className="w-4 h-4 text-gray-500" />
+                                                    ) : (
+                                                        <EyeCloseIcon className="w-4 h-4 fill-gray-500" />
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="text-xs text-gray-500">
+                                            Le mot de passe doit contenir au moins 8 caractères.
+                                        </div>
+                                        
+                                        <div>
+                                            <Button 
+                                                type="submit"
+                                                className="w-full text-white bg-blue-600 hover:bg-blue-700" 
+                                                size="sm"
+                                                disabled={isLoading}
+                                            >
+                                                {isLoading ? 'Définition du mot de passe...' : 'Définir le mot de passe'}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        )}
                     </div>
-                ) : (
-                    <>
-                        <p className="mt-4 text-base text-gray-600">
-                            Veuillez saisir votre nouveau mot de passe ci-dessous.
-                        </p>
-                        <form className="mt-10 space-y-4" onSubmit={handleSubmit}>
-                            <div>
-                                <label htmlFor="password" className="sr-only">
-                                    Nouveau mot de passe
-                                </label>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    autoComplete="new-password"
-                                    required
-                                    value={formData.password}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                                    className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2.5 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)] sm:text-sm"
-                                    placeholder="Nouveau mot de passe"
-                                />
-                            </div>
-                            
-                            <div>
-                                <label htmlFor="confirm-password" className="sr-only">
-                                    Confirmer le mot de passe
-                                </label>
-                                <input
-                                    id="confirm-password"
-                                    name="confirm-password"
-                                    type="password"
-                                    autoComplete="new-password"
-                                    required
-                                    value={formData.confirmPassword}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                                    className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2.5 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)] sm:text-sm"
-                                    placeholder="Confirmer le mot de passe"
-                                />
-                            </div>
-
-                            {error && (
-                                <p className="text-sm text-red-600 text-left">{error}</p>
-                            )}
-
-                            <div className="pt-2">
-                                <button
-                                    type="submit"
-                                    disabled={isLoading}
-                                    className={`w-full rounded-md px-4 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-color)] transition-colors ${
-                                        isLoading 
-                                            ? 'bg-gray-400 cursor-not-allowed' 
-                                            : 'bg-[var(--primary-color)] hover:opacity-90 cursor-pointer'
-                                    }`}
-                                >
-                                    {isLoading ? 'Définition du mot de passe...' : 'Mettre à jour le mot de passe'}
-                                </button>
-                            </div>
-                        </form>
-                    </>
-                )}
+                </div>
             </div>
-        </main>
+            
+            {/* Right side - Content (hidden on mobile) */}
+            <div className="hidden md:flex w-1/2 h-screen bg-[var(--primary-color)] items-center justify-center px-8">
+                <div className="max-w-sm text-center text-white">
+                    {/* Logo with icon placeholder */}
+                    <div className="mb-8">
+                        <div className="w-24 h-24 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
+                            <div className="text-3xl font-bold text-white">L</div>
+                        </div>
+                        <h2 className="text-xl font-bold tracking-wider">
+                            LILLINKER
+                        </h2>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="space-y-6">
+                        <h1 className="text-2xl font-bold leading-tight">
+                            {success ? 'Compte activé!' : 'Presque terminé!'}
+                        </h1>
+                        
+                        <p className="text-white/90 text-sm leading-relaxed">
+                            {success 
+                                ? 'Votre compte Lillinker est maintenant actif. Connectez-vous pour commencer à gérer votre portage salarial en toute simplicité.'
+                                : 'Définissez votre mot de passe pour activer votre compte Lillinker. Une fois activé, vous pourrez gérer vos missions et suivre vos paiements facilement.'
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 
