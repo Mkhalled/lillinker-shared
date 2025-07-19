@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { UserDAO } from '@/dao/user.dao';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,16 +12,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if email exists in users table
-    const existingUser = await prisma.user.findUnique({
-      where: {
-        email: email.toLowerCase()
-      },
-      select: {
-        id: true,
-        email: true
-      }
-    });
+    // Check if email exists in users table using UserDAO
+    const existingUser = await UserDAO.findByEmail(email.toLowerCase());
 
     return NextResponse.json({
       exists: !!existingUser,
