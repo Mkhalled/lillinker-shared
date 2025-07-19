@@ -1,9 +1,9 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, CheckCircle, X, Building2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, X, Building2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-
+import ServiceInfoTooltip from '../ServiceInfoTooltip';
 import { Button } from '../ui/button/Button';
 
 interface PlatformService {
@@ -27,8 +27,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [platformServices, setPlatformServices] = useState<PlatformService[]>([])
-    const [emailExists, setEmailExists] = useState(false)
+  const [emailExists, setEmailExists] = useState(false)
   const [checkingEmail, setCheckingEmail] = useState(false)
+  const [showPlatformServices, setShowPlatformServices] = useState(false)
   const [formData, setFormData] = useState({
     // Step 1: Personal info
     firstName: "",
@@ -179,6 +180,45 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         s.serviceId === serviceId ? { ...s, responseData: value } : s
       )
     }))
+  }
+
+  // Helper function to parse choices from service.choices
+  const parseChoices = (choices: any) => {
+    if (!choices) return [];
+    if (typeof choices === 'string') {
+      try {
+        return JSON.parse(choices);
+      } catch {
+        return [choices];
+      }
+    }
+    if (Array.isArray(choices)) return choices;
+    return [];
+  }
+
+  // Handle multiple selections for SELECT type
+  const handleMultipleSelectChange = (serviceId: number, option: string, isChecked: boolean) => {
+    setFormData((prev) => {
+      const service = prev.selectedServices.find(s => s.serviceId === serviceId)
+      if (!service) return prev
+      
+      let currentSelections = service.responseData ? service.responseData.split(',').filter(s => s.trim() !== '') : []
+      
+      if (isChecked) {
+        if (!currentSelections.includes(option)) {
+          currentSelections.push(option)
+        }
+      } else {
+        currentSelections = currentSelections.filter(s => s !== option)
+      }
+      
+      return {
+        ...prev,
+        selectedServices: prev.selectedServices.map(s => 
+          s.serviceId === serviceId ? { ...s, responseData: currentSelections.join(',') } : s
+        )
+      }
+    })
   }
 
   const handleComplete = async () => {
@@ -462,9 +502,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
       case 3:
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <h3 className="font-medium mb-3">Sélectionnez les services qui vous intéressent :</h3>
+              <h3 className="font-medium mb-4">Sélectionnez les services qui vous intéressent :</h3>
               
               {error && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm mb-4">
@@ -472,126 +512,164 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                 </div>
               )}
 
-              {platformServices.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <Building2 className="h-12 w-12 mx-auto mb-2 text-gray-400" />
-                  <p>Aucun service disponible pour le moment</p>
+              {/* Platform Services Section */}
+              <div className="space-y-4">
+                <div 
+                  className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => setShowPlatformServices(!showPlatformServices)}
+                >
+                  <div className="flex items-center space-x-2">
+                    <Building2 className="h-5 w-5 text-gray-600" />
+                    <span className="font-medium text-gray-900">Services disponibles sur la plateforme</span>
+                    <span className="text-sm text-gray-500">({platformServices.length} services)</span>
+                  </div>
+                  {showPlatformServices ? (
+                    <ChevronUp className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-gray-400" />
+                  )}
                 </div>
-              ) : (
-                <div className="max-h-96 overflow-y-auto space-y-3">
-                  {platformServices.map((service) => {
-                    const selectedService = formData.selectedServices.find(s => s.serviceId === service.id)
-                    const isSelected = !!selectedService
-                    
-                    return (
-                      <div key={service.id} className="border rounded-lg p-4 bg-white">
-                        <div className="flex items-start space-x-3">
-                          <input
-                            type="checkbox"
-                            id={`service-${service.id}`}
-                            checked={isSelected}
-                            onChange={() => handleServiceToggle(service.id)}
-                            className="mt-1"
-                          />
-                          <div className="flex-1">
-                            <label htmlFor={`service-${service.id}`} className="font-medium cursor-pointer">
-                              {service.label}
-                            </label>
-                            {service.description && (
-                              <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                            )}
-                            
-                            {/* Service Type and Requirements Info */}
-                            <div className="flex items-center gap-2 mt-2">
-                              <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">
-                                {service.data_type}
-                              </span>
-                              {service.requires_data && (
-                                <span className="text-xs px-2 py-1 bg-orange-100 text-orange-600 rounded">
-                                  Données requises
-                                </span>
-                              )}
-                            </div>
 
-                            {/* Required checkbox for selected services */}
-                            {isSelected && (
-                              <div className="mt-3 pl-4 border-l-2 border-blue-200">
-                                <label className="flex items-center space-x-2">
+                {showPlatformServices && (
+                  <>
+                    {platformServices.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <Building2 className="h-12 w-12 mx-auto mb-2 text-gray-400" />
+                        <p>Aucun service disponible pour le moment</p>
+                      </div>
+                    ) : (
+                      <div className="max-h-96 overflow-y-auto space-y-3">
+                        {platformServices.map((service) => {
+                          const selectedService = formData.selectedServices.find(s => s.serviceId === service.id)
+                          const isSelected = !!selectedService
+                          const choices = parseChoices(service.choices)
+                          
+                          return (
+                            <div key={service.id} className="border rounded-lg p-4 bg-white">
+                              <div className="flex items-start justify-between">
+                                <div className="flex items-start space-x-3 flex-1">
                                   <input
                                     type="checkbox"
-                                    checked={selectedService?.isRequired || false}
-                                    onChange={(e) => handleServiceRequiredChange(service.id, e.target.checked)}
-                                    className="text-blue-600"
+                                    id={`service-${service.id}`}
+                                    checked={isSelected}
+                                    onChange={() => handleServiceToggle(service.id)}
+                                    className="mt-1"
                                   />
-                                  <span className="text-sm text-gray-700">Ce service est <strong>obligatoire</strong> pour moi</span>
-                                </label>
-
-                                {/* Data input for services that require data */}
-                                {service.requires_data && (
-                                  <div className="mt-3">
-                                    <label className="text-sm font-medium text-gray-700 block mb-1">
-                                      {service.data_label}
+                                  <div className="flex-1">
+                                    <label htmlFor={`service-${service.id}`} className="font-medium cursor-pointer block">
+                                      {service.label}
                                     </label>
-                                    {service.data_description && (
-                                      <p className="text-xs text-gray-500 mb-2">{service.data_description}</p>
-                                    )}
-                                    
-                                    {service.data_type === 'TEXT' && (
-                                      <input
-                                        type="text"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                        value={selectedService?.responseData || ""}
-                                        onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
-                                        placeholder="Votre réponse..."
-                                      />
-                                    )}
-                                    
-                                    {service.data_type === 'NUMBER' && (
-                                      <input
-                                        type="number"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                        value={selectedService?.responseData || ""}
-                                        onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
-                                        placeholder="Entrez un nombre..."
-                                      />
-                                    )}
-                                    
-                                    {(service.data_type === 'SELECT' || service.data_type === 'RADIO') && service.choices && (
-                                      <select
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                        value={selectedService?.responseData || ""}
-                                        onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
-                                      >
-                                        <option value="">Sélectionnez une option</option>
-                                        {(service.choices as string[]).map((choice, index) => (
-                                          <option key={index} value={choice}>
-                                            {choice}
-                                          </option>
-                                        ))}
-                                      </select>
-                                    )}
                                   </div>
-                                )}
+                                </div>
+                                
+                                {/* Service Info Tooltip */}
+                                <div onClick={(e) => e.stopPropagation()}>
+                                  <ServiceInfoTooltip service={service} />
+                                </div>
                               </div>
-                            )}
-                          </div>
-                        </div>
+
+                              {/* Required checkbox and data input for selected services */}
+                              {isSelected && (
+                                <div className="mt-4 pl-4 border-l-2 border-blue-200">
+                                  <label className="flex items-center space-x-2 mb-3">
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedService?.isRequired || false}
+                                      onChange={(e) => handleServiceRequiredChange(service.id, e.target.checked)}
+                                      className="text-blue-600"
+                                    />
+                                    <span className="text-sm text-gray-700">Ce service est <strong>obligatoire</strong> pour moi</span>
+                                  </label>
+
+                                  {/* Data input for services that require data */}
+                                  {service.requires_data && (
+                                    <div className="space-y-3">
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-700 block">
+                                          {service.data_label || 'Données requises'}
+                                        </label>
+                                        {service.data_description && (
+                                          <p className="text-xs text-gray-500 mt-1">{service.data_description}</p>
+                                        )}
+                                      </div>
+                                      
+                                      {/* TEXT input */}
+                                      {service.data_type === 'TEXT' && (
+                                        <textarea
+                                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                          value={selectedService?.responseData || ""}
+                                          onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
+                                          placeholder="Saisissez votre réponse..."
+                                          rows={3}
+                                        />
+                                      )}
+                                      
+                                      {/* NUMBER input */}
+                                      {service.data_type === 'NUMBER' && (
+                                        <input
+                                          type="number"
+                                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                          value={selectedService?.responseData || ""}
+                                          onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
+                                          placeholder="Entrez un nombre..."
+                                        />
+                                      )}
+                                      
+                                      {/* SELECT (multiple choice) */}
+                                      {service.data_type === 'SELECT' && choices.length > 0 && (
+                                        <div className="space-y-2">
+                                          <p className="text-xs text-gray-600">Sélectionnez une ou plusieurs options :</p>
+                                          {choices.map((choice: string, index: number) => {
+                                            const currentSelections = selectedService?.responseData ? 
+                                              selectedService.responseData.split(',').filter(s => s.trim() !== '') : []
+                                            const isChecked = currentSelections.includes(choice)
+                                            
+                                            return (
+                                              <label key={index} className="flex items-center space-x-2">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={isChecked}
+                                                  onChange={(e) => handleMultipleSelectChange(service.id, choice, e.target.checked)}
+                                                  className="text-blue-600"
+                                                />
+                                                <span className="text-sm text-gray-700">{choice}</span>
+                                              </label>
+                                            )
+                                          })}
+                                        </div>
+                                      )}
+                                      
+                                      {/* RADIO (single choice) */}
+                                      {service.data_type === 'RADIO' && choices.length > 0 && (
+                                        <div className="space-y-2">
+                                          <p className="text-xs text-gray-600">Sélectionnez une option :</p>
+                                          {choices.map((choice: string, index: number) => (
+                                            <label key={index} className="flex items-center space-x-2">
+                                              <input
+                                                type="radio"
+                                                name={`service-${service.id}-radio`}
+                                                value={choice}
+                                                checked={selectedService?.responseData === choice}
+                                                onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
+                                                className="text-blue-600"
+                                              />
+                                              <span className="text-sm text-gray-700">{choice}</span>
+                                            </label>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })}
                       </div>
-                    )
-                  })}
-                </div>
-              )}
-              
-              {/* Selection Summary */}
-              {formData.selectedServices.length > 0 && (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mt-4">
-                  <h5 className="font-medium text-blue-900 mb-2">Résumé de votre sélection</h5>
-                  <div className="space-y-1 text-sm text-blue-800">
-                    <p>• {formData.selectedServices.length} service(s) sélectionné(s)</p>
-                    <p>• {formData.selectedServices.filter(s => s.isRequired).length} service(s) obligatoire(s)</p>
-                  </div>
-                </div>
-              )}
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )
