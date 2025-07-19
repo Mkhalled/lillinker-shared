@@ -33,6 +33,8 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [platformServices, setPlatformServices] = useState<PlatformService[]>([])
+  const [emailExists, setEmailExists] = useState(false)
+  const [checkingEmail, setCheckingEmail] = useState(false)
   const [formData, setFormData] = useState({
     // Step 1: General info
     companyName: "",
@@ -80,6 +82,47 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
     fetchPlatformServices()
   }, [])
+
+  // Check if email exists when adminEmail changes
+  useEffect(() => {
+    const checkEmailExists = async () => {
+      if (!formData.adminEmail || formData.adminEmail.length < 3) {
+        setEmailExists(false)
+        return
+      }
+
+      // Only check if email format is valid
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      if (!emailRegex.test(formData.adminEmail)) {
+        setEmailExists(false)
+        return
+      }
+
+      setCheckingEmail(true)
+      try {
+        const response = await fetch('/api/check-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: formData.adminEmail }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setEmailExists(data.exists)
+        }
+      } catch (error) {
+        console.error('Error checking email:', error)
+      } finally {
+        setCheckingEmail(false)
+      }
+    }
+
+    // Debounce the email check
+    const timeoutId = setTimeout(checkEmailExists, 500)
+    return () => clearTimeout(timeoutId)
+  }, [formData.adminEmail])
 
   const handleNext = () => {
     if (currentStep === 4) {
@@ -311,15 +354,20 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               <label htmlFor="fees" className="text-sm font-medium text-gray-700">Taux de frais de gestion (%) *</label>
               <input
               id='fees'
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type="number"
-                step="0.1"
-                value={formData.managementFeeRate}
-                onChange={(e) => setFormData((prev) => ({ ...prev, managementFeeRate: e.target.value }))}
-                placeholder="8.5"
-                required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="range"
+              step="0.1"
+              min="0"
+              max="20"
+              value={formData.managementFeeRate}
+              onChange={(e) => setFormData((prev) => ({ ...prev, managementFeeRate: e.target.value }))}
+              placeholder="8.5"
+              required
               />
+              <div className="flex justify-between items-center">
               <p className="text-sm text-gray-600">Taux standard appliqué sur le chiffre d&apos;affaires</p>
+              <span className="text-sm font-medium text-gray-900">{formData.managementFeeRate}%</span>
+              </div>
             </div>
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <h4 className="font-medium text-blue-900 mb-2">Fonctionnalité future</h4>
@@ -360,15 +408,38 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             </div>
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium text-gray-700">Email de l&apos;administrateur *</label>
-              <input
-              id='email'
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <div className="relative">
+                <input
+                id='email'
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                  emailExists 
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                    : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 type="email"
                 value={formData.adminEmail}
                 onChange={(e) => setFormData((prev) => ({ ...prev, adminEmail: e.target.value }))}
                 placeholder="marie.martin@societe.com"
+                pattern="^[a-zA-Z0-9._%+-]+@(?!gmail\.com|yahoo\.com|yahoo\.fr)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                title="Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)"
                 required
-              />
+                />
+                {checkingEmail && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Email validation errors */}
+              {formData.adminEmail && !/^[a-zA-Z0-9._%+-]+@(?!gmail\.com|yahoo\.com|yahoo\.fr)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.adminEmail) && (
+                <p className="text-xs text-red-600">Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)</p>
+              )}
+              
+              {/* Email exists error */}
+              {emailExists && formData.adminEmail && (
+                <p className="text-xs text-red-600">Cette adresse email est déjà utilisée</p>
+              )}
             </div>
             <div className="space-y-2">
               <label htmlFor="phone" className="text-sm font-medium text-gray-700">Téléphone de l&apos;administrateur *</label>
@@ -673,7 +744,12 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 2:
         return formData.consultantCount && formData.managementFeeRate
       case 3:
-        return formData.adminFirstName && formData.adminLastName && formData.adminEmail && formData.adminPhone
+        return formData.adminFirstName && 
+               formData.adminLastName && 
+               formData.adminEmail && 
+               formData.adminPhone &&
+               !emailExists &&
+               /^[a-zA-Z0-9._%+-]+@(?!gmail\.com|yahoo\.com|yahoo\.fr)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.adminEmail)
       case 4:
        {
          const hasSelectedServices = formData.selectedPlatformServices.length > 0

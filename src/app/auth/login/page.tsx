@@ -68,14 +68,6 @@ const LoginPage = () => {
       if (role === 'ADMIN') {
         router.push('/admin/dashboard');
       } else {
-        // Check if profile is complete
-        let hasCompleteProfile = session.user?.phone_number;
-        if (role === 'COMPANY') {
-          hasCompleteProfile = hasCompleteProfile && session.user?.companyId;
-        }
-        if (!hasCompleteProfile) {
-          router.push('/profile-completion');
-        } else {
           // Redirect based on role
           switch (role) {
             case 'COMPANY':
@@ -91,7 +83,6 @@ const LoginPage = () => {
               router.push('/');
           }
         }
-      }
     } catch (err) {
       console.error('Login error:', err);
       setError('Une erreur inattendue s\'est produite. Veuillez réessayer.');

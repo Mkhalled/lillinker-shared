@@ -38,7 +38,7 @@ const Hero = () => {
                   className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-full"
                   onClick={() => setShowFreelanceModal(true)}
                 >
-                  Vous avez une mission?
+                  Demande de simulation
                 </Button>
                 <Button
                   variant="outline"
@@ -46,7 +46,7 @@ const Hero = () => {
                   className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-3 rounded-full bg-transparent"
                   onClick={() => setShowCompanyModal(true)}
                 >
-                  Gérer vos consultants?
+                  Repondre a les demandes
                 </Button>
               </div>
             </div>

@@ -27,6 +27,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [platformServices, setPlatformServices] = useState<PlatformService[]>([])
+    const [emailExists, setEmailExists] = useState(false)
+  const [checkingEmail, setCheckingEmail] = useState(false)
   const [formData, setFormData] = useState({
     // Step 1: Personal info
     firstName: "",
@@ -73,6 +75,47 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
     fetchPlatformServices()
   }, [])
+
+    // Check if email exists when email changes
+  useEffect(() => {
+    const checkEmailExists = async () => {
+      if (!formData.email || formData.email.length < 3) {
+        setEmailExists(false)
+        return
+      }
+
+      // Only check if email format is valid
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      if (!emailRegex.test(formData.email)) {
+        setEmailExists(false)
+        return
+      }
+
+      setCheckingEmail(true)
+      try {
+        const response = await fetch('/api/check-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: formData.email }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setEmailExists(data.exists)
+        }
+      } catch (error) {
+        console.error('Error checking email:', error)
+      } finally {
+        setCheckingEmail(false)
+      }
+    }
+
+    // Debounce the email check
+    const timeoutId = setTimeout(checkEmailExists, 500)
+    return () => clearTimeout(timeoutId)
+  }, [formData.email])
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
@@ -220,16 +263,39 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
               </div>
             </div>
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700">Email *</label>
-              <input
-              id='email'
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label htmlFor="email" className="text-sm font-medium text-gray-700">Email de l&apos;administrateur *</label>
+              <div className="relative">
+                <input
+                id='email'
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                  emailExists 
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                    : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                placeholder="jean.dupont@email.com"
+                placeholder="marie.martin@societe.com"
+                pattern="^[a-zA-Z0-9._%+-]+@(?!gmail\.com|yahoo\.com|yahoo\.fr)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                title="Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)"
                 required
-              />
+                />
+                {checkingEmail && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Email validation errors */}
+              {formData.email && !/^[a-zA-Z0-9._%+-]+@(?!gmail\.com|yahoo\.com|yahoo\.fr)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email) && (
+                <p className="text-xs text-red-600">Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)</p>
+              )}
+              
+              {/* Email exists error */}
+              {emailExists && formData.email && (
+                <p className="text-xs text-red-600">Cette adresse email est déjà utilisée</p>
+              )}
             </div>
             <div className="space-y-2">
               <label htmlFor="phone" className="text-sm font-medium text-gray-700">Téléphone *</label>
