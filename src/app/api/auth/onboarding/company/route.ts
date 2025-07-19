@@ -39,7 +39,8 @@ export async function POST(request: NextRequest) {
     logger.debug('Company onboarding data validated successfully', {
       ...enhancedLogContext,
       hasSelectedServices: !!(validatedData.selected_services?.length),
-      hasNewService: !!validatedData.service_label,
+      hasNewServices: !!(validatedData.new_services?.length),
+      hasLegacyNewService: !!validatedData.service_label,
       consultantCount: validatedData.consultant_count,
     });
 
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
       ...enhancedLogContext,
       companyId: result.company.id,
       servicesLinked: result.companyServices.length,
-      newServiceCreated: !!result.platformService,
+      newServicesCreated: result.platformServices.length,
     });
 
     return NextResponse.json({

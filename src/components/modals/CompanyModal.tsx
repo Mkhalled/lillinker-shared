@@ -1,10 +1,10 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, CheckCircle, Plus, Trash2, X, Building2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, Plus, Trash2, X, Building2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-
 import { Button } from '../ui/button/Button';
+import ServiceInfoTooltip from '../ServiceInfoTooltip';
 
 interface PlatformService {
   id: number
@@ -35,6 +35,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const [platformServices, setPlatformServices] = useState<PlatformService[]>([])
   const [emailExists, setEmailExists] = useState(false)
   const [checkingEmail, setCheckingEmail] = useState(false)
+  const [showPlatformServices, setShowPlatformServices] = useState(false)
   const [formData, setFormData] = useState({
     // Step 1: General info
     companyName: "",
@@ -66,6 +67,21 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
   const totalSteps = 5
 
+  // Email validation function
+  const isValidBusinessEmail = (email: string): boolean => {
+    // Basic email format check
+    const basicEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    if (!basicEmailRegex.test(email)) {
+      return false
+    }
+    
+    // Check for excluded domains (Gmail, Yahoo)
+    const domain = email.split('@')[1]?.toLowerCase()
+    const excludedDomains = ['gmail.com', 'yahoo.com', 'yahoo.fr']
+    
+    return !excludedDomains.includes(domain)
+  }
+
   // Fetch platform services when component mounts
   useEffect(() => {
     const fetchPlatformServices = async () => {
@@ -92,8 +108,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       }
 
       // Only check if email format is valid
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-      if (!emailRegex.test(formData.adminEmail)) {
+      if (!isValidBusinessEmail(formData.adminEmail)) {
         setEmailExists(false)
         return
       }
@@ -259,15 +274,18 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           consultant_count: parseInt(formData.consultantCount),
           management_fees: parseFloat(formData.managementFeeRate),
           selected_services: formData.selectedPlatformServices.map(id => parseInt(id)),
-          new_services: formData.newServices.filter(service => service.label.trim() !== '').map(service => ({
-            service_label: service.label,
-            service_description: service.description,
-            data_type: service.dataType,
-            requires_data: service.requiresData,
-            data_label: service.dataLabel,
-            data_description: service.dataDescription,
-            choices: service.choices.filter(choice => choice.trim() !== ''),
-          })),
+          // Send all new services as array
+          new_services: formData.newServices
+            .filter(service => service.label.trim() !== '')
+            .map(service => ({
+              service_label: service.label,
+              service_description: service.description,
+              data_type: service.dataType,
+              requires_data: service.requiresData,
+              data_label: service.dataLabel,
+              data_description: service.dataDescription,
+              choices: service.choices.filter(choice => choice.trim() !== ''),
+            }))
         }
 
         const onboardingResponse = await fetch('/api/auth/onboarding/company', {
@@ -420,7 +438,6 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 value={formData.adminEmail}
                 onChange={(e) => setFormData((prev) => ({ ...prev, adminEmail: e.target.value }))}
                 placeholder="marie.martin@societe.com"
-                pattern="^[a-zA-Z0-9._%+-]+@(?!gmail\.com|yahoo\.com|yahoo\.fr)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
                 title="Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)"
                 required
                 />
@@ -432,7 +449,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               </div>
               
               {/* Email validation errors */}
-              {formData.adminEmail && !/^[a-zA-Z0-9._%+-]+@(?!gmail\.com|yahoo\.com|yahoo\.fr)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.adminEmail) && (
+              {formData.adminEmail && !isValidBusinessEmail(formData.adminEmail) && (
                 <p className="text-xs text-red-600">Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)</p>
               )}
               
@@ -458,67 +475,77 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 4:
         return (
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium mb-4">Sélection des services</h3>
-              <p className="text-gray-600 mb-6">
-                Choisissez les services existants sur la plateforme ou créez un nouveau service personnalisé.
-              </p>
-            </div>
 
             {/* Existing Platform Services */}
             <div className="space-y-4">
-              <h4 className="font-medium text-gray-900">Services disponibles sur la plateforme</h4>
-              {platformServices.length === 0 ? (
-                <div className="text-center py-8 text-gray-500 border border-gray-200 rounded-lg">
-                  <Building2 className="h-12 w-12 mx-auto mb-2 text-gray-400" />
-                  <p>Aucun service disponible pour le moment</p>
+              <div 
+                className="flex items-center justify-between cursor-pointer p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                onClick={() => setShowPlatformServices(!showPlatformServices)}
+              >
+                <h4 className="font-medium text-gray-900">Services disponibles sur la plateforme</h4>
+                <div className="flex items-center gap-2">
+                  {platformServices.length > 0 && (
+                    <span className="text-sm text-gray-500">
+                      {platformServices.length} service{platformServices.length > 1 ? 's' : ''}
+                    </span>
+                  )}
+                  {showPlatformServices ? (
+                    <ChevronUp className="h-4 w-4 text-gray-500" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-gray-500" />
+                  )}
                 </div>
-              ) : (
-                <div className="max-h-60 overflow-y-auto space-y-2 border border-gray-200 rounded-lg p-4">
-                  {platformServices.map((service) => (
-                    <div
-                      key={service.id}
-                      className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                        formData.selectedPlatformServices.includes(service.id.toString())
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => toggleServiceSelection(service.id)}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h5 className="font-medium text-gray-900">{service.label}</h5>
-                          {service.description && (
-                            <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                          )}
-                          <div className="flex items-center gap-4 mt-2">
-                            <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">
-                              {service.data_type}
-                            </span>
-                            {service.requires_data && (
-                              <span className="text-xs px-2 py-1 bg-orange-100 text-orange-600 rounded">
-                                Données requises
-                              </span>
-                            )}
-                          </div>
-                          {service.user.ownedCompany && (
-                            <p className="text-xs text-gray-500 mt-1">
-                              Par {service.user.ownedCompany.name}
-                            </p>
-                          )}
-                        </div>
-                        <div className="ml-3">
-                          <input
-                            type="checkbox"
-                            checked={formData.selectedPlatformServices.includes(service.id.toString())}
-                            onChange={() => toggleServiceSelection(service.id)}
-                            className="h-4 w-4 text-blue-600 rounded"
-                          />
-                        </div>
-                      </div>
+              </div>
+              
+              {showPlatformServices && (
+                <>
+                  {platformServices.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500 border border-gray-200 rounded-lg">
+                      <Building2 className="h-12 w-12 mx-auto mb-2 text-gray-400" />
+                      <p>Aucun service disponible pour le moment</p>
                     </div>
-                  ))}
-                </div>
+                  ) : (
+                    <div className="max-h-60 overflow-y-auto space-y-2 border border-gray-200 rounded-lg p-4">
+                      {platformServices.map((service) => (
+                        <div
+                          key={service.id}
+                          className={`p-3 border rounded-lg transition-colors ${
+                            formData.selectedPlatformServices.includes(service.id.toString())
+                              ? 'border-blue-500 bg-blue-50'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div 
+                              className="flex-1 cursor-pointer"
+                              onClick={() => toggleServiceSelection(service.id)}
+                            >
+                              <div className="flex items-center gap-2">
+                                <h5 className="font-medium text-gray-900">{service.label}</h5>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                  <ServiceInfoTooltip service={service} />
+                                </div>
+                              </div>
+                              {service.user.ownedCompany && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Par {service.user.ownedCompany.name}
+                                </p>
+                              )}
+                            </div>
+                            <div className="ml-3">
+                              <input
+                                type="checkbox"
+                                checked={formData.selectedPlatformServices.includes(service.id.toString())}
+                                onChange={() => toggleServiceSelection(service.id)}
+                                className="h-4 w-4 text-blue-600 rounded"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
@@ -537,11 +564,6 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 </Button>
               </div>
 
-              {formData.newServices.length === 0 ? (
-                <div className="text-center py-6 text-gray-500 border border-gray-200 rounded-lg bg-gray-50">
-                  <p className="text-sm">Aucun nouveau service créé. Cliquez sur &apos;Nouveau service&apos; pour en ajouter un.</p>
-                </div>
-              ) : (
                 <div className="space-y-4">
                   {formData.newServices.map((service, index) => (
                     <div key={service.id} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
@@ -671,23 +693,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                     </div>
                   ))}
                 </div>
-              )}
             </div>
-
-            {/* Selection Summary */}
-            {(formData.selectedPlatformServices.length > 0 || formData.newServices.length > 0) && (
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h5 className="font-medium text-blue-900 mb-2">Résumé de votre sélection</h5>
-                <div className="space-y-1 text-sm text-blue-800">
-                  {formData.selectedPlatformServices.length > 0 && (
-                    <p>• {formData.selectedPlatformServices.length} service(s) sélectionné(s) sur la plateforme</p>
-                  )}
-                  {formData.newServices.length > 0 && (
-                    <p>• {formData.newServices.length} nouveau(x) service(s) à créer</p>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         )
 
@@ -749,7 +755,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                formData.adminEmail && 
                formData.adminPhone &&
                !emailExists &&
-               /^[a-zA-Z0-9._%+-]+@(?!gmail\.com|yahoo\.com|yahoo\.fr)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.adminEmail)
+               isValidBusinessEmail(formData.adminEmail)
       case 4:
        {
          const hasSelectedServices = formData.selectedPlatformServices.length > 0

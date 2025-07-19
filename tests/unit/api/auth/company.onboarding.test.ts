@@ -44,13 +44,45 @@ describe('AuthService - Company Onboarding', () => {
       siret: '98765432109876',
       consultant_count: 25,
       management_fees: 20.0,
-      service_label: 'Custom Analytics Service',
-      service_description: 'Advanced analytics for business intelligence',
-      data_type: 'SELECT',
-      requires_data: true,
-      data_label: 'Analytics Type',
-      data_description: 'Select the type of analytics required',
-      choices: ['Basic', 'Advanced', 'Enterprise'],
+      new_services: [
+        {
+          service_label: 'Custom Analytics Service',
+          service_description: 'Advanced analytics for business intelligence',
+          data_type: 'SELECT',
+          requires_data: true,
+          data_label: 'Analytics Type',
+          data_description: 'Select the type of analytics required',
+          choices: ['Basic', 'Advanced', 'Enterprise'],
+        }
+      ]
+    };
+
+    const mockCompanyDataWithMultipleNewServices: CompanyOnboarding = {
+      company_name: 'Multi-Service Corp',
+      company_description: 'A company with multiple services',
+      siret: '11223344556677',
+      consultant_count: 15,
+      management_fees: 18.0,
+      new_services: [
+        {
+          service_label: 'Analytics Service',
+          service_description: 'Data analytics',
+          data_type: 'SELECT',
+          requires_data: true,
+          data_label: 'Analytics Type',
+          data_description: 'Select analytics type',
+          choices: ['Basic', 'Advanced'],
+        },
+        {
+          service_label: 'Consulting Service',
+          service_description: 'Business consulting',
+          data_type: 'TEXT',
+          requires_data: true,
+          data_label: 'Expertise Area',
+          data_description: 'Describe your expertise',
+          choices: [],
+        }
+      ]
     };
 
     const mockCompany = {
@@ -103,6 +135,20 @@ describe('AuthService - Company Onboarding', () => {
       created_at: new Date(),
     };
 
+    const mockPlatformService2 = {
+      id: 5,
+      user_id: mockUserId,
+      label: 'Consulting Service',
+      description: 'Business consulting',
+      data_type: 'TEXT',
+      requires_data: true,
+      data_label: 'Expertise Area',
+      data_description: 'Describe your expertise',
+      choices: [],
+      status: 'PENDING',
+      created_at: new Date(),
+    };
+
     const mockNewCompanyService = {
       id: 4,
       company_id: 1,
@@ -135,7 +181,7 @@ describe('AuthService - Company Onboarding', () => {
 
       expect(result).toEqual({
         company: mockCompany,
-        platformService: null,
+        platformServices: [],
         companyServices: [
           mockCompanyServices[0],
           mockCompanyServices[1],
@@ -174,7 +220,7 @@ describe('AuthService - Company Onboarding', () => {
         expect.objectContaining({
           companyId: 1,
           totalServicesLinked: 3,
-          newServiceCreated: false,
+          newServicesCreated: 0,
         })
       );
     });
@@ -203,16 +249,15 @@ describe('AuthService - Company Onboarding', () => {
 
       expect(result).toEqual({
         company: mockCompany,
-        platformService: mockPlatformService,
+        platformServices: [mockPlatformService],
         companyServices: [mockNewCompanyService],
       });
 
       expect(mockLogger.debug).toHaveBeenCalledWith(
-        'Creating new platform service',
+        'Creating new platform services',
         expect.objectContaining({
-          serviceLabel: 'Custom Analytics Service',
-          dataType: 'SELECT',
-          requiresData: true,
+          newServicesCount: 1,
+          serviceLabels: ['Custom Analytics Service'],
         })
       );
 
@@ -220,7 +265,66 @@ describe('AuthService - Company Onboarding', () => {
         'New platform service created and linked',
         expect.objectContaining({
           platformServiceId: 4,
+          serviceLabel: 'Custom Analytics Service',
           status: 'PENDING',
+        })
+      );
+    });
+
+    it('should successfully complete company onboarding with multiple new services', async () => {
+      const mockNewCompanyService2 = {
+        id: 5,
+        company_id: 1,
+        service_id: 5,
+        is_active: false,
+        created_at: new Date(),
+      };
+
+      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
+        const mockTx = {
+          company: {
+            create: jest.fn().mockResolvedValue(mockCompany),
+          },
+          platformService: {
+            create: jest.fn()
+              .mockResolvedValueOnce(mockPlatformService)
+              .mockResolvedValueOnce(mockPlatformService2),
+          },
+          companyService: {
+            create: jest.fn()
+              .mockResolvedValueOnce(mockNewCompanyService)
+              .mockResolvedValueOnce(mockNewCompanyService2),
+          },
+        };
+        return await callback(mockTx);
+      });
+
+      mockPrisma.$transaction = mockTransaction;
+
+      const result = await AuthService.completeCompanyOnboarding(mockUserId, mockCompanyDataWithMultipleNewServices);
+
+      expect(mockTransaction).toHaveBeenCalledWith(expect.any(Function));
+
+      expect(result).toEqual({
+        company: mockCompany,
+        platformServices: [mockPlatformService, mockPlatformService2],
+        companyServices: [mockNewCompanyService, mockNewCompanyService2],
+      });
+
+      expect(mockLogger.debug).toHaveBeenCalledWith(
+        'Creating new platform services',
+        expect.objectContaining({
+          newServicesCount: 2,
+          serviceLabels: ['Analytics Service', 'Consulting Service'],
+        })
+      );
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Company onboarding completed successfully',
+        expect.objectContaining({
+          companyId: 1,
+          totalServicesLinked: 2,
+          newServicesCreated: 2,
         })
       );
     });
@@ -228,10 +332,17 @@ describe('AuthService - Company Onboarding', () => {
     it('should handle company onboarding with both selected services and new service', async () => {
       const mixedData: CompanyOnboarding = {
         ...mockCompanyData,
-        service_label: 'Additional Service',
-        service_description: 'An additional service',
-        data_type: 'TEXT',
-        requires_data: false,
+        new_services: [
+          {
+            service_label: 'Additional Service',
+            service_description: 'An additional service',
+            data_type: 'TEXT',
+            requires_data: false,
+            data_label: '',
+            data_description: '',
+            choices: [],
+          }
+        ]
       };
 
       const mockTransaction = jest.fn().mockImplementation(async (callback) => {
@@ -258,7 +369,7 @@ describe('AuthService - Company Onboarding', () => {
       const result = await AuthService.completeCompanyOnboarding(mockUserId, mixedData);
 
       expect(result.companyServices).toHaveLength(4);
-      expect(result.platformService).toEqual(mockPlatformService);
+      expect(result.platformServices).toEqual([mockPlatformService]);
 
       expect(mockLogger.debug).toHaveBeenCalledWith(
         'Processing selected platform services',
@@ -269,9 +380,10 @@ describe('AuthService - Company Onboarding', () => {
       );
 
       expect(mockLogger.debug).toHaveBeenCalledWith(
-        'Creating new platform service',
+        'Creating new platform services',
         expect.objectContaining({
-          serviceLabel: 'Additional Service',
+          newServicesCount: 1,
+          serviceLabels: ['Additional Service'],
         })
       );
     });

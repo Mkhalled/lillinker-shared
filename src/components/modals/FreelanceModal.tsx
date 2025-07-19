@@ -58,6 +58,21 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
   const totalSteps = 5
 
+  // Email validation function
+  const isValidBusinessEmail = (email: string): boolean => {
+    // Basic email format check
+    const basicEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    if (!basicEmailRegex.test(email)) {
+      return false
+    }
+    
+    // Check for excluded domains (Gmail, Yahoo)
+    const domain = email.split('@')[1]?.toLowerCase()
+    const excludedDomains = ['gmail.com', 'yahoo.com', 'yahoo.fr']
+    
+    return !excludedDomains.includes(domain)
+  }
+
   // Fetch platform services when component mounts
   useEffect(() => {
     const fetchPlatformServices = async () => {
@@ -85,8 +100,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       }
 
       // Only check if email format is valid
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-      if (!emailRegex.test(formData.email)) {
+      if (!isValidBusinessEmail(formData.email)) {
         setEmailExists(false)
         return
       }
@@ -276,8 +290,6 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                 value={formData.email}
                 onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                 placeholder="marie.martin@societe.com"
-                pattern="^[a-zA-Z0-9._%+-]+@(?!gmail\.com|yahoo\.com|yahoo\.fr)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                title="Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)"
                 required
                 />
                 {checkingEmail && (
@@ -288,7 +300,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
               </div>
               
               {/* Email validation errors */}
-              {formData.email && !/^[a-zA-Z0-9._%+-]+@(?!gmail\.com|yahoo\.com|yahoo\.fr)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email) && (
+              {formData.email && !isValidBusinessEmail(formData.email) && (
                 <p className="text-xs text-red-600">Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)</p>
               )}
               
@@ -677,7 +689,13 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const isStepValid = () => {
     switch (currentStep) {
       case 1:
-        return formData.firstName && formData.lastName && formData.email && formData.phone && formData.profession
+        return formData.firstName && 
+               formData.lastName && 
+               formData.email && 
+               formData.phone && 
+               formData.profession &&
+               !emailExists &&
+               isValidBusinessEmail(formData.email)
       case 2:
         return (
           formData.hasMission &&

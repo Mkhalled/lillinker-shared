@@ -110,7 +110,7 @@ export class AuthService {
 
         const results = {
           company,
-          platformService: null as any,
+          platformServices: [] as any[],
           companyServices: [] as any[],
         };
 
@@ -142,53 +142,76 @@ export class AuthService {
           });
         }
 
-        // Handle new service creation if provided
+        // Handle new services creation (multiple services support)
+        const newServicesToCreate = [];
+        
+        // Check for new services array (preferred method)
+        if (data.new_services && data.new_services.length > 0) {
+          newServicesToCreate.push(...data.new_services);
+        }
+        
+        // Check for legacy single service (backward compatibility)
         if (data.service_label && data.service_label.trim() !== '') {
-          logger.debug('Creating new platform service', {
+          newServicesToCreate.push({
+            service_label: data.service_label,
+            service_description: data.service_description,
+            data_type: data.data_type!,
+            requires_data: data.requires_data || false,
+            data_label: data.data_label,
+            data_description: data.data_description,
+            choices: data.choices,
+          });
+        }
+
+        // Create all new services
+        if (newServicesToCreate.length > 0) {
+          logger.debug('Creating new platform services', {
             ...logContext,
-            serviceLabel: data.service_label,
-            dataType: data.data_type,
-            requiresData: data.requires_data,
+            newServicesCount: newServicesToCreate.length,
+            serviceLabels: newServicesToCreate.map(s => s.service_label),
           });
 
-          const platformService = await tx.platformService.create({
-            data: {
-              user_id: userId,
-              label: data.service_label,
-              description: data.service_description || '',
-              data_type: data.data_type!,
-              requires_data: data.requires_data || false,
-              data_label: data.data_label || '',
-              data_description: data.data_description || '',
-              choices: data.choices && data.choices.length > 0 ? data.choices : undefined,
-              status: 'PENDING',
-            },
-          });
+          for (const newService of newServicesToCreate) {
+            const platformService = await tx.platformService.create({
+              data: {
+                user_id: userId,
+                label: newService.service_label,
+                description: newService.service_description || '',
+                data_type: newService.data_type,
+                requires_data: newService.requires_data,
+                data_label: newService.data_label || '',
+                data_description: newService.data_description || '',
+                choices: newService.choices && newService.choices.length > 0 ? newService.choices : undefined,
+                status: 'PENDING',
+              },
+            });
 
-          // Create company service linking for new service
-          const companyService = await tx.companyService.create({
-            data: {
-              company_id: company.id,
-              service_id: platformService.id,
-              is_active: false, // Will be activated when platform service is approved
-            },
-          });
+            // Create company service linking for new service
+            const companyService = await tx.companyService.create({
+              data: {
+                company_id: company.id,
+                service_id: platformService.id,
+                is_active: false, // Will be activated when platform service is approved
+              },
+            });
 
-          results.platformService = platformService;
-          results.companyServices.push(companyService);
+            results.platformServices.push(platformService);
+            results.companyServices.push(companyService);
 
-          logger.info('New platform service created and linked', {
-            ...logContext,
-            platformServiceId: platformService.id,
-            status: platformService.status,
-          });
+            logger.info('New platform service created and linked', {
+              ...logContext,
+              platformServiceId: platformService.id,
+              serviceLabel: newService.service_label,
+              status: platformService.status,
+            });
+          }
         }
 
         logger.info('Company onboarding completed successfully', {
           ...logContext,
           companyId: company.id,
           totalServicesLinked: results.companyServices.length,
-          newServiceCreated: !!results.platformService,
+          newServicesCreated: results.platformServices.length,
         });
 
         return results;

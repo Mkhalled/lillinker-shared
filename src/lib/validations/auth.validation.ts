@@ -21,7 +21,18 @@ export const CompanyOnboardingSchema = z.object({
   // Selected platform services
   selected_services: z.array(z.number()).optional(),
   
-  // New service data (optional - only if creating a new service)
+  // New services data (array of new services)
+  new_services: z.array(z.object({
+    service_label: z.string().min(1, 'Service label is required'),
+    service_description: z.string().optional(),
+    data_type: z.enum(['TEXT', 'NUMBER', 'SELECT', 'RADIO']),
+    requires_data: z.boolean(),
+    data_label: z.string().optional(),
+    data_description: z.string().optional(),
+    choices: z.array(z.string()).optional(),
+  })).optional(),
+  
+  // Legacy single service fields (for backward compatibility)
   service_label: z.string().optional(),
   service_description: z.string().optional(),
   data_type: z.enum(['TEXT', 'NUMBER', 'SELECT', 'RADIO']).optional(),
@@ -30,10 +41,11 @@ export const CompanyOnboardingSchema = z.object({
   data_description: z.string().optional(),
   choices: z.array(z.string()).optional(),
 }).refine((data) => {
-  // Either must have selected services OR provide new service data
+  // Either must have selected services OR provide new service data (array or legacy single)
   const hasSelectedServices = data.selected_services && data.selected_services.length > 0;
-  const hasNewService = data.service_label && data.service_label.trim() !== '';
-  return hasSelectedServices || hasNewService;
+  const hasNewServices = data.new_services && data.new_services.length > 0;
+  const hasLegacyNewService = data.service_label && data.service_label.trim() !== '';
+  return hasSelectedServices || hasNewServices || hasLegacyNewService;
 }, {
   message: "Must select at least one service or create a new service",
   path: ["selected_services"],
