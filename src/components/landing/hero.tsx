@@ -56,7 +56,9 @@ const Hero = () => {
                 <Image
                   src="/images/landing/1.png"
                   alt="Team collaboration illustration"
-                  className="w-full h-auto rounded-lg"
+                  width={500}
+                  height={400}
+                  className="w-full h-auto"
                 />
                 <div className="absolute -top-4 -right-4 bg-blue-600 text-white p-3 rounded-full">
                   <div className="w-6 h-6 bg-white/20 rounded-full"></div>
