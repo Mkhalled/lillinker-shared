@@ -103,6 +103,7 @@ model PlatformService {
   user             User            @relation(fields: [user_id], references: [id])
   companyServices  CompanyService[]
   companyResponses CompanyResponse[]
+  freelanceRequests FreelanceRequestOption[]
 
   @@map("platform_services")
 }
@@ -128,7 +129,6 @@ model CompanyService {
   is_active       Boolean
   company         Company                @relation(fields: [company_id], references: [id])
   service         PlatformService        @relation(fields: [service_id], references: [id])
-  requestOptions  FreelanceRequestOption[]
 
   @@map("company_services")
 }
@@ -171,7 +171,7 @@ model FreelanceRequestOption {
   is_required      Boolean         @default(false)
   response_data    Json?
   request             FreelanceRequest @relation(fields: [freelance_request_id], references: [id])
-  serviceOption       CompanyService   @relation(fields: [service_option_id], references: [id])
+  platformService     PlatformService @relation(fields: [service_option_id], references: [id])
 
   @@map("freelance_request_options")
 }

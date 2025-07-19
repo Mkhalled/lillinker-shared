@@ -277,39 +277,62 @@ export class AuthService {
             selectedServicesCount: data.selected_services.length,
           });
 
-          // For each selected service, try to find company services or create a pending option
+          // Create request options directly for platform services
           const requestOptions = await Promise.all(
             data.selected_services.map(async (selectedService) => {
-              // Find any company service that offers this platform service
-              const companyService = await tx.companyService.findFirst({
-                where: {
-                  service_id: selectedService.serviceId,
-                  is_active: true,
-                },
+              // Verify that the platform service exists
+              const platformService = await tx.platformService.findUnique({
+                where: { id: selectedService.serviceId },
               });
 
-              if (companyService) {
-                // Create option with existing company service
+              if (platformService) {
+                // Convert responseData string to appropriate JSON structure based on data_type
+                let responseDataJson;
+                if (selectedService.responseData && selectedService.responseData.trim() !== '') {
+                  switch (platformService.data_type) {
+                    case 'TEXT':
+                      responseDataJson = { text: selectedService.responseData };
+                      break;
+                    case 'NUMBER':
+                      responseDataJson = { number: selectedService.responseData };
+                      break;
+                    case 'SELECT':
+                      // For SELECT type, responseData comes as comma-separated values
+                      const selections = selectedService.responseData.split(',').map(s => s.trim()).filter(s => s !== '');
+                      responseDataJson = { selected: selections };
+                      break;
+                    case 'RADIO':
+                      responseDataJson = { selected: selectedService.responseData };
+                      break;
+                    default:
+                      responseDataJson = { value: selectedService.responseData };
+                  }
+                } else {
+                  responseDataJson = undefined;
+                }
+
+                // Create freelance request option with direct reference to platform service
                 const option = await tx.freelanceRequestOption.create({
                   data: {
                     freelance_request_id: freelanceRequest.id,
-                    service_option_id: companyService.id,
+                    service_option_id: selectedService.serviceId,
                     is_required: selectedService.isRequired,
-                    response_data: selectedService.responseData ? { data: selectedService.responseData } : undefined,
+                    response_data: responseDataJson,
                   },
                 });
 
                 logger.debug('Freelance request option created', {
                   ...logContext,
                   serviceId: selectedService.serviceId,
-                  companyServiceId: companyService.id,
+                  platformServiceLabel: platformService.label,
+                  dataType: platformService.data_type,
                   isRequired: selectedService.isRequired,
+                  responseData: responseDataJson,
                 });
 
                 return option;
               } else {
-                // For now, we'll skip services without company providers
-                logger.warn('No company service found for requested platform service', {
+                logger.warn('Platform service not found', {
                   ...logContext,
                   serviceId: selectedService.serviceId,
                 });

@@ -285,7 +285,7 @@ async function main(): Promise<void> {
     });
 
     // Create company services
-    const companyService1 = await prisma.companyService.create({
+    await prisma.companyService.create({
       data: {
         company_id: mainCompany.id,
         service_id: platformService1.id,
@@ -293,7 +293,7 @@ async function main(): Promise<void> {
       },
     });
 
-    const companyService2 = await prisma.companyService.create({
+    await prisma.companyService.create({
       data: {
         company_id: mainCompany.id,
         service_id: platformService2.id,
@@ -344,28 +344,49 @@ async function main(): Promise<void> {
       },
     });
 
-    // Create freelance request options
+    // Create freelance request options (now referencing platform services directly)
     await prisma.freelanceRequestOption.create({
       data: {
         freelance_request_id: freelanceRequest1.id,
-        service_option_id: companyService1.id,
+        service_option_id: platformService1.id,
         is_required: false,
+        response_data: { text: 'Nous recherchons un taux compétitif pour notre mission de développement' },
       },
     });
 
     await prisma.freelanceRequestOption.create({
       data: {
         freelance_request_id: freelanceRequest1.id,
-        service_option_id: companyService2.id,
+        service_option_id: platformService2.id,
         is_required: true,
+        response_data: { selected: ['Assurance RC Pro', 'Gestion administrative', 'Formation continue'] },
+      },
+    });
+
+    await prisma.freelanceRequestOption.create({
+      data: {
+        freelance_request_id: freelanceRequest1.id,
+        service_option_id: platformService3.id,
+        is_required: true,
+        response_data: { selected: '30 jours' },
       },
     });
 
     await prisma.freelanceRequestOption.create({
       data: {
         freelance_request_id: freelanceRequest2.id,
-        service_option_id: companyService1.id,
+        service_option_id: platformService1.id,
         is_required: true,
+        response_data: { text: 'Recherche du meilleur taux possible pour mission de consulting' },
+      },
+    });
+
+    await prisma.freelanceRequestOption.create({
+      data: {
+        freelance_request_id: freelanceRequest2.id,
+        service_option_id: platformService5.id,
+        is_required: true,
+        response_data: { selected: 'CDI' },
       },
     });
 
