@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { useModalData } from '../../hooks/useModalData';
 import { BasicEmailInput } from '../form/BasicEmailInput';
 import ServiceInfoTooltip from '../ServiceInfoTooltip';
-import { CollapsibleSection } from '../ui/CollapsibleSection';
 
 import { ModalWrapper } from './ModalWrapper';
 import { SuccessStep } from './SuccessStep';
@@ -27,6 +26,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
     const basicEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return basicEmailRegex.test(email);
   }
+  
+  const [summaryPage, setSummaryPage] = useState(0)
   
   const [formData, setFormData] = useState({
     // Step 1: Personal info
@@ -300,8 +301,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
           <div className="space-y-4">
             <div className="space-y-3">
               <label htmlFor="mission" className="text-sm font-medium text-gray-700">Avez-vous une mission actuellement ? *</label>
-              <div id='mission' className="space-y-3">
-                <label className="flex items-center space-x-3 cursor-pointer">
+              <div id='mission' className="flex flex-wrap gap-4">
+                <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="radio"
                     name="hasMission"
@@ -312,7 +313,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                   />
                   <span className="text-gray-700">Non, je suis en recherche</span>
                 </label>
-                <label className="flex items-center space-x-3 cursor-pointer">
+                <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="radio"
                     name="hasMission"
@@ -323,7 +324,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                   />
                   <span className="text-gray-700">En cours de recherche</span>
                 </label>
-                <label className="flex items-center space-x-3 cursor-pointer">
+                <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="radio"
                     name="hasMission"
@@ -338,11 +339,12 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             </div>
 
             {formData.hasMission === "yes" && (
-              <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+                <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
                 <p className="text-sm text-gray-600 mb-3">
                   <em>Les informations client sont optionnelles mais peuvent aider à mieux vous accompagner.</em>
                 </p>
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
                   <label htmlFor="client" className="text-sm font-medium text-gray-700">Nom du client</label>
                   <input
                   id='client'
@@ -351,9 +353,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                     onChange={(e) => setFormData((prev) => ({ ...prev, clientName: e.target.value }))}
                     placeholder="Nom de l'entreprise (optionnel)"
                   />
-                </div>
-                <div className="space-y-2">
-                  <label  htmlFor="address" className="text-sm font-medium text-gray-700">Adresse du client</label>
+                  </div>
+                  <div className="space-y-2">
+                  <label htmlFor="address" className="text-sm font-medium text-gray-700">Adresse du client</label>
                   <input
                   id='address'
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -361,25 +363,25 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                     onChange={(e) => setFormData((prev) => ({ ...prev, clientAddress: e.target.value }))}
                     placeholder="Adresse complète (optionnel)"
                   />
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="field" className="text-sm font-medium text-gray-700">Secteur d&apos;activité</label>
                   <select
-                  id='field'
+                    id='field'
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={formData.clientSector}
                     onChange={(e) => setFormData((prev) => ({ ...prev, clientSector: e.target.value }))}
                   >
                     <option value="">Sélectionnez le secteur (optionnel)</option>
-                    <option value="tech">Technologie</option>
-                    <option value="finance">Finance</option>
-                    <option value="retail">Commerce</option>
-                    <option value="healthcare">Santé</option>
-                    <option value="education">Éducation</option>
-                    <option value="other">Autre</option>
+                    {metiers.map((metier) => (
+                      <option key={metier.id} value={metier.name}>
+                        {metier.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
-              </div>
+                </div>
             )}
 
             {/* TJM and Days - always shown */}
@@ -452,7 +454,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="font-medium mb-4">Sélectionnez les services qui vous intéressent :</h3>
+              <h3 className="font-medium mb-4">Sélectionnez les services qui vous intéressent</h3>
               
               {error && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm mb-4">
@@ -460,145 +462,136 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                 </div>
               )}
 
-              {/* Platform Services using CollapsibleSection */}
-              <CollapsibleSection
-                title="Services disponibles sur la plateforme"
-                items={platformServices}
-                selectedItems={formData.selectedServices.map(s => s.serviceId.toString())}
-                onToggleItem={handleServiceToggle}
-                getItemId={(service) => service.id}
-                renderItem={(service, isSelected) => {
+              {/* Services List - Scrollable */}
+              <div className="space-y-4 max-h-80 overflow-y-auto">
+                {platformServices.map((service) => {
+                  const isSelected = formData.selectedServices.some(s => s.serviceId === service.id)
                   const selectedService = formData.selectedServices.find(s => s.serviceId === service.id)
                   const choices = parseChoices(service.choices)
                   
                   return (
-                    <div className="space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start space-x-3 flex-1">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => handleServiceToggle(service.id)}
-                            className="mt-1"
-                          />
-                          <div className="flex-1">
-                            <label className="font-medium cursor-pointer block">
-                              {service.label}
-                            </label>
-                            {service.description && (
-                              <p className="text-sm text-gray-500 mt-1">{service.description}</p>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {/* Service Info Tooltip */}
-                        <div onClick={(e) => e.stopPropagation()}>
-                          <ServiceInfoTooltip service={service} />
-                        </div>
-                      </div>
-
-                      {/* Required checkbox and data input for selected services */}
-                      {isSelected && selectedService && (
-                        <div className="mt-4 pl-4 border-l-2 border-blue-200" onClick={(e) => e.stopPropagation()}>
-                          <label className="flex items-center space-x-2 mb-3">
+                    <div key={service.id} className="border border-gray-200 rounded-lg p-4">
+                      <div className="space-y-3">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-3 flex-1">
                             <input
                               type="checkbox"
-                              checked={selectedService?.isRequired || false}
-                              onChange={(e) => handleServiceRequiredChange(service.id, e.target.checked)}
-                              className="text-blue-600"
+                              checked={isSelected}
+                              onChange={() => handleServiceToggle(service.id)}
+                              className="mt-1"
                             />
-                            <span className="text-sm text-gray-700">Ce service est <strong>obligatoire</strong> pour moi</span>
-                          </label>
+                            <div className="flex-1">
+                              <label className="font-medium cursor-pointer block">
+                                {service.label}
+                              </label>
+                            </div>
+                          </div>
+                          
+                          {/* Service Info Tooltip */}
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <ServiceInfoTooltip service={service} />
+                          </div>
+                        </div>
 
-                          {/* Data input for services that require data */}
-                          {service.requires_data && (
-                            <div className="space-y-3">
-                              <div>
-                                <label className="text-sm font-medium text-gray-700 block">
-                                  {service.data_label || 'Données requises'}
-                                </label>
-                                {service.data_description && (
-                                  <p className="text-xs text-gray-500 mt-1">{service.data_description}</p>
+                        {/* Required checkbox and data input for selected services */}
+                        {isSelected && selectedService && (
+                          <div className="mt-4 pl-4 border-l-2 border-blue-200" onClick={(e) => e.stopPropagation()}>
+                            <label className="flex items-center space-x-2 mb-3">
+                              <input
+                                type="checkbox"
+                                checked={selectedService?.isRequired || false}
+                                onChange={(e) => handleServiceRequiredChange(service.id, e.target.checked)}
+                                className="text-blue-600"
+                              />
+                              <span className="text-sm text-gray-700">Ce service est <strong>obligatoire</strong> pour moi</span>
+                            </label>
+
+                            {/* Data input for services that require data */}
+                            {service.requires_data && (
+                              <div className="space-y-3">
+                                <div>
+                                  <label className="text-sm font-medium text-gray-700 block">
+                                    {service.data_label || 'Données requises'}
+                                  </label>
+                                  {service.data_description && (
+                                    <p className="text-xs text-gray-500 mt-1">{service.data_description}</p>
+                                  )}
+                                </div>
+                                
+                                {/* TEXT input */}
+                                {service.data_type === 'TEXT' && (
+                                  <textarea
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    value={selectedService?.responseData || ""}
+                                    onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
+                                    placeholder="Saisissez votre réponse..."
+                                    rows={3}
+                                  />
                                 )}
-                              </div>
-                              
-                              {/* TEXT input */}
-                              {service.data_type === 'TEXT' && (
-                                <textarea
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                  value={selectedService?.responseData || ""}
-                                  onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
-                                  placeholder="Saisissez votre réponse..."
-                                  rows={3}
-                                />
-                              )}
-                              
-                              {/* NUMBER input */}
-                              {service.data_type === 'NUMBER' && (
-                                <input
-                                  type="number"
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                  value={selectedService?.responseData || ""}
-                                  onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
-                                  placeholder="Entrez un nombre..."
-                                />
-                              )}
-                              
-                              {/* SELECT (multiple choice) */}
-                              {service.data_type === 'SELECT' && choices.length > 0 && (
-                                <div className="space-y-2">
-                                  <p className="text-xs text-gray-600">Sélectionnez une ou plusieurs options :</p>
-                                  {choices.map((choice: string, index: number) => {
-                                    const currentSelections = selectedService?.responseData ? 
-                                      selectedService.responseData.split(',').filter(s => s.trim() !== '') : []
-                                    const isChecked = currentSelections.includes(choice)
-                                    
-                                    return (
+                                
+                                {/* NUMBER input */}
+                                {service.data_type === 'NUMBER' && (
+                                  <input
+                                    type="number"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    value={selectedService?.responseData || ""}
+                                    onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
+                                    placeholder="Entrez un nombre..."
+                                  />
+                                )}
+                                
+                                {/* SELECT (multiple choice) */}
+                                {service.data_type === 'SELECT' && choices.length > 0 && (
+                                  <div className="space-y-2">
+                                    <p className="text-xs text-gray-600">Sélectionnez une ou plusieurs options :</p>
+                                    {choices.map((choice: string, index: number) => {
+                                      const currentSelections = selectedService?.responseData ? 
+                                        selectedService.responseData.split(',').filter(s => s.trim() !== '') : []
+                                      const isChecked = currentSelections.includes(choice)
+                                      
+                                      return (
+                                        <label key={index} className="flex items-center space-x-2">
+                                          <input
+                                            type="checkbox"
+                                            checked={isChecked}
+                                            onChange={(e) => handleMultipleSelectChange(service.id, choice, e.target.checked)}
+                                            className="text-blue-600"
+                                          />
+                                          <span className="text-sm text-gray-700">{choice}</span>
+                                        </label>
+                                      )
+                                    })}
+                                  </div>
+                                )}
+                                
+                                {/* RADIO (single choice) */}
+                                {service.data_type === 'RADIO' && choices.length > 0 && (
+                                  <div className="space-y-2">
+                                    <p className="text-xs text-gray-600">Sélectionnez une option :</p>
+                                    {choices.map((choice: string, index: number) => (
                                       <label key={index} className="flex items-center space-x-2">
                                         <input
-                                          type="checkbox"
-                                          checked={isChecked}
-                                          onChange={(e) => handleMultipleSelectChange(service.id, choice, e.target.checked)}
+                                          type="radio"
+                                          name={`service-${service.id}-radio`}
+                                          value={choice}
+                                          checked={selectedService?.responseData === choice}
+                                          onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
                                           className="text-blue-600"
                                         />
                                         <span className="text-sm text-gray-700">{choice}</span>
                                       </label>
-                                    )
-                                  })}
-                                </div>
-                              )}
-                              
-                              {/* RADIO (single choice) */}
-                              {service.data_type === 'RADIO' && choices.length > 0 && (
-                                <div className="space-y-2">
-                                  <p className="text-xs text-gray-600">Sélectionnez une option :</p>
-                                  {choices.map((choice: string, index: number) => (
-                                    <label key={index} className="flex items-center space-x-2">
-                                      <input
-                                        type="radio"
-                                        name={`service-${service.id}-radio`}
-                                        value={choice}
-                                        checked={selectedService?.responseData === choice}
-                                        onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
-                                        className="text-blue-600"
-                                      />
-                                      <span className="text-sm text-gray-700">{choice}</span>
-                                    </label>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )
-                }}
-                loadingText="Aucun service disponible pour le moment"
-                emptyStateText="Aucun service disponible pour le moment"
-                showItemCount={true}
-                maxHeight="max-h-96"
-              />
+                })}
+              </div>
             </div>
           </div>
         )
@@ -651,129 +644,176 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         )
 
       case 5:
-        return (
-          <div className="space-y-6 max-h-[60vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Récapitulatif de votre demande
-            </h3>
-            <div className="text-sm text-gray-600 mb-6">
-              Veuillez vérifier les informations saisies avant de soumettre votre demande.
-            </div>
-
-            {/* Personal Information */}
-            <div className="border rounded-lg p-4 bg-gray-50">
-              <h4 className="font-medium text-gray-900 mb-3">Informations personnelles</h4>
-              <div className="space-y-2 text-sm">
-                <div><span className="font-medium">Nom:</span> {formData.lastName}</div>
-                <div><span className="font-medium">Prénom:</span> {formData.firstName}</div>
-                <div><span className="font-medium">Email:</span> {formData.email}</div>
-                <div><span className="font-medium">Téléphone:</span> {formData.phone}</div>
-                <div><span className="font-medium">Métier:</span> {metiers.find(m => m.id === formData.metierId)?.name}</div>
+        const summaryPages = [
+          {
+            title: "Informations personnelles",
+            content: (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Informations personnelles</h4>
+                <div className="space-y-2 text-sm">
+                  <div><span className="font-medium">Nom:</span> {formData.lastName}</div>
+                  <div><span className="font-medium">Prénom:</span> {formData.firstName}</div>
+                  <div><span className="font-medium">Email:</span> {formData.email}</div>
+                  <div><span className="font-medium">Téléphone:</span> {formData.phone}</div>
+                  <div><span className="font-medium">Métier:</span> {metiers.find(m => m.id === formData.metierId)?.name}</div>
+                </div>
               </div>
-            </div>
-
-            {/* Mission Details */}
-            <div className="border rounded-lg p-4 bg-gray-50">
-              <h4 className="font-medium text-gray-900 mb-3">Détails de la mission</h4>
-              <div className="space-y-2 text-sm">
-                <div><span className="font-medium">Situation actuelle:</span> {
-                  formData.hasMission === "yes" ? "J'ai une mission en cours" :
-                  formData.hasMission === "searching" ? "En cours de recherche" :
-                  formData.hasMission === "no" ? "Je suis en recherche" : formData.hasMission
-                }</div>
-                <div><span className="font-medium">TJM souhaité:</span> {formData.tjm}€</div>
-                <div><span className="font-medium">Nombre de jours par semaine:</span> {formData.days}</div>
-                {formData.clientName && <div><span className="font-medium">Nom du client:</span> {formData.clientName}</div>}
-                {formData.clientAddress && <div><span className="font-medium">Adresse du client:</span> {formData.clientAddress}</div>}
-                {formData.clientSector && <div><span className="font-medium">Secteur d&apos;activité:</span> {
-                  formData.clientSector === "tech" ? "Technologie" :
-                  formData.clientSector === "finance" ? "Finance" :
-                  formData.clientSector === "retail" ? "Commerce" :
-                  formData.clientSector === "healthcare" ? "Santé" :
-                  formData.clientSector === "education" ? "Éducation" :
-                  formData.clientSector === "other" ? "Autre" : formData.clientSector
-                }</div>}
+            )
+          },
+          {
+            title: "Détails de la mission",
+            content: (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Détails de la mission</h4>
+                <div className="space-y-2 text-sm">
+                  <div><span className="font-medium">Situation actuelle:</span> {
+                    formData.hasMission === "yes" ? "J'ai une mission en cours" :
+                    formData.hasMission === "searching" ? "En cours de recherche" :
+                    formData.hasMission === "no" ? "Je suis en recherche" : formData.hasMission
+                  }</div>
+                  <div><span className="font-medium">TJM souhaité:</span> {formData.tjm}€</div>
+                  <div><span className="font-medium">Nombre de jours par semaine:</span> {formData.days}</div>
+                  {formData.clientName && <div><span className="font-medium">Nom du client:</span> {formData.clientName}</div>}
+                  {formData.clientAddress && <div><span className="font-medium">Adresse du client:</span> {formData.clientAddress}</div>}
+                  {formData.clientSector && <div><span className="font-medium">Secteur d&apos;activité:</span> {
+                    formData.clientSector === "tech" ? "Technologie" :
+                    formData.clientSector === "finance" ? "Finance" :
+                    formData.clientSector === "retail" ? "Commerce" :
+                    formData.clientSector === "healthcare" ? "Santé" :
+                    formData.clientSector === "education" ? "Éducation" :
+                    formData.clientSector === "other" ? "Autre" : formData.clientSector
+                  }</div>}
+                </div>
               </div>
-            </div>
-
-            {/* Portage Information */}
-            <div className="border rounded-lg p-4 bg-gray-50">
-              <h4 className="font-medium text-gray-900 mb-3">Portage salarial</h4>
-              <div className="space-y-2 text-sm">
-                <div><span className="font-medium">Intéressé par le portage:</span> {formData.wantsPortage === "yes" ? "Oui" : "Non"}</div>
-                {formData.wantsPortage === "yes" && formData.selectedPortages.length > 0 && (
-                  <div>
-                    <span className="font-medium">Services de portage sélectionnés:</span>
-                    <ul className="list-disc list-inside ml-4 mt-1">
-                      {formData.selectedPortages.map(portageId => {
-                        const portage = portages.find(p => p.id === parseInt(portageId));
-                        return (
-                          <li key={portageId}>
-                            {portage?.name} - {portage?.description}
-                          </li>
-                        );
-                      })}
-                    </ul>
+            )
+          },
+          {
+            title: "Portage salarial",
+            content: (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Portage salarial</h4>
+                <div className="space-y-2 text-sm">
+                  <div><span className="font-medium">Intéressé par le portage:</span> {formData.wantsPortage === "yes" ? "Oui" : "Non"}</div>
+                  {formData.wantsPortage === "yes" && formData.selectedPortages.length > 0 && (
+                    <div>
+                      <span className="font-medium">Services de portage sélectionnés:</span>
+                      <ul className="list-disc list-inside ml-4 mt-1">
+                        {formData.selectedPortages.map(portageId => {
+                          const portage = portages.find(p => p.id === parseInt(portageId));
+                          return (
+                            <li key={portageId}>
+                              {portage?.name} - {portage?.description}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )
+          },
+          {
+            title: "Services et priorité",
+            content: (
+              <div className="space-y-4">
+                {/* Services */}
+                {formData.selectedServices && formData.selectedServices.length > 0 && (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Services sélectionnés</h4>
+                    <div className="text-sm">
+                      <ul className="list-disc list-inside space-y-1">
+                        {formData.selectedServices.map(selectedService => {
+                          const service = platformServices.find(s => s.id === selectedService.serviceId);
+                          return (
+                            <li key={selectedService.serviceId}>
+                              {service?.label}
+                              {selectedService.isRequired && <span className=" text-red-600 font-medium"> (Obligatoire)</span>}
+                              {selectedService.responseData && (
+                                <div className="ml-4 text-gray-600 text-xs mt-1">
+                                  Données: {selectedService.responseData}
+                                </div>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
                   </div>
                 )}
+
+                {/* New Services */}
+                {formData.newServices && formData.newServices.length > 0 && (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Services personnalisés demandés</h4>
+                    <div className="text-sm">
+                      <ul className="list-disc list-inside space-y-1">
+                        {formData.newServices.map((service, index) => (
+                          <li key={index}>{service}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {/* Priority */}
+                <div className="border rounded-lg p-4 bg-gray-50">
+                  <h4 className="font-medium text-gray-900 mb-3">Priorité de la demande</h4>
+                  <div className="text-sm">
+                    <div className="flex items-center space-x-2">
+                      <span className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                        formData.priority === "urgent" ? "bg-red-500" :
+                        formData.priority === "medium" ? "bg-orange-500" : "bg-green-500"
+                      }`}></span>
+                      <span className="font-medium">
+                        {formData.priority === "urgent" ? "Urgent - J'ai besoin d'une réponse rapidement" :
+                         formData.priority === "medium" ? "Moyen - Dans les prochaines semaines" :
+                         "Non prioritaire - Je me renseigne"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
+            )
+          }
+        ]
+
+        const currentSummaryPage = summaryPages[summaryPage]
+
+        return (
+          <div className="space-y-6">
+
+            <div className="text-center mb-4">
+              <h4 className="text-md font-medium text-gray-800">
+                {currentSummaryPage.title} ({summaryPage + 1}/4)
+              </h4>
             </div>
 
-            {/* Services */}
-            {formData.selectedServices && formData.selectedServices.length > 0 && (
-              <div className="border rounded-lg p-4 bg-gray-50">
-                <h4 className="font-medium text-gray-900 mb-3">Services sélectionnés</h4>
-                <div className="text-sm">
-                  <ul className="list-disc list-inside space-y-1">
-                    {formData.selectedServices.map(selectedService => {
-                      const service = platformServices.find(s => s.id === selectedService.serviceId);
-                      return (
-                        <li key={selectedService.serviceId}>
-                          {service?.label}
-                          {selectedService.isRequired && <span className=" text-red-600 font-medium"> (Obligatoire)</span>}
-                          {selectedService.responseData && (
-                            <div className="ml-4 text-gray-600 text-xs mt-1">
-                              Données: {selectedService.responseData}
-                            </div>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </div>
-            )}
+            {currentSummaryPage.content}
 
-            {/* New Services */}
-            {formData.newServices && formData.newServices.length > 0 && (
-              <div className="border rounded-lg p-4 bg-gray-50">
-                <h4 className="font-medium text-gray-900 mb-3">Services personnalisés demandés</h4>
-                <div className="text-sm">
-                  <ul className="list-disc list-inside space-y-1">
-                    {formData.newServices.map((service, index) => (
-                      <li key={index}>{service}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {/* Priority */}
-            <div className="border rounded-lg p-4 bg-gray-50">
-              <h4 className="font-medium text-gray-900 mb-3">Priorité de la demande</h4>
-              <div className="text-sm">
-                <div className="flex items-center space-x-2">
-                  <span className={`w-3 h-3 rounded-full flex-shrink-0 ${
-                    formData.priority === "urgent" ? "bg-red-500" :
-                    formData.priority === "medium" ? "bg-orange-500" : "bg-green-500"
-                  }`}></span>
-                  <span className="font-medium">
-                    {formData.priority === "urgent" ? "Urgent - J'ai besoin d'une réponse rapidement" :
-                     formData.priority === "medium" ? "Moyen - Dans les prochaines semaines" :
-                     "Non prioritaire - Je me renseigne"}
-                  </span>
-                </div>
-              </div>
+            {/* Summary Pagination Controls */}
+            <div className="flex justify-between items-center mt-6">
+              <button
+                type="button"
+                onClick={() => setSummaryPage(prev => Math.max(0, prev - 1))}
+                disabled={summaryPage === 0}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Section précédente
+              </button>
+              
+              <span className="text-sm text-gray-500">
+                Section {summaryPage + 1} sur {summaryPages.length}
+              </span>
+              
+              <button
+                type="button"
+                onClick={() => setSummaryPage(prev => Math.min(summaryPages.length - 1, prev + 1))}
+                disabled={summaryPage >= summaryPages.length - 1}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Section suivante
+              </button>
             </div>
           </div>
         );
