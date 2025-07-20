@@ -43,7 +43,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
     clientSector: "",
     tjm: "",
     days: "",
-    wantsPortage: "", // "yes" or "no"
+    wantsPortage: "no", // "yes" or "no"
     selectedPortages: [] as string[],
 
     // Step 3: Services
@@ -415,62 +415,35 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
             {/* Portage Question */}
             <div className="space-y-3">
-              <label htmlFor="portage-freelance" className="text-sm font-medium text-gray-700">Souhaitez-vous faire appel à une société de portage salarial ? *</label>
-              <div id="portage-freelance" className="space-y-3">
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="wantsPortage"
-                    value="yes"
-                    checked={formData.wantsPortage === "yes"}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, wantsPortage: e.target.value }))}
-                    className="text-blue-600"
-                  />
-                  <span className="text-gray-700">Oui, je souhaite une société de portage</span>
-                </label>
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="wantsPortage"
-                    value="no"
-                    checked={formData.wantsPortage === "no"}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, wantsPortage: e.target.value }))}
-                    className="text-blue-600"
-                  />
-                  <span className="text-gray-700">Non, je ne souhaite pas de portage</span>
-                </label>
-              </div>
+              <label className="flex items-center space-x-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.wantsPortage === "yes"}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, wantsPortage: e.target.checked ? "yes" : "no" }))}
+                  className="text-blue-600"
+                />
+                <span className="text-sm font-medium text-gray-700">Je souhaite faire appel à une société de portage salarial</span>
+              </label>
             </div>
 
             {/* Portages Selection - Only show if freelancer wants portage */}
             {formData.wantsPortage === "yes" && (
-              <CollapsibleSection
-                title="Services de portage souhaités *"
-                description="Sélectionnez les services de portage qui vous intéressent"
-                items={portages}
-                selectedItems={formData.selectedPortages}
-                onToggleItem={handlePortageToggle}
-                getItemId={(portage) => portage.id}
-                renderItem={(portage, isSelected) => (
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <span className="text-sm text-gray-700 font-medium">{portage.name}</span>
-                      {portage.description && (
-                        <p className="text-xs text-gray-500 mt-1">{portage.description}</p>
-                      )}
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => handlePortageToggle(portage.id)}
-                      className="h-4 w-4 text-blue-600 rounded"
-                    />
-                  </div>
-                )}
-                loadingText="Chargement des services de portage..."
-                emptyStateText="Aucun service de portage disponible"
-                showItemCount={true}
-              />
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-gray-700">Services de portage souhaités *</label>
+                <div className="grid grid-cols-3 gap-3">
+                  {portages.map((portage) => (
+                    <label key={portage.id} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.selectedPortages.includes(portage.id.toString())}
+                        onChange={() => handlePortageToggle(portage.id)}
+                        className="text-blue-600 rounded"
+                      />
+                      <span className="text-sm text-gray-700">{portage.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         )
@@ -877,8 +850,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
           formData.tjm &&
           parseFloat(formData.tjm) >= 1 &&
           formData.days &&
-          parseFloat(formData.days) >= 0.5 &&
-          formData.wantsPortage
+          parseFloat(formData.days) >= 0.5
         );
         // If wants portage, must select at least one portage service
         if (formData.wantsPortage === "yes") {

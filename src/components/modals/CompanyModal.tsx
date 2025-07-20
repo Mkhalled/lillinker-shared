@@ -28,7 +28,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     companyName: "",
     siret: "",
     description: "",
-    isPortage: "", // "yes" or "no"
+    isPortage: "no", // "yes" or "no"
     
     // Step 2: Consultants and fees
     consultantCount: "",
@@ -302,62 +302,35 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
             {/* Portage Company Question */}
             <div className="space-y-3">
-              <label htmlFor="portage" className="text-sm font-medium text-gray-700">Êtes-vous une société de portage salarial ? *</label>
-              <div id="portage" className="space-y-3">
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="isPortage"
-                    value="yes"
-                    checked={formData.isPortage === "yes"}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, isPortage: e.target.value }))}
-                    className="text-blue-600"
-                  />
-                  <span className="text-gray-700">Oui, nous sommes une société de portage salarial</span>
-                </label>
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="isPortage"
-                    value="no"
-                    checked={formData.isPortage === "no"}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, isPortage: e.target.value }))}
-                    className="text-blue-600"
-                  />
-                  <span className="text-gray-700">Non, nous ne sommes pas une société de portage</span>
-                </label>
-              </div>
+              <label className="flex items-center space-x-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.isPortage === "yes"}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, isPortage: e.target.checked ? "yes" : "no" }))}
+                  className="text-blue-600"
+                />
+                <span className="text-sm font-medium text-gray-700">Nous sommes une société de portage salarial</span>
+              </label>
             </div>
 
             {/* Portages Selection - Only show if company is portage */}
             {formData.isPortage === "yes" && (
-              <CollapsibleSection
-                title="Services de portage proposés *"
-                description="Sélectionnez les services de portage que votre société propose"
-                items={portages}
-                selectedItems={formData.selectedPortages}
-                onToggleItem={togglePortageSelection}
-                getItemId={(portage) => portage.id}
-                renderItem={(portage, isSelected) => (
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <span className="text-sm text-gray-700 font-medium">{portage.name}</span>
-                      {portage.description && (
-                        <p className="text-xs text-gray-500 mt-1">{portage.description}</p>
-                      )}
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => togglePortageSelection(portage.id)}
-                      className="h-4 w-4 text-blue-600 rounded"
-                    />
-                  </div>
-                )}
-                loadingText="Chargement des services de portage..."
-                emptyStateText="Aucun service de portage disponible"
-                showItemCount={true}
-              />
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-gray-700">Services de portage proposés *</label>
+                <div className="grid grid-cols-3 gap-3">
+                  {portages.map((portage) => (
+                    <label key={portage.id} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.selectedPortages.includes(portage.id.toString())}
+                        onChange={() => togglePortageSelection(portage.id)}
+                        className="text-blue-600 rounded"
+                      />
+                      <span className="text-sm text-gray-700">{portage.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         )
@@ -837,7 +810,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const isStepValid = () => {
     switch (currentStep) {
       case 1: {
-        const basicValid = formData.companyName && formData.siret && formData.description && formData.isPortage;
+        const basicValid = formData.companyName && formData.siret && formData.description;
         if (formData.isPortage === "yes") {
           return basicValid && formData.selectedPortages.length > 0;
         }
