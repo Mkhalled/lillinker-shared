@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 
 import { useModalData } from '../../hooks/useModalData';
-import { EmailValidationInput, useEmailValidation } from '../form/EmailValidationInput';
+import { BasicEmailInput } from '../form/BasicEmailInput';
 import ServiceInfoTooltip from '../ServiceInfoTooltip';
 import { CollapsibleSection } from '../ui/CollapsibleSection';
 
@@ -21,7 +21,13 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { platformServices, metiers, portages, error: dataError } = useModalData()
-  const { isValidBusinessEmail } = useEmailValidation()
+  
+  // Basic email validation function
+  const isValidEmail = (email: string): boolean => {
+    const basicEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return basicEmailRegex.test(email);
+  }
+  
   const [formData, setFormData] = useState({
     // Step 1: Personal info
     firstName: "",
@@ -252,7 +258,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                 />
               </div>
             </div>
-            <EmailValidationInput
+            <BasicEmailInput
               email={formData.email}
               onEmailChange={(email) => setFormData((prev) => ({ ...prev, email: email }))}
               label="Email *"
@@ -864,7 +870,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                formData.email && 
                formData.phone && 
                formData.metierId > 0 &&
-               isValidBusinessEmail(formData.email)
+               isValidEmail(formData.email)
       case 2: {
         const basicValid = (
           formData.hasMission &&
