@@ -29,7 +29,6 @@ export const SuccessStep = ({
       <div>
         <h3 className="text-xl font-semibold mb-2 text-gray-900">{title}</h3>
         <p className="text-gray-600 mb-4">
-          <strong>{email}</strong>
           {message || defaultMessage}
         </p>
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">

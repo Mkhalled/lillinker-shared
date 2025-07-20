@@ -28,7 +28,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
     lastName: "",
     email: "",
     phone: "",
-    metierId: 0, // Changed from profession to metierId
+    metierId: 0,
 
     // Step 2: Mission info
     hasMission: "",
@@ -46,12 +46,13 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       isRequired: boolean;
       responseData?: string;
     }[],
+    newServices: [] as string[],
 
     // Step 4: Priority
     priority: "",
   })
 
-  const totalSteps = 5
+  const totalSteps = 6
 
   // Set data error if there's a fetching error
   useEffect(() => {
@@ -214,7 +215,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         throw new Error(errorData.error || 'Freelance onboarding failed')
       }
       // Show success step
-      setCurrentStep(5)
+      setCurrentStep(6)
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Une erreur est survenue')
     } finally {
@@ -672,6 +673,134 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
       case 5:
         return (
+          <div className="space-y-6 max-h-[60vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Récapitulatif de votre demande
+            </h3>
+            <div className="text-sm text-gray-600 mb-6">
+              Veuillez vérifier les informations saisies avant de soumettre votre demande.
+            </div>
+
+            {/* Personal Information */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <h4 className="font-medium text-gray-900 mb-3">Informations personnelles</h4>
+              <div className="space-y-2 text-sm">
+                <div><span className="font-medium">Nom:</span> {formData.lastName}</div>
+                <div><span className="font-medium">Prénom:</span> {formData.firstName}</div>
+                <div><span className="font-medium">Email:</span> {formData.email}</div>
+                <div><span className="font-medium">Téléphone:</span> {formData.phone}</div>
+                <div><span className="font-medium">Métier:</span> {metiers.find(m => m.id === formData.metierId)?.name}</div>
+              </div>
+            </div>
+
+            {/* Mission Details */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <h4 className="font-medium text-gray-900 mb-3">Détails de la mission</h4>
+              <div className="space-y-2 text-sm">
+                <div><span className="font-medium">Situation actuelle:</span> {
+                  formData.hasMission === "yes" ? "J'ai une mission en cours" :
+                  formData.hasMission === "searching" ? "En cours de recherche" :
+                  formData.hasMission === "no" ? "Je suis en recherche" : formData.hasMission
+                }</div>
+                <div><span className="font-medium">TJM souhaité:</span> {formData.tjm}€</div>
+                <div><span className="font-medium">Nombre de jours par semaine:</span> {formData.days}</div>
+                {formData.clientName && <div><span className="font-medium">Nom du client:</span> {formData.clientName}</div>}
+                {formData.clientAddress && <div><span className="font-medium">Adresse du client:</span> {formData.clientAddress}</div>}
+                {formData.clientSector && <div><span className="font-medium">Secteur d&apos;activité:</span> {
+                  formData.clientSector === "tech" ? "Technologie" :
+                  formData.clientSector === "finance" ? "Finance" :
+                  formData.clientSector === "retail" ? "Commerce" :
+                  formData.clientSector === "healthcare" ? "Santé" :
+                  formData.clientSector === "education" ? "Éducation" :
+                  formData.clientSector === "other" ? "Autre" : formData.clientSector
+                }</div>}
+              </div>
+            </div>
+
+            {/* Portage Information */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <h4 className="font-medium text-gray-900 mb-3">Portage salarial</h4>
+              <div className="space-y-2 text-sm">
+                <div><span className="font-medium">Intéressé par le portage:</span> {formData.wantsPortage === "yes" ? "Oui" : "Non"}</div>
+                {formData.wantsPortage === "yes" && formData.selectedPortages.length > 0 && (
+                  <div>
+                    <span className="font-medium">Services de portage sélectionnés:</span>
+                    <ul className="list-disc list-inside ml-4 mt-1">
+                      {formData.selectedPortages.map(portageId => {
+                        const portage = portages.find(p => p.id === parseInt(portageId));
+                        return (
+                          <li key={portageId}>
+                            {portage?.name} - {portage?.description}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Services */}
+            {formData.selectedServices && formData.selectedServices.length > 0 && (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Services sélectionnés</h4>
+                <div className="text-sm">
+                  <ul className="list-disc list-inside space-y-1">
+                    {formData.selectedServices.map(selectedService => {
+                      const service = platformServices.find(s => s.id === selectedService.serviceId);
+                      return (
+                        <li key={selectedService.serviceId}>
+                          {service?.label}
+                          {selectedService.isRequired && <span className=" text-red-600 font-medium"> (Obligatoire)</span>}
+                          {selectedService.responseData && (
+                            <div className="ml-4 text-gray-600 text-xs mt-1">
+                              Données: {selectedService.responseData}
+                            </div>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* New Services */}
+            {formData.newServices && formData.newServices.length > 0 && (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Services personnalisés demandés</h4>
+                <div className="text-sm">
+                  <ul className="list-disc list-inside space-y-1">
+                    {formData.newServices.map((service, index) => (
+                      <li key={index}>{service}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* Priority */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <h4 className="font-medium text-gray-900 mb-3">Priorité de la demande</h4>
+              <div className="text-sm">
+                <div className="flex items-center space-x-2">
+                  <span className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                    formData.priority === "urgent" ? "bg-red-500" :
+                    formData.priority === "medium" ? "bg-orange-500" : "bg-green-500"
+                  }`}></span>
+                  <span className="font-medium">
+                    {formData.priority === "urgent" ? "Urgent - J'ai besoin d'une réponse rapidement" :
+                     formData.priority === "medium" ? "Moyen - Dans les prochaines semaines" :
+                     "Non prioritaire - Je me renseigne"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 6:
+        return (
           <SuccessStep 
             email={formData.email} 
             title="Merci pour votre demande !"
@@ -700,6 +829,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       case 4:
         return "Priorité de la demande"
       case 5:
+        return "Récapitulatif"
+      case 6:
         return "Demande envoyée"
       default:
         return ""
@@ -717,6 +848,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       case 4:
         return "Définissez l'urgence de votre demande"
       case 5:
+        return "Vérifiez vos informations avant l'envoi"
+      case 6:
         return "Votre demande a été transmise"
       default:
         return ""
@@ -752,6 +885,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       case 4:
         return formData.priority
       case 5:
+        return true // Recap step is always valid and ready for submission
+      case 6:
         return true
       default:
         return false
@@ -772,10 +907,10 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       isStepValid={isStepValid() as boolean}
       isLoading={isLoading}
       error={error}
-      showNavigation={currentStep < 5}
+      showNavigation={currentStep < 6}
       completeButtonText="Envoyer ma demande"
       nextButtonText="Suivant"
-      completionStep={4} // Specify that completion happens on step 4
+      completionStep={5} // Specify that completion happens on step 5
     >
       {renderStep()}
     </ModalWrapper>

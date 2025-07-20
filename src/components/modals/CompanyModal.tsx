@@ -56,7 +56,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     }>
   })
 
-  const totalSteps = 5
+  const totalSteps = 6
 
   // Set data error if there's a fetching error
   useEffect(() => {
@@ -66,7 +66,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   }, [dataError])
 
   const handleNext = () => {
-    if (currentStep === 4) {
+    if (currentStep === 5) {
       handleComplete()
     } else if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1)
@@ -184,7 +184,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   }
 
   const handleComplete = async () => {
-    if (currentStep === 4) {
+    if (currentStep === 5) {
       setIsLoading(true)
       setError(null)
       
@@ -250,7 +250,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           throw new Error(errorData.error || 'Company onboarding failed')
         }
 
-        setCurrentStep(5)
+        setCurrentStep(6)
       } catch (error) {
         console.error('Registration error:', error)
         setError(error instanceof Error ? error.message : 'Une erreur est survenue')
@@ -661,6 +661,134 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         )
 
       case 5:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Récapitulatif de votre demande</h3>
+              <p className="text-sm text-gray-600">Vérifiez vos informations avant de finaliser votre inscription</p>
+            </div>
+
+            <div className="space-y-4">
+              {/* Company Information */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-3">Informations de la société</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Nom:</span>
+                    <span className="font-medium">{formData.companyName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">SIRET:</span>
+                    <span className="font-medium">{formData.siret}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Type:</span>
+                    <span className="font-medium">
+                      {formData.isPortage === "yes" ? "Société de portage salarial" : "Autre société"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Consultants:</span>
+                    <span className="font-medium">{formData.consultantCount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Frais de gestion:</span>
+                    <span className="font-medium">{formData.managementFeeRate}%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Administrator Information */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-3">Administrateur</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Nom:</span>
+                    <span className="font-medium">{formData.adminFirstName} {formData.adminLastName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Email:</span>
+                    <span className="font-medium">{formData.adminEmail}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Téléphone:</span>
+                    <span className="font-medium">{formData.adminPhone}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Métiers */}
+              {formData.selectedMetiers.length > 0 && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-3">Métiers supportés ({formData.selectedMetiers.length})</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.selectedMetiers.map(metierId => {
+                      const metier = metiers?.find(m => m.id.toString() === metierId)
+                      return metier ? (
+                        <span key={metierId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {metier.name}
+                        </span>
+                      ) : null
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Portage Services */}
+              {formData.isPortage === "yes" && formData.selectedPortages.length > 0 && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-3">Services de portage ({formData.selectedPortages.length})</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.selectedPortages.map(portageId => {
+                      const portage = portages?.find(p => p.id.toString() === portageId)
+                      return portage ? (
+                        <span key={portageId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          {portage.name}
+                        </span>
+                      ) : null
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Platform Services */}
+              {formData.selectedPlatformServices.length > 0 && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-3">Services plateforme ({formData.selectedPlatformServices.length})</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.selectedPlatformServices.map(serviceId => {
+                      const service = platformServices?.find(s => s.id.toString() === serviceId)
+                      return service ? (
+                        <span key={serviceId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          {service.label}
+                        </span>
+                      ) : null
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* New Services */}
+              {formData.newServices.filter(s => s.label.trim() !== '').length > 0 && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-3">Nouveaux services ({formData.newServices.filter(s => s.label.trim() !== '').length})</h4>
+                  <div className="space-y-2">
+                    {formData.newServices.filter(s => s.label.trim() !== '').map(service => (
+                      <div key={service.id} className="text-sm">
+                        <span className="font-medium">{service.label}</span>
+                        {service.description && (
+                          <p className="text-gray-600">{service.description}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )
+
+      case 6:
         return <SuccessStep email={formData.adminEmail} />
 
       default:
@@ -679,6 +807,8 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 4:
         return "Services et options"
       case 5:
+        return "Récapitulatif"
+      case 6:
         return "Demande envoyée"
       default:
         return ""
@@ -696,6 +826,8 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 4:
         return "Définissez les services que vous proposez"
       case 5:
+        return "Vérifiez vos informations avant finalisation"
+      case 6:
         return "Votre demande a été transmise"
       default:
         return ""
@@ -730,6 +862,8 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         return hasSelectedServices || hasValidNewServices 
        }
       case 5:
+        return true // Recap step is always valid
+      case 6:
         return true
       default:
         return false
@@ -750,7 +884,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       isStepValid={isStepValid() as boolean}
       isLoading={isLoading}
       error={error}
-      showNavigation={currentStep < 5}
+      showNavigation={currentStep < 6}
       completeButtonText="Finaliser l'inscription"
       nextButtonText="Suivant"
     >

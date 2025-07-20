@@ -118,16 +118,16 @@ export const ModalWrapper = ({
                 <span>Précédent</span>
               </Button>
 
-              {currentStep < totalSteps - 1 ? (
+              {currentStep < totalSteps && !isCompletionStep ? (
                 <Button 
                   onClick={handleNextClick} 
                   disabled={!isStepValid || isLoading}
                   className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  <span>{nextButtonText}</span>
+                  <span>{isCompleteStep ? completeButtonText : nextButtonText}</span>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              ) : (
+              ) : !isCompletionStep ? (
                 <Button 
                   onClick={handleNextClick}
                   disabled={!isStepValid || isLoading}
@@ -140,12 +140,12 @@ export const ModalWrapper = ({
                     </>
                   ) : (
                     <>
-                      <span>{isCompleteStep ? completeButtonText : nextButtonText}</span>
+                      <span>{completeButtonText}</span>
                       <ChevronRight className="h-4 w-4" />
                     </>
                   )}
                 </Button>
-              )}
+              ) : null}
             </div>
           )}
 
