@@ -35,6 +35,7 @@ describe('AuthService - Company Onboarding', () => {
       siret: '12345678901234',
       consultant_count: 10,
       management_fees: 15.5,
+      is_portage: false,
       selected_services: [1, 2, 3],
       selected_metiers: [1, 2], // Add required metiers
     };
@@ -45,6 +46,7 @@ describe('AuthService - Company Onboarding', () => {
       siret: '98765432109876',
       consultant_count: 25,
       management_fees: 20.0,
+      is_portage: false,
       selected_metiers: [1, 3], // Add required metiers
       new_services: [
         {
@@ -65,6 +67,7 @@ describe('AuthService - Company Onboarding', () => {
       siret: '11223344556677',
       consultant_count: 15,
       management_fees: 18.0,
+      is_portage: false,
       selected_metiers: [2, 4], // Add required metiers
       new_services: [
         {
@@ -160,6 +163,19 @@ describe('AuthService - Company Onboarding', () => {
       created_at: new Date(),
     };
 
+    const mockPortageCompanyData: CompanyOnboarding = {
+      company_name: 'Portage Company Ltd',
+      company_description: 'A portage company for testing',
+      siret: '98765432109876',
+      consultant_count: 25,
+      management_fees: 12.0,
+      is_portage: true,
+      selected_services: [1, 2],
+      selected_metiers: [1, 2],
+      selected_portages: [1, 2],
+      new_services: []
+    };
+
     it('should successfully complete company onboarding with selected services', async () => {
       const mockTransaction = jest.fn().mockImplementation(async (callback) => {
         const mockTx = {
@@ -174,6 +190,9 @@ describe('AuthService - Company Onboarding', () => {
           },
           companyMetier: {
             createMany: jest.fn().mockResolvedValue({ count: 2 }),
+          },
+          companyPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 0 }),
           },
         };
         return await callback(mockTx);
@@ -240,6 +259,9 @@ describe('AuthService - Company Onboarding', () => {
           companyMetier: {
             createMany: jest.fn().mockResolvedValue({ count: 2 }),
           },
+          companyPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 0 }),
+          },
           platformService: {
             create: jest.fn().mockResolvedValue(mockPlatformService),
           },
@@ -296,6 +318,9 @@ describe('AuthService - Company Onboarding', () => {
           },
           companyMetier: {
             createMany: jest.fn().mockResolvedValue({ count: 2 }),
+          },
+          companyPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 0 }),
           },
           platformService: {
             create: jest.fn()
@@ -371,6 +396,9 @@ describe('AuthService - Company Onboarding', () => {
           },
           companyMetier: {
             createMany: jest.fn().mockResolvedValue({ count: 2 }),
+          },
+          companyPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 0 }),
           },
           platformService: {
             create: jest.fn().mockResolvedValue(mockPlatformService),
@@ -486,6 +514,9 @@ describe('AuthService - Company Onboarding', () => {
           companyMetier: {
             createMany: jest.fn().mockResolvedValue({ count: 2 }),
           },
+          companyPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 0 }),
+          },
           platformService: {
             create: jest.fn().mockRejectedValue(serviceCreationError),
           },
@@ -503,6 +534,87 @@ describe('AuthService - Company Onboarding', () => {
         'Company onboarding failed',
         serviceCreationError,
         expect.any(Object)
+      );
+    });
+
+    it('should successfully complete portage company onboarding with portage services', async () => {
+      const mockPortageCompany = {
+        ...mockCompany,
+        name: 'Portage Company Ltd',
+        description: 'A portage company for testing',
+        siret: '98765432109876',
+        consultant_count: 25,
+        management_fees: 12.0,
+      };
+
+      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
+        const mockTx = {
+          company: {
+            create: jest.fn().mockResolvedValue(mockPortageCompany),
+          },
+          companyService: {
+            create: jest.fn()
+              .mockResolvedValueOnce(mockCompanyServices[0])
+              .mockResolvedValueOnce(mockCompanyServices[1]),
+          },
+          companyMetier: {
+            createMany: jest.fn().mockResolvedValue({ count: 2 }),
+          },
+          companyPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 2 }),
+          },
+        };
+        return await callback(mockTx);
+      });
+
+      mockPrisma.$transaction = mockTransaction;
+
+      const result = await AuthService.completeCompanyOnboarding(mockUserId, mockPortageCompanyData);
+
+      expect(mockTransaction).toHaveBeenCalledWith(expect.any(Function));
+
+      expect(result).toEqual({
+        company: mockPortageCompany,
+        platformServices: [],
+        companyServices: [
+          mockCompanyServices[0],
+          mockCompanyServices[1],
+        ],
+      });
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Starting company onboarding process',
+        expect.objectContaining({
+          operation: 'completeCompanyOnboarding',
+          userId: mockUserId,
+          companyName: 'Portage Company Ltd',
+          siret: '98765432109876',
+        })
+      );
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Company record created successfully',
+        expect.objectContaining({
+          companyId: 1,
+          consultantCount: 25,
+          managementFees: 12.0,
+        })
+      );
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Company services linked successfully',
+        expect.objectContaining({
+          linkedServicesCount: 2,
+        })
+      );
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Company onboarding completed successfully',
+        expect.objectContaining({
+          companyId: 1,
+          totalServicesLinked: 2,
+          newServicesCreated: 0,
+        })
       );
     });
   });

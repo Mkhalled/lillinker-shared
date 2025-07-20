@@ -26,9 +26,16 @@ export interface Metier {
   name: string;
 }
 
+export interface Portage {
+  id: number;
+  name: string;
+  description: string | null;
+}
+
 export const useModalData = () => {
   const [platformServices, setPlatformServices] = useState<PlatformService[]>([]);
   const [metiers, setMetiers] = useState<Metier[]>([]);
+  const [portages, setPortages] = useState<Portage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,10 +45,11 @@ export const useModalData = () => {
       setError(null);
       
       try {
-        // Fetch platform services and metiers in parallel
-        const [servicesResponse, metiersResponse] = await Promise.all([
+        // Fetch platform services, metiers, and portages in parallel
+        const [servicesResponse, metiersResponse, portagesResponse] = await Promise.all([
           fetch('/api/platform-services'),
-          fetch('/api/metiers')
+          fetch('/api/metiers'),
+          fetch('/api/portages')
         ]);
 
         if (servicesResponse.ok) {
@@ -57,6 +65,13 @@ export const useModalData = () => {
         } else {
           console.warn('Failed to fetch metiers');
         }
+
+        if (portagesResponse.ok) {
+          const portagesData = await portagesResponse.json();
+          setPortages(portagesData.data || []);
+        } else {
+          console.warn('Failed to fetch portages');
+        }
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Erreur lors du chargement des données');
@@ -71,6 +86,7 @@ export const useModalData = () => {
   return {
     platformServices,
     metiers,
+    portages,
     isLoading,
     error
   };

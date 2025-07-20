@@ -98,6 +98,7 @@ export class AuthService {
             siret: data.siret,
             consultant_count: data.consultant_count,
             management_fees: data.management_fees,
+            is_portage: data.is_portage || false,
           },
         });
 
@@ -160,6 +161,27 @@ export class AuthService {
           logger.info('Company metiers linked successfully', {
             ...logContext,
             linkedMetiersCount: data.selected_metiers.length,
+          });
+        }
+
+        // Handle selected portages (for portage companies)
+        if (data.is_portage && data.selected_portages && data.selected_portages.length > 0) {
+          logger.debug('Processing selected portages', {
+            ...logContext,
+            selectedPortagesCount: data.selected_portages.length,
+            portageIds: data.selected_portages,
+          });
+
+          await tx.companyPortage.createMany({
+            data: data.selected_portages.map(portageId => ({
+              company_id: company.id,
+              portage_id: portageId,
+            })),
+          });
+
+          logger.info('Company portages linked successfully', {
+            ...logContext,
+            linkedPortagesCount: data.selected_portages.length,
           });
         }
 
@@ -280,6 +302,7 @@ export class AuthService {
             priority: data.priority,
             tjm: data.tjm,
             days: data.days,
+            wants_portage: data.wants_portage || false,
           },
         });
 
@@ -374,7 +397,49 @@ export class AuthService {
             skipped: data.selected_services.length - validRequestOptions.length,
           });
 
+          // Handle selected portages (if freelancer wants portage)
+          if (data.wants_portage && data.selected_portages && data.selected_portages.length > 0) {
+            logger.debug('Processing freelance portage preferences', {
+              ...logContext,
+              selectedPortagesCount: data.selected_portages.length,
+              portageIds: data.selected_portages,
+            });
+
+            await tx.freelanceRequestPortage.createMany({
+              data: data.selected_portages.map(portageId => ({
+                freelance_request_id: freelanceRequest.id,
+                portage_id: portageId,
+              })),
+            });
+
+            logger.info('Freelance portage preferences recorded', {
+              ...logContext,
+              linkedPortagesCount: data.selected_portages.length,
+            });
+          }
+
           return { freelance, freelanceRequest, requestOptions: validRequestOptions };
+        }
+
+        // Handle portages even without services
+        if (data.wants_portage && data.selected_portages && data.selected_portages.length > 0) {
+          logger.debug('Processing freelance portage preferences (without services)', {
+            ...logContext,
+            selectedPortagesCount: data.selected_portages.length,
+            portageIds: data.selected_portages,
+          });
+
+          await tx.freelanceRequestPortage.createMany({
+            data: data.selected_portages.map(portageId => ({
+              freelance_request_id: freelanceRequest.id,
+              portage_id: portageId,
+            })),
+          });
+
+          logger.info('Freelance portage preferences recorded (without services)', {
+            ...logContext,
+            linkedPortagesCount: data.selected_portages.length,
+          });
         }
 
         logger.info('Freelance onboarding completed successfully', {

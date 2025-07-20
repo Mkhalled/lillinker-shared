@@ -69,11 +69,13 @@ model Company {
   siret             String?         @unique
   consultant_count  Int
   management_fees   Float
+  is_portage        Boolean         @default(false)
   admin             User            @relation("CompanyAdmin", fields: [admin_user_id], references: [id])
   managers          CompanyManager[]
   services          CompanyService[]
   responses         CompanyResponse[]
   metiers           CompanyMetier[]
+  portages          CompanyPortage[]
 
   @@map("companies")
 }
@@ -100,6 +102,18 @@ model CompanyMetier {
   
   @@unique([company_id, metier_id])
   @@map("company_metiers")
+}
+
+// CompanyPortage junction table for many-to-many relationship
+model CompanyPortage {
+  id          Int      @id @default(autoincrement())
+  company_id  Int
+  portage_id  Int
+  company     Company  @relation(fields: [company_id], references: [id])
+  portage     Portage  @relation(fields: [portage_id], references: [id])
+  
+  @@unique([company_id, portage_id])
+  @@map("company_portages")
 }
 
 // PlatformService model
@@ -158,9 +172,11 @@ model FreelanceRequest {
   priority        Priority
   tjm             Float
   days            Float
+  wants_portage   Boolean                @default(false)
   freelance       Freelance              @relation(fields: [freelance_id], references: [id])
   options         FreelanceRequestOption[]
   responses       CompanyResponse[]
+  portages        FreelanceRequestPortage[]
 
   @@map("freelance_requests")
 }
@@ -188,6 +204,18 @@ model FreelanceRequestOption {
   platformService     PlatformService @relation(fields: [service_option_id], references: [id])
 
   @@map("freelance_request_options")
+}
+
+// FreelanceRequestPortage junction table for freelance portage preferences
+model FreelanceRequestPortage {
+  id                  Int             @id @default(autoincrement())
+  freelance_request_id Int
+  portage_id          Int
+  request             FreelanceRequest @relation(fields: [freelance_request_id], references: [id])
+  portage             Portage         @relation(fields: [portage_id], references: [id])
+  
+  @@unique([freelance_request_id, portage_id])
+  @@map("freelance_request_portages")
 }
 
 // CompanyResponse model
@@ -242,4 +270,15 @@ model Metier {
   companies   CompanyMetier[]
   
   @@map("metiers")
+}
+
+// Portage model - similar to Metier
+model Portage {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  description String?         @db.Text
+  companies   CompanyPortage[]
+  freelanceRequests FreelanceRequestPortage[]
+  
+  @@map("portages")
 }

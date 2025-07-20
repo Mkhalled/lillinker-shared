@@ -18,6 +18,10 @@ export const CompanyOnboardingSchema = z.object({
   consultant_count: z.number().min(1, 'Consultant count must be at least 1'),
   management_fees: z.number().min(0, 'Management fees must be positive'),
   
+  // Portage company flag and services
+  is_portage: z.boolean().default(false),
+  selected_portages: z.array(z.number()).optional(),
+  
   // Selected platform services
   selected_services: z.array(z.number()).optional(),
   
@@ -66,6 +70,10 @@ export const FreelanceOnboardingSchema = z.object({
   priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).default('MEDIUM'),
   tjm: z.number().min(1, 'Daily rate (TJM) is required'),
   days: z.number().min(0.5, 'Days must be at least 0.5'),
+  
+  // Portage preferences
+  wants_portage: z.boolean().default(false),
+  selected_portages: z.array(z.number()).optional(),
   
   // Service requirements - array of service objects with required flags
   selected_services: z.array(z.object({

@@ -179,6 +179,69 @@ async function main(): Promise<void> {
       ],
     });
 
+    // Create portage types
+    const portageComptabilite = await prisma.portage.create({
+      data: {
+        name: 'Comptabilité et Gestion',
+        description: 'Services de comptabilité, déclarations fiscales et gestion administrative',
+      },
+    });
+
+    const portageJuridique = await prisma.portage.create({
+      data: {
+        name: 'Conseil Juridique',
+        description: 'Accompagnement juridique, rédaction de contrats et conseil en droit du travail',
+      },
+    });
+
+    const portageFormation = await prisma.portage.create({
+      data: {
+        name: 'Formation et Développement',
+        description: 'Formation continue, coaching professionnel et développement de compétences',
+      },
+    });
+
+    const portageAssurance = await prisma.portage.create({
+      data: {
+        name: 'Assurance et Protection',
+        description: 'Assurance responsabilité civile professionnelle et couverture santé',
+      },
+    });
+
+    const portageReseautage = await prisma.portage.create({
+      data: {
+        name: 'Réseau et Business Development',
+        description: 'Mise en relation, développement commercial et accompagnement réseau',
+      },
+    });
+
+    // Mark companies as portage companies and link them to portage services
+    await prisma.company.update({
+      where: { id: mainCompany.id },
+      data: { is_portage: true },
+    });
+
+    await prisma.company.update({
+      where: { id: itgPortage.id },
+      data: { is_portage: true },
+    });
+
+    // Link portage companies to their services
+    await prisma.companyPortage.createMany({
+      data: [
+        // STA Portage offers all services
+        { company_id: mainCompany.id, portage_id: portageComptabilite.id },
+        { company_id: mainCompany.id, portage_id: portageJuridique.id },
+        { company_id: mainCompany.id, portage_id: portageFormation.id },
+        { company_id: mainCompany.id, portage_id: portageAssurance.id },
+        { company_id: mainCompany.id, portage_id: portageReseautage.id },
+        // ITG Portage offers specialized services
+        { company_id: itgPortage.id, portage_id: portageComptabilite.id },
+        { company_id: itgPortage.id, portage_id: portageJuridique.id },
+        { company_id: itgPortage.id, portage_id: portageFormation.id },
+      ],
+    });
+
     // Create some freelance users
     const freelanceUser1 = await createUser({
       first_name: 'Marie',

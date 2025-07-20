@@ -21,13 +21,15 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { platformServices, metiers, error: dataError } = useModalData()
+  const { platformServices, metiers, portages, error: dataError } = useModalData()
   const { isValidBusinessEmail } = useEmailValidation()
   const [formData, setFormData] = useState({
     // Step 1: General info
     companyName: "",
     siret: "",
     description: "",
+    isPortage: "", // "yes" or "no"
+    
     // Step 2: Consultants and fees
     consultantCount: "",
     managementFeeRate: "",
@@ -41,6 +43,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     // Step 4: Services selection and creation
     selectedPlatformServices: [] as string[],
     selectedMetiers: [] as string[], // Add metiers selection
+    selectedPortages: [] as string[], // Add portages selection
     newServices: [] as Array<{
       id: string
       label: string
@@ -93,6 +96,16 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       selectedMetiers: prev.selectedMetiers.includes(metierIdStr)
         ? prev.selectedMetiers.filter(id => id !== metierIdStr)
         : [...prev.selectedMetiers, metierIdStr]
+    }))
+  }
+
+  const togglePortageSelection = (portageId: number) => {
+    const portageIdStr = portageId.toString()
+    setFormData(prev => ({
+      ...prev,
+      selectedPortages: prev.selectedPortages.includes(portageIdStr)
+        ? prev.selectedPortages.filter(id => id !== portageIdStr)
+        : [...prev.selectedPortages, portageIdStr]
     }))
   }
 
@@ -206,8 +219,10 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           siret: formData.siret,
           consultant_count: parseInt(formData.consultantCount),
           management_fees: parseFloat(formData.managementFeeRate),
+          is_portage: formData.isPortage === "yes",
           selected_services: formData.selectedPlatformServices.map(id => parseInt(id)),
           selected_metiers: formData.selectedMetiers.map(id => parseInt(id)), // Add metiers
+          selected_portages: formData.isPortage === "yes" ? formData.selectedPortages.map(id => parseInt(id)) : [], // Add portages
           // Send all new services as array
           new_services: formData.newServices
             .filter(service => service.label.trim() !== '')
@@ -284,6 +299,66 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 required
               />
             </div>
+
+            {/* Portage Company Question */}
+            <div className="space-y-3">
+              <label htmlFor="portage" className="text-sm font-medium text-gray-700">Êtes-vous une société de portage salarial ? *</label>
+              <div id="portage" className="space-y-3">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="isPortage"
+                    value="yes"
+                    checked={formData.isPortage === "yes"}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, isPortage: e.target.value }))}
+                    className="text-blue-600"
+                  />
+                  <span className="text-gray-700">Oui, nous sommes une société de portage salarial</span>
+                </label>
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="isPortage"
+                    value="no"
+                    checked={formData.isPortage === "no"}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, isPortage: e.target.value }))}
+                    className="text-blue-600"
+                  />
+                  <span className="text-gray-700">Non, nous ne sommes pas une société de portage</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Portages Selection - Only show if company is portage */}
+            {formData.isPortage === "yes" && (
+              <CollapsibleSection
+                title="Services de portage proposés *"
+                description="Sélectionnez les services de portage que votre société propose"
+                items={portages}
+                selectedItems={formData.selectedPortages}
+                onToggleItem={togglePortageSelection}
+                getItemId={(portage) => portage.id}
+                renderItem={(portage, isSelected) => (
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <span className="text-sm text-gray-700 font-medium">{portage.name}</span>
+                      {portage.description && (
+                        <p className="text-xs text-gray-500 mt-1">{portage.description}</p>
+                      )}
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => togglePortageSelection(portage.id)}
+                      className="h-4 w-4 text-blue-600 rounded"
+                    />
+                  </div>
+                )}
+                loadingText="Chargement des services de portage..."
+                emptyStateText="Aucun service de portage disponible"
+                showItemCount={true}
+              />
+            )}
           </div>
         )
 
@@ -629,8 +704,13 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
   const isStepValid = () => {
     switch (currentStep) {
-      case 1:
-        return formData.companyName && formData.siret && formData.description
+      case 1: {
+        const basicValid = formData.companyName && formData.siret && formData.description && formData.isPortage;
+        if (formData.isPortage === "yes") {
+          return basicValid && formData.selectedPortages.length > 0;
+        }
+        return basicValid;
+      }
       case 2:
         return formData.consultantCount && formData.managementFeeRate && formData.selectedMetiers.length > 0
       case 3:

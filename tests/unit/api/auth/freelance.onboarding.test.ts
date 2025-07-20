@@ -38,6 +38,7 @@ describe('AuthService - Freelance Onboarding', () => {
       priority: 'HIGH',
       tjm: 650.00,
       days: 20,
+      wants_portage: false,
       selected_services: [
         {
           serviceId: 1,
@@ -59,6 +60,7 @@ describe('AuthService - Freelance Onboarding', () => {
       priority: 'MEDIUM',
       tjm: 500.00,
       days: 15,
+      wants_portage: false,
     };
 
     const mockFreelance = {
@@ -140,6 +142,9 @@ describe('AuthService - Freelance Onboarding', () => {
           freelanceRequest: {
             create: jest.fn().mockResolvedValue(mockFreelanceRequest),
           },
+          freelanceRequestPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 0 }),
+          },
           platformService: {
             findUnique: jest.fn()
               .mockResolvedValueOnce(mockPlatformServices[0])
@@ -220,6 +225,9 @@ describe('AuthService - Freelance Onboarding', () => {
           freelanceRequest: {
             create: jest.fn().mockResolvedValue(mockFreelanceRequest),
           },
+          freelanceRequestPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 0 }),
+          },
         };
         return await callback(mockTx);
       });
@@ -252,6 +260,9 @@ describe('AuthService - Freelance Onboarding', () => {
           },
           freelanceRequest: {
             create: jest.fn().mockResolvedValue(mockFreelanceRequest),
+          },
+          freelanceRequestPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 0 }),
           },
           platformService: {
             findUnique: jest.fn()
@@ -342,6 +353,9 @@ describe('AuthService - Freelance Onboarding', () => {
           freelanceRequest: {
             create: jest.fn().mockRejectedValue(requestError),
           },
+          freelanceRequestPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 0 }),
+          },
         };
         return await callback(mockTx);
       });
@@ -374,6 +388,9 @@ describe('AuthService - Freelance Onboarding', () => {
           },
           freelanceRequest: {
             create: jest.fn().mockResolvedValue(mockFreelanceRequest),
+          },
+          freelanceRequestPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 0 }),
           },
           platformService: {
             findUnique: jest.fn().mockResolvedValueOnce(mockPlatformServices[0]),
@@ -448,6 +465,9 @@ describe('AuthService - Freelance Onboarding', () => {
           freelanceRequest: {
             create: jest.fn().mockResolvedValue(mockFreelanceRequest),
           },
+          freelanceRequestPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 0 }),
+          },
           platformService: {
             findUnique: jest.fn().mockResolvedValueOnce(mockPlatformServices[0]),
           },
@@ -471,6 +491,98 @@ describe('AuthService - Freelance Onboarding', () => {
         expect.objectContaining({
           serviceId: 1,
           isRequired: true,
+        })
+      );
+    });
+
+    it('should successfully complete freelance onboarding with portage preferences', async () => {
+      const mockFreelanceWithPortage: FreelanceOnboarding = {
+        ...mockFreelanceData,
+        wants_portage: true,
+        selected_portages: [1, 2],
+        selected_services: [
+          {
+            serviceId: 1,
+            isRequired: true,
+            responseData: 'React development expertise',
+          },
+        ],
+      };
+
+      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
+        const mockTx = {
+          freelance: {
+            create: jest.fn().mockResolvedValue(mockFreelance),
+          },
+          freelanceRequest: {
+            create: jest.fn().mockResolvedValue(mockFreelanceRequest),
+          },
+          freelanceRequestPortage: {
+            createMany: jest.fn().mockResolvedValue({ count: 2 }),
+          },
+          platformService: {
+            findUnique: jest.fn().mockResolvedValueOnce(mockPlatformServices[0]),
+          },
+          freelanceRequestOption: {
+            create: jest.fn().mockResolvedValueOnce(mockRequestOptions[0]),
+          },
+        };
+        return await callback(mockTx);
+      });
+
+      mockPrisma.$transaction = mockTransaction;
+
+      const result = await AuthService.completeFreelanceOnboarding(mockUserId, mockFreelanceWithPortage);
+
+      expect(mockTransaction).toHaveBeenCalledWith(expect.any(Function));
+
+      expect(result).toEqual({
+        freelance: mockFreelance,
+        freelanceRequest: mockFreelanceRequest,
+        requestOptions: [mockRequestOptions[0]],
+      });
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Starting freelance onboarding process',
+        expect.objectContaining({
+          operation: 'completeFreelanceOnboarding',
+          userId: mockUserId,
+          metier_id: 1,
+          tjm: 650.00,
+          days: 20,
+        })
+      );
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Freelance profile created successfully',
+        expect.objectContaining({
+          freelanceId: 1,
+        })
+      );
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Freelance request created successfully',
+        expect.objectContaining({
+          freelanceRequestId: 1,
+          missionStatus: 'OPEN',
+          priority: 'HIGH',
+          clientName: 'Acme Corporation',
+        })
+      );
+
+      expect(mockLogger.debug).toHaveBeenCalledWith(
+        'Processing freelance service requests',
+        expect.objectContaining({
+          selectedServicesCount: 1,
+        })
+      );
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Freelance service requests processed',
+        expect.objectContaining({
+          totalRequested: 1,
+          successfullyLinked: 1,
+          skipped: 0,
         })
       );
     });

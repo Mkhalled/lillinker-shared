@@ -20,7 +20,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { platformServices, metiers, error: dataError } = useModalData()
+  const { platformServices, metiers, portages, error: dataError } = useModalData()
   const { isValidBusinessEmail } = useEmailValidation()
   const [formData, setFormData] = useState({
     // Step 1: Personal info
@@ -37,6 +37,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
     clientSector: "",
     tjm: "",
     days: "",
+    wantsPortage: "", // "yes" or "no"
+    selectedPortages: [] as string[],
 
     // Step 3: Services
     selectedServices: [] as {
@@ -105,6 +107,16 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       selectedServices: prev.selectedServices.map(s => 
         s.serviceId === serviceId ? { ...s, responseData: value } : s
       )
+    }))
+  }
+
+  const handlePortageToggle = (portageId: number) => {
+    const portageIdStr = portageId.toString()
+    setFormData((prev) => ({
+      ...prev,
+      selectedPortages: prev.selectedPortages.includes(portageIdStr)
+        ? prev.selectedPortages.filter(id => id !== portageIdStr)
+        : [...prev.selectedPortages, portageIdStr]
     }))
   }
 
@@ -182,6 +194,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                  formData.priority === 'medium' ? 'MEDIUM' : 'LOW',
         tjm: parseFloat(formData.tjm) || 1, // Ensure minimum value of 1
         days: parseFloat(formData.days) || 0.5, // Ensure minimum value of 0.5
+        wants_portage: formData.wantsPortage === "yes",
+        selected_portages: formData.wantsPortage === "yes" ? formData.selectedPortages.map(id => parseInt(id)) : [],
         selected_services: formData.selectedServices,
         // Only include client fields if they have values
         ...(formData.clientName && { client_name: formData.clientName }),
@@ -391,6 +405,66 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                 />
               </div>
             </div>
+
+            {/* Portage Question */}
+            <div className="space-y-3">
+              <label htmlFor="portage-freelance" className="text-sm font-medium text-gray-700">Souhaitez-vous faire appel à une société de portage salarial ? *</label>
+              <div id="portage-freelance" className="space-y-3">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="wantsPortage"
+                    value="yes"
+                    checked={formData.wantsPortage === "yes"}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, wantsPortage: e.target.value }))}
+                    className="text-blue-600"
+                  />
+                  <span className="text-gray-700">Oui, je souhaite une société de portage</span>
+                </label>
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="wantsPortage"
+                    value="no"
+                    checked={formData.wantsPortage === "no"}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, wantsPortage: e.target.value }))}
+                    className="text-blue-600"
+                  />
+                  <span className="text-gray-700">Non, je ne souhaite pas de portage</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Portages Selection - Only show if freelancer wants portage */}
+            {formData.wantsPortage === "yes" && (
+              <CollapsibleSection
+                title="Services de portage souhaités *"
+                description="Sélectionnez les services de portage qui vous intéressent"
+                items={portages}
+                selectedItems={formData.selectedPortages}
+                onToggleItem={handlePortageToggle}
+                getItemId={(portage) => portage.id}
+                renderItem={(portage, isSelected) => (
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <span className="text-sm text-gray-700 font-medium">{portage.name}</span>
+                      {portage.description && (
+                        <p className="text-xs text-gray-500 mt-1">{portage.description}</p>
+                      )}
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handlePortageToggle(portage.id)}
+                      className="h-4 w-4 text-blue-600 rounded"
+                    />
+                  </div>
+                )}
+                loadingText="Chargement des services de portage..."
+                emptyStateText="Aucun service de portage disponible"
+                showItemCount={true}
+              />
+            )}
           </div>
         )
 
@@ -658,15 +732,21 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                formData.phone && 
                formData.metierId > 0 &&
                isValidBusinessEmail(formData.email)
-      case 2:
-        return (
+      case 2: {
+        const basicValid = (
           formData.hasMission &&
           formData.tjm &&
           parseFloat(formData.tjm) >= 1 &&
           formData.days &&
-          parseFloat(formData.days) >= 0.5
-          // Client information is completely optional, no validation needed
-        )
+          parseFloat(formData.days) >= 0.5 &&
+          formData.wantsPortage
+        );
+        // If wants portage, must select at least one portage service
+        if (formData.wantsPortage === "yes") {
+          return basicValid && formData.selectedPortages.length > 0;
+        }
+        return basicValid;
+      }
       case 3:
         return true // Optional step
       case 4:
