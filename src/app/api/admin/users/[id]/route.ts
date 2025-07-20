@@ -3,7 +3,7 @@ import { getToken } from 'next-auth/jwt';
 
 import { UserDAO } from '@/dao/user.dao';
 import { logger } from '@/lib/logger';
-import { accountActivationEmail } from '@/lib/mailer';
+import { sendAccountActivationEmail } from '@/lib/mailer';
 
 const secret = process.env.NEXTAUTH_SECRET!;
 
@@ -21,13 +21,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    const userId = params.id;
+    const userId = parseInt(params.id);
 
-    await UserDAO.update(userId, { isActive: true });
+    await UserDAO.update(userId, { status: true });
     const user = await UserDAO.findUserBasicInfoById(userId);
     if (user) {
-      const fullName = `${user.firstname} ${user.lastname}`;
-      await accountActivationEmail(user.email, fullName);
+      const fullName = `${user.first_name} ${user.last_name}`;
+      await sendAccountActivationEmail(user.email, fullName);
     }
     logger.info('User account activated successfully', { userId });
     return NextResponse.json({ message: 'Account Activated successfully' }, { status: 200 });

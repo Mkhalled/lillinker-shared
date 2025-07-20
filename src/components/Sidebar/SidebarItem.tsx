@@ -3,8 +3,15 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 
 import SidebarDropdown from '@/components/Sidebar/SidebarDropdown';
+import type { MenuItem } from '@/types/menu';
 
-const SidebarItem = ({ item, pageName, setPageName }: any) => {
+interface SidebarItemProps {
+  item: MenuItem;
+  pageName: string;
+  setPageName: (name: string) => void;
+}
+
+const SidebarItem = ({ item, pageName, setPageName }: SidebarItemProps) => {
   const handleClick = () => {
     const updatedPageName = pageName !== item.label.toLowerCase() ? item.label.toLowerCase() : '';
     return setPageName(updatedPageName);
@@ -12,10 +19,10 @@ const SidebarItem = ({ item, pageName, setPageName }: any) => {
 
   const pathname = usePathname();
 
-  const isActive = (item: any) => {
-    if (item.route === pathname) return true;
-    if (item.children) {
-      return item.children.some((child: any) => isActive(child));
+  const isActive = (menuItem: MenuItem): boolean => {
+    if (menuItem.route === pathname) return true;
+    if (menuItem.children) {
+      return menuItem.children.some((child) => child.route === pathname);
     }
     return false;
   };
@@ -26,7 +33,7 @@ const SidebarItem = ({ item, pageName, setPageName }: any) => {
     <>
       <li>
         <Link
-          href={item.route}
+          href={item.route || '#'}
           onClick={handleClick}
           className={`${isItemActive ? 'bg-graydark dark:bg-meta-4' : ''} group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4`}
         >
@@ -59,7 +66,7 @@ const SidebarItem = ({ item, pageName, setPageName }: any) => {
               pageName !== item.label.toLowerCase() && 'hidden'
             }`}
           >
-            <SidebarDropdown item={item.children} />
+            <SidebarDropdown item={item} />
           </div>
         )}
       </li>

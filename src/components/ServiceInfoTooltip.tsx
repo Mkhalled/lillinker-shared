@@ -12,7 +12,7 @@ interface ServiceInfoTooltipProps {
     requires_data: boolean;
     data_label: string;
     data_description: string | null;
-    choices: any;
+    choices: unknown;
     user ?: {
       first_name: string;
       last_name: string;
@@ -47,7 +47,7 @@ const ServiceInfoTooltip = ({ service }: ServiceInfoTooltipProps) => {
     }
   };
 
-  const parseChoices = (choices: any) => {
+  const parseChoices = (choices: unknown): string[] => {
     if (!choices) return [];
     if (typeof choices === 'string') {
       try {
@@ -119,10 +119,10 @@ const ServiceInfoTooltip = ({ service }: ServiceInfoTooltipProps) => {
                     )}
                     
                     {/* Show choices for SELECT and RADIO types */}
-                    {(service.data_type === 'SELECT' || service.data_type === 'RADIO') && service.choices && (
+                    {(service.data_type === 'SELECT' || service.data_type === 'RADIO') && parseChoices(service.choices).length > 0 && (
                       <span>. Options: {parseChoices(service.choices).join(', ')}</span>
                     )}
-
+                    
                     {/* Show example for TEXT type */}
                     {service.data_type === 'TEXT' && (
                       <span>. Format: Texte libre (ex: description, commentaire, adresse)</span>

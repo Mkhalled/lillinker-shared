@@ -1,28 +1,17 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, CheckCircle, Plus, Trash2, X, Building2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-import { Button } from '../ui/button/Button';
+import { useModalData } from '../../hooks/useModalData';
+import { EmailValidationInput, useEmailValidation } from '../form/EmailValidationInput';
 import ServiceInfoTooltip from '../ServiceInfoTooltip';
+import { Button } from '../ui/button/Button';
+import { CollapsibleSection } from '../ui/CollapsibleSection';
 
-interface PlatformService {
-  id: number
-  label: string
-  description: string | null
-  data_type: string
-  requires_data: boolean
-  data_label: string
-  data_description: string | null
-  choices: any
-  user: {
-    first_name: string
-    last_name: string
-    ownedCompany: {
-      name: string
-    } | null
-  }
-}
+import { ModalWrapper } from './ModalWrapper';
+import { SuccessStep } from './SuccessStep';
+
 
 interface CompanyModalProps {
   onClose: () => void
@@ -32,10 +21,8 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [platformServices, setPlatformServices] = useState<PlatformService[]>([])
-  const [emailExists, setEmailExists] = useState(false)
-  const [checkingEmail, setCheckingEmail] = useState(false)
-  const [showPlatformServices, setShowPlatformServices] = useState(false)
+  const { platformServices, metiers, error: dataError } = useModalData()
+  const { isValidBusinessEmail } = useEmailValidation()
   const [formData, setFormData] = useState({
     // Step 1: General info
     companyName: "",
@@ -53,6 +40,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
     // Step 4: Services selection and creation
     selectedPlatformServices: [] as string[],
+    selectedMetiers: [] as string[], // Add metiers selection
     newServices: [] as Array<{
       id: string
       label: string
@@ -67,77 +55,12 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
   const totalSteps = 5
 
-  // Email validation function
-  const isValidBusinessEmail = (email: string): boolean => {
-    // Basic email format check
-    const basicEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    if (!basicEmailRegex.test(email)) {
-      return false
-    }
-    
-    // Check for excluded domains (Gmail, Yahoo)
-    const domain = email.split('@')[1]?.toLowerCase()
-    const excludedDomains = ['gmail.com', 'yahoo.com', 'yahoo.fr']
-    
-    return !excludedDomains.includes(domain)
-  }
-
-  // Fetch platform services when component mounts
+  // Set data error if there's a fetching error
   useEffect(() => {
-    const fetchPlatformServices = async () => {
-      try {
-        const response = await fetch('/api/platform-services')
-        if (response.ok) {
-          const data = await response.json()
-          setPlatformServices(data.data || [])
-        }
-      } catch (error) {
-        console.error('Failed to fetch platform services:', error)
-      }
+    if (dataError) {
+      setError(dataError)
     }
-
-    fetchPlatformServices()
-  }, [])
-
-  // Check if email exists when adminEmail changes
-  useEffect(() => {
-    const checkEmailExists = async () => {
-      if (!formData.adminEmail || formData.adminEmail.length < 3) {
-        setEmailExists(false)
-        return
-      }
-
-      // Only check if email format is valid
-      if (!isValidBusinessEmail(formData.adminEmail)) {
-        setEmailExists(false)
-        return
-      }
-
-      setCheckingEmail(true)
-      try {
-        const response = await fetch('/api/check-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email: formData.adminEmail }),
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          setEmailExists(data.exists)
-        }
-      } catch (error) {
-        console.error('Error checking email:', error)
-      } finally {
-        setCheckingEmail(false)
-      }
-    }
-
-    // Debounce the email check
-    const timeoutId = setTimeout(checkEmailExists, 500)
-    return () => clearTimeout(timeoutId)
-  }, [formData.adminEmail])
+  }, [dataError])
 
   const handleNext = () => {
     if (currentStep === 4) {
@@ -163,6 +86,16 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     }))
   }
 
+  const toggleMetierSelection = (metierId: number) => {
+    const metierIdStr = metierId.toString()
+    setFormData(prev => ({
+      ...prev,
+      selectedMetiers: prev.selectedMetiers.includes(metierIdStr)
+        ? prev.selectedMetiers.filter(id => id !== metierIdStr)
+        : [...prev.selectedMetiers, metierIdStr]
+    }))
+  }
+
   const addNewService = () => {
     const newService = {
       id: Date.now().toString(),
@@ -180,7 +113,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     }))
   }
 
-  const updateNewService = (serviceId: string, field: string, value: any) => {
+  const updateNewService = (serviceId: string, field: string, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       newServices: prev.newServices.map(service =>
@@ -274,6 +207,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           consultant_count: parseInt(formData.consultantCount),
           management_fees: parseFloat(formData.managementFeeRate),
           selected_services: formData.selectedPlatformServices.map(id => parseInt(id)),
+          selected_metiers: formData.selectedMetiers.map(id => parseInt(id)), // Add metiers
           // Send all new services as array
           new_services: formData.newServices
             .filter(service => service.label.trim() !== '')
@@ -387,13 +321,30 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               <span className="text-sm font-medium text-gray-900">{formData.managementFeeRate}%</span>
               </div>
             </div>
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="font-medium text-blue-900 mb-2">Fonctionnalité future</h4>
-              <p className="text-sm text-blue-800">
-                Bientôt, vous pourrez définir des paliers de frais selon le TJM (Taux Journalier Moyen) pour proposer
-                des tarifs dégressifs.
-              </p>
-            </div>
+
+            {/* Metiers Selection */}
+            <CollapsibleSection
+              title="Métiers supportés *"
+              description="Sélectionnez les métiers que votre société de portage prend en charge"
+              items={metiers}
+              selectedItems={formData.selectedMetiers}
+              onToggleItem={toggleMetierSelection}
+              getItemId={(metier) => metier.id}
+              renderItem={(metier, isSelected) => (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-700 font-medium">{metier.name}</span>
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleMetierSelection(metier.id)}
+                    className="h-4 w-4 text-blue-600 rounded"
+                  />
+                </div>
+              )}
+              loadingText="Chargement des métiers..."
+              emptyStateText="Aucun métier disponible"
+              showItemCount={true}
+            />
           </div>
         )
 
@@ -424,40 +375,13 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700">Email de l&apos;administrateur *</label>
-              <div className="relative">
-                <input
-                id='email'
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                  emailExists 
-                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                    : 'border-gray-300 focus:ring-blue-500'
-                }`}
-                type="email"
-                value={formData.adminEmail}
-                onChange={(e) => setFormData((prev) => ({ ...prev, adminEmail: e.target.value }))}
-                placeholder="marie.martin@societe.com"
-                title="Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)"
-                required
-                />
-                {checkingEmail && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                  </div>
-                )}
-              </div>
-              
-              {/* Email validation errors */}
-              {formData.adminEmail && !isValidBusinessEmail(formData.adminEmail) && (
-                <p className="text-xs text-red-600">Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)</p>
-              )}
-              
-              {/* Email exists error */}
-              {emailExists && formData.adminEmail && (
-                <p className="text-xs text-red-600">Cette adresse email est déjà utilisée</p>
-              )}
-            </div>
+            <EmailValidationInput
+              email={formData.adminEmail}
+              onEmailChange={(email) => setFormData((prev) => ({ ...prev, adminEmail: email }))}
+              label="Email de l'administrateur *"
+              placeholder="marie.martin@societe.com"
+              id="admin-email"
+            />
             <div className="space-y-2">
               <label htmlFor="phone" className="text-sm font-medium text-gray-700">Téléphone de l&apos;administrateur *</label>
               <input
@@ -477,77 +401,41 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           <div className="space-y-6">
 
             {/* Existing Platform Services */}
-            <div className="space-y-4">
-              <div 
-                className="flex items-center justify-between cursor-pointer p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                onClick={() => setShowPlatformServices(!showPlatformServices)}
-              >
-                <h4 className="font-medium text-gray-900">Services disponibles sur la plateforme</h4>
-                <div className="flex items-center gap-2">
-                  {platformServices.length > 0 && (
-                    <span className="text-sm text-gray-500">
-                      {platformServices.length} service{platformServices.length > 1 ? 's' : ''}
-                    </span>
-                  )}
-                  {showPlatformServices ? (
-                    <ChevronUp className="h-4 w-4 text-gray-500" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 text-gray-500" />
-                  )}
+            <CollapsibleSection
+              title="Services disponibles sur la plateforme"
+              items={platformServices}
+              selectedItems={formData.selectedPlatformServices}
+              onToggleItem={toggleServiceSelection}
+              getItemId={(service) => service.id}
+              renderItem={(service, isSelected) => (
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h5 className="font-medium text-gray-900">{service.label}</h5>
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <ServiceInfoTooltip service={service} />
+                      </div>
+                    </div>
+                    {service.user?.ownedCompany && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Par {service.user.ownedCompany.name}
+                      </p>
+                    )}
+                  </div>
+                  <div className="ml-3">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleServiceSelection(service.id)}
+                      className="h-4 w-4 text-blue-600 rounded"
+                    />
+                  </div>
                 </div>
-              </div>
-              
-              {showPlatformServices && (
-                <>
-                  {platformServices.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500 border border-gray-200 rounded-lg">
-                      <Building2 className="h-12 w-12 mx-auto mb-2 text-gray-400" />
-                      <p>Aucun service disponible pour le moment</p>
-                    </div>
-                  ) : (
-                    <div className="max-h-60 overflow-y-auto space-y-2 border border-gray-200 rounded-lg p-4">
-                      {platformServices.map((service) => (
-                        <div
-                          key={service.id}
-                          className={`p-3 border rounded-lg transition-colors ${
-                            formData.selectedPlatformServices.includes(service.id.toString())
-                              ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <div className="flex justify-between items-start">
-                            <div 
-                              className="flex-1 cursor-pointer"
-                              onClick={() => toggleServiceSelection(service.id)}
-                            >
-                              <div className="flex items-center gap-2">
-                                <h5 className="font-medium text-gray-900">{service.label}</h5>
-                                <div onClick={(e) => e.stopPropagation()}>
-                                  <ServiceInfoTooltip service={service} />
-                                </div>
-                              </div>
-                              {service.user.ownedCompany && (
-                                <p className="text-xs text-gray-500 mt-1">
-                                  Par {service.user.ownedCompany.name}
-                                </p>
-                              )}
-                            </div>
-                            <div className="ml-3">
-                              <input
-                                type="checkbox"
-                                checked={formData.selectedPlatformServices.includes(service.id.toString())}
-                                onChange={() => toggleServiceSelection(service.id)}
-                                className="h-4 w-4 text-blue-600 rounded"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </>
               )}
-            </div>
+              loadingText="Aucun service disponible pour le moment"
+              emptyStateText="Aucun service disponible pour le moment"
+              showItemCount={true}
+            />
 
             {/* Create New Service Section */}
             <div className="border-t pt-6">
@@ -698,28 +586,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         )
 
       case 5:
-        return (
-          <div className="space-y-6 text-center">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
-            <div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Vérifiez votre adresse email !</h3>
-              <p className="text-gray-600 mb-4">
-              Un email de vérification a été envoyé à <strong>{formData.adminEmail}</strong>. 
-              Cliquez sur le lien dans l&apos;email pour vérifier votre adresse et définir votre mot de passe.
-              </p>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
-              <h4 className="font-medium text-blue-900 mb-2">Prochaines étapes :</h4>
-              <ul className="text-sm text-blue-800 space-y-1">
-                <li>• Vérifiez votre boîte email (y compris les spams)</li>
-                <li>• Cliquez sur le lien de vérification</li>
-                <li>• Définissez votre mot de passe</li>
-                <li>• Attendez la validation par notre équipe (2-3 jours ouvrés)</li>
-                <li>• Accès complet à la plateforme après validation</li>
-              </ul>
-              </div>
-            </div>
-          </div>
-        )
+        return <SuccessStep email={formData.adminEmail} />
 
       default:
         return null
@@ -743,18 +610,34 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     }
   }
 
+  const getStepDescription = () => {
+    switch (currentStep) {
+      case 1:
+        return "Présentez votre société de portage salarial"
+      case 2:
+        return "Informations sur vos consultants et tarifs"
+      case 3:
+        return "Coordonnées de l'administrateur du compte"
+      case 4:
+        return "Définissez les services que vous proposez"
+      case 5:
+        return "Votre demande a été transmise"
+      default:
+        return ""
+    }
+  }
+
   const isStepValid = () => {
     switch (currentStep) {
       case 1:
         return formData.companyName && formData.siret && formData.description
       case 2:
-        return formData.consultantCount && formData.managementFeeRate
+        return formData.consultantCount && formData.managementFeeRate && formData.selectedMetiers.length > 0
       case 3:
         return formData.adminFirstName && 
                formData.adminLastName && 
                formData.adminEmail && 
                formData.adminPhone &&
-               !emailExists &&
                isValidBusinessEmail(formData.adminEmail)
       case 4:
        {
@@ -774,114 +657,25 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">L</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">Lillinker</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">
-                Étape {currentStep} sur {totalSteps}
-              </span>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${(currentStep / totalSteps) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">{getStepTitle()}</h2>
-            <p className="text-gray-600">
-              {currentStep === 1 && "Présentez votre société de portage salarial"}
-              {currentStep === 2 && "Informations sur vos consultants et tarifs"}
-              {currentStep === 3 && "Coordonnées de l'administrateur du compte"}
-              {currentStep === 4 && "Définissez les services que vous proposez"}
-              {currentStep === 6 && "Votre demande a été transmise"}
-            </p>
-          </div>
-
-          <div className="mb-8">
-            {error && (
-              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-800 text-sm">{error}</p>
-              </div>
-            )}
-            {renderStep()}
-          </div>
-
-          {currentStep < 5 && (
-            <div className="flex justify-between">
-              <Button 
-                variant="outline" 
-                onClick={handlePrevious} 
-                disabled={currentStep === 1 || isLoading}
-                className="flex items-center space-x-2"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                <span>Précédent</span>
-              </Button>
-
-              {currentStep < 4 ? (
-                <Button 
-                  onClick={handleNext} 
-                  disabled={!isStepValid() || isLoading}
-                  className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  <span>Suivant</span>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button 
-                  onClick={handleComplete}
-                  disabled={!isStepValid() || isLoading}
-                  className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      <span>Inscription en cours...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Finaliser l&apos;inscription</span>
-                      <CheckCircle className="h-4 w-4" />
-                    </>
-                  )}
-                </Button>
-              )}
-            </div>
-          )}
-
-          {currentStep === 5 && (
-            <div className="flex justify-center">
-              <Button 
-                onClick={onClose}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8"
-              >
-                Fermer
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <ModalWrapper
+      onClose={onClose}
+      title="Lillinker"
+      currentStep={currentStep}
+      totalSteps={totalSteps}
+      stepTitle={getStepTitle()}
+      stepDescription={getStepDescription()}
+      onNext={handleNext}
+      onPrevious={handlePrevious}
+      onComplete={handleComplete}
+      isStepValid={isStepValid() as boolean}
+      isLoading={isLoading}
+      error={error}
+      showNavigation={currentStep < 5}
+      completeButtonText="Finaliser l'inscription"
+      nextButtonText="Suivant"
+    >
+      {renderStep()}
+    </ModalWrapper>
   );
 };
 

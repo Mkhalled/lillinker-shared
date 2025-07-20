@@ -1,11 +1,11 @@
 'use client';
 
+import Image from "next/image";
 import { useState } from 'react';
 
 import CompanyModal from '../modals/CompanyModal';
 import FreelanceModal from '../modals/FreelanceModal';
 import { Button } from '../ui/button/Button';
-import Image from "next/image"
 const Hero = () => {
   const [showFreelanceModal, setShowFreelanceModal] = useState(false)
   const [showCompanyModal, setShowCompanyModal] = useState(false)

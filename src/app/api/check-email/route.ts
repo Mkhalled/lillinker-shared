@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { UserDAO } from '@/dao/user.dao';
 
 export async function POST(request: NextRequest) {

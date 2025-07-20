@@ -36,6 +36,7 @@ describe('AuthService - Company Onboarding', () => {
       consultant_count: 10,
       management_fees: 15.5,
       selected_services: [1, 2, 3],
+      selected_metiers: [1, 2], // Add required metiers
     };
 
     const mockCompanyDataWithNewService: CompanyOnboarding = {
@@ -44,6 +45,7 @@ describe('AuthService - Company Onboarding', () => {
       siret: '98765432109876',
       consultant_count: 25,
       management_fees: 20.0,
+      selected_metiers: [1, 3], // Add required metiers
       new_services: [
         {
           service_label: 'Custom Analytics Service',
@@ -63,6 +65,7 @@ describe('AuthService - Company Onboarding', () => {
       siret: '11223344556677',
       consultant_count: 15,
       management_fees: 18.0,
+      selected_metiers: [2, 4], // Add required metiers
       new_services: [
         {
           service_label: 'Analytics Service',
@@ -169,6 +172,9 @@ describe('AuthService - Company Onboarding', () => {
               .mockResolvedValueOnce(mockCompanyServices[1])
               .mockResolvedValueOnce(mockCompanyServices[2]),
           },
+          companyMetier: {
+            createMany: jest.fn().mockResolvedValue({ count: 2 }),
+          },
         };
         return await callback(mockTx);
       });
@@ -231,6 +237,9 @@ describe('AuthService - Company Onboarding', () => {
           company: {
             create: jest.fn().mockResolvedValue(mockCompany),
           },
+          companyMetier: {
+            createMany: jest.fn().mockResolvedValue({ count: 2 }),
+          },
           platformService: {
             create: jest.fn().mockResolvedValue(mockPlatformService),
           },
@@ -284,6 +293,9 @@ describe('AuthService - Company Onboarding', () => {
         const mockTx = {
           company: {
             create: jest.fn().mockResolvedValue(mockCompany),
+          },
+          companyMetier: {
+            createMany: jest.fn().mockResolvedValue({ count: 2 }),
           },
           platformService: {
             create: jest.fn()
@@ -356,6 +368,9 @@ describe('AuthService - Company Onboarding', () => {
               .mockResolvedValueOnce(mockCompanyServices[1])
               .mockResolvedValueOnce(mockCompanyServices[2])
               .mockResolvedValueOnce(mockNewCompanyService),
+          },
+          companyMetier: {
+            createMany: jest.fn().mockResolvedValue({ count: 2 }),
           },
           platformService: {
             create: jest.fn().mockResolvedValue(mockPlatformService),
@@ -467,6 +482,9 @@ describe('AuthService - Company Onboarding', () => {
         const mockTx = {
           company: {
             create: jest.fn().mockResolvedValue(mockCompany),
+          },
+          companyMetier: {
+            createMany: jest.fn().mockResolvedValue({ count: 2 }),
           },
           platformService: {
             create: jest.fn().mockRejectedValue(serviceCreationError),

@@ -110,8 +110,8 @@ export class AuthService {
 
         const results = {
           company,
-          platformServices: [] as any[],
-          companyServices: [] as any[],
+          platformServices: [] as unknown[],
+          companyServices: [] as unknown[],
         };
 
         // Handle selected existing platform services
@@ -139,6 +139,27 @@ export class AuthService {
           logger.info('Company services linked successfully', {
             ...logContext,
             linkedServicesCount: companyServices.length,
+          });
+        }
+
+        // Handle selected metiers
+        if (data.selected_metiers && data.selected_metiers.length > 0) {
+          logger.debug('Processing selected metiers', {
+            ...logContext,
+            selectedMetiersCount: data.selected_metiers.length,
+            metierIds: data.selected_metiers,
+          });
+
+          await tx.companyMetier.createMany({
+            data: data.selected_metiers.map(metierId => ({
+              company_id: company.id,
+              metier_id: metierId,
+            })),
+          });
+
+          logger.info('Company metiers linked successfully', {
+            ...logContext,
+            linkedMetiersCount: data.selected_metiers.length,
           });
         }
 
@@ -296,14 +317,16 @@ export class AuthService {
                     case 'NUMBER':
                       responseDataJson = { number: selectedService.responseData };
                       break;
-                    case 'SELECT':
+                    case 'SELECT': {
                       // For SELECT type, responseData comes as comma-separated values
                       const selections = selectedService.responseData.split(',').map(s => s.trim()).filter(s => s !== '');
-                      responseDataJson = { selected: selections };
+                      responseDataJson = { select: selections };
                       break;
-                    case 'RADIO':
-                      responseDataJson = { selected: selectedService.responseData };
+                    }
+                    case 'RADIO': {
+                      responseDataJson = { radio: selectedService.responseData };
                       break;
+                    }
                     default:
                       responseDataJson = { value: selectedService.responseData };
                   }

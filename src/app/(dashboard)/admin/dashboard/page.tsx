@@ -8,7 +8,7 @@ const PlatformAdminDashboard = () => {
   return (
     <div>
       <h1 className="text-2xl font-semibold text-gray-900">
-        Welcome Platform Admin : {session?.user.username}
+        Welcome Platform Admin : {session?.user.last_name}
       </h1>
     </div>
   );

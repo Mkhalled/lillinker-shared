@@ -11,7 +11,7 @@ export class CompanyDAO {
 
   static async findById(id: string) {
     return prisma.company.findUnique({
-      where: { id },
+      where: { id: parseInt(id) },
     });
   }
 
@@ -23,14 +23,14 @@ export class CompanyDAO {
 
   static async update(id: string, data: Prisma.CompanyUpdateInput) {
     return prisma.company.update({
-      where: { id },
+      where: { id: parseInt(id) },
       data,
     });
   }
 
   static async delete(id: string) {
     return prisma.company.delete({
-      where: { id },
+      where: { id: parseInt(id) },
     });
   }
 }

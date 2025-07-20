@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const enhancedLogContext = {
       ...logContext,
       userId,
-      metier: onboardingData.metier,
+      metier_id: onboardingData.metier_id,
       tjm: onboardingData.tjm,
       days: onboardingData.days,
     };

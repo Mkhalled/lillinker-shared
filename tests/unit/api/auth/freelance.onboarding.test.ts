@@ -30,7 +30,7 @@ describe('AuthService - Freelance Onboarding', () => {
   describe('completeFreelanceOnboarding', () => {
     const mockUserId = 1;
     const mockFreelanceData: FreelanceOnboarding = {
-      metier: 'Full Stack Developer',
+      metier_id: 1, // Changed from 'metier' to 'metier_id' and made it a number
       mission_status: 'OPEN',
       client_name: 'Acme Corporation',
       client_address: '123 Business Street, Paris, France',
@@ -53,7 +53,7 @@ describe('AuthService - Freelance Onboarding', () => {
     };
 
     const mockFreelanceDataNoServices: FreelanceOnboarding = {
-      metier: 'Backend Developer',
+      metier_id: 2, // Changed from 'metier' to 'metier_id' and made it a number
       mission_status: 'PENDING',
       client_name: 'Tech Startup',
       priority: 'MEDIUM',
@@ -64,7 +64,7 @@ describe('AuthService - Freelance Onboarding', () => {
     const mockFreelance = {
       id: 1,
       freelance_id: mockUserId,
-      metier: 'Full Stack Developer',
+      metier_id: 1, // Changed from 'metier' to 'metier_id'
       created_at: new Date(),
       updated_at: new Date(),
     };
@@ -83,18 +83,32 @@ describe('AuthService - Freelance Onboarding', () => {
       updated_at: new Date(),
     };
 
-    const mockCompanyServices = [
+    const mockPlatformServices = [
       {
         id: 1,
-        company_id: 1,
-        service_id: 1,
-        is_active: true,
+        user_id: 1,
+        label: 'React Development',
+        description: 'React application development',
+        data_type: 'TEXT',
+        requires_data: true,
+        data_label: 'Technical Requirements',
+        data_description: 'Describe your technical requirements',
+        choices: null,
+        status: 'ACTIVE',
+        created_at: new Date(),
       },
       {
         id: 2,
-        company_id: 2,
-        service_id: 2,
-        is_active: true,
+        user_id: 2,
+        label: 'DevOps Support',
+        description: 'DevOps and infrastructure support',
+        data_type: 'TEXT',
+        requires_data: false,
+        data_label: '',
+        data_description: '',
+        choices: null,
+        status: 'ACTIVE',
+        created_at: new Date(),
       },
     ];
 
@@ -126,10 +140,10 @@ describe('AuthService - Freelance Onboarding', () => {
           freelanceRequest: {
             create: jest.fn().mockResolvedValue(mockFreelanceRequest),
           },
-          companyService: {
-            findFirst: jest.fn()
-              .mockResolvedValueOnce(mockCompanyServices[0])
-              .mockResolvedValueOnce(mockCompanyServices[1]),
+          platformService: {
+            findUnique: jest.fn()
+              .mockResolvedValueOnce(mockPlatformServices[0])
+              .mockResolvedValueOnce(mockPlatformServices[1]),
           },
           freelanceRequestOption: {
             create: jest.fn()
@@ -157,7 +171,7 @@ describe('AuthService - Freelance Onboarding', () => {
         expect.objectContaining({
           operation: 'completeFreelanceOnboarding',
           userId: mockUserId,
-          metier: 'Full Stack Developer',
+          metier_id: 1,
           tjm: 650.00,
           days: 20,
         })
@@ -230,7 +244,7 @@ describe('AuthService - Freelance Onboarding', () => {
       );
     });
 
-    it('should handle services without company providers', async () => {
+    it('should handle services that don\'t exist', async () => {
       const mockTransaction = jest.fn().mockImplementation(async (callback) => {
         const mockTx = {
           freelance: {
@@ -239,9 +253,9 @@ describe('AuthService - Freelance Onboarding', () => {
           freelanceRequest: {
             create: jest.fn().mockResolvedValue(mockFreelanceRequest),
           },
-          companyService: {
-            findFirst: jest.fn()
-              .mockResolvedValueOnce(mockCompanyServices[0]) // First service found
+          platformService: {
+            findUnique: jest.fn()
+              .mockResolvedValueOnce(mockPlatformServices[0]) // First service found
               .mockResolvedValueOnce(null), // Second service not found
           },
           freelanceRequestOption: {
@@ -258,7 +272,7 @@ describe('AuthService - Freelance Onboarding', () => {
       expect(result.requestOptions).toHaveLength(1);
 
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'No company service found for requested platform service',
+        'Platform service not found',
         expect.objectContaining({
           serviceId: 2,
         })
@@ -361,8 +375,8 @@ describe('AuthService - Freelance Onboarding', () => {
           freelanceRequest: {
             create: jest.fn().mockResolvedValue(mockFreelanceRequest),
           },
-          companyService: {
-            findFirst: jest.fn().mockResolvedValueOnce(mockCompanyServices[0]),
+          platformService: {
+            findUnique: jest.fn().mockResolvedValueOnce(mockPlatformServices[0]),
           },
           freelanceRequestOption: {
             create: jest.fn().mockRejectedValue(optionError),
@@ -391,7 +405,9 @@ describe('AuthService - Freelance Onboarding', () => {
 
     it('should validate required freelance data fields', async () => {
       const invalidData = {
-        metier: '',
+        metier_id: 0,
+        mission_status: 'OPEN',
+        priority: 'MEDIUM',
         tjm: 0,
         days: 0,
       } as FreelanceOnboarding;
@@ -432,8 +448,8 @@ describe('AuthService - Freelance Onboarding', () => {
           freelanceRequest: {
             create: jest.fn().mockResolvedValue(mockFreelanceRequest),
           },
-          companyService: {
-            findFirst: jest.fn().mockResolvedValueOnce(mockCompanyServices[0]),
+          platformService: {
+            findUnique: jest.fn().mockResolvedValueOnce(mockPlatformServices[0]),
           },
           freelanceRequestOption: {
             create: jest.fn().mockResolvedValueOnce({

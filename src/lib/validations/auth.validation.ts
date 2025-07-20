@@ -21,6 +21,9 @@ export const CompanyOnboardingSchema = z.object({
   // Selected platform services
   selected_services: z.array(z.number()).optional(),
   
+  // Selected metiers
+  selected_metiers: z.array(z.number()).min(1, 'Must select at least one metier'),
+  
   // New services data (array of new services)
   new_services: z.array(z.object({
     service_label: z.string().min(1, 'Service label is required'),
