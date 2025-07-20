@@ -79,9 +79,11 @@ async function main(): Promise<void> {
     await prisma.freelanceRequest.deleteMany();
     await prisma.companyService.deleteMany();
     await prisma.platformService.deleteMany();
+    await prisma.companyMetier.deleteMany();
     await prisma.companyManager.deleteMany();
     await prisma.freelance.deleteMany();
     await prisma.company.deleteMany();
+    await prisma.metier.deleteMany();
     await prisma.session.deleteMany();
     await prisma.account.deleteMany();
     await prisma.user.deleteMany();
@@ -140,6 +142,43 @@ async function main(): Promise<void> {
       management_fees: 7.8,
     });
 
+    // Create metiers
+    const metierDeveloppement = await prisma.metier.create({
+      data: {
+        name: 'Développement Web Full-Stack',
+      },
+    });
+
+    const metierConseil = await prisma.metier.create({
+      data: {
+        name: 'Consultant en Transformation Digitale',
+      },
+    });
+
+    const metierDesign = await prisma.metier.create({
+      data: {
+        name: 'Designer UX/UI',
+      },
+    });
+
+    const metierMarketing = await prisma.metier.create({
+      data: {
+        name: 'Marketing Digital',
+      },
+    });
+
+    // Link companies to metiers (many-to-many relationship)
+    await prisma.companyMetier.createMany({
+      data: [
+        { company_id: mainCompany.id, metier_id: metierDeveloppement.id },
+        { company_id: mainCompany.id, metier_id: metierConseil.id },
+        { company_id: mainCompany.id, metier_id: metierDesign.id },
+        { company_id: itgPortage.id, metier_id: metierDeveloppement.id },
+        { company_id: itgPortage.id, metier_id: metierConseil.id },
+        { company_id: itgPortage.id, metier_id: metierMarketing.id },
+      ],
+    });
+
     // Create some freelance users
     const freelanceUser1 = await createUser({
       first_name: 'Marie',
@@ -165,14 +204,14 @@ async function main(): Promise<void> {
     const freelance1 = await prisma.freelance.create({
       data: {
         freelance_id: freelanceUser1.id,
-        metier: 'Développeuse Web Full-Stack',
+        metier_id: metierDeveloppement.id,
       },
     });
 
     const freelance2 = await prisma.freelance.create({
       data: {
         freelance_id: freelanceUser2.id,
-        metier: 'Consultant en Transformation Digitale',
+        metier_id: metierConseil.id,
       },
     });
 

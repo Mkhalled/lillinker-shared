@@ -18,6 +18,11 @@ interface PlatformService {
   status: string
 }
 
+interface Metier {
+  id: number
+  name: string
+}
+
 interface FreelanceModalProps {
   onClose: () => void
 }
@@ -27,6 +32,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [platformServices, setPlatformServices] = useState<PlatformService[]>([])
+  const [metiers, setMetiers] = useState<Metier[]>([])
   const [emailExists, setEmailExists] = useState(false)
   const [checkingEmail, setCheckingEmail] = useState(false)
   const [showPlatformServices, setShowPlatformServices] = useState(false)
@@ -36,7 +42,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
     lastName: "",
     email: "",
     phone: "",
-    profession: "",
+    metierId: 0, // Changed from profession to metierId
 
     // Step 2: Mission info
     hasMission: "",
@@ -74,22 +80,31 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
     return !excludedDomains.includes(domain)
   }
 
-  // Fetch platform services when component mounts
+  // Fetch platform services and metiers when component mounts
   useEffect(() => {
-    const fetchPlatformServices = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/platform-services')
-        if (response.ok) {
-          const data = await response.json()
-          setPlatformServices(data.data || [])
+        // Fetch platform services
+        const servicesResponse = await fetch('/api/platform-services')
+        if (servicesResponse.ok) {
+          const servicesData = await servicesResponse.json()
+          setPlatformServices(servicesData.data || [])
+        }
+
+        // Fetch metiers
+        const metiersResponse = await fetch('/api/metiers')
+        console.log(metiersResponse)
+        if (metiersResponse.ok) {
+          const metiersData = await metiersResponse.json()
+          setMetiers(metiersData.data || [])
         }
       } catch (error) {
-        console.error('Error fetching platform services:', error)
-        setError('Erreur lors du chargement des services')
+        console.error('Error fetching data:', error)
+        setError('Erreur lors du chargement des données')
       }
     }
 
-    fetchPlatformServices()
+    fetchData()
   }, [])
 
     // Check if email exists when email changes
@@ -251,7 +266,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       // Step 2: Freelance onboarding - same pattern as CompanyModal
       const onboardingData = {
         userId: signupData.userId,
-        metier: formData.profession,
+        metier_id: formData.metierId,
         mission_status: formData.hasMission === 'yes' ? 'OPEN' : 'CLOSED',
         priority: formData.priority === 'urgent' ? 'HIGH' : 
                  formData.priority === 'medium' ? 'MEDIUM' : 'LOW',
@@ -363,18 +378,17 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             <div className="space-y-2">
               <label htmlFor="metier" className="text-sm font-medium text-gray-700">Métier *</label>
               <select
-              id='metier'
+                id='metier'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.profession}
-                onChange={(e) => setFormData((prev) => ({ ...prev, profession: e.target.value }))}
+                value={formData.metierId}
+                onChange={(e) => setFormData((prev) => ({ ...prev, metierId: parseInt(e.target.value) }))}
               >
-                <option value="">Sélectionnez votre métier</option>
-                <option value="developer">Développeur</option>
-                <option value="designer">Designer</option>
-                <option value="consultant">Consultant</option>
-                <option value="marketing">Marketing</option>
-                <option value="writer">Rédacteur</option>
-                <option value="other">Autre</option>
+                <option value={0}>Sélectionnez votre métier</option>
+                {metiers.map((metier) => (
+                  <option key={metier.id} value={metier.id}>
+                    {metier.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -771,7 +785,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                formData.lastName && 
                formData.email && 
                formData.phone && 
-               formData.profession &&
+               formData.metierId > 0 &&
                !emailExists &&
                isValidBusinessEmail(formData.email)
       case 2:

@@ -226,7 +226,7 @@ export class AuthService {
     const logContext = {
       operation: 'completeFreelanceOnboarding',
       userId,
-      metier: data.metier,
+      metier_id: data.metier_id,
       tjm: data.tjm,
       days: data.days,
     };
@@ -239,7 +239,7 @@ export class AuthService {
         const freelance = await tx.freelance.create({
           data: {
             freelance_id: userId,
-            metier: data.metier,
+            metier_id: data.metier_id,
           },
         });
 

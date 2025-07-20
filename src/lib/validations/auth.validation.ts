@@ -53,7 +53,7 @@ export const CompanyOnboardingSchema = z.object({
 
 export const FreelanceOnboardingSchema = z.object({
   // Freelance data
-  metier: z.string().min(2, 'Profession/Metier is required'),
+  metier_id: z.number().min(1, 'Metier selection is required'),
   
   // Freelance request data
   mission_status: z.enum(['OPEN', 'CLOSED', 'PENDING']).default('OPEN'),

@@ -51,7 +51,8 @@ enum Role {
 model Freelance {
   id           Int               @id @default(autoincrement())
   freelance_id Int               @unique
-  metier       String
+  metier_id    Int
+  metier       Metier            @relation(fields: [metier_id], references: [id])
   user         User              @relation(fields: [freelance_id], references: [id])
   requests     FreelanceRequest[]
 
@@ -72,6 +73,7 @@ model Company {
   managers          CompanyManager[]
   services          CompanyService[]
   responses         CompanyResponse[]
+  metiers           CompanyMetier[]
 
   @@map("companies")
 }
@@ -86,6 +88,18 @@ model CompanyManager {
   
   @@unique([company_id, user_id])
   @@map("company_managers")
+}
+
+// CompanyMetier junction table for many-to-many relationship
+model CompanyMetier {
+  id          Int      @id @default(autoincrement())
+  company_id  Int
+  metier_id   Int
+  company     Company  @relation(fields: [company_id], references: [id])
+  metier      Metier   @relation(fields: [metier_id], references: [id])
+  
+  @@unique([company_id, metier_id])
+  @@map("company_metiers")
 }
 
 // PlatformService model
@@ -220,4 +234,12 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+model Metier {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  freelances  Freelance[]
+  companies   CompanyMetier[]
+  
+  @@map("metiers")
 }
