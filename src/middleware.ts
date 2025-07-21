@@ -55,6 +55,6 @@ export const config = {
      * - auth routes
      * - public API routes
      */
-    '/((?!_next/static|_next/image|favicon.ico|images|public|auth|api/auth|api/platform-services|$|api/metiers|api/check-email|api/portages).*)',
+    '/((?!_next/static|_next/image|favicon.ico|images|public|auth|api/auth|api/platform-services|$|api/metiers|api/check-email|api/portages|check-siret).*)',
   ],
 };

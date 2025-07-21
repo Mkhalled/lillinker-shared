@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 
 import { useModalData } from '../../hooks/useModalData';
 import { EmailValidationInput, useEmailValidation } from '../form/EmailValidationInput';
+import { SiretValidationInput } from '../form/SiretValidationInput';
 import ServiceInfoTooltip from '../ServiceInfoTooltip';
 import { Button } from '../ui/button/Button';
 import { CollapsibleSection } from '../ui/CollapsibleSection';
@@ -312,17 +313,10 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <label htmlFor="siret" className="text-sm font-medium text-gray-700">SIRET *</label>
-                <input
-                id='siret'
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.siret}
-                  onChange={(e) => setFormData((prev: CompanyFormData) => ({ ...prev, siret: e.target.value }))}
-                  placeholder="12345678901234"
-                  required
-                />
-              </div>
+              <SiretValidationInput 
+                siret={formData.siret}
+                onSiretChange={(siret) => setFormData((prev: CompanyFormData) => ({ ...prev, siret }))}
+              />
             </div>
             <div className="space-y-2">
               <label htmlFor="desc" className="text-sm font-medium text-gray-700">Description de la société *</label>
@@ -859,7 +853,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const isStepValid = () => {
     switch (currentStep) {
       case 1: {
-        const basicValid = formData.companyName && formData.siret && formData.description;
+        const basicValid = formData.companyName && 
+                          formData.siret && 
+                          formData.description;
         if (formData.isPortage === "yes") {
           return basicValid && formData.selectedPortages.length > 0;
         }
