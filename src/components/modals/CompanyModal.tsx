@@ -23,6 +23,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const [error, setError] = useState<string | null>(null)
   const { platformServices, metiers, portages, error: dataError } = useModalData()
   const { isValidBusinessEmail } = useEmailValidation()
+  const [summaryPage, setSummaryPage] = useState(0)
   const [formData, setFormData] = useState({
     // Step 1: General info
     companyName: "",
@@ -34,15 +35,17 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     consultantCount: "",
     managementFeeRate: "",
 
-    // Step 3: Admin info
+    // Step 3: Metiers selection
+    selectedMetiers: [] as string[], // Add metiers selection
+
+    // Step 4: Admin info
     adminFirstName: "",
     adminLastName: "",
     adminEmail: "",
     adminPhone: "",
 
-    // Step 4: Services selection and creation
+    // Step 5: Services selection and creation
     selectedPlatformServices: [] as string[],
-    selectedMetiers: [] as string[], // Add metiers selection
     selectedPortages: [] as string[], // Add portages selection
     newServices: [] as Array<{
       id: string
@@ -56,7 +59,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     }>
   })
 
-  const totalSteps = 6
+  const totalSteps = 7
 
   // Set data error if there's a fetching error
   useEffect(() => {
@@ -66,7 +69,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   }, [dataError])
 
   const handleNext = () => {
-    if (currentStep === 5) {
+    if (currentStep === 6) {
       handleComplete()
     } else if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1)
@@ -184,7 +187,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   }
 
   const handleComplete = async () => {
-    if (currentStep === 5) {
+    if (currentStep === 6) {
       setIsLoading(true)
       setError(null)
       
@@ -250,7 +253,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           throw new Error(errorData.error || 'Company onboarding failed')
         }
 
-        setCurrentStep(6)
+        setCurrentStep(7)
       } catch (error) {
         console.error('Registration error:', error)
         setError(error instanceof Error ? error.message : 'Une erreur est survenue')
@@ -265,27 +268,29 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 1:
         return (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700" htmlFor="nom">Nom de la société *</label>
-              <input
-              id='nom'
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.companyName}
-                onChange={(e) => setFormData((prev) => ({ ...prev, companyName: e.target.value }))}
-                placeholder="Ma Société de Portage"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="siret" className="text-sm font-medium text-gray-700">SIRET *</label>
-              <input
-              id='siret'
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.siret}
-                onChange={(e) => setFormData((prev) => ({ ...prev, siret: e.target.value }))}
-                placeholder="12345678901234"
-                required
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700" htmlFor="nom">Nom de la société *</label>
+                <input
+                id='nom'
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.companyName}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, companyName: e.target.value }))}
+                  placeholder="Ma Société de Portage"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="siret" className="text-sm font-medium text-gray-700">SIRET *</label>
+                <input
+                id='siret'
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.siret}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, siret: e.target.value }))}
+                  placeholder="12345678901234"
+                  required
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <label htmlFor="desc" className="text-sm font-medium text-gray-700">Description de la société *</label>
@@ -369,7 +374,12 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               <span className="text-sm font-medium text-gray-900">{formData.managementFeeRate}%</span>
               </div>
             </div>
+          </div>
+        )
 
+      case 3:
+        return (
+          <div className="space-y-4">
             {/* Metiers Selection */}
             <CollapsibleSection
               title="Métiers supportés *"
@@ -396,7 +406,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           </div>
         )
 
-      case 3:
+      case 4:
         return (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -444,7 +454,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           </div>
         )
 
-      case 4:
+      case 5:
         return (
           <div className="space-y-6">
 
@@ -633,135 +643,156 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           </div>
         )
 
-      case 5:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Récapitulatif de votre demande</h3>
-              <p className="text-sm text-gray-600">Vérifiez vos informations avant de finaliser votre inscription</p>
-            </div>
-
-            <div className="space-y-4">
-              {/* Company Information */}
-              <div className="bg-gray-50 p-4 rounded-lg">
+      case 6:
+        const summaryPages = [
+          {
+            title: "Informations de la société",
+            content: (
+              <div className="border rounded-lg p-4 bg-gray-50">
                 <h4 className="font-medium text-gray-900 mb-3">Informations de la société</h4>
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Nom:</span>
-                    <span className="font-medium">{formData.companyName}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">SIRET:</span>
-                    <span className="font-medium">{formData.siret}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Type:</span>
-                    <span className="font-medium">
-                      {formData.isPortage === "yes" ? "Société de portage salarial" : "Autre société"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Consultants:</span>
-                    <span className="font-medium">{formData.consultantCount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Frais de gestion:</span>
-                    <span className="font-medium">{formData.managementFeeRate}%</span>
-                  </div>
+                  <div><span className="font-medium">Nom:</span> {formData.companyName}</div>
+                  <div><span className="font-medium">SIRET:</span> {formData.siret}</div>
+                  <div><span className="font-medium">Type:</span> {formData.isPortage === "yes" ? "Société de portage salarial" : "Autre société"}</div>
+                  <div><span className="font-medium">Consultants:</span> {formData.consultantCount}</div>
+                  <div><span className="font-medium">Frais de gestion:</span> {formData.managementFeeRate}%</div>
                 </div>
               </div>
-
-              {/* Administrator Information */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-medium text-gray-900 mb-3">Administrateur</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Nom:</span>
-                    <span className="font-medium">{formData.adminFirstName} {formData.adminLastName}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Email:</span>
-                    <span className="font-medium">{formData.adminEmail}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Téléphone:</span>
-                    <span className="font-medium">{formData.adminPhone}</span>
+            )
+          },
+          {
+            title: "Administrateur et métiers",
+            content: (
+              <div className="space-y-4">
+                {/* Administrator Information */}
+                <div className="border rounded-lg p-4 bg-gray-50">
+                  <h4 className="font-medium text-gray-900 mb-3">Administrateur</h4>
+                  <div className="space-y-2 text-sm">
+                    <div><span className="font-medium">Nom:</span> {formData.adminFirstName} {formData.adminLastName}</div>
+                    <div><span className="font-medium">Email:</span> {formData.adminEmail}</div>
+                    <div><span className="font-medium">Téléphone:</span> {formData.adminPhone}</div>
                   </div>
                 </div>
+
+                {/* Métiers */}
+                {formData.selectedMetiers.length > 0 && (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Métiers supportés ({formData.selectedMetiers.length})</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.selectedMetiers.map(metierId => {
+                        const metier = metiers?.find(m => m.id.toString() === metierId)
+                        return metier ? (
+                          <span key={metierId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {metier.name}
+                          </span>
+                        ) : null
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {/* Métiers */}
-              {formData.selectedMetiers.length > 0 && (
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-3">Métiers supportés ({formData.selectedMetiers.length})</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.selectedMetiers.map(metierId => {
-                      const metier = metiers?.find(m => m.id.toString() === metierId)
-                      return metier ? (
-                        <span key={metierId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {metier.name}
-                        </span>
-                      ) : null
-                    })}
+            )
+          },
+          {
+            title: "Services proposés",
+            content: (
+              <div className="space-y-4">
+                {/* Portage Services */}
+                {formData.isPortage === "yes" && formData.selectedPortages.length > 0 && (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Services de portage ({formData.selectedPortages.length})</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.selectedPortages.map(portageId => {
+                        const portage = portages?.find(p => p.id.toString() === portageId)
+                        return portage ? (
+                          <span key={portageId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {portage.name}
+                          </span>
+                        ) : null
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Portage Services */}
-              {formData.isPortage === "yes" && formData.selectedPortages.length > 0 && (
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-3">Services de portage ({formData.selectedPortages.length})</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.selectedPortages.map(portageId => {
-                      const portage = portages?.find(p => p.id.toString() === portageId)
-                      return portage ? (
-                        <span key={portageId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          {portage.name}
-                        </span>
-                      ) : null
-                    })}
+                {/* Platform Services */}
+                {formData.selectedPlatformServices.length > 0 && (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Services plateforme ({formData.selectedPlatformServices.length})</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.selectedPlatformServices.map(serviceId => {
+                        const service = platformServices?.find(s => s.id.toString() === serviceId)
+                        return service ? (
+                          <span key={serviceId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            {service.label}
+                          </span>
+                        ) : null
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Platform Services */}
-              {formData.selectedPlatformServices.length > 0 && (
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-3">Services plateforme ({formData.selectedPlatformServices.length})</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.selectedPlatformServices.map(serviceId => {
-                      const service = platformServices?.find(s => s.id.toString() === serviceId)
-                      return service ? (
-                        <span key={serviceId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                          {service.label}
-                        </span>
-                      ) : null
-                    })}
+                {/* New Services */}
+                {formData.newServices.filter(s => s.label.trim() !== '').length > 0 && (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Nouveaux services ({formData.newServices.filter(s => s.label.trim() !== '').length})</h4>
+                    <div className="space-y-2">
+                      {formData.newServices.filter(s => s.label.trim() !== '').map(service => (
+                        <div key={service.id} className="text-sm">
+                          <span className="font-medium">{service.label}</span>
+                          {service.description && (
+                            <p className="text-gray-600">{service.description}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+            )
+          }
+        ]
 
-              {/* New Services */}
-              {formData.newServices.filter(s => s.label.trim() !== '').length > 0 && (
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-3">Nouveaux services ({formData.newServices.filter(s => s.label.trim() !== '').length})</h4>
-                  <div className="space-y-2">
-                    {formData.newServices.filter(s => s.label.trim() !== '').map(service => (
-                      <div key={service.id} className="text-sm">
-                        <span className="font-medium">{service.label}</span>
-                        {service.description && (
-                          <p className="text-gray-600">{service.description}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+        const currentSummaryPage = summaryPages[summaryPage]
+
+        return (
+          <div className="space-y-6">
+
+            <div className="text-center mb-4">
+              <h4 className="text-md font-medium text-gray-800">
+                {currentSummaryPage.title} ({summaryPage + 1}/3)
+              </h4>
+            </div>
+
+            {currentSummaryPage.content}
+
+            {/* Summary Pagination Controls */}
+            <div className="flex justify-between items-center mt-6">
+              <button
+                type="button"
+                onClick={() => setSummaryPage(prev => Math.max(0, prev - 1))}
+                disabled={summaryPage === 0}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Section précédente
+              </button>
+              
+              <span className="text-sm text-gray-500">
+                Section {summaryPage + 1} sur {summaryPages.length}
+              </span>
+              
+              <button
+                type="button"
+                onClick={() => setSummaryPage(prev => Math.min(summaryPages.length - 1, prev + 1))}
+                disabled={summaryPage >= summaryPages.length - 1}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Section suivante
+              </button>
             </div>
           </div>
-        )
+        );
 
-      case 6:
+      case 7:
         return <SuccessStep email={formData.adminEmail} />
 
       default:
@@ -776,12 +807,14 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 2:
         return "Consultants et frais de gestion"
       case 3:
-        return "Informations de l'administrateur"
+        return "Métiers supportés"
       case 4:
-        return "Services et options"
+        return "Informations de l'administrateur"
       case 5:
-        return "Récapitulatif"
+        return "Services et options"
       case 6:
+        return "Récapitulatif"
+      case 7:
         return "Demande envoyée"
       default:
         return ""
@@ -795,12 +828,14 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 2:
         return "Informations sur vos consultants et tarifs"
       case 3:
-        return "Coordonnées de l'administrateur du compte"
+        return "Sélectionnez les métiers que vous supportez"
       case 4:
-        return "Définissez les services que vous proposez"
+        return "Coordonnées de l'administrateur du compte"
       case 5:
-        return "Vérifiez vos informations avant finalisation"
+        return "Définissez les services que vous proposez"
       case 6:
+        return "Vérifiez vos informations avant finalisation"
+      case 7:
         return "Votre demande a été transmise"
       default:
         return ""
@@ -817,14 +852,16 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         return basicValid;
       }
       case 2:
-        return formData.consultantCount && formData.managementFeeRate && formData.selectedMetiers.length > 0
+        return formData.consultantCount && formData.managementFeeRate
       case 3:
+        return formData.selectedMetiers.length > 0
+      case 4:
         return formData.adminFirstName && 
                formData.adminLastName && 
                formData.adminEmail && 
                formData.adminPhone &&
                isValidBusinessEmail(formData.adminEmail)
-      case 4:
+      case 5:
        {
          const hasSelectedServices = formData.selectedPlatformServices.length > 0
         const hasValidNewServices = formData.newServices.some(service => 
@@ -834,9 +871,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         )
         return hasSelectedServices || hasValidNewServices 
        }
-      case 5:
-        return true // Recap step is always valid
       case 6:
+        return true // Recap step is always valid
+      case 7:
         return true
       default:
         return false
@@ -857,9 +894,10 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       isStepValid={isStepValid() as boolean}
       isLoading={isLoading}
       error={error}
-      showNavigation={currentStep < 6}
+      showNavigation={currentStep < 7}
       completeButtonText="Finaliser l'inscription"
       nextButtonText="Suivant"
+      completionStep={6} // Specify that completion happens on step 6
     >
       {renderStep()}
     </ModalWrapper>
