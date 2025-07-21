@@ -96,13 +96,13 @@ const LoginPage = () => {
       {/* Left side - Form */}
       <div className="flex flex-col w-full md:w-1/2 bg-white">
         <div className="w-full max-w-md sm:pt-10 mx-auto mb-5 px-6">
-          <Link
+            <Link
             href="/"
             className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-          >
+            >
             <ChevronLeftIcon className="w-4 h-4 mr-2" />
-            Retour au tableau de bord
-          </Link>
+            Retour à l'accueil
+            </Link>
         </div>
         
         <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto px-6">
@@ -186,7 +186,7 @@ const LoginPage = () => {
                 <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400">
                   Vous n&apos;avez pas de compte?{" "}
                   <Link
-                    href="/auth/signup"
+                    href="/"
                     className="text-blue-600 hover:text-blue-700"
                   >
                     S&apos;inscrire

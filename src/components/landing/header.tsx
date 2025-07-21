@@ -7,7 +7,14 @@ import { useState } from 'react';
 
 import { Button } from '../ui/button/Button';
 
-const Header = () => {
+interface HeaderProps {
+  onHomeClick?: () => void
+  onAboutClick?: () => void
+  onServicesClick?: () => void
+  onContactClick?: () => void
+}
+
+const Header = ({ onHomeClick, onAboutClick, onServicesClick, onContactClick }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const toggleMenu = () => {
@@ -30,30 +37,38 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="#home" className="text-gray-700 hover:text-[var(--primary-color)] transition-colors">
+            <button 
+              onClick={onHomeClick}
+              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+            >
               Home
-            </Link>
-            <Link href="#about" className="text-gray-700 hover:text-[var(--primary-color)] transition-colors">
+            </button>
+            <button 
+              onClick={onAboutClick}
+              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+            >
               About
-            </Link>
-            <Link href="#services" className="text-gray-700 hover:text-[var(--primary-color)] transition-colors">
+            </button>
+            <button 
+              onClick={onServicesClick}
+              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+            >
               Services
-            </Link>
-            <Link href="#contact" className="text-gray-700 hover:text-[var(--primary-color)] transition-colors">
+            </button>
+            <button 
+              onClick={onContactClick}
+              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+            >
               Contact
-            </Link>
+            </button>
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Button
-              variant="outline"
-              className="border-[var(--primary-color)] text-[var(--primary-color)] hover:bg-[var(--primary-light)] bg-transparent"
-            >
+            <Link href="/auth/login">
+              <Button className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white">
               Login
             </Button>
-            <Button className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white">
-              Get Started
-            </Button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -68,34 +83,42 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-100 bg-white/95 backdrop-blur-sm">
             <nav className="flex flex-col space-y-4">
-              <Link
-                href="#home"
-                className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2"
-                onClick={closeMenu}
+              <button
+                onClick={() => {
+                  onHomeClick?.()
+                  closeMenu()
+                }}
+                className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2 text-left"
               >
                 Home
-              </Link>
-              <Link
-                href="#about"
-                className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2"
-                onClick={closeMenu}
+              </button>
+              <button
+                onClick={() => {
+                  onAboutClick?.()
+                  closeMenu()
+                }}
+                className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2 text-left"
               >
                 About
-              </Link>
-              <Link
-                href="#services"
-                className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2"
-                onClick={closeMenu}
+              </button>
+              <button
+                onClick={() => {
+                  onServicesClick?.()
+                  closeMenu()
+                }}
+                className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2 text-left"
               >
                 Services
-              </Link>
-              <Link
-                href="#contact"
-                className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2"
-                onClick={closeMenu}
+              </button>
+              <button
+                onClick={() => {
+                  onContactClick?.()
+                  closeMenu()
+                }}
+                className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2 text-left"
               >
                 Contact
-              </Link>
+              </button>
               <div className="flex flex-col space-y-3 pt-4 border-t border-gray-100">
                 <Button
                   variant="outline"
