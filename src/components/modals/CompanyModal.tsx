@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 import { useModalData } from '../../hooks/useModalData';
@@ -9,6 +9,7 @@ import ServiceInfoTooltip from '../ServiceInfoTooltip';
 import { Button } from '../ui/button/Button';
 import { CollapsibleSection } from '../ui/CollapsibleSection';
 
+import AddServiceModal from './AddServiceModal';
 import { ModalWrapper } from './ModalWrapper';
 import { SuccessStep } from './SuccessStep';
 
@@ -24,6 +25,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const { platformServices, metiers, portages, error: dataError } = useModalData()
   const { isValidBusinessEmail } = useEmailValidation()
   const [summaryPage, setSummaryPage] = useState(0)
+  const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false)
   const [formData, setFormData] = useState({
     // Step 1: General info
     companyName: "",
@@ -113,76 +115,22 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   }
 
   const addNewService = () => {
-    const newService = {
-      id: Date.now().toString(),
-      label: "",
-      description: "",
-      requiresData: false,
-      dataType: "TEXT",
-      dataLabel: "",
-      dataDescription: "",
-      choices: [] as string[]
-    }
+    setIsAddServiceModalOpen(true)
+  }
+
+  const handleAddService = (newService: {
+    id: string
+    label: string
+    description: string
+    requiresData: boolean
+    dataType: string
+    dataLabel: string
+    dataDescription: string
+    choices: string[]
+  }) => {
     setFormData(prev => ({
       ...prev,
       newServices: [...prev.newServices, newService]
-    }))
-  }
-
-  const updateNewService = (serviceId: string, field: string, value: string | boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      newServices: prev.newServices.map(service =>
-        service.id === serviceId ? { ...service, [field]: value } : service
-      )
-    }))
-  }
-
-  const removeNewService = (serviceId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      newServices: prev.newServices.filter(service => service.id !== serviceId)
-    }))
-  }
-
-  const addChoiceToNewService = (serviceId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      newServices: prev.newServices.map(service =>
-        service.id === serviceId 
-          ? { ...service, choices: [...service.choices, ""] }
-          : service
-      )
-    }))
-  }
-
-  const updateNewServiceChoice = (serviceId: string, choiceIndex: number, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      newServices: prev.newServices.map(service =>
-        service.id === serviceId
-          ? {
-              ...service,
-              choices: service.choices.map((choice, index) => 
-                index === choiceIndex ? value : choice
-              )
-            }
-          : service
-      )
-    }))
-  }
-
-  const removeNewServiceChoice = (serviceId: string, choiceIndex: number) => {
-    setFormData(prev => ({
-      ...prev,
-      newServices: prev.newServices.map(service =>
-        service.id === serviceId
-          ? {
-              ...service,
-              choices: service.choices.filter((_, index) => index !== choiceIndex)
-            }
-          : service
-      )
     }))
   }
 
@@ -498,7 +446,14 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             {/* Create New Service Section */}
             <div className="border-t pt-6">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="font-medium text-gray-900">Créer des nouveaux services</h4>
+                <div>
+                  <h4 className="font-medium text-gray-900">Créer des nouveaux services</h4>
+                  {formData.newServices.length > 0 && (
+                    <p className="text-sm text-gray-600 mt-1">
+                      {formData.newServices.length} service{formData.newServices.length > 1 ? 's' : ''} créé{formData.newServices.length > 1 ? 's' : ''}
+                    </p>
+                  )}
+                </div>
                 <Button
                   variant="outline"
                   size="sm"
@@ -510,135 +465,26 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 </Button>
               </div>
 
-                <div className="space-y-4">
-                  {formData.newServices.map((service, index) => (
-                    <div key={service.id} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-                      <div className="flex items-start justify-between mb-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          Nouveau service {index + 1}
-                        </span>
-                        <button
-                          onClick={() => removeNewService(service.id)}
-                          className="text-red-600 hover:text-red-700 p-1"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+              {formData.newServices.length > 0 && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {formData.newServices.length} service{formData.newServices.length > 1 ? 's' : ''}
                       </div>
-
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <label htmlFor="service" className="text-sm font-medium text-gray-700">Libellé du service *</label>
-                            <input
-                            id='service'
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              value={service.label}
-                              onChange={(e) => updateNewService(service.id, "label", e.target.value)}
-                              placeholder="Ex: Assurance RC Pro"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <label htmlFor="description" className="text-sm font-medium text-gray-700">Description</label>
-                            <input
-                            id='description'
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              value={service.description}
-                              onChange={(e) => updateNewService(service.id, "description", e.target.value)}
-                              placeholder="Description du service"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id={`requires-data-${service.id}`}
-                            checked={service.requiresData}
-                            onChange={(e) => updateNewService(service.id, "requiresData", e.target.checked)}
-                          />
-                          <label htmlFor={`requires-data-${service.id}`} className="text-sm text-gray-700">
-                            Ce service nécessite des données du consultant
-                          </label>
-                        </div>
-
-                        {service.requiresData && (
-                          <div className="pl-6 space-y-4 border-l-2 border-gray-200">
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <label htmlFor="type" className="text-sm font-medium text-gray-700">Type de données</label>
-                                <select
-                                id='type'
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  value={service.dataType}
-                                  onChange={(e) => updateNewService(service.id, "dataType", e.target.value)}
-                                >
-                                  <option value="TEXT">Texte libre</option>
-                                  <option value="NUMBER">Numérique</option>
-                                  <option value="RADIO">Choix unique</option>
-                                  <option value="SELECT">Choix multiple</option>
-                                </select>
-                              </div>
-                              <div className="space-y-2">
-                                <label htmlFor="label" className="text-sm font-medium text-gray-700">Label du champ</label>
-                                <input
-                                id='label'
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  value={service.dataLabel}
-                                  onChange={(e) => updateNewService(service.id, "dataLabel", e.target.value)}
-                                  placeholder="Ex: Niveau d'expérience"
-                                />
-                              </div>
-                            </div>
-                            <div className="space-y-2">
-                              <label htmlFor="champ" className="text-sm font-medium text-gray-700">Description du champ</label>
-                              <input
-                              id='champ'
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={service.dataDescription}
-                                onChange={(e) => updateNewService(service.id, "dataDescription", e.target.value)}
-                                placeholder="Instructions pour le freelance"
-                              />
-                            </div>
-
-                            {(service.dataType === "RADIO" || service.dataType === "SELECT") && (
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <label htmlFor="value" className="text-sm font-medium text-gray-700">Valeurs possibles</label>
-                                  <button
-                                    type="button"
-                                    onClick={() => addChoiceToNewService(service.id)}
-                                    className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm"
-                                  >
-                                    <Plus className="h-4 w-4" />
-                                    <span>Ajouter</span>
-                                  </button>
-                                </div>
-                                {service.choices.map((choice, choiceIndex) => (
-                                  <div key={choiceIndex} className="flex items-center space-x-2">
-                                    <input
-                                    id='value'
-                                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                      value={choice}
-                                      onChange={(e) => updateNewServiceChoice(service.id, choiceIndex, e.target.value)}
-                                      placeholder={`Option ${choiceIndex + 1}`}
-                                    />
-                                    <button
-                                      type="button"
-                                      onClick={() => removeNewServiceChoice(service.id, choiceIndex)}
-                                      className="text-red-600 hover:text-red-700 p-1"
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                      <span className="text-sm text-gray-600">
+                        {formData.newServices.map(s => s.label).filter(label => label.trim() !== '').join(', ') || 'Services en cours de création'}
+                      </span>
                     </div>
-                  ))}
+                    <button
+                      onClick={() => setFormData(prev => ({ ...prev, newServices: [] }))}
+                      className="text-red-600 hover:text-red-700 text-sm font-medium"
+                    >
+                      Tout supprimer
+                    </button>
+                  </div>
                 </div>
+              )}
             </div>
           </div>
         )
@@ -694,57 +540,140 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             )
           },
           {
-            title: "Services proposés",
+            title: "Associations de portage",
             content: (
               <div className="space-y-4">
                 {/* Portage Services */}
-                {formData.isPortage === "yes" && formData.selectedPortages.length > 0 && (
+                {formData.isPortage === "yes" && formData.selectedPortages.length > 0 ? (
                   <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Services de portage ({formData.selectedPortages.length})</h4>
-                    <div className="flex flex-wrap gap-2">
+                    <h4 className="font-medium text-gray-900 mb-3">Associations de portage ({formData.selectedPortages.length})</h4>
+                    <div className="space-y-3">
                       {formData.selectedPortages.map(portageId => {
                         const portage = portages?.find(p => p.id.toString() === portageId)
                         return portage ? (
-                          <span key={portageId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {portage.name}
-                          </span>
+                          <div key={portageId} className="flex items-start space-x-3 p-3 bg-white rounded border">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              {portage.name}
+                            </span>
+                            <div className="flex-1">
+                              <p className="text-sm text-gray-600">{portage.description}</p>
+                            </div>
+                          </div>
                         ) : null
                       })}
                     </div>
                   </div>
+                ) : formData.isPortage === "yes" ? (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Services de portage</h4>
+                    <p className="text-sm text-gray-600">Aucun service de portage sélectionné</p>
+                  </div>
+                ) : (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Services de portage</h4>
+                    <p className="text-sm text-gray-600">Non applicable - Vous n'êtes pas une société de portage salarial</p>
+                  </div>
                 )}
-
+              </div>
+            )
+          },
+          {
+            title: "Services plateforme",
+            content: (
+              <div className="space-y-4">
                 {/* Platform Services */}
-                {formData.selectedPlatformServices.length > 0 && (
+                {formData.selectedPlatformServices.length > 0 ? (
                   <div className="border rounded-lg p-4 bg-gray-50">
                     <h4 className="font-medium text-gray-900 mb-3">Services plateforme ({formData.selectedPlatformServices.length})</h4>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="space-y-3">
                       {formData.selectedPlatformServices.map(serviceId => {
                         const service = platformServices?.find(s => s.id.toString() === serviceId)
                         return service ? (
-                          <span key={serviceId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                            {service.label}
-                          </span>
+                          <div key={serviceId} className="flex items-start space-x-3 p-3 bg-white rounded border">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                              {service.label}
+                            </span>
+                            <div className="flex-1">
+                              {service.description && (
+                                <p className="text-sm text-gray-600">{service.description}</p>
+                              )}
+                              {service.user?.ownedCompany && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Créé par {service.user.ownedCompany.name}
+                                </p>
+                              )}
+                            </div>
+                          </div>
                         ) : null
                       })}
                     </div>
                   </div>
+                ) : (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Services plateforme</h4>
+                    <p className="text-sm text-gray-600">Aucun service plateforme sélectionné</p>
+                  </div>
                 )}
-
+              </div>
+            )
+          },
+          {
+            title: "Nouveaux services",
+            content: (
+              <div className="space-y-4">
                 {/* New Services */}
-                {formData.newServices.filter(s => s.label.trim() !== '').length > 0 && (
+                {formData.newServices.filter(s => s.label.trim() !== '').length > 0 ? (
                   <div className="border rounded-lg p-4 bg-gray-50">
                     <h4 className="font-medium text-gray-900 mb-3">Nouveaux services ({formData.newServices.filter(s => s.label.trim() !== '').length})</h4>
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                       {formData.newServices.filter(s => s.label.trim() !== '').map(service => (
-                        <div key={service.id} className="text-sm">
-                          <span className="font-medium">{service.label}</span>
+                        <div key={service.id} className="p-4 bg-white rounded border">
+                          <div className="flex items-start justify-between mb-2">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                              Nouveau
+                            </span>
+                          </div>
+                          <h5 className="font-medium text-gray-900 mb-1">{service.label}</h5>
                           {service.description && (
-                            <p className="text-gray-600">{service.description}</p>
+                            <p className="text-sm text-gray-600 mb-3">{service.description}</p>
+                          )}
+                          {service.requiresData && (
+                            <div className="mt-3 p-3 bg-gray-50 rounded">
+                              <p className="text-xs text-gray-600 mb-2">
+                                <span className="font-medium">Données requises:</span> {service.dataType === 'TEXT' ? 'Texte libre' : service.dataType === 'NUMBER' ? 'Numérique' : service.dataType === 'RADIO' ? 'Choix unique' : 'Choix multiple'}
+                              </p>
+                              {service.dataLabel && (
+                                <p className="text-xs text-gray-600 mb-1">
+                                  <span className="font-medium">Label:</span> {service.dataLabel}
+                                </p>
+                              )}
+                              {service.dataDescription && (
+                                <p className="text-xs text-gray-600 mb-1">
+                                  <span className="font-medium">Description:</span> {service.dataDescription}
+                                </p>
+                              )}
+                              {service.choices && service.choices.filter(c => c.trim() !== '').length > 0 && (
+                                <div className="mt-2">
+                                  <p className="text-xs text-gray-600 font-medium mb-1">Options disponibles:</p>
+                                  <div className="flex flex-wrap gap-1">
+                                    {service.choices.filter(c => c.trim() !== '').map((choice, index) => (
+                                      <span key={index} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-gray-200 text-gray-700">
+                                        {choice}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           )}
                         </div>
                       ))}
                     </div>
+                  </div>
+                ) : (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Nouveaux services</h4>
+                    <p className="text-sm text-gray-600">Aucun nouveau service créé</p>
                   </div>
                 )}
               </div>
@@ -759,7 +688,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
             <div className="text-center mb-4">
               <h4 className="text-md font-medium text-gray-800">
-                {currentSummaryPage.title} ({summaryPage + 1}/3)
+                {currentSummaryPage.title} ({summaryPage + 1}/5)
               </h4>
             </div>
 
@@ -881,26 +810,34 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   }
 
   return (
-    <ModalWrapper
-      onClose={onClose}
-      title="Lillinker"
-      currentStep={currentStep}
-      totalSteps={totalSteps}
-      stepTitle={getStepTitle()}
-      stepDescription={getStepDescription()}
-      onNext={handleNext}
-      onPrevious={handlePrevious}
-      onComplete={handleComplete}
-      isStepValid={isStepValid() as boolean}
-      isLoading={isLoading}
-      error={error}
-      showNavigation={currentStep < 7}
-      completeButtonText="Finaliser l'inscription"
-      nextButtonText="Suivant"
-      completionStep={6} // Specify that completion happens on step 6
-    >
-      {renderStep()}
-    </ModalWrapper>
+    <>
+      <ModalWrapper
+        onClose={onClose}
+        title="Lillinker"
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        stepTitle={getStepTitle()}
+        stepDescription={getStepDescription()}
+        onNext={handleNext}
+        onPrevious={handlePrevious}
+        onComplete={handleComplete}
+        isStepValid={isStepValid() as boolean}
+        isLoading={isLoading}
+        error={error}
+        showNavigation={currentStep < 7}
+        completeButtonText="Finaliser l'inscription"
+        nextButtonText="Suivant"
+        completionStep={6} // Specify that completion happens on step 6
+      >
+        {renderStep()}
+      </ModalWrapper>
+
+      <AddServiceModal
+        isOpen={isAddServiceModalOpen}
+        onClose={() => setIsAddServiceModalOpen(false)}
+        onSave={handleAddService}
+      />
+    </>
   );
 };
 

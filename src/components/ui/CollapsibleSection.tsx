@@ -31,7 +31,7 @@ export const CollapsibleSection = <T,>({
   emptyStateIcon,
   emptyStateText = "Aucun élément disponible",
   className = "",
-  maxHeight = "max-h-60",
+  maxHeight = "max-h-45",
   showItemCount = true
 }: CollapsibleSectionProps<T>) => {
   const [isExpanded, setIsExpanded] = useState(false);

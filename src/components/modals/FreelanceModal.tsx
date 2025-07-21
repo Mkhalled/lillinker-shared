@@ -463,7 +463,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
               )}
 
               {/* Services List - Scrollable */}
-              <div className="space-y-4 max-h-80 overflow-y-auto">
+              <div className="space-y-4 max-h-60 overflow-y-auto">
                 {platformServices.map((service) => {
                   const isSelected = formData.selectedServices.some(s => s.serviceId === service.id)
                   const selectedService = formData.selectedServices.find(s => s.serviceId === service.id)
@@ -479,9 +479,10 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                               checked={isSelected}
                               onChange={() => handleServiceToggle(service.id)}
                               className="mt-1"
+                              id={`service-${service.id}`}
                             />
                             <div className="flex-1">
-                              <label className="font-medium cursor-pointer block">
+                              <label htmlFor={`service-${service.id}`} className="font-medium cursor-pointer block">
                                 {service.label}
                               </label>
                             </div>
@@ -714,7 +715,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             )
           },
           {
-            title: "Services et priorité",
+            title: "Services sélectionnés",
             content: (
               <div className="space-y-4">
                 {/* Services */}
@@ -722,7 +723,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                   <div className="border rounded-lg p-4 bg-gray-50">
                     <h4 className="font-medium text-gray-900 mb-3">Services sélectionnés</h4>
                     <div className="text-sm">
-                      <ul className="list-disc list-inside space-y-1">
+                      <ul className="list-disc overflow-auto max-h-40 list-inside space-y-1">
                         {formData.selectedServices.map(selectedService => {
                           const service = platformServices.find(s => s.id === selectedService.serviceId);
                           return (
@@ -756,21 +757,40 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                   </div>
                 )}
 
-                {/* Priority */}
-                <div className="border rounded-lg p-4 bg-gray-50">
-                  <h4 className="font-medium text-gray-900 mb-3">Priorité de la demande</h4>
-                  <div className="text-sm">
-                    <div className="flex items-center space-x-2">
-                      <span className={`w-3 h-3 rounded-full flex-shrink-0 ${
-                        formData.priority === "urgent" ? "bg-red-500" :
-                        formData.priority === "medium" ? "bg-orange-500" : "bg-green-500"
-                      }`}></span>
-                      <span className="font-medium">
-                        {formData.priority === "urgent" ? "Urgent - J'ai besoin d'une réponse rapidement" :
-                         formData.priority === "medium" ? "Moyen - Dans les prochaines semaines" :
-                         "Non prioritaire - Je me renseigne"}
-                      </span>
-                    </div>
+                {/* No services selected message */}
+                {(!formData.selectedServices || formData.selectedServices.length === 0) && 
+                 (!formData.newServices || formData.newServices.length === 0) && (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Services sélectionnés</h4>
+                    <p className="text-sm text-gray-600">Aucun service sélectionné</p>
+                  </div>
+                )}
+              </div>
+            )
+          },
+          {
+            title: "Priorité de la demande",
+            content: (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Priorité de la demande</h4>
+                <div className="text-sm">
+                  <div className="flex items-center space-x-3">
+                    <span className={`w-4 h-4 rounded-full flex-shrink-0 ${
+                      formData.priority === "urgent" ? "bg-red-500" :
+                      formData.priority === "medium" ? "bg-orange-500" : "bg-green-500"
+                    }`}></span>
+                    <span className="font-medium">
+                      {formData.priority === "urgent" ? "Urgent - J'ai besoin d'une réponse rapidement" :
+                       formData.priority === "medium" ? "Moyen - Dans les prochaines semaines" :
+                       "Non prioritaire - Je me renseigne"}
+                    </span>
+                  </div>
+                  <div className="mt-3 p-3 bg-white rounded border">
+                    <p className="text-xs text-gray-600">
+                      {formData.priority === "urgent" ? "Votre demande sera traitée en priorité par nos équipes et nos partenaires." :
+                       formData.priority === "medium" ? "Votre demande sera traitée dans un délai standard de quelques semaines." :
+                       "Votre demande sera traitée sans urgence particulière. Idéal pour une phase de découverte."}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -785,7 +805,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
             <div className="text-center mb-4">
               <h4 className="text-md font-medium text-gray-800">
-                {currentSummaryPage.title} ({summaryPage + 1}/4)
+                {currentSummaryPage.title} ({summaryPage + 1}/5)
               </h4>
             </div>
 
