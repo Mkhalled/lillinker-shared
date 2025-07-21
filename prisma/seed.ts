@@ -76,14 +76,17 @@ async function main(): Promise<void> {
     // Clean up existing data in correct order (respecting foreign key constraints)
     await prisma.companyResponse.deleteMany();
     await prisma.freelanceRequestOption.deleteMany();
+    await prisma.freelanceRequestPortage.deleteMany();
     await prisma.freelanceRequest.deleteMany();
     await prisma.companyService.deleteMany();
     await prisma.platformService.deleteMany();
     await prisma.companyMetier.deleteMany();
+    await prisma.companyPortage.deleteMany();
     await prisma.companyManager.deleteMany();
     await prisma.freelance.deleteMany();
     await prisma.company.deleteMany();
     await prisma.metier.deleteMany();
+    await prisma.portage.deleteMany();
     await prisma.session.deleteMany();
     await prisma.account.deleteMany();
     await prisma.user.deleteMany();
@@ -142,76 +145,109 @@ async function main(): Promise<void> {
       management_fees: 7.8,
     });
 
-    // Create metiers
-    const metierDeveloppement = await prisma.metier.create({
+    // Create metiers (jobs/professions)
+    const metierDeveloppeur = await prisma.metier.create({
       data: {
-        name: 'Développement Web Full-Stack',
+        name: 'Développeur Full-Stack',
       },
     });
 
-    const metierConseil = await prisma.metier.create({
-      data: {
-        name: 'Consultant en Transformation Digitale',
-      },
-    });
-
-    const metierDesign = await prisma.metier.create({
+    const metierDesigner = await prisma.metier.create({
       data: {
         name: 'Designer UX/UI',
       },
     });
 
+    const metierConstructeur = await prisma.metier.create({
+      data: {
+        name: 'Ingénieur BTP',
+      },
+    });
+
+    const metierConsultant = await prisma.metier.create({
+      data: {
+        name: 'Consultant en Transformation Digitale',
+      },
+    });
+
     const metierMarketing = await prisma.metier.create({
       data: {
-        name: 'Marketing Digital',
+        name: 'Spécialiste Marketing Digital',
+      },
+    });
+
+    const metierDataScientist = await prisma.metier.create({
+      data: {
+        name: 'Data Scientist',
+      },
+    });
+
+    const metierArchitecte = await prisma.metier.create({
+      data: {
+        name: 'Architecte Logiciel',
+      },
+    });
+
+    const metierChefProjet = await prisma.metier.create({
+      data: {
+        name: 'Chef de Projet IT',
+      },
+    });
+
+    const metierComptable = await prisma.metier.create({
+      data: {
+        name: 'Expert-Comptable',
+      },
+    });
+
+    const metierFormateur = await prisma.metier.create({
+      data: {
+        name: 'Formateur Professionnel',
       },
     });
 
     // Link companies to metiers (many-to-many relationship)
     await prisma.companyMetier.createMany({
       data: [
-        { company_id: mainCompany.id, metier_id: metierDeveloppement.id },
-        { company_id: mainCompany.id, metier_id: metierConseil.id },
-        { company_id: mainCompany.id, metier_id: metierDesign.id },
-        { company_id: itgPortage.id, metier_id: metierDeveloppement.id },
-        { company_id: itgPortage.id, metier_id: metierConseil.id },
+        // STA Portage - General portage company with diverse expertise
+        { company_id: mainCompany.id, metier_id: metierDeveloppeur.id },
+        { company_id: mainCompany.id, metier_id: metierConsultant.id },
+        { company_id: mainCompany.id, metier_id: metierDesigner.id },
+        { company_id: mainCompany.id, metier_id: metierArchitecte.id },
+        { company_id: mainCompany.id, metier_id: metierChefProjet.id },
+        { company_id: mainCompany.id, metier_id: metierConstructeur.id },
+        { company_id: mainCompany.id, metier_id: metierComptable.id },
+        { company_id: mainCompany.id, metier_id: metierFormateur.id },
+        // ITG Portage - IT and digital focused portage company
+        { company_id: itgPortage.id, metier_id: metierDeveloppeur.id },
+        { company_id: itgPortage.id, metier_id: metierDataScientist.id },
         { company_id: itgPortage.id, metier_id: metierMarketing.id },
+        { company_id: itgPortage.id, metier_id: metierConsultant.id },
+        { company_id: itgPortage.id, metier_id: metierArchitecte.id },
+        { company_id: itgPortage.id, metier_id: metierDesigner.id },
+        { company_id: itgPortage.id, metier_id: metierChefProjet.id },
       ],
     });
 
-    // Create portage types
-    const portageComptabilite = await prisma.portage.create({
+    // Create portage associations (professional associations)
+    const associationFreelancesFrance = await prisma.portage.create({
       data: {
-        name: 'Comptabilité et Gestion',
-        description: 'Services de comptabilité, déclarations fiscales et gestion administrative',
+        name: 'Association des Freelances de France',
+        description: 'Réseau national des travailleurs indépendants et freelances français',
       },
     });
 
-    const portageJuridique = await prisma.portage.create({
+    const syndicatPortageSalarial = await prisma.portage.create({
       data: {
-        name: 'Conseil Juridique',
-        description: 'Accompagnement juridique, rédaction de contrats et conseil en droit du travail',
+        name: 'Syndicat National',
+        description: 'Organisation professionnelle représentant les entreprises de portage salarial',
       },
     });
 
-    const portageFormation = await prisma.portage.create({
+    const federationConsultants = await prisma.portage.create({
       data: {
-        name: 'Formation et Développement',
-        description: 'Formation continue, coaching professionnel et développement de compétences',
-      },
-    });
-
-    const portageAssurance = await prisma.portage.create({
-      data: {
-        name: 'Assurance et Protection',
-        description: 'Assurance responsabilité civile professionnelle et couverture santé',
-      },
-    });
-
-    const portageReseautage = await prisma.portage.create({
-      data: {
-        name: 'Réseau et Business Development',
-        description: 'Mise en relation, développement commercial et accompagnement réseau',
+        name: 'Fédération des Consultants',
+        description: 'Association regroupant les consultants et experts indépendants',
       },
     });
 
@@ -226,19 +262,15 @@ async function main(): Promise<void> {
       data: { is_portage: true },
     });
 
-    // Link portage companies to their services
+    // Link portage companies to professional associations
     await prisma.companyPortage.createMany({
       data: [
-        // STA Portage offers all services
-        { company_id: mainCompany.id, portage_id: portageComptabilite.id },
-        { company_id: mainCompany.id, portage_id: portageJuridique.id },
-        { company_id: mainCompany.id, portage_id: portageFormation.id },
-        { company_id: mainCompany.id, portage_id: portageAssurance.id },
-        { company_id: mainCompany.id, portage_id: portageReseautage.id },
-        // ITG Portage offers specialized services
-        { company_id: itgPortage.id, portage_id: portageComptabilite.id },
-        { company_id: itgPortage.id, portage_id: portageJuridique.id },
-        { company_id: itgPortage.id, portage_id: portageFormation.id },
+        // STA Portage is member of multiple associations
+        { company_id: mainCompany.id, portage_id: associationFreelancesFrance.id },
+        { company_id: mainCompany.id, portage_id: syndicatPortageSalarial.id },
+        { company_id: mainCompany.id, portage_id: federationConsultants.id },
+        // ITG Portage is member of IT-focused associations
+        { company_id: itgPortage.id, portage_id: syndicatPortageSalarial.id },
       ],
     });
 
@@ -263,28 +295,62 @@ async function main(): Promise<void> {
       email_verified: true, // This freelancer has verified email
     });
 
+    const freelanceUser3 = await createUser({
+      first_name: 'Sophie',
+      last_name: 'Legrand',
+      email: 'sophie.legrand@example.com',
+      phone_number: '+33123456794',
+      role: 'FREELANCE',
+      status: true,
+      email_verified: true,
+    });
+
+    const freelanceUser4 = await createUser({
+      first_name: 'Thomas',
+      last_name: 'Moreau',
+      email: 'thomas.moreau@example.com',
+      phone_number: '+33123456795',
+      role: 'FREELANCE',
+      status: true,
+      email_verified: false,
+    });
+
     // Create freelance profiles
     const freelance1 = await prisma.freelance.create({
       data: {
         freelance_id: freelanceUser1.id,
-        metier_id: metierDeveloppement.id,
+        metier_id: metierDeveloppeur.id,
       },
     });
 
     const freelance2 = await prisma.freelance.create({
       data: {
         freelance_id: freelanceUser2.id,
-        metier_id: metierConseil.id,
+        metier_id: metierConsultant.id,
+      },
+    });
+
+    const freelance3 = await prisma.freelance.create({
+      data: {
+        freelance_id: freelanceUser3.id,
+        metier_id: metierConstructeur.id,
+      },
+    });
+
+    const freelance4 = await prisma.freelance.create({
+      data: {
+        freelance_id: freelanceUser4.id,
+        metier_id: metierComptable.id,
       },
     });
 
     // Create a manager user
     const managerUser = await createUser({
-      first_name: 'Sophie',
+      first_name: 'Claire',
       last_name: 'Laurent',
-      email: 'sophie.laurent@sta-portage.com',
+      email: 'claire.laurent@sta-portage.com',
       role: 'MANAGER',
-      phone_number: '+33123456794',
+      phone_number: '+33123456796',
       status: true,
       email_verified: true, // Manager is pre-verified
     });
@@ -446,6 +512,32 @@ async function main(): Promise<void> {
       },
     });
 
+    const freelanceRequest3 = await prisma.freelanceRequest.create({
+      data: {
+        freelance_id: freelance3.id,
+        mission_status: 'OPEN',
+        client_name: 'Entreprise de Construction Moderne',
+        client_address: '10 Avenue de la Construction, 69003 Lyon',
+        client_sector: 'BTP et Génie Civil',
+        priority: 'HIGH',
+        tjm: 450.0,
+        days: 60.0,
+      },
+    });
+
+    const freelanceRequest4 = await prisma.freelanceRequest.create({
+      data: {
+        freelance_id: freelance4.id,
+        mission_status: 'CLOSED',
+        client_name: 'Cabinet Comptable Parisien',
+        client_address: '5 Rue de la Comptabilité, 75008 Paris',
+        client_sector: 'Services Comptables',
+        priority: 'LOW',
+        tjm: 400.0,
+        days: 20.0,
+      },
+    });
+
     // Create freelance request options (now referencing platform services directly)
     await prisma.freelanceRequestOption.create({
       data: {
@@ -550,9 +642,11 @@ async function main(): Promise<void> {
       itgAdminUser: itgAdminUser.id,
       mainCompany: mainCompany.id,
       itgPortage: itgPortage.id,
-      freelanceUser1: freelanceUser1.id,
-      freelanceUser2: freelanceUser2.id,
+      freelanceUsers: [freelanceUser1.id, freelanceUser2.id, freelanceUser3.id, freelanceUser4.id],
+      freelances: [freelance1.id, freelance2.id, freelance3.id, freelance4.id],
       managerUser: managerUser.id,
+      metiersCreated: 10, // All job types from developer to formateur
+      associationsCreated: 5, // Professional associations instead of services
       platformServices: [
         platformService1.id, 
         platformService2.id, 
@@ -561,7 +655,7 @@ async function main(): Promise<void> {
         platformService5.id,
         platformService6.id
       ],
-      freelanceRequests: [freelanceRequest1.id, freelanceRequest2.id],
+      freelanceRequests: [freelanceRequest1.id, freelanceRequest2.id, freelanceRequest3.id, freelanceRequest4.id],
     });
   } catch (e) {
     logger.error('Error during seeding', e as Error);

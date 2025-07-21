@@ -222,9 +222,9 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
                   {(serviceData.dataType === "RADIO" || serviceData.dataType === "SELECT") && (
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-gray-700">
+                        <h2  className="text-sm font-medium text-gray-700">
                           Options disponibles *
-                        </label>
+                        </h2>
                         <Button
                           variant="outline"
                           size="sm"
@@ -256,7 +256,7 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
 
                       {serviceData.choices.length === 0 && (
                         <p className="text-sm text-gray-500 italic">
-                          Cliquez sur "Ajouter" pour créer des options
+                          Cliquez sur &quot;Ajouter&quot; pour créer des options
                         </p>
                       )}
 

@@ -22,6 +22,7 @@ interface ModalWrapperProps {
   completeButtonText?: string;
   nextButtonText?: string;
   completionStep?: number; // New prop to specify which step triggers completion
+  onClearProgress?: () => void; // New prop for clearing progress
 }
 
 export const ModalWrapper = ({
@@ -41,7 +42,8 @@ export const ModalWrapper = ({
   showNavigation = true,
   completeButtonText = "Finaliser l'inscription",
   nextButtonText = "Suivant",
-  completionStep // New prop
+  completionStep, // New prop
+  onClearProgress // New prop
 }: ModalWrapperProps) => {
   const isCompletionStep = currentStep === totalSteps;
   const isCompleteStep = completionStep ? currentStep === completionStep : currentStep === totalSteps - 1;
@@ -70,6 +72,15 @@ export const ModalWrapper = ({
               <span className="text-sm text-gray-500">
                 Étape {currentStep} sur {totalSteps}
               </span>
+              {onClearProgress && currentStep > 1 && (
+                <button
+                  onClick={onClearProgress}
+                  className="text-xs text-red-600 hover:text-red-700 px-2 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                  title="Recommencer depuis le début"
+                >
+                  Recommencer
+                </button>
+              )}
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-600 transition-colors"

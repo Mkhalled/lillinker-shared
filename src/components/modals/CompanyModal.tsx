@@ -13,55 +13,133 @@ import AddServiceModal from './AddServiceModal';
 import { ModalWrapper } from './ModalWrapper';
 import { SuccessStep } from './SuccessStep';
 
+interface NewService {
+  id: string;
+  label: string;
+  description: string;
+  requiresData: boolean;
+  dataType: string;
+  dataLabel: string;
+  dataDescription: string;
+  choices: string[];
+}
+
+interface CompanyFormData {
+  // Step 1: General info
+  companyName: string;
+  siret: string;
+  description: string;
+  isPortage: "yes" | "no";
+  
+  // Step 2: Consultants and fees
+  consultantCount: string;
+  managementFeeRate: string;
+
+  // Step 3: Metiers selection
+  selectedMetiers: string[];
+
+  // Step 4: Admin info
+  adminFirstName: string;
+  adminLastName: string;
+  adminEmail: string;
+  adminPhone: string;
+
+  // Step 5: Services selection and creation
+  selectedPlatformServices: string[];
+  selectedPortages: string[];
+  newServices: NewService[];
+}
+
 
 interface CompanyModalProps {
   onClose: () => void
 }
 
 const CompanyModal = ({ onClose }: CompanyModalProps) => {
-  const [currentStep, setCurrentStep] = useState(1)
+  // Initialize currentStep with localStorage data if available
+  const [currentStep, setCurrentStep] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedStep = localStorage.getItem('company-modal-step')
+      if (savedStep) {
+        const step = parseInt(savedStep, 10)
+        if (step >= 1 && step <= 7) {
+          return step
+        }
+      }
+    }
+    return 1
+  })
+  
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { platformServices, metiers, portages, error: dataError } = useModalData()
   const { isValidBusinessEmail } = useEmailValidation()
   const [summaryPage, setSummaryPage] = useState(0)
   const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false)
-  const [formData, setFormData] = useState({
-    // Step 1: General info
-    companyName: "",
-    siret: "",
-    description: "",
-    isPortage: "no", // "yes" or "no"
+  
+  // Initialize formData with localStorage data if available
+  const [formData, setFormData] = useState<CompanyFormData>(() => {
+    if (typeof window !== 'undefined') {
+      const savedData = localStorage.getItem('company-modal-data')
+      if (savedData) {
+        try {
+          return JSON.parse(savedData)
+        } catch (error) {
+          console.error('Error parsing saved form data:', error)
+        }
+      }
+    }
     
-    // Step 2: Consultants and fees
-    consultantCount: "",
-    managementFeeRate: "",
+    return {
+      // Step 1: General info
+      companyName: "",
+      siret: "",
+      description: "",
+      isPortage: "no", // "yes" or "no"
+      
+      // Step 2: Consultants and fees
+      consultantCount: "",
+      managementFeeRate: "",
 
-    // Step 3: Metiers selection
-    selectedMetiers: [] as string[], // Add metiers selection
+      // Step 3: Metiers selection
+      selectedMetiers: [] as string[], // Add metiers selection
 
-    // Step 4: Admin info
-    adminFirstName: "",
-    adminLastName: "",
-    adminEmail: "",
-    adminPhone: "",
+      // Step 4: Admin info
+      adminFirstName: "",
+      adminLastName: "",
+      adminEmail: "",
+      adminPhone: "",
 
-    // Step 5: Services selection and creation
-    selectedPlatformServices: [] as string[],
-    selectedPortages: [] as string[], // Add portages selection
-    newServices: [] as Array<{
-      id: string
-      label: string
-      description: string
-      requiresData: boolean
-      dataType: string
-      dataLabel: string
-      dataDescription: string
-      choices: string[]
-    }>
+      // Step 5: Services selection and creation
+      selectedPlatformServices: [] as string[],
+      selectedPortages: [] as string[], // Add portages selection
+      newServices: [] as NewService[]
+    }
   })
 
   const totalSteps = 7
+
+  // Save form data to localStorage whenever formData changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('company-modal-data', JSON.stringify(formData))
+    }
+  }, [formData])
+
+  // Save current step to localStorage whenever currentStep changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('company-modal-step', currentStep.toString())
+    }
+  }, [currentStep])
+
+  // Clear localStorage on successful completion
+  const clearLocalStorage = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('company-modal-data')
+      localStorage.removeItem('company-modal-step')
+    }
+  }
 
   // Set data error if there's a fetching error
   useEffect(() => {
@@ -86,30 +164,30 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
   const toggleServiceSelection = (serviceId: number) => {
     const serviceIdStr = serviceId.toString()
-    setFormData(prev => ({
+    setFormData((prev: CompanyFormData) => ({
       ...prev,
       selectedPlatformServices: prev.selectedPlatformServices.includes(serviceIdStr)
-        ? prev.selectedPlatformServices.filter(id => id !== serviceIdStr)
+        ? prev.selectedPlatformServices.filter((id: string) => id !== serviceIdStr)
         : [...prev.selectedPlatformServices, serviceIdStr]
     }))
   }
 
   const toggleMetierSelection = (metierId: number) => {
     const metierIdStr = metierId.toString()
-    setFormData(prev => ({
+    setFormData((prev: CompanyFormData) => ({
       ...prev,
       selectedMetiers: prev.selectedMetiers.includes(metierIdStr)
-        ? prev.selectedMetiers.filter(id => id !== metierIdStr)
+        ? prev.selectedMetiers.filter((id: string) => id !== metierIdStr)
         : [...prev.selectedMetiers, metierIdStr]
     }))
   }
 
   const togglePortageSelection = (portageId: number) => {
     const portageIdStr = portageId.toString()
-    setFormData(prev => ({
+    setFormData((prev: CompanyFormData) => ({
       ...prev,
       selectedPortages: prev.selectedPortages.includes(portageIdStr)
-        ? prev.selectedPortages.filter(id => id !== portageIdStr)
+        ? prev.selectedPortages.filter((id: string) => id !== portageIdStr)
         : [...prev.selectedPortages, portageIdStr]
     }))
   }
@@ -118,17 +196,8 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     setIsAddServiceModalOpen(true)
   }
 
-  const handleAddService = (newService: {
-    id: string
-    label: string
-    description: string
-    requiresData: boolean
-    dataType: string
-    dataLabel: string
-    dataDescription: string
-    choices: string[]
-  }) => {
-    setFormData(prev => ({
+  const handleAddService = (newService: NewService) => {
+    setFormData((prev: CompanyFormData) => ({
       ...prev,
       newServices: [...prev.newServices, newService]
     }))
@@ -140,6 +209,19 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       setError(null)
       
       try {
+        // Get the most up-to-date form data from localStorage
+        let currentFormData = formData
+        if (typeof window !== 'undefined') {
+          const savedData = localStorage.getItem('company-modal-data')
+          if (savedData) {
+            try {
+              currentFormData = JSON.parse(savedData)
+            } catch (error) {
+              console.error('Error parsing saved form data during submission:', error)
+            }
+          }
+        }
+
         // Step 1: Initial registration (create user)
         const signupResponse = await fetch('/api/auth/register', {
           method: 'POST',
@@ -147,11 +229,11 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            first_name: formData.adminFirstName,
-            last_name: formData.adminLastName,
-            email: formData.adminEmail,
+            first_name: currentFormData.adminFirstName,
+            last_name: currentFormData.adminLastName,
+            email: currentFormData.adminEmail,
             role: "COMPANY",
-            phone_number: formData.adminPhone,
+            phone_number: currentFormData.adminPhone,
           }),
         })
 
@@ -165,26 +247,26 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         // Step 2: Company onboarding
         const onboardingData = {
           userId: signupData.userId,
-          company_name: formData.companyName,
-          company_description: formData.description,
-          siret: formData.siret,
-          consultant_count: parseInt(formData.consultantCount),
-          management_fees: parseFloat(formData.managementFeeRate),
-          is_portage: formData.isPortage === "yes",
-          selected_services: formData.selectedPlatformServices.map(id => parseInt(id)),
-          selected_metiers: formData.selectedMetiers.map(id => parseInt(id)), // Add metiers
-          selected_portages: formData.isPortage === "yes" ? formData.selectedPortages.map(id => parseInt(id)) : [], // Add portages
+          company_name: currentFormData.companyName,
+          company_description: currentFormData.description,
+          siret: currentFormData.siret,
+          consultant_count: parseInt(currentFormData.consultantCount),
+          management_fees: parseFloat(currentFormData.managementFeeRate),
+          is_portage: currentFormData.isPortage === "yes",
+          selected_services: currentFormData.selectedPlatformServices.map((id: string) => parseInt(id)),
+          selected_metiers: currentFormData.selectedMetiers.map((id: string) => parseInt(id)), // Add metiers
+          selected_portages: currentFormData.isPortage === "yes" ? currentFormData.selectedPortages.map((id: string) => parseInt(id)) : [], // Add portages
           // Send all new services as array
-          new_services: formData.newServices
-            .filter(service => service.label.trim() !== '')
-            .map(service => ({
+          new_services: currentFormData.newServices
+            .filter((service: NewService) => service.label.trim() !== '')
+            .map((service: NewService) => ({
               service_label: service.label,
               service_description: service.description,
               data_type: service.dataType,
               requires_data: service.requiresData,
               data_label: service.dataLabel,
               data_description: service.dataDescription,
-              choices: service.choices.filter(choice => choice.trim() !== ''),
+              choices: service.choices.filter((choice: string) => choice.trim() !== ''),
             }))
         }
 
@@ -201,6 +283,8 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           throw new Error(errorData.error || 'Company onboarding failed')
         }
 
+        // Clear localStorage on successful completion
+        clearLocalStorage()
         setCurrentStep(7)
       } catch (error) {
         console.error('Registration error:', error)
@@ -223,7 +307,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 id='nom'
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.companyName}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, companyName: e.target.value }))}
+                  onChange={(e) => setFormData((prev: CompanyFormData) => ({ ...prev, companyName: e.target.value }))}
                   placeholder="Ma Société de Portage"
                   required
                 />
@@ -234,7 +318,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 id='siret'
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.siret}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, siret: e.target.value }))}
+                  onChange={(e) => setFormData((prev: CompanyFormData) => ({ ...prev, siret: e.target.value }))}
                   placeholder="12345678901234"
                   required
                 />
@@ -246,7 +330,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               id='desc'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.description}
-                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                onChange={(e) => setFormData((prev: CompanyFormData) => ({ ...prev, description: e.target.value }))}
                 placeholder="Décrivez votre société de portage salarial..."
                 rows={4}
                 required
@@ -259,7 +343,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 <input
                   type="checkbox"
                   checked={formData.isPortage === "yes"}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, isPortage: e.target.checked ? "yes" : "no" }))}
+                  onChange={(e) => setFormData((prev: CompanyFormData) => ({ ...prev, isPortage: e.target.checked ? "yes" : "no" }))}
                   className="text-blue-600"
                 />
                 <span className="text-sm font-medium text-gray-700">Nous sommes une société de portage salarial</span>
@@ -269,7 +353,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             {/* Portages Selection - Only show if company is portage */}
             {formData.isPortage === "yes" && (
               <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-700">Services de portage proposés *</label>
+                <h1 className="text-sm font-medium text-gray-700">Services de portage proposés *</h1>
                 <div className="grid grid-cols-3 gap-3">
                   {portages.map((portage) => (
                     <label key={portage.id} className="flex items-center space-x-2 cursor-pointer">
@@ -298,7 +382,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="number"
                 value={formData.consultantCount}
-                onChange={(e) => setFormData((prev) => ({ ...prev, consultantCount: e.target.value }))}
+                onChange={(e) => setFormData((prev: CompanyFormData) => ({ ...prev, consultantCount: e.target.value }))}
                 placeholder="50"
                 required
               />
@@ -313,7 +397,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               min="0"
               max="20"
               value={formData.managementFeeRate}
-              onChange={(e) => setFormData((prev) => ({ ...prev, managementFeeRate: e.target.value }))}
+              onChange={(e) => setFormData((prev: CompanyFormData) => ({ ...prev, managementFeeRate: e.target.value }))}
               placeholder="8.5"
               required
               />
@@ -364,7 +448,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 id='prenom'
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.adminFirstName}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, adminFirstName: e.target.value }))}
+                  onChange={(e) => setFormData((prev: CompanyFormData) => ({ ...prev, adminFirstName: e.target.value }))}
                   placeholder="Marie"
                   required
                 />
@@ -375,7 +459,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 id='name'
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.adminLastName}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, adminLastName: e.target.value }))}
+                  onChange={(e) => setFormData((prev: CompanyFormData) => ({ ...prev, adminLastName: e.target.value }))}
                   placeholder="Martin"
                   required
                 />
@@ -383,7 +467,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             </div>
             <EmailValidationInput
               email={formData.adminEmail}
-              onEmailChange={(email) => setFormData((prev) => ({ ...prev, adminEmail: email }))}
+              onEmailChange={(email) => setFormData((prev: CompanyFormData) => ({ ...prev, adminEmail: email }))}
               label="Email de l'administrateur *"
               placeholder="marie.martin@societe.com"
               id="admin-email"
@@ -394,7 +478,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               id='phone'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.adminPhone}
-                onChange={(e) => setFormData((prev) => ({ ...prev, adminPhone: e.target.value }))}
+                onChange={(e) => setFormData((prev: CompanyFormData) => ({ ...prev, adminPhone: e.target.value }))}
                 placeholder="01 23 45 67 89"
                 required
               />
@@ -473,11 +557,11 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                         {formData.newServices.length} service{formData.newServices.length > 1 ? 's' : ''}
                       </div>
                       <span className="text-sm text-gray-600">
-                        {formData.newServices.map(s => s.label).filter(label => label.trim() !== '').join(', ') || 'Services en cours de création'}
+                        {formData.newServices.map((s: NewService) => s.label).filter((label: string) => label.trim() !== '').join(', ') || 'Services en cours de création'}
                       </span>
                     </div>
                     <button
-                      onClick={() => setFormData(prev => ({ ...prev, newServices: [] }))}
+                      onClick={() => setFormData((prev: CompanyFormData) => ({ ...prev, newServices: [] }))}
                       className="text-red-600 hover:text-red-700 text-sm font-medium"
                     >
                       Tout supprimer
@@ -489,7 +573,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           </div>
         )
 
-      case 6:
+      case 6: {
         const summaryPages = [
           {
             title: "Informations de la société",
@@ -525,7 +609,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                   <div className="border rounded-lg p-4 bg-gray-50">
                     <h4 className="font-medium text-gray-900 mb-3">Métiers supportés ({formData.selectedMetiers.length})</h4>
                     <div className="flex flex-wrap gap-2">
-                      {formData.selectedMetiers.map(metierId => {
+                      {formData.selectedMetiers.map((metierId: string) => {
                         const metier = metiers?.find(m => m.id.toString() === metierId)
                         return metier ? (
                           <span key={metierId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -548,7 +632,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                   <div className="border rounded-lg p-4 bg-gray-50">
                     <h4 className="font-medium text-gray-900 mb-3">Associations de portage ({formData.selectedPortages.length})</h4>
                     <div className="space-y-3">
-                      {formData.selectedPortages.map(portageId => {
+                      {formData.selectedPortages.map((portageId: string) => {
                         const portage = portages?.find(p => p.id.toString() === portageId)
                         return portage ? (
                           <div key={portageId} className="flex items-start space-x-3 p-3 bg-white rounded border">
@@ -571,7 +655,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                 ) : (
                   <div className="border rounded-lg p-4 bg-gray-50">
                     <h4 className="font-medium text-gray-900 mb-3">Services de portage</h4>
-                    <p className="text-sm text-gray-600">Non applicable - Vous n'êtes pas une société de portage salarial</p>
+                    <p className="text-sm text-gray-600">Non applicable - Vous n&apos;êtes pas une société de portage salarial</p>
                   </div>
                 )}
               </div>
@@ -586,7 +670,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                   <div className="border rounded-lg p-4 bg-gray-50">
                     <h4 className="font-medium text-gray-900 mb-3">Services plateforme ({formData.selectedPlatformServices.length})</h4>
                     <div className="space-y-3">
-                      {formData.selectedPlatformServices.map(serviceId => {
+                      {formData.selectedPlatformServices.map((serviceId: string) => {
                         const service = platformServices?.find(s => s.id.toString() === serviceId)
                         return service ? (
                           <div key={serviceId} className="flex items-start space-x-3 p-3 bg-white rounded border">
@@ -622,11 +706,11 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             content: (
               <div className="space-y-4">
                 {/* New Services */}
-                {formData.newServices.filter(s => s.label.trim() !== '').length > 0 ? (
+                {formData.newServices.filter((s: NewService) => s.label.trim() !== '').length > 0 ? (
                   <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Nouveaux services ({formData.newServices.filter(s => s.label.trim() !== '').length})</h4>
+                    <h4 className="font-medium text-gray-900 mb-3">Nouveaux services ({formData.newServices.filter((s: NewService) => s.label.trim() !== '').length})</h4>
                     <div className="space-y-4">
-                      {formData.newServices.filter(s => s.label.trim() !== '').map(service => (
+                      {formData.newServices.filter((s: NewService) => s.label.trim() !== '').map((service: NewService) => (
                         <div key={service.id} className="p-4 bg-white rounded border">
                           <div className="flex items-start justify-between mb-2">
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
@@ -652,11 +736,11 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                                   <span className="font-medium">Description:</span> {service.dataDescription}
                                 </p>
                               )}
-                              {service.choices && service.choices.filter(c => c.trim() !== '').length > 0 && (
+                              {service.choices && service.choices.filter((c: string) => c.trim() !== '').length > 0 && (
                                 <div className="mt-2">
                                   <p className="text-xs text-gray-600 font-medium mb-1">Options disponibles:</p>
                                   <div className="flex flex-wrap gap-1">
-                                    {service.choices.filter(c => c.trim() !== '').map((choice, index) => (
+                                    {service.choices.filter((c: string) => c.trim() !== '').map((choice: string, index: number) => (
                                       <span key={index} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-gray-200 text-gray-700">
                                         {choice}
                                       </span>
@@ -720,6 +804,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             </div>
           </div>
         );
+      }
 
       case 7:
         return <SuccessStep email={formData.adminEmail} />
@@ -793,7 +878,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 5:
        {
          const hasSelectedServices = formData.selectedPlatformServices.length > 0
-        const hasValidNewServices = formData.newServices.some(service => 
+        const hasValidNewServices = formData.newServices.some((service: NewService) => 
           service.label.trim() !== "" &&
           (!service.requiresData || 
            (service.dataLabel.trim() !== "" && service.dataType.trim() !== ""))
@@ -828,6 +913,27 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         completeButtonText="Finaliser l'inscription"
         nextButtonText="Suivant"
         completionStep={6} // Specify that completion happens on step 6
+        onClearProgress={() => {
+          clearLocalStorage()
+          setCurrentStep(1)
+          setFormData({
+            companyName: "",
+            siret: "",
+            description: "",
+            isPortage: "no",
+            consultantCount: "",
+            managementFeeRate: "",
+            selectedMetiers: [],
+            adminFirstName: "",
+            adminLastName: "",
+            adminEmail: "",
+            adminPhone: "",
+            selectedPlatformServices: [],
+            selectedPortages: [],
+            newServices: []
+          })
+          setSummaryPage(0)
+        }}
       >
         {renderStep()}
       </ModalWrapper>

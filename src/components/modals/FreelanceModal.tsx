@@ -9,6 +9,38 @@ import ServiceInfoTooltip from '../ServiceInfoTooltip';
 import { ModalWrapper } from './ModalWrapper';
 import { SuccessStep } from './SuccessStep';
 
+interface SelectedService {
+  serviceId: number;
+  isRequired: boolean;
+  responseData?: string;
+}
+
+interface FreelanceFormData {
+  // Step 1: Personal info
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  metierId: number;
+
+  // Step 2: Mission info
+  hasMission: string;
+  clientName: string;
+  clientAddress: string;
+  clientSector: string;
+  tjm: string;
+  days: string;
+  wantsPortage: "yes" | "no";
+  selectedPortages: string[];
+
+  // Step 3: Services
+  selectedServices: SelectedService[];
+  newServices: string[];
+
+  // Step 4: Priority
+  priority: string;
+}
+
 
 
 interface FreelanceModalProps {
@@ -16,7 +48,20 @@ interface FreelanceModalProps {
 }
 
 const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
-  const [currentStep, setCurrentStep] = useState(1)
+  // Initialize currentStep with localStorage data if available
+  const [currentStep, setCurrentStep] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedStep = localStorage.getItem('freelance-modal-step')
+      if (savedStep) {
+        const step = parseInt(savedStep, 10)
+        if (step >= 1 && step <= 6) {
+          return step
+        }
+      }
+    }
+    return 1
+  })
+  
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { platformServices, metiers, portages, error: dataError } = useModalData()
@@ -29,37 +74,69 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   
   const [summaryPage, setSummaryPage] = useState(0)
   
-  const [formData, setFormData] = useState({
-    // Step 1: Personal info
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    metierId: 0,
+  // Initialize formData with localStorage data if available
+  const [formData, setFormData] = useState<FreelanceFormData>(() => {
+    if (typeof window !== 'undefined') {
+      const savedData = localStorage.getItem('freelance-modal-data')
+      if (savedData) {
+        try {
+          return JSON.parse(savedData)
+        } catch (error) {
+          console.error('Error parsing saved form data:', error)
+        }
+      }
+    }
+    
+    return {
+      // Step 1: Personal info
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      metierId: 0,
 
-    // Step 2: Mission info
-    hasMission: "",
-    clientName: "",
-    clientAddress: "",
-    clientSector: "",
-    tjm: "",
-    days: "",
-    wantsPortage: "no", // "yes" or "no"
-    selectedPortages: [] as string[],
+      // Step 2: Mission info
+      hasMission: "",
+      clientName: "",
+      clientAddress: "",
+      clientSector: "",
+      tjm: "",
+      days: "",
+      wantsPortage: "no", // "yes" or "no"
+      selectedPortages: [] as string[],
 
-    // Step 3: Services
-    selectedServices: [] as {
-      serviceId: number;
-      isRequired: boolean;
-      responseData?: string;
-    }[],
-    newServices: [] as string[],
+      // Step 3: Services
+      selectedServices: [] as SelectedService[],
+      newServices: [] as string[],
 
-    // Step 4: Priority
-    priority: "",
+      // Step 4: Priority
+      priority: "",
+    }
   })
 
   const totalSteps = 6
+
+  // Save form data to localStorage whenever formData changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('freelance-modal-data', JSON.stringify(formData))
+    }
+  }, [formData])
+
+  // Save current step to localStorage whenever currentStep changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('freelance-modal-step', currentStep.toString())
+    }
+  }, [currentStep])
+
+  // Clear localStorage on successful completion
+  const clearLocalStorage = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('freelance-modal-data')
+      localStorage.removeItem('freelance-modal-step')
+    }
+  }
 
   // Set data error if there's a fetching error
   useEffect(() => {
@@ -81,14 +158,14 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   }
 
   const handleServiceToggle = (serviceId: number) => {
-    setFormData((prev) => {
-      const existingServiceIndex = prev.selectedServices.findIndex(s => s.serviceId === serviceId)
+    setFormData((prev: FreelanceFormData) => {
+      const existingServiceIndex = prev.selectedServices.findIndex((s: SelectedService) => s.serviceId === serviceId)
       
       if (existingServiceIndex >= 0) {
         // Remove service
         return {
           ...prev,
-          selectedServices: prev.selectedServices.filter(s => s.serviceId !== serviceId)
+          selectedServices: prev.selectedServices.filter((s: SelectedService) => s.serviceId !== serviceId)
         }
       } else {
         // Add service
@@ -101,18 +178,18 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   }
 
   const handleServiceRequiredChange = (serviceId: number, isRequired: boolean) => {
-    setFormData((prev) => ({
+    setFormData((prev: FreelanceFormData) => ({
       ...prev,
-      selectedServices: prev.selectedServices.map(s => 
+      selectedServices: prev.selectedServices.map((s: SelectedService) => 
         s.serviceId === serviceId ? { ...s, isRequired } : s
       )
     }))
   }
 
   const handleServiceDataChange = (serviceId: number, value: string) => {
-    setFormData((prev) => ({
+    setFormData((prev: FreelanceFormData) => ({
       ...prev,
-      selectedServices: prev.selectedServices.map(s => 
+      selectedServices: prev.selectedServices.map((s: SelectedService) => 
         s.serviceId === serviceId ? { ...s, responseData: value } : s
       )
     }))
@@ -120,10 +197,10 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
   const handlePortageToggle = (portageId: number) => {
     const portageIdStr = portageId.toString()
-    setFormData((prev) => ({
+    setFormData((prev: FreelanceFormData) => ({
       ...prev,
       selectedPortages: prev.selectedPortages.includes(portageIdStr)
-        ? prev.selectedPortages.filter(id => id !== portageIdStr)
+        ? prev.selectedPortages.filter((id: string) => id !== portageIdStr)
         : [...prev.selectedPortages, portageIdStr]
     }))
   }
@@ -144,23 +221,23 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
   // Handle multiple selections for SELECT type
   const handleMultipleSelectChange = (serviceId: number, option: string, isChecked: boolean) => {
-    setFormData((prev) => {
-      const service = prev.selectedServices.find(s => s.serviceId === serviceId)
+    setFormData((prev: FreelanceFormData) => {
+      const service = prev.selectedServices.find((s: SelectedService) => s.serviceId === serviceId)
       if (!service) return prev
       
-      let currentSelections = service.responseData ? service.responseData.split(',').filter(s => s.trim() !== '') : []
+      let currentSelections = service.responseData ? service.responseData.split(',').filter((s: string) => s.trim() !== '') : []
       
       if (isChecked) {
         if (!currentSelections.includes(option)) {
           currentSelections.push(option)
         }
       } else {
-        currentSelections = currentSelections.filter(s => s !== option)
+        currentSelections = currentSelections.filter((s: string) => s !== option)
       }
       
       return {
         ...prev,
-        selectedServices: prev.selectedServices.map(s => 
+        selectedServices: prev.selectedServices.map((s: SelectedService) => 
           s.serviceId === serviceId ? { ...s, responseData: currentSelections.join(',') } : s
         )
       }
@@ -172,6 +249,19 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
     setError(null)
 
     try {
+      // Get the most up-to-date form data from localStorage
+      let currentFormData = formData
+      if (typeof window !== 'undefined') {
+        const savedData = localStorage.getItem('freelance-modal-data')
+        if (savedData) {
+          try {
+            currentFormData = JSON.parse(savedData)
+          } catch (error) {
+            console.error('Error parsing saved form data during submission:', error)
+          }
+        }
+      }
+
       // Step 1: Initial registration (create user) - same as CompanyModal
       const signupResponse = await fetch('/api/auth/register', {
         method: 'POST',
@@ -179,11 +269,11 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          email: formData.email,
+          first_name: currentFormData.firstName,
+          last_name: currentFormData.lastName,
+          email: currentFormData.email,
           role: "FREELANCE",
-          phone_number: formData.phone,
+          phone_number: currentFormData.phone,
         }),
       })
 
@@ -196,19 +286,19 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       // Step 2: Freelance onboarding - same pattern as CompanyModal
       const onboardingData = {
         userId: signupData.userId,
-        metier_id: formData.metierId,
-        mission_status: formData.hasMission === 'yes' ? 'OPEN' : 'PENDING',
-        priority: formData.priority === 'urgent' ? 'HIGH' : 
-                 formData.priority === 'medium' ? 'MEDIUM' : 'LOW',
-        tjm: parseFloat(formData.tjm) || 1, // Ensure minimum value of 1
-        days: parseFloat(formData.days) || 0.5, // Ensure minimum value of 0.5
-        wants_portage: formData.wantsPortage === "yes",
-        selected_portages: formData.wantsPortage === "yes" ? formData.selectedPortages.map(id => parseInt(id)) : [],
-        selected_services: formData.selectedServices,
+        metier_id: currentFormData.metierId,
+        mission_status: currentFormData.hasMission === 'yes' ? 'OPEN' : 'PENDING',
+        priority: currentFormData.priority === 'urgent' ? 'HIGH' : 
+                 currentFormData.priority === 'medium' ? 'MEDIUM' : 'LOW',
+        tjm: parseFloat(currentFormData.tjm) || 1, // Ensure minimum value of 1
+        days: parseFloat(currentFormData.days) || 0.5, // Ensure minimum value of 0.5
+        wants_portage: currentFormData.wantsPortage === "yes",
+        selected_portages: currentFormData.wantsPortage === "yes" ? currentFormData.selectedPortages.map((id: string) => parseInt(id)) : [],
+        selected_services: currentFormData.selectedServices,
         // Only include client fields if they have values
-        ...(formData.clientName && { client_name: formData.clientName }),
-        ...(formData.clientAddress && { client_address: formData.clientAddress }),
-        ...(formData.clientSector && { client_sector: formData.clientSector }),
+        ...(currentFormData.clientName && { client_name: currentFormData.clientName }),
+        ...(currentFormData.clientAddress && { client_address: currentFormData.clientAddress }),
+        ...(currentFormData.clientSector && { client_sector: currentFormData.clientSector }),
       }
       const onboardingResponse = await fetch('/api/auth/onboarding/freelance', {
         method: 'POST',
@@ -221,6 +311,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         const errorData = await onboardingResponse.json()
         throw new Error(errorData.error || 'Freelance onboarding failed')
       }
+      
+      // Clear localStorage on successful completion
+      clearLocalStorage()
       // Show success step
       setCurrentStep(6)
     } catch (error) {
@@ -242,7 +335,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                 id='prenom'
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.firstName}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, firstName: e.target.value }))}
+                  onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, firstName: e.target.value }))}
                   placeholder="Jean"
                   required
                 />
@@ -253,7 +346,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                 id='nom'
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.lastName}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, lastName: e.target.value }))}
+                  onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, lastName: e.target.value }))}
                   placeholder="Dupont"
                   required
                 />
@@ -261,7 +354,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             </div>
             <BasicEmailInput
               email={formData.email}
-              onEmailChange={(email) => setFormData((prev) => ({ ...prev, email: email }))}
+              onEmailChange={(email) => setFormData((prev: FreelanceFormData) => ({ ...prev, email: email }))}
               label="Email *"
               placeholder="jean.dupont@email.com"
               id="freelance-email"
@@ -272,7 +365,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
               id='phone'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.phone}
-                onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, phone: e.target.value }))}
                 placeholder="06 12 34 56 78"
                 required
               />
@@ -283,7 +376,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                 id='metier'
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.metierId}
-                onChange={(e) => setFormData((prev) => ({ ...prev, metierId: parseInt(e.target.value) }))}
+                onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, metierId: parseInt(e.target.value) }))}
               >
                 <option value={0}>Sélectionnez votre métier</option>
                 {metiers.map((metier) => (
@@ -308,7 +401,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                     name="hasMission"
                     value="no"
                     checked={formData.hasMission === "no"}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, hasMission: e.target.value }))}
+                    onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))}
                     className="text-blue-600"
                   />
                   <span className="text-gray-700">Non, je suis en recherche</span>
@@ -319,7 +412,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                     name="hasMission"
                     value="searching"
                     checked={formData.hasMission === "searching"}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, hasMission: e.target.value }))}
+                    onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))}
                     className="text-blue-600"
                   />
                   <span className="text-gray-700">En cours de recherche</span>
@@ -330,7 +423,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                     name="hasMission"
                     value="yes"
                     checked={formData.hasMission === "yes"}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, hasMission: e.target.value }))}
+                    onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))}
                     className="text-blue-600"
                   />
                   <span className="text-gray-700">Oui, j&apos;ai une mission en cours</span>
@@ -350,7 +443,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                   id='client'
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={formData.clientName}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, clientName: e.target.value }))}
+                    onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, clientName: e.target.value }))}
                     placeholder="Nom de l'entreprise (optionnel)"
                   />
                   </div>
@@ -360,7 +453,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                   id='address'
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={formData.clientAddress}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, clientAddress: e.target.value }))}
+                    onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, clientAddress: e.target.value }))}
                     placeholder="Adresse complète (optionnel)"
                   />
                   </div>
@@ -371,7 +464,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                     id='field'
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={formData.clientSector}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, clientSector: e.target.value }))}
+                    onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, clientSector: e.target.value }))}
                   >
                     <option value="">Sélectionnez le secteur (optionnel)</option>
                     {metiers.map((metier) => (
@@ -393,7 +486,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                   type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.tjm}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, tjm: e.target.value }))}
+                  onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, tjm: e.target.value }))}
                   placeholder="500"
                   min="0"
                   step="10"
@@ -406,7 +499,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                   type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.days}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, days: e.target.value }))}
+                  onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, days: e.target.value }))}
                   placeholder="5"
                   min="1"
                   max="7"
@@ -421,7 +514,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                 <input
                   type="checkbox"
                   checked={formData.wantsPortage === "yes"}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, wantsPortage: e.target.checked ? "yes" : "no" }))}
+                  onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, wantsPortage: e.target.checked ? "yes" : "no" }))}
                   className="text-blue-600"
                 />
                 <span className="text-sm font-medium text-gray-700">Je souhaite faire appel à une société de portage salarial</span>
@@ -431,7 +524,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             {/* Portages Selection - Only show if freelancer wants portage */}
             {formData.wantsPortage === "yes" && (
               <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-700">Services de portage souhaités *</label>
+                <h1 className="text-sm font-medium text-gray-700">Services de portage souhaités *</h1>
                 <div className="grid grid-cols-3 gap-3">
                   {portages.map((portage) => (
                     <label key={portage.id} className="flex items-center space-x-2 cursor-pointer">
@@ -456,6 +549,10 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             <div>
               <h3 className="font-medium mb-4">Sélectionnez les services qui vous intéressent</h3>
               
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-sm mb-4">
+                <p><strong>Information :</strong> Si vous sélectionnez un service, vous devez obligatoirement remplir les données demandées (texte, choix, etc.)</p>
+              </div>
+              
               {error && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm mb-4">
                   {error}
@@ -465,8 +562,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
               {/* Services List - Scrollable */}
               <div className="space-y-4 max-h-60 overflow-y-auto">
                 {platformServices.map((service) => {
-                  const isSelected = formData.selectedServices.some(s => s.serviceId === service.id)
-                  const selectedService = formData.selectedServices.find(s => s.serviceId === service.id)
+                  const isSelected = formData.selectedServices.some((s: SelectedService) => s.serviceId === service.id)
+                  const selectedService = formData.selectedServices.find((s: SelectedService) => s.serviceId === service.id)
                   const choices = parseChoices(service.choices)
                   
                   return (
@@ -512,7 +609,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                               <div className="space-y-3">
                                 <div>
                                   <label className="text-sm font-medium text-gray-700 block">
-                                    {service.data_label || 'Données requises'}
+                                    {service.data_label || 'Données requises'} <span className="text-red-500">*</span>
                                   </label>
                                   {service.data_description && (
                                     <p className="text-xs text-gray-500 mt-1">{service.data_description}</p>
@@ -522,11 +619,16 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                                 {/* TEXT input */}
                                 {service.data_type === 'TEXT' && (
                                   <textarea
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 text-sm ${
+                                      (!selectedService?.responseData || selectedService.responseData.trim() === '') 
+                                        ? 'border-red-300 focus:ring-red-500' 
+                                        : 'border-gray-300 focus:ring-blue-500'
+                                    }`}
                                     value={selectedService?.responseData || ""}
                                     onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
-                                    placeholder="Saisissez votre réponse..."
+                                    placeholder="Saisissez votre réponse... (obligatoire)"
                                     rows={3}
+                                    required
                                   />
                                 )}
                                 
@@ -534,20 +636,25 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                                 {service.data_type === 'NUMBER' && (
                                   <input
                                     type="number"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 text-sm ${
+                                      (!selectedService?.responseData || selectedService.responseData.trim() === '') 
+                                        ? 'border-red-300 focus:ring-red-500' 
+                                        : 'border-gray-300 focus:ring-blue-500'
+                                    }`}
                                     value={selectedService?.responseData || ""}
                                     onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
-                                    placeholder="Entrez un nombre..."
+                                    placeholder="Entrez un nombre... (obligatoire)"
+                                    required
                                   />
                                 )}
                                 
                                 {/* SELECT (multiple choice) */}
                                 {service.data_type === 'SELECT' && choices.length > 0 && (
                                   <div className="space-y-2">
-                                    <p className="text-xs text-gray-600">Sélectionnez une ou plusieurs options :</p>
+                                    <p className="text-xs text-gray-600">Sélectionnez une ou plusieurs options <span className="text-red-500">*</span> :</p>
                                     {choices.map((choice: string, index: number) => {
                                       const currentSelections = selectedService?.responseData ? 
-                                        selectedService.responseData.split(',').filter(s => s.trim() !== '') : []
+                                        selectedService.responseData.split(',').filter((s: string) => s.trim() !== '') : []
                                       const isChecked = currentSelections.includes(choice)
                                       
                                       return (
@@ -562,13 +669,16 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                                         </label>
                                       )
                                     })}
+                                    {(!selectedService?.responseData || selectedService.responseData.trim() === '') && (
+                                      <p className="text-xs text-red-500 mt-1">Veuillez sélectionner au moins une option.</p>
+                                    )}
                                   </div>
                                 )}
                                 
                                 {/* RADIO (single choice) */}
                                 {service.data_type === 'RADIO' && choices.length > 0 && (
                                   <div className="space-y-2">
-                                    <p className="text-xs text-gray-600">Sélectionnez une option :</p>
+                                    <p className="text-xs text-gray-600">Sélectionnez une option <span className="text-red-500">*</span> :</p>
                                     {choices.map((choice: string, index: number) => (
                                       <label key={index} className="flex items-center space-x-2">
                                         <input
@@ -582,6 +692,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                                         <span className="text-sm text-gray-700">{choice}</span>
                                       </label>
                                     ))}
+                                    {(!selectedService?.responseData || selectedService.responseData.trim() === '') && (
+                                      <p className="text-xs text-red-500 mt-1">Veuillez sélectionner une option.</p>
+                                    )}
                                   </div>
                                 )}
                               </div>
@@ -609,7 +722,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                       name="priority"
                       value="urgent"
                       checked={formData.priority === "urgent"}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, priority: e.target.value }))}
+                      onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, priority: e.target.value }))}
                       className="text-blue-600"
                     />
                     <span className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></span>
@@ -621,7 +734,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                       name="priority"
                       value="medium"
                       checked={formData.priority === "medium"}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, priority: e.target.value }))}
+                      onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, priority: e.target.value }))}
                       className="text-blue-600"
                     />
                     <span className="w-3 h-3 bg-orange-500 rounded-full flex-shrink-0"></span>
@@ -633,7 +746,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                       name="priority"
                       value="low"
                       checked={formData.priority === "low"}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, priority: e.target.value }))}
+                      onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, priority: e.target.value }))}
                       className="text-blue-600"
                     />
                     <span className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></span>
@@ -644,8 +757,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
           </div>
         )
 
-      case 5:
-        const summaryPages = [
+      case 5: {
+         const summaryPages = [
           {
             title: "Informations personnelles",
             content: (
@@ -699,7 +812,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                     <div>
                       <span className="font-medium">Services de portage sélectionnés:</span>
                       <ul className="list-disc list-inside ml-4 mt-1">
-                        {formData.selectedPortages.map(portageId => {
+                        {formData.selectedPortages.map((portageId: string) => {
                           const portage = portages.find(p => p.id === parseInt(portageId));
                           return (
                             <li key={portageId}>
@@ -724,7 +837,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                     <h4 className="font-medium text-gray-900 mb-3">Services sélectionnés</h4>
                     <div className="text-sm">
                       <ul className="list-disc overflow-auto max-h-40 list-inside space-y-1">
-                        {formData.selectedServices.map(selectedService => {
+                        {formData.selectedServices.map((selectedService: SelectedService) => {
                           const service = platformServices.find(s => s.id === selectedService.serviceId);
                           return (
                             <li key={selectedService.serviceId}>
@@ -749,7 +862,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                     <h4 className="font-medium text-gray-900 mb-3">Services personnalisés demandés</h4>
                     <div className="text-sm">
                       <ul className="list-disc list-inside space-y-1">
-                        {formData.newServices.map((service, index) => (
+                        {formData.newServices.map((service: string, index: number) => (
                           <li key={index}>{service}</li>
                         ))}
                       </ul>
@@ -837,7 +950,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             </div>
           </div>
         );
-
+      }
+       
       case 6:
         return (
           <SuccessStep 
@@ -883,7 +997,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       case 2:
         return "Parlez-nous de votre situation actuelle"
       case 3:
-        return "Choisissez les services qui vous intéressent"
+        return "Choisissez les services qui vous intéressent (données obligatoires si sélectionnés)"
       case 4:
         return "Définissez l'urgence de votre demande"
       case 5:
@@ -918,8 +1032,25 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         }
         return basicValid;
       }
-      case 3:
-        return true // Optional step
+      case 3: {
+        // Services step validation
+        // If no services are selected, step is valid (services are optional)
+        if (formData.selectedServices.length === 0) {
+          return true;
+        }
+        
+        // If services are selected, validate that required data is provided
+        for (const selectedService of formData.selectedServices) {
+          const service = platformServices.find(s => s.id === selectedService.serviceId);
+          if (service?.requires_data) {
+            // For services that require data, check if responseData is provided
+            if (!selectedService.responseData || selectedService.responseData.trim() === '') {
+              return false; // Data is required but not provided
+            }
+          }
+        }
+        return true;
+      }
       case 4:
         return formData.priority
       case 5:
@@ -949,6 +1080,29 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       completeButtonText="Envoyer ma demande"
       nextButtonText="Suivant"
       completionStep={5} // Specify that completion happens on step 5
+      onClearProgress={() => {
+        clearLocalStorage()
+        setCurrentStep(1)
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          metierId: 0,
+          hasMission: "",
+          clientName: "",
+          clientAddress: "",
+          clientSector: "",
+          tjm: "",
+          days: "",
+          wantsPortage: "no",
+          selectedPortages: [],
+          selectedServices: [],
+          newServices: [],
+          priority: "",
+        })
+        setSummaryPage(0)
+      }}
     >
       {renderStep()}
     </ModalWrapper>
