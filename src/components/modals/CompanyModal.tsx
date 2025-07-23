@@ -142,6 +142,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         // Clear localStorage on successful completion
         clearFormData();
         clearStepProgress();
+        
+        // Move to success step
+        goToNextStep();
       } catch (error) {
         console.error('Registration error:', error)
         const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue'
