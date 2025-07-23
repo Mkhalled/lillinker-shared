@@ -75,7 +75,6 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const [error, setError] = useState<string | null>(null)
   const { platformServices, metiers, portages, error: dataError } = useModalData()
   const { isValidBusinessEmail } = useEmailValidation()
-  const [summaryPage, setSummaryPage] = useState(0)
   const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false)
   
   // Initialize formData with localStorage data if available
@@ -567,238 +566,151 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           </div>
         )
 
-      case 6: {
-        const summaryPages = [
-          {
-            title: "Informations de la société",
-            content: (
-              <div className="border rounded-lg p-4 bg-gray-50">
-                <h4 className="font-medium text-gray-900 mb-3">Informations de la société</h4>
-                <div className="space-y-2 text-sm">
-                  <div><span className="font-medium">Nom:</span> {formData.companyName}</div>
-                  <div><span className="font-medium">SIRET:</span> {formData.siret}</div>
-                  <div><span className="font-medium">Type:</span> {formData.isPortage === "yes" ? "Société de portage salarial" : "Autre société"}</div>
-                  <div><span className="font-medium">Consultants:</span> {formData.consultantCount}</div>
-                  <div><span className="font-medium">Frais de gestion:</span> {formData.managementFeeRate}%</div>
-                </div>
+      case 6:
+        return (
+          <div className="space-y-6">
+            {/* Company Information */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <h4 className="font-medium text-gray-900 mb-3">Informations de la société</h4>
+              <div className="space-y-2 text-sm">
+                <div><span className="font-medium">Nom:</span> {formData.companyName}</div>
+                <div><span className="font-medium">SIRET:</span> {formData.siret}</div>
+                <div><span className="font-medium">Type:</span> {formData.isPortage === "yes" ? "Société de portage salarial" : "Autre société"}</div>
+                <div><span className="font-medium">Consultants:</span> {formData.consultantCount}</div>
+                <div><span className="font-medium">Frais de gestion:</span> {formData.managementFeeRate}%</div>
               </div>
-            )
-          },
-          {
-            title: "Administrateur et métiers",
-            content: (
-              <div className="space-y-4">
-                {/* Administrator Information */}
-                <div className="border rounded-lg p-4 bg-gray-50">
-                  <h4 className="font-medium text-gray-900 mb-3">Administrateur</h4>
-                  <div className="space-y-2 text-sm">
-                    <div><span className="font-medium">Nom:</span> {formData.adminFirstName} {formData.adminLastName}</div>
-                    <div><span className="font-medium">Email:</span> {formData.adminEmail}</div>
-                    <div><span className="font-medium">Téléphone:</span> {formData.adminPhone}</div>
-                  </div>
-                </div>
+            </div>
 
-                {/* Métiers */}
-                {formData.selectedMetiers.length > 0 && (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Métiers supportés ({formData.selectedMetiers.length})</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {formData.selectedMetiers.map((metierId: string) => {
-                        const metier = metiers?.find(m => m.id.toString() === metierId)
-                        return metier ? (
-                          <span key={metierId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {metier.name}
-                          </span>
-                        ) : null
-                      })}
-                    </div>
-                  </div>
-                )}
+            {/* Administrator Information */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <h4 className="font-medium text-gray-900 mb-3">Administrateur</h4>
+              <div className="space-y-2 text-sm">
+                <div><span className="font-medium">Nom:</span> {formData.adminFirstName} {formData.adminLastName}</div>
+                <div><span className="font-medium">Email:</span> {formData.adminEmail}</div>
+                <div><span className="font-medium">Téléphone:</span> {formData.adminPhone}</div>
               </div>
-            )
-          },
-          {
-            title: "Associations de portage",
-            content: (
-              <div className="space-y-4">
-                {/* Portage Services */}
-                {formData.isPortage === "yes" && formData.selectedPortages.length > 0 ? (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Associations de portage ({formData.selectedPortages.length})</h4>
-                    <div className="space-y-3">
-                      {formData.selectedPortages.map((portageId: string) => {
-                        const portage = portages?.find(p => p.id.toString() === portageId)
-                        return portage ? (
-                          <div key={portageId} className="flex items-start space-x-3 p-3 bg-white rounded border">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                              {portage.name}
-                            </span>
-                            <div className="flex-1">
-                              <p className="text-sm text-gray-600">{portage.description}</p>
-                            </div>
-                          </div>
-                        ) : null
-                      })}
-                    </div>
-                  </div>
-                ) : formData.isPortage === "yes" ? (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Services de portage</h4>
-                    <p className="text-sm text-gray-600">Aucun service de portage sélectionné</p>
-                  </div>
-                ) : (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Services de portage</h4>
-                    <p className="text-sm text-gray-600">Non applicable - Vous n&apos;êtes pas une société de portage salarial</p>
-                  </div>
-                )}
+            </div>
+
+            {/* Métiers */}
+            {formData.selectedMetiers.length > 0 && (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Métiers supportés ({formData.selectedMetiers.length})</h4>
+                <div className="flex flex-wrap gap-2">
+                  {formData.selectedMetiers.map((metierId: string) => {
+                    const metier = metiers?.find(m => m.id.toString() === metierId)
+                    return metier ? (
+                      <span key={metierId} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {metier.name}
+                      </span>
+                    ) : null
+                  })}
+                </div>
               </div>
-            )
-          },
-          {
-            title: "Services plateforme",
-            content: (
-              <div className="space-y-4">
-                {/* Platform Services */}
-                {formData.selectedPlatformServices.length > 0 ? (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Services plateforme ({formData.selectedPlatformServices.length})</h4>
-                    <div className="space-y-3">
-                      {formData.selectedPlatformServices.map((serviceId: string) => {
-                        const service = platformServices?.find(s => s.id.toString() === serviceId)
-                        return service ? (
-                          <div key={serviceId} className="flex items-start space-x-3 p-3 bg-white rounded border">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                              {service.label}
-                            </span>
-                            <div className="flex-1">
-                              {service.description && (
-                                <p className="text-sm text-gray-600">{service.description}</p>
-                              )}
-                              {service.user?.ownedCompany && (
-                                <p className="text-xs text-gray-500 mt-1">
-                                  Créé par {service.user.ownedCompany.name}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        ) : null
-                      })}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Services plateforme</h4>
-                    <p className="text-sm text-gray-600">Aucun service plateforme sélectionné</p>
-                  </div>
-                )}
+            )}
+
+            {/* Portage Services */}
+            {formData.isPortage === "yes" && formData.selectedPortages.length > 0 && (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Associations de portage ({formData.selectedPortages.length})</h4>
+                <div className="space-y-3">
+                  {formData.selectedPortages.map((portageId: string) => {
+                    const portage = portages?.find(p => p.id.toString() === portageId)
+                    return portage ? (
+                      <div key={portageId} className="flex items-start space-x-3 p-3 bg-white rounded border">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          {portage.name}
+                        </span>
+                        <div className="flex-1">
+                          <p className="text-sm text-gray-600">{portage.description}</p>
+                        </div>
+                      </div>
+                    ) : null
+                  })}
+                </div>
               </div>
-            )
-          },
-          {
-            title: "Nouveaux services",
-            content: (
-              <div className="space-y-4">
-                {/* New Services */}
-                {formData.newServices.filter((s: NewService) => s.label.trim() !== '').length > 0 ? (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Nouveaux services ({formData.newServices.filter((s: NewService) => s.label.trim() !== '').length})</h4>
-                    <div className="space-y-4">
-                      {formData.newServices.filter((s: NewService) => s.label.trim() !== '').map((service: NewService) => (
-                        <div key={service.id} className="p-4 bg-white rounded border">
-                          <div className="flex items-start justify-between mb-2">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                              Nouveau
-                            </span>
-                          </div>
-                          <h5 className="font-medium text-gray-900 mb-1">{service.label}</h5>
+            )}
+
+            {/* Platform Services */}
+            {formData.selectedPlatformServices.length > 0 && (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Services plateforme ({formData.selectedPlatformServices.length})</h4>
+                <div className="space-y-3">
+                  {formData.selectedPlatformServices.map((serviceId: string) => {
+                    const service = platformServices?.find(s => s.id.toString() === serviceId)
+                    return service ? (
+                      <div key={serviceId} className="flex items-start space-x-3 p-3 bg-white rounded border">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          {service.label}
+                        </span>
+                        <div className="flex-1">
                           {service.description && (
-                            <p className="text-sm text-gray-600 mb-3">{service.description}</p>
+                            <p className="text-sm text-gray-600">{service.description}</p>
                           )}
-                          {service.requiresData && (
-                            <div className="mt-3 p-3 bg-gray-50 rounded">
-                              <p className="text-xs text-gray-600 mb-2">
-                                <span className="font-medium">Données requises:</span> {service.dataType === 'TEXT' ? 'Texte libre' : service.dataType === 'NUMBER' ? 'Numérique' : service.dataType === 'RADIO' ? 'Choix unique' : 'Choix multiple'}
-                              </p>
-                              {service.dataLabel && (
-                                <p className="text-xs text-gray-600 mb-1">
-                                  <span className="font-medium">Label:</span> {service.dataLabel}
-                                </p>
-                              )}
-                              {service.dataDescription && (
-                                <p className="text-xs text-gray-600 mb-1">
-                                  <span className="font-medium">Description:</span> {service.dataDescription}
-                                </p>
-                              )}
-                              {service.choices && service.choices.filter((c: string) => c.trim() !== '').length > 0 && (
-                                <div className="mt-2">
-                                  <p className="text-xs text-gray-600 font-medium mb-1">Options disponibles:</p>
-                                  <div className="flex flex-wrap gap-1">
-                                    {service.choices.filter((c: string) => c.trim() !== '').map((choice: string, index: number) => (
-                                      <span key={index} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-gray-200 text-gray-700">
-                                        {choice}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
+                          {service.user?.ownedCompany && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              Créé par {service.user.ownedCompany.name}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ) : null
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* New Services */}
+            {formData.newServices.filter((s: NewService) => s.label.trim() !== '').length > 0 && (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Nouveaux services ({formData.newServices.filter((s: NewService) => s.label.trim() !== '').length})</h4>
+                <div className="space-y-4">
+                  {formData.newServices.filter((s: NewService) => s.label.trim() !== '').map((service: NewService) => (
+                    <div key={service.id} className="p-4 bg-white rounded border">
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                          Nouveau
+                        </span>
+                      </div>
+                      <h5 className="font-medium text-gray-900 mb-1">{service.label}</h5>
+                      {service.description && (
+                        <p className="text-sm text-gray-600 mb-3">{service.description}</p>
+                      )}
+                      {service.requiresData && (
+                        <div className="mt-3 p-3 bg-gray-50 rounded">
+                          <p className="text-xs text-gray-600 mb-2">
+                            <span className="font-medium">Données requises:</span> {service.dataType === 'TEXT' ? 'Texte libre' : service.dataType === 'NUMBER' ? 'Numérique' : service.dataType === 'RADIO' ? 'Choix unique' : 'Choix multiple'}
+                          </p>
+                          {service.dataLabel && (
+                            <p className="text-xs text-gray-600 mb-1">
+                              <span className="font-medium">Label:</span> {service.dataLabel}
+                            </p>
+                          )}
+                          {service.dataDescription && (
+                            <p className="text-xs text-gray-600 mb-1">
+                              <span className="font-medium">Description:</span> {service.dataDescription}
+                            </p>
+                          )}
+                          {service.choices && service.choices.filter((c: string) => c.trim() !== '').length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-xs text-gray-600 font-medium mb-1">Options disponibles:</p>
+                              <div className="flex flex-wrap gap-1">
+                                {service.choices.filter((c: string) => c.trim() !== '').map((choice: string, index: number) => (
+                                  <span key={index} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-gray-200 text-gray-700">
+                                    {choice}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
                           )}
                         </div>
-                      ))}
+                      )}
                     </div>
-                  </div>
-                ) : (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Nouveaux services</h4>
-                    <p className="text-sm text-gray-600">Aucun nouveau service créé</p>
-                  </div>
-                )}
+                  ))}
+                </div>
               </div>
-            )
-          }
-        ]
-
-        const currentSummaryPage = summaryPages[summaryPage]
-
-        return (
-          <div className="space-y-6">
-
-            <div className="text-center mb-4">
-              <h4 className="text-md font-medium text-gray-800">
-                {currentSummaryPage.title} ({summaryPage + 1}/5)
-              </h4>
-            </div>
-
-            {currentSummaryPage.content}
-
-            {/* Summary Pagination Controls */}
-            <div className="flex justify-between items-center mt-6">
-              <button
-                type="button"
-                onClick={() => setSummaryPage(prev => Math.max(0, prev - 1))}
-                disabled={summaryPage === 0}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Section précédente
-              </button>
-              
-              <span className="text-sm text-gray-500">
-                Section {summaryPage + 1} sur {summaryPages.length}
-              </span>
-              
-              <button
-                type="button"
-                onClick={() => setSummaryPage(prev => Math.min(summaryPages.length - 1, prev + 1))}
-                disabled={summaryPage >= summaryPages.length - 1}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Section suivante
-              </button>
-            </div>
+            )}
           </div>
-        );
-      }
+        )
 
       case 7:
         return <SuccessStep email={formData.adminEmail} />
@@ -928,7 +840,6 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             selectedPortages: [],
             newServices: []
           })
-          setSummaryPage(0)
         }}
       >
         {renderStep()}

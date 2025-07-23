@@ -72,8 +72,6 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
     return basicEmailRegex.test(email);
   }
   
-  const [summaryPage, setSummaryPage] = useState(0)
-  
   // Initialize formData with localStorage data if available
   const [formData, setFormData] = useState<FreelanceFormData>(() => {
     if (typeof window !== 'undefined') {
@@ -757,200 +755,142 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
           </div>
         )
 
-      case 5: {
-         const summaryPages = [
-          {
-            title: "Informations personnelles",
-            content: (
-              <div className="border rounded-lg p-4 bg-gray-50">
-                <h4 className="font-medium text-gray-900 mb-3">Informations personnelles</h4>
-                <div className="space-y-2 text-sm">
-                  <div><span className="font-medium">Nom:</span> {formData.lastName}</div>
-                  <div><span className="font-medium">Prénom:</span> {formData.firstName}</div>
-                  <div><span className="font-medium">Email:</span> {formData.email}</div>
-                  <div><span className="font-medium">Téléphone:</span> {formData.phone}</div>
-                  <div><span className="font-medium">Métier:</span> {metiers.find(m => m.id === formData.metierId)?.name}</div>
-                </div>
-              </div>
-            )
-          },
-          {
-            title: "Détails de la mission",
-            content: (
-              <div className="border rounded-lg p-4 bg-gray-50">
-                <h4 className="font-medium text-gray-900 mb-3">Détails de la mission</h4>
-                <div className="space-y-2 text-sm">
-                  <div><span className="font-medium">Situation actuelle:</span> {
-                    formData.hasMission === "yes" ? "J'ai une mission en cours" :
-                    formData.hasMission === "searching" ? "En cours de recherche" :
-                    formData.hasMission === "no" ? "Je suis en recherche" : formData.hasMission
-                  }</div>
-                  <div><span className="font-medium">TJM souhaité:</span> {formData.tjm}€</div>
-                  <div><span className="font-medium">Nombre de jours par semaine:</span> {formData.days}</div>
-                  {formData.clientName && <div><span className="font-medium">Nom du client:</span> {formData.clientName}</div>}
-                  {formData.clientAddress && <div><span className="font-medium">Adresse du client:</span> {formData.clientAddress}</div>}
-                  {formData.clientSector && <div><span className="font-medium">Secteur d&apos;activité:</span> {
-                    formData.clientSector === "tech" ? "Technologie" :
-                    formData.clientSector === "finance" ? "Finance" :
-                    formData.clientSector === "retail" ? "Commerce" :
-                    formData.clientSector === "healthcare" ? "Santé" :
-                    formData.clientSector === "education" ? "Éducation" :
-                    formData.clientSector === "other" ? "Autre" : formData.clientSector
-                  }</div>}
-                </div>
-              </div>
-            )
-          },
-          {
-            title: "Portage salarial",
-            content: (
-              <div className="border rounded-lg p-4 bg-gray-50">
-                <h4 className="font-medium text-gray-900 mb-3">Portage salarial</h4>
-                <div className="space-y-2 text-sm">
-                  <div><span className="font-medium">Intéressé par le portage:</span> {formData.wantsPortage === "yes" ? "Oui" : "Non"}</div>
-                  {formData.wantsPortage === "yes" && formData.selectedPortages.length > 0 && (
-                    <div>
-                      <span className="font-medium">Services de portage sélectionnés:</span>
-                      <ul className="list-disc list-inside ml-4 mt-1">
-                        {formData.selectedPortages.map((portageId: string) => {
-                          const portage = portages.find(p => p.id === parseInt(portageId));
-                          return (
-                            <li key={portageId}>
-                              {portage?.name} - {portage?.description}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )
-          },
-          {
-            title: "Services sélectionnés",
-            content: (
-              <div className="space-y-4">
-                {/* Services */}
-                {formData.selectedServices && formData.selectedServices.length > 0 && (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Services sélectionnés</h4>
-                    <div className="text-sm">
-                      <ul className="list-disc overflow-auto max-h-40 list-inside space-y-1">
-                        {formData.selectedServices.map((selectedService: SelectedService) => {
-                          const service = platformServices.find(s => s.id === selectedService.serviceId);
-                          return (
-                            <li key={selectedService.serviceId}>
-                              {service?.label}
-                              {selectedService.isRequired && <span className=" text-red-600 font-medium"> (Obligatoire)</span>}
-                              {selectedService.responseData && (
-                                <div className="ml-4 text-gray-600 text-xs mt-1">
-                                  Données: {selectedService.responseData}
-                                </div>
-                              )}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                {/* New Services */}
-                {formData.newServices && formData.newServices.length > 0 && (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Services personnalisés demandés</h4>
-                    <div className="text-sm">
-                      <ul className="list-disc list-inside space-y-1">
-                        {formData.newServices.map((service: string, index: number) => (
-                          <li key={index}>{service}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                {/* No services selected message */}
-                {(!formData.selectedServices || formData.selectedServices.length === 0) && 
-                 (!formData.newServices || formData.newServices.length === 0) && (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <h4 className="font-medium text-gray-900 mb-3">Services sélectionnés</h4>
-                    <p className="text-sm text-gray-600">Aucun service sélectionné</p>
-                  </div>
-                )}
-              </div>
-            )
-          },
-          {
-            title: "Priorité de la demande",
-            content: (
-              <div className="border rounded-lg p-4 bg-gray-50">
-                <h4 className="font-medium text-gray-900 mb-3">Priorité de la demande</h4>
-                <div className="text-sm">
-                  <div className="flex items-center space-x-3">
-                    <span className={`w-4 h-4 rounded-full flex-shrink-0 ${
-                      formData.priority === "urgent" ? "bg-red-500" :
-                      formData.priority === "medium" ? "bg-orange-500" : "bg-green-500"
-                    }`}></span>
-                    <span className="font-medium">
-                      {formData.priority === "urgent" ? "Urgent - J'ai besoin d'une réponse rapidement" :
-                       formData.priority === "medium" ? "Moyen - Dans les prochaines semaines" :
-                       "Non prioritaire - Je me renseigne"}
-                    </span>
-                  </div>
-                  <div className="mt-3 p-3 bg-white rounded border">
-                    <p className="text-xs text-gray-600">
-                      {formData.priority === "urgent" ? "Votre demande sera traitée en priorité par nos équipes et nos partenaires." :
-                       formData.priority === "medium" ? "Votre demande sera traitée dans un délai standard de quelques semaines." :
-                       "Votre demande sera traitée sans urgence particulière. Idéal pour une phase de découverte."}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )
-          }
-        ]
-
-        const currentSummaryPage = summaryPages[summaryPage]
-
+      case 5:
         return (
           <div className="space-y-6">
-
-            <div className="text-center mb-4">
-              <h4 className="text-md font-medium text-gray-800">
-                {currentSummaryPage.title} ({summaryPage + 1}/5)
-              </h4>
+            {/* Personal Information */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <h4 className="font-medium text-gray-900 mb-3">Informations personnelles</h4>
+              <div className="space-y-2 text-sm">
+                <div><span className="font-medium">Nom:</span> {formData.lastName}</div>
+                <div><span className="font-medium">Prénom:</span> {formData.firstName}</div>
+                <div><span className="font-medium">Email:</span> {formData.email}</div>
+                <div><span className="font-medium">Téléphone:</span> {formData.phone}</div>
+                <div><span className="font-medium">Métier:</span> {metiers.find(m => m.id === formData.metierId)?.name}</div>
+              </div>
             </div>
 
-            {currentSummaryPage.content}
+            {/* Mission Details */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <h4 className="font-medium text-gray-900 mb-3">Détails de la mission</h4>
+              <div className="space-y-2 text-sm">
+                <div><span className="font-medium">Situation actuelle:</span> {
+                  formData.hasMission === "yes" ? "J'ai une mission en cours" :
+                  formData.hasMission === "searching" ? "En cours de recherche" :
+                  formData.hasMission === "no" ? "Je suis en recherche" : formData.hasMission
+                }</div>
+                <div><span className="font-medium">TJM souhaité:</span> {formData.tjm}€</div>
+                <div><span className="font-medium">Nombre de jours par semaine:</span> {formData.days}</div>
+                {formData.clientName && <div><span className="font-medium">Nom du client:</span> {formData.clientName}</div>}
+                {formData.clientAddress && <div><span className="font-medium">Adresse du client:</span> {formData.clientAddress}</div>}
+                {formData.clientSector && <div><span className="font-medium">Secteur d&apos;activité:</span> {
+                  formData.clientSector === "tech" ? "Technologie" :
+                  formData.clientSector === "finance" ? "Finance" :
+                  formData.clientSector === "retail" ? "Commerce" :
+                  formData.clientSector === "healthcare" ? "Santé" :
+                  formData.clientSector === "education" ? "Éducation" :
+                  formData.clientSector === "other" ? "Autre" : formData.clientSector
+                }</div>}
+              </div>
+            </div>
 
-            {/* Summary Pagination Controls */}
-            <div className="flex justify-between items-center mt-6">
-              <button
-                type="button"
-                onClick={() => setSummaryPage(prev => Math.max(0, prev - 1))}
-                disabled={summaryPage === 0}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Section précédente
-              </button>
-              
-              <span className="text-sm text-gray-500">
-                Section {summaryPage + 1} sur {summaryPages.length}
-              </span>
-              
-              <button
-                type="button"
-                onClick={() => setSummaryPage(prev => Math.min(summaryPages.length - 1, prev + 1))}
-                disabled={summaryPage >= summaryPages.length - 1}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Section suivante
-              </button>
+            {/* Portage Information */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <h4 className="font-medium text-gray-900 mb-3">Portage salarial</h4>
+              <div className="space-y-2 text-sm">
+                <div><span className="font-medium">Intéressé par le portage:</span> {formData.wantsPortage === "yes" ? "Oui" : "Non"}</div>
+                {formData.wantsPortage === "yes" && formData.selectedPortages.length > 0 && (
+                  <div>
+                    <span className="font-medium">Services de portage sélectionnés:</span>
+                    <ul className="list-disc list-inside ml-4 mt-1">
+                      {formData.selectedPortages.map((portageId: string) => {
+                        const portage = portages.find(p => p.id === parseInt(portageId));
+                        return (
+                          <li key={portageId}>
+                            {portage?.name} - {portage?.description}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Services */}
+            {formData.selectedServices && formData.selectedServices.length > 0 && (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Services sélectionnés</h4>
+                <div className="text-sm">
+                  <ul className="list-disc overflow-auto max-h-40 list-inside space-y-1">
+                    {formData.selectedServices.map((selectedService: SelectedService) => {
+                      const service = platformServices.find(s => s.id === selectedService.serviceId);
+                      return (
+                        <li key={selectedService.serviceId}>
+                          {service?.label}
+                          {selectedService.isRequired && <span className=" text-red-600 font-medium"> (Obligatoire)</span>}
+                          {selectedService.responseData && (
+                            <div className="ml-4 text-gray-600 text-xs mt-1">
+                              Données: {selectedService.responseData}
+                            </div>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* New Services */}
+            {formData.newServices && formData.newServices.length > 0 && (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Services personnalisés demandés</h4>
+                <div className="text-sm">
+                  <ul className="list-disc list-inside space-y-1">
+                    {formData.newServices.map((service: string, index: number) => (
+                      <li key={index}>{service}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* No services selected message */}
+            {(!formData.selectedServices || formData.selectedServices.length === 0) && 
+             (!formData.newServices || formData.newServices.length === 0) && (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">Services sélectionnés</h4>
+                <p className="text-sm text-gray-600">Aucun service sélectionné</p>
+              </div>
+            )}
+
+            {/* Priority */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <h4 className="font-medium text-gray-900 mb-3">Priorité de la demande</h4>
+              <div className="text-sm">
+                <div className="flex items-center space-x-3">
+                  <span className={`w-4 h-4 rounded-full flex-shrink-0 ${
+                    formData.priority === "urgent" ? "bg-red-500" :
+                    formData.priority === "medium" ? "bg-orange-500" : "bg-green-500"
+                  }`}></span>
+                  <span className="font-medium">
+                    {formData.priority === "urgent" ? "Urgent - J'ai besoin d'une réponse rapidement" :
+                     formData.priority === "medium" ? "Moyen - Dans les prochaines semaines" :
+                     "Non prioritaire - Je me renseigne"}
+                  </span>
+                </div>
+                <div className="mt-3 p-3 bg-white rounded border">
+                  <p className="text-xs text-gray-600">
+                    {formData.priority === "urgent" ? "Votre demande sera traitée en priorité par nos équipes et nos partenaires." :
+                     formData.priority === "medium" ? "Votre demande sera traitée dans un délai standard de quelques semaines." :
+                     "Votre demande sera traitée sans urgence particulière. Idéal pour une phase de découverte."}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        );
-      }
+        )
        
       case 6:
         return (
@@ -1101,7 +1041,6 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
           newServices: [],
           priority: "",
         })
-        setSummaryPage(0)
       }}
     >
       {renderStep()}
