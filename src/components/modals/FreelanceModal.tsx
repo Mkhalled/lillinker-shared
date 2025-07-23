@@ -65,11 +65,34 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { platformServices, metiers, portages, error: dataError } = useModalData()
+  const [emailExists, setEmailExists] = useState(false)
   
   // Basic email validation function
   const isValidEmail = (email: string): boolean => {
     const basicEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return basicEmailRegex.test(email);
+  }
+
+  // Function to check if email exists
+  const checkEmailExists = async (email: string): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/check-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.exists;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error checking email:', error);
+      return false;
+    }
   }
   
   // Initialize formData with localStorage data if available
@@ -127,6 +150,28 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       localStorage.setItem('freelance-modal-step', currentStep.toString())
     }
   }, [currentStep])
+
+  // Check email existence when email changes
+  useEffect(() => {
+    const checkEmail = async () => {
+      if (!formData.email || !isValidEmail(formData.email)) {
+        setEmailExists(false)
+        return
+      }
+
+      try {
+        const exists = await checkEmailExists(formData.email)
+        setEmailExists(exists)
+      } catch (error) {
+        console.error('Error checking email existence:', error)
+        setEmailExists(false)
+      }
+    }
+
+    // Debounce the email check
+    const timeoutId = setTimeout(checkEmail, 500)
+    return () => clearTimeout(timeoutId)
+  }, [formData.email])
 
   // Clear localStorage on successful completion
   const clearLocalStorage = () => {
@@ -352,7 +397,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             </div>
             <BasicEmailInput
               email={formData.email}
-              onEmailChange={(email) => setFormData((prev: FreelanceFormData) => ({ ...prev, email: email }))}
+              onEmailChange={(email: string) => setFormData((prev: FreelanceFormData) => ({ ...prev, email: email }))}
               label="Email *"
               placeholder="jean.dupont@email.com"
               id="freelance-email"
@@ -957,7 +1002,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
                formData.email && 
                formData.phone && 
                formData.metierId > 0 &&
-               isValidEmail(formData.email)
+               isValidEmail(formData.email) &&
+               !emailExists
       case 2: {
         const basicValid = (
           formData.hasMission &&

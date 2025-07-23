@@ -74,8 +74,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { platformServices, metiers, portages, error: dataError } = useModalData()
-  const { isValidBusinessEmail } = useEmailValidation()
+  const { isValidBusinessEmail, checkEmailExists } = useEmailValidation()
   const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false)
+  const [emailExists, setEmailExists] = useState(false)
   
   // Initialize formData with localStorage data if available
   const [formData, setFormData] = useState<CompanyFormData>(() => {
@@ -132,6 +133,28 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       localStorage.setItem('company-modal-step', currentStep.toString())
     }
   }, [currentStep])
+
+  // Check email existence when admin email changes
+  useEffect(() => {
+    const checkEmail = async () => {
+      if (!formData.adminEmail || !isValidBusinessEmail(formData.adminEmail)) {
+        setEmailExists(false)
+        return
+      }
+
+      try {
+        const exists = await checkEmailExists(formData.adminEmail)
+        setEmailExists(exists)
+      } catch (error) {
+        console.error('Error checking email existence:', error)
+        setEmailExists(false)
+      }
+    }
+
+    // Debounce the email check
+    const timeoutId = setTimeout(checkEmail, 500)
+    return () => clearTimeout(timeoutId)
+  }, [formData.adminEmail, isValidBusinessEmail, checkEmailExists])
 
   // Clear localStorage on successful completion
   const clearLocalStorage = () => {
@@ -782,7 +805,8 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                formData.adminLastName && 
                formData.adminEmail && 
                formData.adminPhone &&
-               isValidBusinessEmail(formData.adminEmail)
+               isValidBusinessEmail(formData.adminEmail) &&
+               !emailExists
       case 5:
        {
          const hasSelectedServices = formData.selectedPlatformServices.length > 0
