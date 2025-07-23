@@ -20,4 +20,7 @@ export interface FreelanceFormData extends BaseUserInfo {
 
   // Step 4: Priority
   priority: string;
+
+  // Step 5: Summary
+  comments?: string;
 }
