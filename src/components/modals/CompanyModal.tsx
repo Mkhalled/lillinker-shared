@@ -442,7 +442,11 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
                   <input
                     type="checkbox"
                     checked={isSelected}
-                    onChange={() => toggleMetierSelection(metier.id)}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      toggleMetierSelection(metier.id);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                     className="h-4 w-4 text-blue-600 rounded"
                   />
                 </div>
