@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 interface SiretValidationInputProps {
   siret: string;
   onSiretChange: (siret: string) => void;
+  onSiretExistsChange?: (exists: boolean) => void;
   label?: string;
   placeholder?: string;
   required?: boolean;
@@ -14,6 +15,7 @@ interface SiretValidationInputProps {
 export const SiretValidationInput = ({
   siret,
   onSiretChange,
+  onSiretExistsChange,
   label = "SIRET *",
   placeholder = "12345678901234",
   required = true,
@@ -43,14 +45,18 @@ export const SiretValidationInput = ({
 
         if (response.ok) {
           const data = await response.json();
+          console.log('SIRET validation response:', data);
           setSiretExists(data.exists);
+          onSiretExistsChange?.(data.exists);
         } else {
           console.warn('SIRET check failed with status:', response.status);
           setSiretExists(false); // Default to false if check fails
+          onSiretExistsChange?.(false);
         }
       } catch (error) {
         console.error('Error checking SIRET:', error);
         setSiretExists(false); // Default to false if check fails
+        onSiretExistsChange?.(false);
       } finally {
         setCheckingSiret(false);
       }

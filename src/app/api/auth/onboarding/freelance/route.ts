@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
 import { FreelanceOnboardingSchema } from '@/lib/validations/auth.validation';
-import { AuthService } from '@/services/auth.service';
+import { FreelanceService, AuthService } from '@/services';
 
 export async function POST(request: NextRequest) {
   const logContext = {
@@ -45,15 +46,58 @@ export async function POST(request: NextRequest) {
       clientName: validatedData.client_name,
     });
 
-    const result = await AuthService.completeFreelanceOnboarding(
-      parseInt(userId),
-      validatedData
-    );
+    // Use a transaction to ensure data consistency
+    const result = await prisma.$transaction(async () => {
+      // Step 1: Create freelance profile
+      const freelance = await FreelanceService.createFreelanceProfile(
+        parseInt(userId),
+        validatedData.metier_id
+      );
+
+      logger.info('Freelance profile created successfully', {
+        ...enhancedLogContext,
+        freelanceId: freelance.id,
+      });
+
+      // Step 2: Create freelance request
+      const freelanceRequest = await FreelanceService.createFreelanceRequest(
+        freelance.id,
+        validatedData
+      );
+
+      logger.info('Freelance request created successfully', {
+        ...enhancedLogContext,
+        freelanceRequestId: freelanceRequest.id,
+      });
+
+      // Step 3: Create request options for selected services
+      let requestOptions: any[] = [];
+      if (validatedData.selected_services && validatedData.selected_services.length > 0) {
+        requestOptions = await FreelanceService.createRequestOptions(
+          freelanceRequest.id,
+          validatedData.selected_services
+        );
+      }
+
+      // Step 4: Link portage preferences if provided
+      if (validatedData.selected_portages && validatedData.selected_portages.length > 0) {
+        await FreelanceService.linkPortagePreferences(
+          freelanceRequest.id,
+          validatedData.selected_portages
+        );
+      }
+
+      return {
+        freelance,
+        freelanceRequest,
+        requestOptions,
+      };
+    });
 
     logger.info('Freelance onboarding completed, starting finalization', enhancedLogContext);
 
-    // Finalize registration and send verification email
-    await AuthService.finalizeRegistration(parseInt(userId));
+    // Send verification email to complete the registration (outside transaction)
+    await AuthService.sendVerificationEmail(parseInt(userId));
 
     logger.info('Freelance onboarding API completed successfully', {
       ...enhancedLogContext,

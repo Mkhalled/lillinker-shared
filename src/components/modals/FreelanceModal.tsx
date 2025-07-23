@@ -5,47 +5,13 @@ import { useState, useEffect } from 'react';
 import { useModalData } from '../../hooks/useModalData';
 import { BasicEmailInput } from '../form/BasicEmailInput';
 import ServiceInfoTooltip from '../ServiceInfoTooltip';
+import { FreelanceFormData } from '../../types/freelance';
+import { SelectedService, BaseModalProps } from '../../types/user';
 
 import { ModalWrapper } from './ModalWrapper';
 import { SuccessStep } from './SuccessStep';
 
-interface SelectedService {
-  serviceId: number;
-  isRequired: boolean;
-  responseData?: string;
-}
-
-interface FreelanceFormData {
-  // Step 1: Personal info
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  metierId: number;
-
-  // Step 2: Mission info
-  hasMission: string;
-  clientName: string;
-  clientAddress: string;
-  clientSector: string;
-  tjm: string;
-  days: string;
-  wantsPortage: "yes" | "no";
-  selectedPortages: string[];
-
-  // Step 3: Services
-  selectedServices: SelectedService[];
-  newServices: string[];
-
-  // Step 4: Priority
-  priority: string;
-}
-
-
-
-interface FreelanceModalProps {
-  onClose: () => void
-}
+interface FreelanceModalProps extends BaseModalProps {}
 
 const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   // Initialize currentStep with localStorage data if available

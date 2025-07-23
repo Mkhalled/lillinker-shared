@@ -9,52 +9,14 @@ import { SiretValidationInput } from '../form/SiretValidationInput';
 import ServiceInfoTooltip from '../ServiceInfoTooltip';
 import { Button } from '../ui/button/Button';
 import { CollapsibleSection } from '../ui/CollapsibleSection';
+import { CompanyFormData } from '../../types/company';
+import { NewService, BaseModalProps } from '../../types/user';
 
 import AddServiceModal from './AddServiceModal';
 import { ModalWrapper } from './ModalWrapper';
 import { SuccessStep } from './SuccessStep';
 
-interface NewService {
-  id: string;
-  label: string;
-  description: string;
-  requiresData: boolean;
-  dataType: string;
-  dataLabel: string;
-  dataDescription: string;
-  choices: string[];
-}
-
-interface CompanyFormData {
-  // Step 1: General info
-  companyName: string;
-  siret: string;
-  description: string;
-  isPortage: "yes" | "no";
-  
-  // Step 2: Consultants and fees
-  consultantCount: string;
-  managementFeeRate: string;
-
-  // Step 3: Metiers selection
-  selectedMetiers: string[];
-
-  // Step 4: Admin info
-  adminFirstName: string;
-  adminLastName: string;
-  adminEmail: string;
-  adminPhone: string;
-
-  // Step 5: Services selection and creation
-  selectedPlatformServices: string[];
-  selectedPortages: string[];
-  newServices: NewService[];
-}
-
-
-interface CompanyModalProps {
-  onClose: () => void
-}
+interface CompanyModalProps extends BaseModalProps {}
 
 const CompanyModal = ({ onClose }: CompanyModalProps) => {
   // Initialize currentStep with localStorage data if available
@@ -77,6 +39,12 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const { isValidBusinessEmail, checkEmailExists } = useEmailValidation()
   const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false)
   const [emailExists, setEmailExists] = useState(false)
+  const [siretExists, setSiretExists] = useState(false)
+
+  // Debug log when siretExists changes
+  useEffect(() => {
+    console.log('CompanyModal: siretExists changed to:', siretExists);
+  }, [siretExists])
   
   // Initialize formData with localStorage data if available
   const [formData, setFormData] = useState<CompanyFormData>(() => {
@@ -311,7 +279,16 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         setCurrentStep(7)
       } catch (error) {
         console.error('Registration error:', error)
-        setError(error instanceof Error ? error.message : 'Une erreur est survenue')
+        const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue'
+        
+        // Provide more specific error messages for common cases
+        if (errorMessage.includes('SIRET') && errorMessage.includes('existe déjà')) {
+          setError('Ce numéro SIRET est déjà utilisé par une autre société. Veuillez vérifier votre numéro SIRET.')
+        } else if (errorMessage.includes('Unique constraint') && errorMessage.includes('siret')) {
+          setError('Ce numéro SIRET est déjà utilisé. Veuillez vérifier votre numéro SIRET.')
+        } else {
+          setError(errorMessage)
+        }
       } finally {
         setIsLoading(false)
       }
@@ -338,6 +315,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               <SiretValidationInput 
                 siret={formData.siret}
                 onSiretChange={(siret) => setFormData((prev: CompanyFormData) => ({ ...prev, siret }))}
+                onSiretExistsChange={setSiretExists}
               />
             </div>
             <div className="space-y-2">
@@ -813,7 +791,9 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 1: {
         const basicValid = formData.companyName && 
                           formData.siret && 
-                          formData.description;
+                          formData.description &&
+                          !siretExists;
+        console.log('Step 1 validation:', { basicValid, siretExists, companyName: formData.companyName, siret: formData.siret });
         if (formData.isPortage === "yes") {
           return basicValid && formData.selectedPortages.length > 0;
         }

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
 import { CompanyOnboardingSchema } from '@/lib/validations/auth.validation';
-import { AuthService } from '@/services/auth.service';
+import { CompanyService, AuthService, PlatformServiceService } from '@/services';
 
 export async function POST(request: NextRequest) {
   const logContext = {
@@ -44,15 +45,80 @@ export async function POST(request: NextRequest) {
       consultantCount: validatedData.consultant_count,
     });
 
-    const result = await AuthService.completeCompanyOnboarding(
-      parseInt(userId),
-      validatedData
-    );
+    // Use a transaction to ensure data consistency
+    const result = await prisma.$transaction(async () => {
+      // Check if SIRET already exists to prevent duplicate creation
+      const existingCompany = await prisma.company.findUnique({
+        where: { siret: validatedData.siret },
+      });
+      
+      if (existingCompany) {
+        throw new Error('Une société avec ce numéro SIRET existe déjà');
+      }
+
+      // Step 1: Create company using the new CompanyService
+      const company = await CompanyService.createCompany(parseInt(userId), validatedData);
+
+      logger.info('Company created successfully', {
+        ...enhancedLogContext,
+        companyId: company.id,
+      });
+
+      // Step 2: Handle platform services (new services creation)
+      const createdServices = [];
+      if (validatedData.new_services && validatedData.new_services.length > 0) {
+        for (const newService of validatedData.new_services) {
+          const service = await PlatformServiceService.createService(parseInt(userId), newService);
+          createdServices.push(service);
+        }
+      }
+
+      // Handle legacy single service creation for backward compatibility
+      if (validatedData.service_label && !validatedData.new_services?.length) {
+        const legacyService = await PlatformServiceService.createService(parseInt(userId), {
+          service_label: validatedData.service_label,
+          service_description: validatedData.service_description,
+          data_type: validatedData.data_type!,
+          requires_data: validatedData.requires_data!,
+          data_label: validatedData.data_label,
+          data_description: validatedData.data_description,
+          choices: validatedData.choices,
+        });
+        createdServices.push(legacyService);
+      }
+
+      // Step 3: Link selected and created services to company
+      const allServiceIds = [
+        ...(validatedData.selected_services || []),
+        ...createdServices.map(s => s.id),
+      ];
+
+      let companyServices: any[] = [];
+      if (allServiceIds.length > 0) {
+        companyServices = await CompanyService.linkPlatformServices(company.id, allServiceIds);
+      }
+
+      // Step 4: Link metiers to company
+      if (validatedData.selected_metiers && validatedData.selected_metiers.length > 0) {
+        await CompanyService.linkMetiers(company.id, validatedData.selected_metiers);
+      }
+
+      // Step 5: Link portages if company is a portage company
+      if (validatedData.is_portage && validatedData.selected_portages && validatedData.selected_portages.length > 0) {
+        await CompanyService.linkPortages(company.id, validatedData.selected_portages);
+      }
+
+      return {
+        company,
+        companyServices,
+        platformServices: createdServices,
+      };
+    });
 
     logger.info('Company onboarding completed, starting finalization', enhancedLogContext);
 
-    // Finalize registration and send verification email
-    await AuthService.finalizeRegistration(parseInt(userId));
+    // Step 6: Send verification email to complete the registration (outside transaction)
+    await AuthService.sendVerificationEmail(parseInt(userId));
 
     logger.info('Company onboarding API completed successfully', {
       ...enhancedLogContext,

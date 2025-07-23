@@ -13,12 +13,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log('Checking SIRET:', siret.trim());
+
     // Check if SIRET already exists in the database
     const existingCompany = await prisma.company.findUnique({
       where: {
         siret: siret.trim(),
       },
     });
+
+    console.log('SIRET exists:', !!existingCompany);
 
     return NextResponse.json({
       exists: !!existingCompany,

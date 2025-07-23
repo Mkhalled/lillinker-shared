@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { logger } from '@/lib/logger';
 import { SetPasswordSchema } from '@/lib/validations/auth.validation';
-import { AuthService } from '@/services/auth.service';
+import { AuthService } from '@/services';
 
 export async function POST(request: NextRequest) {
   const logContext = {

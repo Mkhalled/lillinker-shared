@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { logger } from '@/lib/logger';
 import { InitialRegistrationSchema } from '@/lib/validations/auth.validation';
-import { AuthService } from '@/services/auth.service';
+import { AuthService } from '@/services';
 
 export async function POST(request: NextRequest) {
   const logContext = {
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       role: validatedData.role,
     });
 
-    const { user } = await AuthService.initiateRegistration(validatedData);
+    const { user } = await AuthService.createUser(validatedData);
 
     logger.info('Registration API completed successfully', {
       ...logContext,
