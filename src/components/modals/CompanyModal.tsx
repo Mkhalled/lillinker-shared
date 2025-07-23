@@ -570,21 +570,40 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
               </div>
 
               {formData.newServices.length > 0 && (
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {formData.newServices.length} service{formData.newServices.length > 1 ? 's' : ''}
+                <div className="space-y-3">
+                  {formData.newServices.map((service: NewService, index: number) => (
+                    <div key={service.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              Nouveau
+                            </span>
+                          </div>
+                          <h5 className="font-medium text-gray-900 mb-1">
+                            {service.label || 'Service sans nom'}
+                          </h5>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setFormData((prev: CompanyFormData) => ({
+                              ...prev,
+                              newServices: prev.newServices.filter((_, i) => i !== index)
+                            }))
+                          }}
+                          className="text-red-600 hover:text-red-700 text-sm font-medium ml-4 px-2 py-1 rounded hover:bg-red-50"
+                        >
+                          Supprimer
+                        </button>
                       </div>
-                      <span className="text-sm text-gray-600">
-                        {formData.newServices.map((s: NewService) => s.label).filter((label: string) => label.trim() !== '').join(', ') || 'Services en cours de création'}
-                      </span>
                     </div>
+                  ))}
+                  <div className="pt-2">
                     <button
                       onClick={() => setFormData((prev: CompanyFormData) => ({ ...prev, newServices: [] }))}
-                      className="text-red-600 hover:text-red-700 text-sm font-medium"
+                      className="text-red-600 hover:text-red-700 text-sm font-medium hover:underline"
                     >
-                      Tout supprimer
+                      Tout supprimer ({formData.newServices.length} service{formData.newServices.length > 1 ? 's' : ''})
                     </button>
                   </div>
                 </div>
