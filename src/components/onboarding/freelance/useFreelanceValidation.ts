@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { FreelanceFormData } from '../../../types/freelance';
+
 import type { PlatformService } from '../../../hooks/useModalData';
+import type { FreelanceFormData } from '../../../types/freelance';
 
 export const useFreelanceValidation = (
   formData: FreelanceFormData,
   currentStep: number,
-  missionStep: number,
   platformServices: PlatformService[]
 ) => {
   const [emailExists, setEmailExists] = useState(false);
@@ -72,28 +72,21 @@ export const useFreelanceValidation = (
                formData.metierId > 0 &&
                isValidEmail(formData.email) &&
                !emailExists;
-      case 2: {
-        // Validate based on current mission step
-        switch (missionStep) {
-          case 1:
-            return formData.hasMission; // Must select a mission status
-          case 2:
-            // If wants portage, must select at least one portage service
-            if (formData.wantsPortage === "yes") {
-              return formData.selectedPortages.length > 0;
-            }
-            return true; // Valid if doesn't want portage
-          case 3:
-            // Must have TJM and days
-            return formData.tjm && 
-                   parseFloat(formData.tjm) >= 1 && 
-                   formData.days && 
-                   parseFloat(formData.days) >= 0.5;
-          default:
-            return false;
+      case 2:
+        return formData.hasMission; // Must select a mission status
+      case 3:
+        // If wants portage, must select at least one portage service
+        if (formData.wantsPortage === "yes") {
+          return formData.selectedPortages.length > 0;
         }
-      }
-      case 3: {
+        return true; // Valid if doesn't want portage
+      case 4:
+        // Must have TJM and days
+        return formData.tjm && 
+               parseFloat(formData.tjm) >= 1 && 
+               formData.days && 
+               parseFloat(formData.days) >= 0.5;
+      case 5: {
         // Services step validation
         // If no services are selected, step is valid (services are optional)
         if (formData.selectedServices.length === 0) {
@@ -112,11 +105,11 @@ export const useFreelanceValidation = (
         }
         return true;
       }
-      case 4:
-        return formData.priority;
-      case 5:
-        return true; // Recap step is always valid and ready for submission
       case 6:
+        return formData.priority;
+      case 7:
+        return true; // Recap step is always valid and ready for submission
+      case 8:
         return true;
       default:
         return false;

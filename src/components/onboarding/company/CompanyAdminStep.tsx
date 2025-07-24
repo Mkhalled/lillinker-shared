@@ -1,17 +1,34 @@
 'use client';
 
-import { EmailValidationInput } from '../../form/EmailValidationInput';
+import { useState, useEffect } from 'react';
+
 import type { CompanyFormData } from '@/types/company';
+
+import { EmailValidationInput } from '../../form/EmailValidationInput';
 
 interface CompanyAdminStepProps {
   formData: CompanyFormData;
   onFormDataChange: (updates: Partial<CompanyFormData>) => void;
+  onValidityChange?: (isValid: boolean) => void;
 }
 
 export const CompanyAdminStep = ({ 
   formData, 
-  onFormDataChange 
+  onFormDataChange,
+  onValidityChange
 }: CompanyAdminStepProps) => {
+  const [isEmailValid, setIsEmailValid] = useState(false);
+
+  // Check overall form validity
+  useEffect(() => {
+    const isFormValid = Boolean(
+      formData.adminFirstName && 
+      formData.adminLastName && 
+      formData.adminPhone &&
+      isEmailValid
+    );
+    onValidityChange?.(isFormValid);
+  }, [formData.adminFirstName, formData.adminLastName, formData.adminPhone, isEmailValid, onValidityChange]);
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
@@ -46,6 +63,7 @@ export const CompanyAdminStep = ({
       <EmailValidationInput
         email={formData.adminEmail}
         onEmailChange={(email) => onFormDataChange({ adminEmail: email })}
+        onValidityChange={setIsEmailValid}
         label="Email de l'administrateur *"
         placeholder="marie.martin@societe.com"
         id="admin-email"

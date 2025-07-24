@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ModalWrapper } from './ModalWrapper';
-import { SuccessStep } from './SuccessStep';
-import AddServiceModal from './AddServiceModal';
+
 import { useModalData } from '@/hooks/useModalData';
 import type { NewService, BaseModalProps } from '@/types/user';
+
+import AddServiceModal from './AddServiceModal';
 import { 
   CompanyGeneralInfoStep,
   CompanyConsultantsStep, 
@@ -16,6 +16,8 @@ import {
 } from './company';
 import { useCompanyForm } from './company/useCompanyForm';
 import { useStepNavigation } from './company/useStepNavigation';
+import { ModalWrapper } from './ModalWrapper';
+import { SuccessStep } from './SuccessStep';
 
 interface CompanyModalProps extends BaseModalProps {}
 
@@ -25,6 +27,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const { platformServices, metiers, portages, error: dataError } = useModalData();
   const [siretExists, setSiretExists] = useState(false);
   const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false);
+  const [isAdminStepValid, setIsAdminStepValid] = useState(false);
 
   // Use custom hooks
   const { formData, updateFormData, clearFormData } = useCompanyForm();
@@ -197,6 +200,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
           <CompanyAdminStep
             formData={formData}
             onFormDataChange={updateFormData}
+            onValidityChange={setIsAdminStepValid}
           />
         );
 
@@ -287,10 +291,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 3:
         return formData.selectedMetiers.length > 0
       case 4:
-        return formData.adminFirstName && 
-               formData.adminLastName && 
-               formData.adminEmail && 
-               formData.adminPhone
+        return isAdminStepValid
       case 5:
        {
          const hasSelectedServices = formData.selectedPlatformServices.length > 0
@@ -325,7 +326,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         isStepValid={isStepValid() as boolean}
         isLoading={isLoading}
         error={error}
-        showNavigation={currentStep < 7}
+       showNavigation={true}
         completeButtonText="Finaliser l'inscription"
         nextButtonText="Suivant"
         completionStep={6} // Specify that completion happens on step 6

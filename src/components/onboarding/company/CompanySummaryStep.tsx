@@ -1,13 +1,14 @@
 'use client';
 
+import type { Metier, Portage, PlatformService } from '@/hooks/useModalData';
 import type { CompanyFormData } from '@/types/company';
 import type { NewService } from '@/types/user';
 
 interface CompanySummaryStepProps {
   formData: CompanyFormData;
-  metiers: any[];
-  portages: any[];
-  platformServices: any[];
+  metiers: Metier[];
+  portages: Portage[];
+  platformServices: PlatformService[];
 }
 
 export const CompanySummaryStep = ({ 

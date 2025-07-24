@@ -12,10 +12,9 @@ export const FreelancePriorityStep = ({
   setFormData
 }: FreelancePriorityStepProps) => {
   const priorities = [
-    { value: "urgent", label: "Urgent (dans la semaine)", color: "text-red-600" },
-    { value: "high", label: "Priorité élevée (dans le mois)", color: "text-orange-600" },
-    { value: "medium", label: "Priorité moyenne (dans les 3 mois)", color: "text-yellow-600" },
-    { value: "low", label: "Pas urgent (quand c'est possible)", color: "text-green-600" }
+    { value: "HIGH", label: "Urgent (dans la semaine)", color: "text-red-600" },
+    { value: "MEDIUM", label: "Priorité moyenne (dans les 3 mois)", color: "text-yellow-600" },
+    { value: "LOW", label: "Pas urgent (quand c'est possible)", color: "text-green-600" }
   ];
 
   return (

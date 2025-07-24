@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 interface EmailValidationInputProps {
   email: string;
   onEmailChange: (email: string) => void;
+  onValidityChange?: (isValid: boolean) => void;
   label?: string;
   placeholder?: string;
   required?: boolean;
@@ -14,6 +15,7 @@ interface EmailValidationInputProps {
 export const EmailValidationInput = ({
   email,
   onEmailChange,
+  onValidityChange,
   label = "Email *",
   placeholder = "marie.martin@societe.com",
   required = true,
@@ -80,6 +82,12 @@ export const EmailValidationInput = ({
     const timeoutId = setTimeout(checkEmailExists, 500);
     return () => clearTimeout(timeoutId);
   }, [email]);
+
+  // Notify parent about email validity changes
+  useEffect(() => {
+    const isValid = Boolean(email && isValidBusinessEmail(email) && !emailExists);
+    onValidityChange?.(isValid);
+  }, [email, emailExists, onValidityChange]);
 
   return (
     <div className="space-y-2">

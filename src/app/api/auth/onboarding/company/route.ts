@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         ...createdServices.map(s => s.id),
       ];
 
-      let companyServices: any[] = [];
+      let companyServices: Array<{ id: number; company_id: number; service_id: number; is_active: boolean }> = [];
       if (allServiceIds.length > 0) {
         companyServices = await CompanyService.linkPlatformServices(company.id, allServiceIds);
       }

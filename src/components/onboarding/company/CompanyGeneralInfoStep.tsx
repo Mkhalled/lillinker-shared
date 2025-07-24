@@ -1,13 +1,15 @@
 'use client';
 
-import { SiretValidationInput } from '../../form/SiretValidationInput';
+import type { Portage } from '@/hooks/useModalData';
 import type { CompanyFormData } from '@/types/company';
+
+import { SiretValidationInput } from '../../form/SiretValidationInput';
 
 interface CompanyGeneralInfoStepProps {
   formData: CompanyFormData;
   onFormDataChange: (updates: Partial<CompanyFormData>) => void;
   onSiretExistsChange: (exists: boolean) => void;
-  portages: any[];
+  portages: Portage[];
 }
 
 export const CompanyGeneralInfoStep = ({ 

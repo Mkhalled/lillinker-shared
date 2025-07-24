@@ -1,12 +1,19 @@
 'use client';
 
-import { CollapsibleSection } from '../../ui/CollapsibleSection';
 import type { CompanyFormData } from '@/types/company';
+
+import { CollapsibleSection } from '../../ui/CollapsibleSection';
+
+interface Metier {
+  id: number;
+  name: string;
+  description?: string;
+}
 
 interface CompanyMetiersStepProps {
   formData: CompanyFormData;
   onFormDataChange: (updates: Partial<CompanyFormData>) => void;
-  metiers: any[];
+  metiers: Metier[];
 }
 
 export const CompanyMetiersStep = ({ 
@@ -31,8 +38,8 @@ export const CompanyMetiersStep = ({
         items={metiers}
         selectedItems={formData.selectedMetiers}
         onToggleItem={toggleMetierSelection}
-        getItemId={(metier: any) => metier.id}
-        renderItem={(metier: any, isSelected: boolean) => (
+        getItemId={(metier: Metier) => metier.id}
+        renderItem={(metier: Metier, isSelected: boolean) => (
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-700 font-medium">{metier.name}</span>
             <input

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import type { CompanyFormData } from '@/types/company';
 
 const initialFormData: CompanyFormData = {

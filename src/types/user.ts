@@ -29,4 +29,4 @@ export interface BaseModalProps {
 }
 
 export type PortagePreference = "yes" | "no";
-export type PriorityLevel = "urgent" | "medium" | "low";
+export type PriorityLevel = "HIGH" | "MEDIUM" | "LOW";

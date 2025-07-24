@@ -1,16 +1,19 @@
 'use client';
 
-import { Button } from '@/components/ui/button/Button';
 import { Plus } from 'lucide-react';
+
+import { Button } from '@/components/ui/button/Button';
 import { CollapsibleSection } from '@/components/ui/CollapsibleSection';
-import ServiceInfoTooltip from '../../ServiceInfoTooltip';
+import type { PlatformService } from '@/hooks/useModalData';
 import type { CompanyFormData } from '@/types/company';
 import type { NewService } from '@/types/user';
+
+import ServiceInfoTooltip from '../../ServiceInfoTooltip';
 
 interface CompanyServicesStepProps {
   formData: CompanyFormData;
   onFormDataChange: (updates: Partial<CompanyFormData>) => void;
-  platformServices: any[];
+  platformServices: PlatformService[];
   onAddNewService: () => void;
 }
 
@@ -46,8 +49,8 @@ export const CompanyServicesStep = ({
         items={platformServices}
         selectedItems={formData.selectedPlatformServices}
         onToggleItem={toggleServiceSelection}
-        getItemId={(service: any) => service.id}
-        renderItem={(service: any, isSelected: boolean) => (
+        getItemId={(service: PlatformService) => service.id}
+        renderItem={(service: PlatformService, isSelected: boolean) => (
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <div className="flex items-center gap-2">

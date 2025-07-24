@@ -1,7 +1,7 @@
 'use client';
 
-import type { FreelanceFormData } from '../../../types/freelance';
 import type { Metier, PlatformService, Portage } from '../../../hooks/useModalData';
+import type { FreelanceFormData } from '../../../types/freelance';
 
 interface FreelanceSummaryStepProps {
   formData: FreelanceFormData;
@@ -13,7 +13,6 @@ interface FreelanceSummaryStepProps {
 
 export const FreelanceSummaryStep = ({
   formData,
-  setFormData,
   metiers,
   platformServices,
   portages
@@ -150,21 +149,6 @@ export const FreelanceSummaryStep = ({
           <div className="text-sm">
             <span className="font-medium">{priorityLabels[formData.priority] || formData.priority}</span>
           </div>
-        </div>
-
-        {/* Additional Comments */}
-        <div className="space-y-2">
-          <label htmlFor="comments" className="text-sm font-medium text-gray-700">
-            Commentaires supplémentaires (optionnel)
-          </label>
-          <textarea
-            id="comments"
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Ajoutez des détails ou précisions sur votre demande..."
-            value={formData.comments || ''}
-            onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, comments: e.target.value }))}
-          />
         </div>
       </div>
     </div>

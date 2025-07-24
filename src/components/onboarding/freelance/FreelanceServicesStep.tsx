@@ -1,7 +1,7 @@
 'use client';
 
-import type { FreelanceFormData } from '../../../types/freelance';
 import type { PlatformService } from '../../../hooks/useModalData';
+import type { FreelanceFormData } from '../../../types/freelance';
 
 interface FreelanceServicesStepProps {
   formData: FreelanceFormData;

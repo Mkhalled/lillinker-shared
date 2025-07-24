@@ -1,12 +1,14 @@
-import { hash } from 'bcryptjs';
 import { randomBytes } from 'crypto';
+
+import { hash } from 'bcryptjs';
 
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
-import { AuthService } from '@/services/auth.service';
 import type {
   InitialRegistration,
 } from '@/lib/validations/auth.validation';
+
+import { AuthService } from '@/services/auth.service';
 
 // Mock dependencies
 jest.mock('bcryptjs', () => ({

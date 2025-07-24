@@ -17,7 +17,6 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: SetValue<
       }
     } catch (error) {
       // If error also return initialValue
-      console.log(error);
       return initialValue;
     }
   });

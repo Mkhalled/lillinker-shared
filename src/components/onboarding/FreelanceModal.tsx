@@ -1,15 +1,16 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useModalData } from '../../hooks/useModalData';
-import ServiceInfoTooltip from '../ServiceInfoTooltip';
-import { SelectedService, BaseModalProps } from '../../types/user';
 
-import { ModalWrapper } from './ModalWrapper';
-import { SuccessStep } from './SuccessStep';
+import { useModalData } from '../../hooks/useModalData';
+import { SelectedService, BaseModalProps } from '../../types/user';
+import ServiceInfoTooltip from '../ServiceInfoTooltip';
+
 import {
   FreelancePersonalInfoStep,
-  FreelanceMissionStep,
+  FreelanceMissionStatusStep,
+  FreelancePortageStep,
+  FreelanceTjmStep,
   FreelancePriorityStep,
   FreelanceSummaryStep,
   useFreelanceForm,
@@ -18,6 +19,8 @@ import {
   useFreelanceHandlers,
   useFreelanceCompletion,
 } from './freelance';
+import { ModalWrapper } from './ModalWrapper';
+import { SuccessStep } from './SuccessStep';
 
 interface FreelanceModalProps extends BaseModalProps {}
 
@@ -26,8 +29,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
   // Use custom hooks
   const { formData, setFormData, clearLocalStorage } = useFreelanceForm();
-  const { currentStep, missionStep, setMissionStep, handleNext, handlePrevious, clearStepProgress } = useFreelanceNavigation(6);
-  const { isStepValid } = useFreelanceValidation(formData, currentStep, missionStep, platformServices);
+  const { currentStep, handleNext, handlePrevious, goToNextStep, clearStepProgress } = useFreelanceNavigation(8);
+  const { isStepValid } = useFreelanceValidation(formData, currentStep, platformServices);
   const { 
     handleServiceToggle, 
     handleServiceRequiredChange, 
@@ -39,10 +42,10 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const { isLoading, error, setError, handleComplete } = useFreelanceCompletion(
     formData, 
     clearLocalStorage, 
-    () => { /* Handle completion navigation in the hook itself */ }
+    goToNextStep
   );
 
-  const totalSteps = 6;
+  const totalSteps = 8;
 
   // Set data error if there's a fetching error
   useEffect(() => {
@@ -64,18 +67,31 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
       case 2:
         return (
-          <FreelanceMissionStep
+          <FreelanceMissionStatusStep
             formData={formData}
             setFormData={setFormData}
-            missionStep={missionStep}
-            setMissionStep={setMissionStep}
             metiers={metiers}
+          />
+        )
+
+      case 3:
+        return (
+          <FreelancePortageStep
+            formData={formData}
+            setFormData={setFormData}
             portages={portages}
             handlePortageToggle={handlePortageToggle}
           />
         )
 
-      case 3:
+      case 4:
+        return (
+          <FreelanceTjmStep
+            formData={formData}
+            setFormData={setFormData}
+          />
+        )
+      case 5:
         return (
           <div className="space-y-6">
             <div>
@@ -242,7 +258,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
           </div>
         )
 
-      case 4:
+      case 6:
         return (
           <FreelancePriorityStep
             formData={formData}
@@ -250,7 +266,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
           />
         )
 
-      case 5:
+      case 7:
         return (
           <FreelanceSummaryStep
             formData={formData}
@@ -261,19 +277,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
           />
         )
        
-      case 6:
-        return (
-          <SuccessStep 
-            email={formData.email} 
-            title="Merci pour votre demande !"
-            message="Vous avez reçu un email pour confirmer votre email et créer votre mot de passe."
-            steps={[
-              "Ajouter un mot de passe",
-              "L'administration acceptera votre demande",
-              "Vous pourrez accéder à des réponses des entreprises"
-            ]}
-          />
-        )
+      case 8:
+        return <SuccessStep email={formData.email} />;
 
       default:
         return null
@@ -285,14 +290,18 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       case 1:
         return "Informations personnelles"
       case 2:
-        return "Informations sur la mission"
+        return "Situation actuelle"
       case 3:
-        return "Services souhaités"
+        return "Société de portage"
       case 4:
-        return "Priorité de la demande"
+        return "TJM et disponibilité"
       case 5:
-        return "Récapitulatif"
+        return "Services souhaités"
       case 6:
+        return "Priorité de la demande"
+      case 7:
+        return "Récapitulatif"
+      case 8:
         return "Demande envoyée"
       default:
         return ""
@@ -304,14 +313,18 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       case 1:
         return "Renseignez vos informations de base"
       case 2:
-        return "Parlez-nous de votre situation actuelle"
+        return "Avez-vous une mission actuellement ?"
       case 3:
-        return "Choisissez les services qui vous intéressent (données obligatoires si sélectionnés)"
+        return "Services de portage salarial"
       case 4:
-        return "Définissez l'urgence de votre demande"
+        return "Définissez votre tarif et disponibilité"
       case 5:
-        return "Vérifiez vos informations avant l'envoi"
+        return "Choisissez les services qui vous intéressent (données obligatoires si sélectionnés)"
       case 6:
+        return "Définissez l'urgence de votre demande"
+      case 7:
+        return "Vérifiez vos informations avant l'envoi"
+      case 8:
         return "Votre demande a été transmise"
       default:
         return ""
@@ -332,10 +345,10 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       isStepValid={isStepValid() as boolean}
       isLoading={isLoading}
       error={error}
-      showNavigation={currentStep < 6}
+      showNavigation={true}
       completeButtonText="Envoyer ma demande"
       nextButtonText="Suivant"
-      completionStep={5} // Specify that completion happens on step 5
+      completionStep={7} // Specify that completion happens on step 7
       onClearProgress={() => {
         clearLocalStorage();
         clearStepProgress();

@@ -1,8 +1,8 @@
 'use client';
 
-import { BasicEmailInput } from '../../form/BasicEmailInput';
-import type { FreelanceFormData } from '../../../types/freelance';
 import type { Metier } from '../../../hooks/useModalData';
+import type { FreelanceFormData } from '../../../types/freelance';
+import { BasicEmailInput } from '../../form/BasicEmailInput';
 
 interface FreelancePersonalInfoStepProps {
   formData: FreelanceFormData;

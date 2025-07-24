@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+
 import { Button } from '../../ui/button/Button';
 
 interface NavigationButtonsProps {

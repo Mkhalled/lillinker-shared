@@ -1,7 +1,8 @@
 // Step Components
 export { FreelancePersonalInfoStep } from './FreelancePersonalInfoStep';
-export { FreelanceMissionStep } from './FreelanceMissionStep';
-export { FreelanceServicesStep } from './FreelanceServicesStep';
+export { FreelanceMissionStatusStep } from './FreelanceMissionStatusStep';
+export { FreelancePortageStep } from './FreelancePortageStep';
+export { FreelanceTjmStep } from './FreelanceTjmStep';
 export { FreelancePriorityStep } from './FreelancePriorityStep';
 export { FreelanceSummaryStep } from './FreelanceSummaryStep';
 

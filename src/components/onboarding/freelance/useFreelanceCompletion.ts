@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+
 import type { FreelanceFormData } from '../../../types/freelance';
 
 export const useFreelanceCompletion = (
   formData: FreelanceFormData,
   clearLocalStorage: () => void,
-  setCurrentStep: (step: number) => void
+  goToNextStep: () => void
 ) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,8 +57,7 @@ export const useFreelanceCompletion = (
         userId: signupData.userId,
         metier_id: currentFormData.metierId,
         mission_status: currentFormData.hasMission === 'yes' ? 'OPEN' : 'PENDING',
-        priority: currentFormData.priority === 'urgent' ? 'HIGH' : 
-                 currentFormData.priority === 'medium' ? 'MEDIUM' : 'LOW',
+        priority: currentFormData.priority,
         tjm: parseFloat(currentFormData.tjm) || 1,
         days: parseFloat(currentFormData.days) || 0.5,
         wants_portage: currentFormData.wantsPortage === "yes",
@@ -85,7 +85,7 @@ export const useFreelanceCompletion = (
       // Clear localStorage on successful completion
       clearLocalStorage();
       // Show success step
-      setCurrentStep(6);
+      goToNextStep();
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Une erreur est survenue');
     } finally {

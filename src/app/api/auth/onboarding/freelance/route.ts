@@ -1,9 +1,12 @@
+import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { FreelanceOnboardingSchema } from '@/lib/validations/auth.validation';
 import { FreelanceService, AuthService } from '@/services';
+
+type JsonValue = Prisma.JsonValue;
 
 export async function POST(request: NextRequest) {
   const logContext = {
@@ -71,7 +74,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Step 3: Create request options for selected services
-      let requestOptions: any[] = [];
+      let requestOptions: Array<{ id: number; freelance_request_id: number; service_option_id: number; is_required: boolean; response_data: JsonValue }> = [];
       if (validatedData.selected_services && validatedData.selected_services.length > 0) {
         requestOptions = await FreelanceService.createRequestOptions(
           freelanceRequest.id,

@@ -1,9 +1,9 @@
 import { logger } from '@/lib/logger';
+import type { CompanyOnboarding, FreelanceOnboarding, InitialRegistration } from '@/lib/validations/auth.validation';
 import { AuthService } from '@/services/auth/auth.service';
 import { CompanyService } from '@/services/company/company.service';
 import { FreelanceService } from '@/services/freelance/freelance.service';
 import { PlatformServiceService } from '@/services/platform/platform-service.service';
-import type { CompanyOnboarding, FreelanceOnboarding, InitialRegistration } from '@/lib/validations/auth.validation';
 
 export class OnboardingService {
   /**

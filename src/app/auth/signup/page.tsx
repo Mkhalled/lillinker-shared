@@ -64,14 +64,6 @@ const SignupForm: React.FC = () => {
         }
         return response.json();
       })
-      .then(data => {
-        console.log('User registered successfully:', data);
-        // Redirect or show success message
-      })
-      .catch(error => {
-        console.error('Error registering user:', error);
-        // Show error message
-      })
       .finally(() => {
         setLoading(false);
       });

@@ -1,7 +1,8 @@
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
-import { AuthService } from '@/services/auth.service';
 import type { CompanyOnboarding } from '@/lib/validations/auth.validation';
+
+import { AuthService } from '@/services/auth.service';
 
 // Mock dependencies
 jest.mock('@/lib/logger', () => ({

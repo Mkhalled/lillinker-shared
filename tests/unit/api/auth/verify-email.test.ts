@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { POST, GET } from '@/app/api/auth/verify-email/route';
 import { logger } from '@/lib/logger';
-import { AuthService } from '@/services/auth.service';
 import { SetPasswordSchema } from '@/lib/validations/auth.validation';
+
+import { AuthService } from '@/services/auth.service';
 
 // Mock dependencies
 jest.mock('@/lib/logger', () => ({

@@ -45,7 +45,6 @@ export const SiretValidationInput = ({
 
         if (response.ok) {
           const data = await response.json();
-          console.log('SIRET validation response:', data);
           setSiretExists(data.exists);
           onSiretExistsChange?.(data.exists);
         } else {
@@ -65,7 +64,7 @@ export const SiretValidationInput = ({
     // Debounce the SIRET check
     const timeoutId = setTimeout(checkSiretExists, 500);
     return () => clearTimeout(timeoutId);
-  }, [siret]);
+  }, [siret, onSiretExistsChange]);
 
   const handleSiretChange = (value: string) => {
     // Allow only digits and spaces/dashes
