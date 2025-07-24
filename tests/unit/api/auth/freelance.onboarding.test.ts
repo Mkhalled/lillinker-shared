@@ -1,8 +1,8 @@
+import { NextRequest } from 'next/server';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
-import type { FreelanceOnboarding } from '@/lib/validations/auth.validation';
-
-import { AuthService } from '@/services/auth.service';
+import { POST as FreelanceOnboardingPOST } from '@/app/api/auth/onboarding/freelance/route';
+import { FreelanceService, AuthService } from '@/services';
 
 // Mock dependencies
 jest.mock('@/lib/logger', () => ({
@@ -20,572 +20,506 @@ jest.mock('@/lib/prisma', () => ({
   },
 }));
 
-const mockPrisma = prisma as any;
-const mockLogger = logger as any;
+jest.mock('@/lib/validations/auth.validation', () => ({
+  FreelanceOnboardingSchema: {
+    parse: jest.fn(),
+  },
+}));
 
-describe('AuthService - Freelance Onboarding', () => {
+jest.mock('@/services', () => ({
+  FreelanceService: {
+    createFreelanceProfile: jest.fn(),
+    createFreelanceRequest: jest.fn(),
+    createRequestOptions: jest.fn(),
+    linkPortagePreferences: jest.fn(),
+  },
+  AuthService: {
+    sendVerificationEmail: jest.fn(),
+  },
+}));
+
+const mockLogger = logger as any;
+const mockPrisma = prisma as any;
+const mockFreelanceOnboardingSchema = require('@/lib/validations/auth.validation').FreelanceOnboardingSchema;
+const mockFreelanceService = FreelanceService as any;
+const mockAuthService = AuthService as any;
+
+describe('POST /api/auth/onboarding/freelance', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('completeFreelanceOnboarding', () => {
-    const mockUserId = 1;
-    const mockFreelanceData: FreelanceOnboarding = {
-      metier_id: 1, // Changed from 'metier' to 'metier_id' and made it a number
-      mission_status: 'OPEN',
-      client_name: 'Acme Corporation',
-      client_address: '123 Business Street, Paris, France',
-      client_sector: 'Technology',
-      priority: 'HIGH',
-      tjm: 650.00,
-      days: 20,
-      wants_portage: false,
-      selected_services: [
-        {
-          serviceId: 1,
-          isRequired: true,
-          responseData: 'React, Node.js expertise required',
-        },
-        {
-          serviceId: 2,
-          isRequired: false,
-          responseData: 'Optional DevOps support',
-        },
-      ],
-    };
+  const validOnboardingData = {
+    userId: 1,
+    metier_id: 2,
+    mission_status: 'OPEN',
+    client_name: 'Acme Corporation',
+    priority: 'HIGH',
+    tjm: 650.00,
+    days: 20,
+    wants_portage: false,
+    selected_services: [
+      {
+        serviceId: 1,
+        isRequired: true,
+        responseData: 'React expertise required',
+      },
+      {
+        serviceId: 2,
+        isRequired: false,
+        responseData: 'Node.js experience preferred',
+      },
+    ],
+    selected_portages: [],
+  };
 
-    const mockFreelanceDataNoServices: FreelanceOnboarding = {
-      metier_id: 2, // Changed from 'metier' to 'metier_id' and made it a number
-      mission_status: 'PENDING',
-      client_name: 'Tech Startup',
-      priority: 'MEDIUM',
-      tjm: 500.00,
-      days: 15,
-      wants_portage: false,
-    };
+  const mockFreelanceProfile = {
+    id: 1,
+    freelance_id: 1,
+    metier_id: 2,
+    created_at: new Date(),
+    updated_at: new Date(),
+  };
 
-    const mockFreelance = {
+  const mockFreelanceRequest = {
+    id: 1,
+    freelance_id: 1,
+    mission_status: 'OPEN',
+    client_name: 'Acme Corporation',
+    priority: 'HIGH',
+    tjm: 650.00,
+    days: 20,
+    created_at: new Date(),
+    updated_at: new Date(),
+  };
+
+  const mockRequestOptions = [
+    {
       id: 1,
-      freelance_id: mockUserId,
-      metier_id: 1, // Changed from 'metier' to 'metier_id'
-      created_at: new Date(),
-      updated_at: new Date(),
+      freelance_request_id: 1,
+      service_option_id: 1,
+      is_required: true,
+      response_data: 'React expertise required',
+    },
+    {
+      id: 2,
+      freelance_request_id: 1,
+      service_option_id: 2,
+      is_required: false,
+      response_data: 'Node.js experience preferred',
+    },
+  ];
+
+  it('should successfully complete freelance onboarding', async () => {
+    const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
+    
+    mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
+    
+    mockPrisma.$transaction.mockImplementation(async (callback: any) => {
+      mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
+      mockFreelanceService.createFreelanceRequest.mockResolvedValue(mockFreelanceRequest);
+      mockFreelanceService.createRequestOptions.mockResolvedValue(mockRequestOptions);
+      
+      return await callback();
+    });
+    
+    mockAuthService.sendVerificationEmail.mockResolvedValue(true);
+
+    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+      method: 'POST',
+      body: JSON.stringify(validOnboardingData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const response = await FreelanceOnboardingPOST(request);
+    const responseData = await response.json();
+
+    expect(mockFreelanceOnboardingSchema.parse).toHaveBeenCalledWith(onboardingDataWithoutUserId);
+    
+    expect(mockPrisma.$transaction).toHaveBeenCalled();
+    expect(mockFreelanceService.createFreelanceProfile).toHaveBeenCalledWith(
+      userId,
+      validOnboardingData.metier_id
+    );
+    expect(mockFreelanceService.createFreelanceRequest).toHaveBeenCalledWith(
+      mockFreelanceProfile.id,
+      onboardingDataWithoutUserId
+    );
+    expect(mockFreelanceService.createRequestOptions).toHaveBeenCalledWith(
+      mockFreelanceRequest.id,
+      validOnboardingData.selected_services
+    );
+    
+    expect(mockAuthService.sendVerificationEmail).toHaveBeenCalledWith(userId);
+
+    expect(response.status).toBe(200);
+    expect(responseData).toEqual({
+      success: true,
+      message: 'Freelance onboarding completed successfully',
+      data: expect.any(Object),
+    });
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Freelance onboarding API endpoint called',
+      expect.objectContaining({
+        operation: 'freelance_onboarding',
+        method: 'POST',
+        path: '/api/auth/onboarding/freelance',
+      })
+    );
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Freelance onboarding API completed successfully',
+      expect.objectContaining({
+        userId: userId,
+        freelanceId: mockFreelanceProfile.id,
+        freelanceRequestId: mockFreelanceRequest.id,
+        requestOptionsCreated: mockRequestOptions.length,
+      })
+    );
+  });
+
+  it('should handle freelance onboarding with portage preferences', async () => {
+    const onboardingDataWithPortage = {
+      ...validOnboardingData,
+      wants_portage: true,
+      selected_portages: [1, 2],
     };
 
-    const mockFreelanceRequest = {
-      id: 1,
-      freelance_id: 1,
+    const { userId, ...onboardingDataWithoutUserId } = onboardingDataWithPortage;
+    
+    mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
+    
+    mockPrisma.$transaction.mockImplementation(async (callback: any) => {
+      mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
+      mockFreelanceService.createFreelanceRequest.mockResolvedValue(mockFreelanceRequest);
+      mockFreelanceService.createRequestOptions.mockResolvedValue(mockRequestOptions);
+      mockFreelanceService.linkPortagePreferences.mockResolvedValue(true);
+      
+      return await callback();
+    });
+    
+    mockAuthService.sendVerificationEmail.mockResolvedValue(true);
+
+    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+      method: 'POST',
+      body: JSON.stringify(onboardingDataWithPortage),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const response = await FreelanceOnboardingPOST(request);
+    const responseData = await response.json();
+
+    expect(mockFreelanceService.linkPortagePreferences).toHaveBeenCalledWith(
+      mockFreelanceRequest.id,
+      onboardingDataWithPortage.selected_portages
+    );
+
+    expect(response.status).toBe(200);
+    expect(responseData.success).toBe(true);
+  });
+
+  it('should handle missing userId error', async () => {
+    const invalidData = {
+      metier_id: 2,
       mission_status: 'OPEN',
-      client_name: 'Acme Corporation',
-      client_address: '123 Business Street, Paris, France',
-      client_sector: 'Technology',
-      priority: 'HIGH',
-      tjm: 650.00,
-      days: 20,
-      created_at: new Date(),
-      updated_at: new Date(),
+      // Missing userId
     };
 
-    const mockPlatformServices = [
-      {
-        id: 1,
-        user_id: 1,
-        label: 'React Development',
-        description: 'React application development',
-        data_type: 'TEXT',
-        requires_data: true,
-        data_label: 'Technical Requirements',
-        data_description: 'Describe your technical requirements',
-        choices: null,
-        status: 'ACTIVE',
-        created_at: new Date(),
+    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+      method: 'POST',
+      body: JSON.stringify(invalidData),
+      headers: {
+        'Content-Type': 'application/json',
       },
-      {
-        id: 2,
-        user_id: 2,
-        label: 'DevOps Support',
-        description: 'DevOps and infrastructure support',
-        data_type: 'TEXT',
-        requires_data: false,
-        data_label: '',
-        data_description: '',
-        choices: null,
-        status: 'ACTIVE',
-        created_at: new Date(),
-      },
-    ];
-
-    const mockRequestOptions = [
-      {
-        id: 1,
-        freelance_request_id: 1,
-        service_option_id: 1,
-        is_required: true,
-        response_data: { data: 'React, Node.js expertise required' },
-        created_at: new Date(),
-      },
-      {
-        id: 2,
-        freelance_request_id: 1,
-        service_option_id: 2,
-        is_required: false,
-        response_data: { data: 'Optional DevOps support' },
-        created_at: new Date(),
-      },
-    ];
-
-    it('should successfully complete freelance onboarding with services', async () => {
-      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
-        const mockTx = {
-          freelance: {
-            create: jest.fn().mockResolvedValue(mockFreelance),
-          },
-          freelanceRequest: {
-            create: jest.fn().mockResolvedValue(mockFreelanceRequest),
-          },
-          freelanceRequestPortage: {
-            createMany: jest.fn().mockResolvedValue({ count: 0 }),
-          },
-          platformService: {
-            findUnique: jest.fn()
-              .mockResolvedValueOnce(mockPlatformServices[0])
-              .mockResolvedValueOnce(mockPlatformServices[1]),
-          },
-          freelanceRequestOption: {
-            create: jest.fn()
-              .mockResolvedValueOnce(mockRequestOptions[0])
-              .mockResolvedValueOnce(mockRequestOptions[1]),
-          },
-        };
-        return await callback(mockTx);
-      });
-
-      mockPrisma.$transaction = mockTransaction;
-
-      const result = await AuthService.completeFreelanceOnboarding(mockUserId, mockFreelanceData);
-
-      expect(mockTransaction).toHaveBeenCalledWith(expect.any(Function));
-
-      expect(result).toEqual({
-        freelance: mockFreelance,
-        freelanceRequest: mockFreelanceRequest,
-        requestOptions: mockRequestOptions,
-      });
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Starting freelance onboarding process',
-        expect.objectContaining({
-          operation: 'completeFreelanceOnboarding',
-          userId: mockUserId,
-          metier_id: 1,
-          tjm: 650.00,
-          days: 20,
-        })
-      );
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Freelance profile created successfully',
-        expect.objectContaining({
-          freelanceId: 1,
-        })
-      );
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Freelance request created successfully',
-        expect.objectContaining({
-          freelanceRequestId: 1,
-          missionStatus: 'OPEN',
-          priority: 'HIGH',
-          clientName: 'Acme Corporation',
-        })
-      );
-
-      expect(mockLogger.debug).toHaveBeenCalledWith(
-        'Processing freelance service requests',
-        expect.objectContaining({
-          selectedServicesCount: 2,
-        })
-      );
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Freelance service requests processed',
-        expect.objectContaining({
-          totalRequested: 2,
-          successfullyLinked: 2,
-          skipped: 0,
-        })
-      );
     });
 
-    it('should successfully complete freelance onboarding without services', async () => {
-      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
-        const mockTx = {
-          freelance: {
-            create: jest.fn().mockResolvedValue(mockFreelance),
-          },
-          freelanceRequest: {
-            create: jest.fn().mockResolvedValue(mockFreelanceRequest),
-          },
-          freelanceRequestPortage: {
-            createMany: jest.fn().mockResolvedValue({ count: 0 }),
-          },
-        };
-        return await callback(mockTx);
-      });
+    const response = await FreelanceOnboardingPOST(request);
+    const responseData = await response.json();
 
-      mockPrisma.$transaction = mockTransaction;
-
-      const result = await AuthService.completeFreelanceOnboarding(mockUserId, mockFreelanceDataNoServices);
-
-      expect(result).toEqual({
-        freelance: mockFreelance,
-        freelanceRequest: mockFreelanceRequest,
-        requestOptions: [],
-      });
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Freelance onboarding completed successfully',
-        expect.objectContaining({
-          freelanceId: 1,
-          freelanceRequestId: 1,
-          servicesRequested: 0,
-        })
-      );
+    expect(response.status).toBe(400);
+    expect(responseData).toEqual({
+      error: 'User ID is required',
     });
 
-    it('should handle services that don\'t exist', async () => {
-      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
-        const mockTx = {
-          freelance: {
-            create: jest.fn().mockResolvedValue(mockFreelance),
-          },
-          freelanceRequest: {
-            create: jest.fn().mockResolvedValue(mockFreelanceRequest),
-          },
-          freelanceRequestPortage: {
-            createMany: jest.fn().mockResolvedValue({ count: 0 }),
-          },
-          platformService: {
-            findUnique: jest.fn()
-              .mockResolvedValueOnce(mockPlatformServices[0]) // First service found
-              .mockResolvedValueOnce(null), // Second service not found
-          },
-          freelanceRequestOption: {
-            create: jest.fn().mockResolvedValueOnce(mockRequestOptions[0]),
-          },
-        };
-        return await callback(mockTx);
-      });
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'Freelance onboarding attempt without user ID',
+      expect.objectContaining({
+        operation: 'freelance_onboarding',
+      })
+    );
+  });
 
-      mockPrisma.$transaction = mockTransaction;
+  it('should handle validation errors', async () => {
+    const invalidData = {
+      userId: 1,
+      metier_id: 'invalid',
+      mission_status: 'INVALID_STATUS',
+      tjm: 'not_a_number',
+    };
 
-      const result = await AuthService.completeFreelanceOnboarding(mockUserId, mockFreelanceData);
-
-      expect(result.requestOptions).toHaveLength(1);
-
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Platform service not found',
-        expect.objectContaining({
-          serviceId: 2,
-        })
-      );
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Freelance service requests processed',
-        expect.objectContaining({
-          totalRequested: 2,
-          successfullyLinked: 1,
-          skipped: 1,
-        })
-      );
+    mockFreelanceOnboardingSchema.parse.mockImplementation(() => {
+      throw new Error('Validation failed: Invalid data format');
     });
 
-    it('should handle database transaction failures', async () => {
-      const dbError = new Error('Transaction failed');
-      mockPrisma.$transaction.mockRejectedValue(dbError);
-
-      await expect(
-        AuthService.completeFreelanceOnboarding(mockUserId, mockFreelanceData)
-      ).rejects.toThrow('Transaction failed');
-
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Freelance onboarding failed',
-        dbError,
-        expect.objectContaining({
-          operation: 'completeFreelanceOnboarding',
-          userId: mockUserId,
-        })
-      );
+    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+      method: 'POST',
+      body: JSON.stringify(invalidData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
-    it('should handle freelance profile creation failure', async () => {
-      const profileError = new Error('Freelance profile creation failed');
+    const response = await FreelanceOnboardingPOST(request);
+    const responseData = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(responseData).toEqual({
+      error: 'Validation failed: Invalid data format',
+    });
+
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Freelance onboarding API failed',
+      expect.any(Error),
+      expect.objectContaining({
+        operation: 'freelance_onboarding',
+      })
+    );
+  });
+
+  it('should handle freelance profile creation errors', async () => {
+    const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
+    
+    mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
+    
+    const profileCreationError = new Error('Failed to create freelance profile');
+    mockPrisma.$transaction.mockImplementation(async (callback: any) => {
+      mockFreelanceService.createFreelanceProfile.mockRejectedValue(profileCreationError);
+      return await callback();
+    });
+
+    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+      method: 'POST',
+      body: JSON.stringify(validOnboardingData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const response = await FreelanceOnboardingPOST(request);
+    const responseData = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(responseData).toEqual({
+      error: 'Failed to create freelance profile',
+    });
+
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Freelance onboarding API failed',
+      profileCreationError,
+      expect.objectContaining({
+        operation: 'freelance_onboarding',
+      })
+    );
+  });
+
+  it('should handle freelance request creation errors', async () => {
+    const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
+    
+    mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
+    
+    const requestCreationError = new Error('Failed to create freelance request');
+    mockPrisma.$transaction.mockImplementation(async (callback: any) => {
+      mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
+      mockFreelanceService.createFreelanceRequest.mockRejectedValue(requestCreationError);
+      return await callback();
+    });
+
+    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+      method: 'POST',
+      body: JSON.stringify(validOnboardingData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const response = await FreelanceOnboardingPOST(request);
+    const responseData = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(responseData).toEqual({
+      error: 'Failed to create freelance request',
+    });
+  });
+
+  it('should handle request options creation errors', async () => {
+    const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
+    
+    mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
+    
+    const optionsCreationError = new Error('Failed to create request options');
+    mockPrisma.$transaction.mockImplementation(async (callback: any) => {
+      mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
+      mockFreelanceService.createFreelanceRequest.mockResolvedValue(mockFreelanceRequest);
+      mockFreelanceService.createRequestOptions.mockRejectedValue(optionsCreationError);
+      return await callback();
+    });
+
+    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+      method: 'POST',
+      body: JSON.stringify(validOnboardingData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const response = await FreelanceOnboardingPOST(request);
+    const responseData = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(responseData).toEqual({
+      error: 'Failed to create request options',
+    });
+  });
+
+  it('should handle verification email sending errors gracefully', async () => {
+    const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
+    
+    mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
+    
+    mockPrisma.$transaction.mockImplementation(async (callback: any) => {
+      mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
+      mockFreelanceService.createFreelanceRequest.mockResolvedValue(mockFreelanceRequest);
+      mockFreelanceService.createRequestOptions.mockResolvedValue(mockRequestOptions);
       
-      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
-        const mockTx = {
-          freelance: {
-            create: jest.fn().mockRejectedValue(profileError),
-          },
-        };
-        return await callback(mockTx);
-      });
+      return await callback();
+    });
+    
+    // Email sending fails but onboarding should still succeed
+    const emailError = new Error('Email service unavailable');
+    mockAuthService.sendVerificationEmail.mockRejectedValue(emailError);
 
-      mockPrisma.$transaction = mockTransaction;
-
-      await expect(
-        AuthService.completeFreelanceOnboarding(mockUserId, mockFreelanceData)
-      ).rejects.toThrow('Freelance profile creation failed');
-
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Freelance onboarding failed',
-        profileError,
-        expect.any(Object)
-      );
+    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+      method: 'POST',
+      body: JSON.stringify(validOnboardingData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
-    it('should handle freelance request creation failure', async () => {
-      const requestError = new Error('Freelance request creation failed');
+    const response = await FreelanceOnboardingPOST(request);
+    const responseData = await response.json();
+
+    // The API should fail if email sending fails
+    expect(response.status).toBe(400);
+    expect(responseData).toEqual({
+      error: 'Email service unavailable',
+    });
+
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Freelance onboarding API failed',
+      emailError,
+      expect.objectContaining({
+        operation: 'freelance_onboarding',
+      })
+    );
+  });
+
+  it('should handle onboarding without selected services', async () => {
+    const onboardingDataWithoutServices = {
+      ...validOnboardingData,
+      selected_services: [],
+    };
+
+    const { userId, ...onboardingDataWithoutUserId } = onboardingDataWithoutServices;
+    
+    mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
+    
+    mockPrisma.$transaction.mockImplementation(async (callback: any) => {
+      mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
+      mockFreelanceService.createFreelanceRequest.mockResolvedValue(mockFreelanceRequest);
+      // createRequestOptions should not be called when no services are selected
       
-      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
-        const mockTx = {
-          freelance: {
-            create: jest.fn().mockResolvedValue(mockFreelance),
-          },
-          freelanceRequest: {
-            create: jest.fn().mockRejectedValue(requestError),
-          },
-          freelanceRequestPortage: {
-            createMany: jest.fn().mockResolvedValue({ count: 0 }),
-          },
-        };
-        return await callback(mockTx);
-      });
+      return await callback();
+    });
+    
+    mockAuthService.sendVerificationEmail.mockResolvedValue(true);
 
-      mockPrisma.$transaction = mockTransaction;
-
-      await expect(
-        AuthService.completeFreelanceOnboarding(mockUserId, mockFreelanceData)
-      ).rejects.toThrow('Freelance request creation failed');
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Freelance profile created successfully',
-        expect.any(Object)
-      );
-
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Freelance onboarding failed',
-        requestError,
-        expect.any(Object)
-      );
+    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+      method: 'POST',
+      body: JSON.stringify(onboardingDataWithoutServices),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
-    it('should handle service option creation failure', async () => {
-      const optionError = new Error('Service option creation failed');
-      
-      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
-        const mockTx = {
-          freelance: {
-            create: jest.fn().mockResolvedValue(mockFreelance),
-          },
-          freelanceRequest: {
-            create: jest.fn().mockResolvedValue(mockFreelanceRequest),
-          },
-          freelanceRequestPortage: {
-            createMany: jest.fn().mockResolvedValue({ count: 0 }),
-          },
-          platformService: {
-            findUnique: jest.fn().mockResolvedValueOnce(mockPlatformServices[0]),
-          },
-          freelanceRequestOption: {
-            create: jest.fn().mockRejectedValue(optionError),
-          },
-        };
-        return await callback(mockTx);
-      });
+    const response = await FreelanceOnboardingPOST(request);
+    const responseData = await response.json();
 
-      mockPrisma.$transaction = mockTransaction;
+    expect(mockFreelanceService.createRequestOptions).not.toHaveBeenCalled();
+    expect(response.status).toBe(200);
+    expect(responseData.success).toBe(true);
+  });
 
-      await expect(
-        AuthService.completeFreelanceOnboarding(mockUserId, mockFreelanceData)
-      ).rejects.toThrow('Service option creation failed');
+  it('should handle database transaction errors', async () => {
+    const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
+    
+    mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
+    
+    const transactionError = new Error('Database transaction failed');
+    mockPrisma.$transaction.mockRejectedValue(transactionError);
 
-      expect(mockLogger.debug).toHaveBeenCalledWith(
-        'Processing freelance service requests',
-        expect.any(Object)
-      );
-
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Freelance onboarding failed',
-        optionError,
-        expect.any(Object)
-      );
+    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+      method: 'POST',
+      body: JSON.stringify(validOnboardingData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
-    it('should validate required freelance data fields', async () => {
-      const invalidData = {
-        metier_id: 0,
-        mission_status: 'OPEN',
-        priority: 'MEDIUM',
-        tjm: 0,
-        days: 0,
-      } as FreelanceOnboarding;
+    const response = await FreelanceOnboardingPOST(request);
+    const responseData = await response.json();
 
-      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
-        const mockTx = {
-          freelance: {
-            create: jest.fn().mockRejectedValue(new Error('Metier is required')),
-          },
-        };
-        return await callback(mockTx);
-      });
-
-      mockPrisma.$transaction = mockTransaction;
-
-      await expect(
-        AuthService.completeFreelanceOnboarding(mockUserId, invalidData)
-      ).rejects.toThrow('Metier is required');
+    expect(response.status).toBe(400);
+    expect(responseData).toEqual({
+      error: 'Database transaction failed',
     });
 
-    it('should handle service requests with empty response data', async () => {
-      const dataWithEmptyResponse: FreelanceOnboarding = {
-        ...mockFreelanceData,
-        selected_services: [
-          {
-            serviceId: 1,
-            isRequired: true,
-            responseData: '',
-          },
-        ],
-      };
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Freelance onboarding API failed',
+      transactionError,
+      expect.objectContaining({
+        operation: 'freelance_onboarding',
+      })
+    );
+  });
 
-      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
-        const mockTx = {
-          freelance: {
-            create: jest.fn().mockResolvedValue(mockFreelance),
-          },
-          freelanceRequest: {
-            create: jest.fn().mockResolvedValue(mockFreelanceRequest),
-          },
-          freelanceRequestPortage: {
-            createMany: jest.fn().mockResolvedValue({ count: 0 }),
-          },
-          platformService: {
-            findUnique: jest.fn().mockResolvedValueOnce(mockPlatformServices[0]),
-          },
-          freelanceRequestOption: {
-            create: jest.fn().mockResolvedValueOnce({
-              ...mockRequestOptions[0],
-              response_data: undefined,
-            }),
-          },
-        };
-        return await callback(mockTx);
-      });
-
-      mockPrisma.$transaction = mockTransaction;
-
-      const result = await AuthService.completeFreelanceOnboarding(mockUserId, dataWithEmptyResponse);
-
-      expect(result.requestOptions).toHaveLength(1);
-      expect(mockLogger.debug).toHaveBeenCalledWith(
-        'Freelance request option created',
-        expect.objectContaining({
-          serviceId: 1,
-          isRequired: true,
-        })
-      );
+  it('should handle empty request body', async () => {
+    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+      method: 'POST',
+      body: JSON.stringify({}),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
-    it('should successfully complete freelance onboarding with portage preferences', async () => {
-      const mockFreelanceWithPortage: FreelanceOnboarding = {
-        ...mockFreelanceData,
-        wants_portage: true,
-        selected_portages: [1, 2],
-        selected_services: [
-          {
-            serviceId: 1,
-            isRequired: true,
-            responseData: 'React development expertise',
-          },
-        ],
-      };
+    const response = await FreelanceOnboardingPOST(request);
+    const responseData = await response.json();
 
-      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
-        const mockTx = {
-          freelance: {
-            create: jest.fn().mockResolvedValue(mockFreelance),
-          },
-          freelanceRequest: {
-            create: jest.fn().mockResolvedValue(mockFreelanceRequest),
-          },
-          freelanceRequestPortage: {
-            createMany: jest.fn().mockResolvedValue({ count: 2 }),
-          },
-          platformService: {
-            findUnique: jest.fn().mockResolvedValueOnce(mockPlatformServices[0]),
-          },
-          freelanceRequestOption: {
-            create: jest.fn().mockResolvedValueOnce(mockRequestOptions[0]),
-          },
-        };
-        return await callback(mockTx);
-      });
-
-      mockPrisma.$transaction = mockTransaction;
-
-      const result = await AuthService.completeFreelanceOnboarding(mockUserId, mockFreelanceWithPortage);
-
-      expect(mockTransaction).toHaveBeenCalledWith(expect.any(Function));
-
-      expect(result).toEqual({
-        freelance: mockFreelance,
-        freelanceRequest: mockFreelanceRequest,
-        requestOptions: [mockRequestOptions[0]],
-      });
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Starting freelance onboarding process',
-        expect.objectContaining({
-          operation: 'completeFreelanceOnboarding',
-          userId: mockUserId,
-          metier_id: 1,
-          tjm: 650.00,
-          days: 20,
-        })
-      );
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Freelance profile created successfully',
-        expect.objectContaining({
-          freelanceId: 1,
-        })
-      );
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Freelance request created successfully',
-        expect.objectContaining({
-          freelanceRequestId: 1,
-          missionStatus: 'OPEN',
-          priority: 'HIGH',
-          clientName: 'Acme Corporation',
-        })
-      );
-
-      expect(mockLogger.debug).toHaveBeenCalledWith(
-        'Processing freelance service requests',
-        expect.objectContaining({
-          selectedServicesCount: 1,
-        })
-      );
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Freelance service requests processed',
-        expect.objectContaining({
-          totalRequested: 1,
-          successfullyLinked: 1,
-          skipped: 0,
-        })
-      );
+    expect(response.status).toBe(400);
+    expect(responseData).toEqual({
+      error: 'User ID is required',
     });
+
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'Freelance onboarding attempt without user ID',
+      expect.objectContaining({
+        operation: 'freelance_onboarding',
+      })
+    );
   });
 });
