@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useState } from 'react';
 
-import CompanyModal from '../modals/CompanyModal';
-import FreelanceModal from '../modals/FreelanceModal';
+import CompanyModal from '../onboarding/CompanyModal';
+import FreelanceModal from '../onboarding/FreelanceModal';
 import { Button } from '../ui/button/Button';
 
 type ModalType = 'none' | 'freelance' | 'company';

@@ -1,0 +1,131 @@
+'use client';
+
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '../../ui/button/Button';
+
+interface NavigationButtonsProps {
+  currentStep: number;
+  totalSteps: number;
+  isStepValid: boolean;
+  isLoading: boolean;
+  isCompletionStep: boolean;
+  isCompleteStep: boolean;
+  onNext?: () => void;
+  onPrevious?: () => void;
+  onComplete?: () => void;
+  onClose: () => void;
+  completeButtonText: string;
+  nextButtonText: string;
+}
+
+export const NavigationButtons = ({
+  currentStep,
+  totalSteps,
+  isStepValid,
+  isLoading,
+  isCompletionStep,
+  isCompleteStep,
+  onNext,
+  onPrevious,
+  onComplete,
+  onClose,
+  completeButtonText,
+  nextButtonText
+}: NavigationButtonsProps) => {
+  const handleNextClick = () => {
+    if (isCompleteStep && onComplete) {
+      onComplete();
+    } else if (onNext) {
+      onNext();
+    }
+  };
+
+  const isFirstStep = currentStep === 1;
+  const canGoNext = currentStep < totalSteps && !isCompletionStep;
+  const isDisabled = !isStepValid || isLoading;
+
+  // Completion step - just close button
+  if (isCompletionStep) {
+    return (
+      <div className="flex justify-center">
+        <Button 
+          onClick={onClose}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+        >
+          Fermer
+        </Button>
+      </div>
+    );
+  }
+
+  // Normal navigation
+  return (
+    <div className="flex justify-between">
+      {/* Previous Button */}
+      <Button 
+        variant="outline" 
+        onClick={onPrevious} 
+        disabled={isFirstStep || isLoading}
+        className="flex items-center space-x-2"
+        aria-label="Étape précédente"
+      >
+        <ChevronLeft className="h-4 w-4" />
+        <span>Précédent</span>
+      </Button>
+
+      {/* Next/Complete Button */}
+      {canGoNext || !isCompletionStep ? (
+        <NextButton
+          onClick={handleNextClick}
+          disabled={isDisabled}
+          isLoading={isLoading}
+          isCompleteStep={isCompleteStep}
+          completeButtonText={completeButtonText}
+          nextButtonText={nextButtonText}
+        />
+      ) : null}
+    </div>
+  );
+};
+
+interface NextButtonProps {
+  onClick: () => void;
+  disabled: boolean;
+  isLoading: boolean;
+  isCompleteStep: boolean;
+  completeButtonText: string;
+  nextButtonText: string;
+}
+
+const NextButton = ({ 
+  onClick, 
+  disabled, 
+  isLoading, 
+  isCompleteStep, 
+  completeButtonText, 
+  nextButtonText 
+}: NextButtonProps) => {
+  const buttonText = isCompleteStep ? completeButtonText : nextButtonText;
+  const ariaLabel = isCompleteStep ? "Finaliser l'inscription" : "Étape suivante";
+
+  return (
+    <Button 
+      onClick={onClick}
+      disabled={disabled}
+      className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
+      aria-label={ariaLabel}
+    >
+      {isLoading ? (
+        <>
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+          <span>Inscription en cours...</span>
+        </>
+      ) : (
+        <>
+          <span>{buttonText}</span>
+          <ChevronRight className="h-4 w-4" />
+        </>
+      )}
+    </Button>
+  );
+};
