@@ -125,7 +125,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
     
     mockAuthService.sendVerificationEmail.mockResolvedValue(true);
 
-    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
       method: 'POST',
       body: JSON.stringify(validOnboardingData),
       headers: {
@@ -203,7 +203,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
     
     mockAuthService.sendVerificationEmail.mockResolvedValue(true);
 
-    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
       method: 'POST',
       body: JSON.stringify(onboardingDataWithPortage),
       headers: {
@@ -230,7 +230,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
       // Missing userId
     };
 
-    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
       method: 'POST',
       body: JSON.stringify(invalidData),
       headers: {
@@ -266,7 +266,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
       throw new Error('Validation failed: Invalid data format');
     });
 
-    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
       method: 'POST',
       body: JSON.stringify(invalidData),
       headers: {
@@ -302,7 +302,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
       return await callback();
     });
 
-    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
       method: 'POST',
       body: JSON.stringify(validOnboardingData),
       headers: {
@@ -339,7 +339,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
       return await callback();
     });
 
-    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
       method: 'POST',
       body: JSON.stringify(validOnboardingData),
       headers: {
@@ -369,7 +369,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
       return await callback();
     });
 
-    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
       method: 'POST',
       body: JSON.stringify(validOnboardingData),
       headers: {
@@ -403,7 +403,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
     const emailError = new Error('Email service unavailable');
     mockAuthService.sendVerificationEmail.mockRejectedValue(emailError);
 
-    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
       method: 'POST',
       body: JSON.stringify(validOnboardingData),
       headers: {
@@ -449,7 +449,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
     
     mockAuthService.sendVerificationEmail.mockResolvedValue(true);
 
-    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
       method: 'POST',
       body: JSON.stringify(onboardingDataWithoutServices),
       headers: {
@@ -473,7 +473,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
     const transactionError = new Error('Database transaction failed');
     mockPrisma.$transaction.mockRejectedValue(transactionError);
 
-    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
       method: 'POST',
       body: JSON.stringify(validOnboardingData),
       headers: {
@@ -499,7 +499,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
   });
 
   it('should handle empty request body', async () => {
-    const request = new NextRequest('http://localhost:3000/api/auth/onboarding/freelance', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
       method: 'POST',
       body: JSON.stringify({}),
       headers: {

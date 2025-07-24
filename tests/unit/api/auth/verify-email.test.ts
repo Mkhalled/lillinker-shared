@@ -47,9 +47,6 @@ const mockLogger = logger as jest.Mocked<typeof logger>;
 const mockAuthService = AuthService as jest.Mocked<typeof AuthService>;
 const mockSetPasswordSchema = SetPasswordSchema as jest.Mocked<typeof SetPasswordSchema>;
 
-// Get the mocked NextResponse
-const { NextResponse } = require('next/server');
-
 describe('Email Verification API', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -71,7 +68,7 @@ describe('Email Verification API', () => {
     mockSetPasswordSchema.parse.mockReturnValue(validVerificationData);
     mockAuthService.verifyEmailAndSetPassword.mockResolvedValue(mockSuccessResult);
 
-    const request = new NextRequest('http://localhost:3000/api/auth/verify-email', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/verify-email', {
       method: 'POST',
       body: JSON.stringify(validVerificationData),
       headers: {
@@ -119,7 +116,7 @@ describe('Email Verification API', () => {
       throw new Error('Token is required');
     });
 
-    const request = new NextRequest('http://localhost:3000/api/auth/verify-email', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/verify-email', {
       method: 'POST',
       body: JSON.stringify(invalidData),
       headers: {
@@ -153,7 +150,7 @@ describe('Email Verification API', () => {
       throw new Error('Password is required');
     });
 
-    const request = new NextRequest('http://localhost:3000/api/auth/verify-email', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/verify-email', {
       method: 'POST',
       body: JSON.stringify(invalidData),
       headers: {
@@ -179,7 +176,7 @@ describe('Email Verification API', () => {
       throw new Error("Passwords don't match");
     });
 
-    const request = new NextRequest('http://localhost:3000/api/auth/verify-email', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/verify-email', {
       method: 'POST',
       body: JSON.stringify(invalidData),
       headers: {
@@ -200,7 +197,7 @@ describe('Email Verification API', () => {
       new Error('Token de vérification invalide ou expiré')
     );
 
-    const request = new NextRequest('http://localhost:3000/api/auth/verify-email', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/verify-email', {
       method: 'POST',
       body: JSON.stringify(validVerificationData),
       headers: {
@@ -234,7 +231,7 @@ describe('Email Verification API', () => {
       new Error('Database connection failed')
     );
 
-    const request = new NextRequest('http://localhost:3000/api/auth/verify-email', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/verify-email', {
       method: 'POST',
       body: JSON.stringify(validVerificationData),
       headers: {
@@ -255,7 +252,7 @@ describe('Email Verification API', () => {
       'Unexpected error type'
     );
 
-    const request = new NextRequest('http://localhost:3000/api/auth/verify-email', {
+    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/verify-email', {
       method: 'POST',
       body: JSON.stringify(validVerificationData),
       headers: {
