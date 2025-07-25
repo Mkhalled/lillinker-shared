@@ -3,9 +3,9 @@
 import type { PlatformService } from '../../../hooks/useModalData';
 import type { FreelanceFormData } from '../../../types/freelance';
 import { SelectedService } from '../../../types/user';
-import ServiceInfoTooltip from '../../ServiceInfoTooltip';
 import { StyledCheckbox } from '../../form/StyledCheckbox';
 import { StyledRadio } from '../../form/StyledRadio';
+import ServiceInfoTooltip from '../../ServiceInfoTooltip';
 
 interface FreelanceServicesStepProps {
   formData: FreelanceFormData;
@@ -43,14 +43,14 @@ export const FreelanceServicesStep = ({
         )}
 
         {/* Services List - Scrollable */}
-        <div className="space-y-4 max-h-60 overflow-y-auto">
+        <div className="space-y-3 sm:space-y-4 max-h-72 sm:max-h-80 overflow-y-auto">
           {platformServices.map((service) => {
             const isSelected = formData.selectedServices.some((s: SelectedService) => s.serviceId === service.id)
             const selectedService = formData.selectedServices.find((s: SelectedService) => s.serviceId === service.id)
             const choices = parseChoices(service.choices as string | null)
             
             return (
-              <div key={service.id} className="border border-gray-200 rounded-lg p-4">
+              <div key={service.id} className="border border-gray-200 rounded-lg p-3 sm:p-4">
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4 flex-1">

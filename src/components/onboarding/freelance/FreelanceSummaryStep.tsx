@@ -39,12 +39,12 @@ export const FreelanceSummaryStep = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="space-y-4">
         {/* Personal Information */}
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
           <h5 className="font-medium text-gray-800 mb-3">Informations personnelles</h5>
-          <div className="grid grid-cols-2 gap-3 text-sm">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 text-sm">
             <div>
               <span className="text-gray-600">Nom:</span>
               <span className="ml-2 font-medium">{formData.firstName} {formData.lastName}</span>
@@ -65,10 +65,10 @@ export const FreelanceSummaryStep = ({
         </div>
 
         {/* Mission Information */}
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
           <h5 className="font-medium text-gray-800 mb-3">Informations mission</h5>
-          <div className="space-y-2 text-sm">
-            <div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 text-sm">
+            <div className="lg:col-span-2">
               <span className="text-gray-600">Statut mission:</span>
               <span className="ml-2 font-medium">{missionLabels[formData.hasMission] || formData.hasMission}</span>
             </div>
@@ -88,26 +88,24 @@ export const FreelanceSummaryStep = ({
                 )}
               </>
             )}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <span className="text-gray-600">TJM:</span>
-                <span className="ml-2 font-medium">{formData.tjm}€</span>
-              </div>
-              <div>
-                <span className="text-gray-600">Jours/semaine:</span>
-                <span className="ml-2 font-medium">{formData.days}</span>
-              </div>
+            <div>
+              <span className="text-gray-600">TJM:</span>
+              <span className="ml-2 font-medium">{formData.tjm}€</span>
+            </div>
+            <div>
+              <span className="text-gray-600">Jours/semaine:</span>
+              <span className="ml-2 font-medium">{formData.days}</span>
             </div>
           </div>
         </div>
 
         {/* Portage Information */}
         {formData.wantsPortage === "yes" && (
-          <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
             <h5 className="font-medium text-gray-800 mb-3">Société de portage</h5>
             <div className="text-sm">
               <span className="text-gray-600">Services sélectionnés:</span>
-              <div className="mt-2 flex flex-wrap gap-2">
+              <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {selectedPortageServices.map(portage => (
                   <span key={portage.id} className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
                     {portage.name}
@@ -119,9 +117,9 @@ export const FreelanceSummaryStep = ({
         )}
 
         {/* Services */}
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
           <h5 className="font-medium text-gray-800 mb-3">Services demandés</h5>
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {selectedServices.map(service => (
               <div key={service.id} className="flex items-start space-x-2 text-sm">
                 <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
@@ -137,7 +135,7 @@ export const FreelanceSummaryStep = ({
         </div>
 
         {/* Priority */}
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
           <h5 className="font-medium text-gray-800 mb-3">Priorité</h5>
           <div className="text-sm">
             <span className="font-medium">{priorityLabels[formData.priority] || formData.priority}</span>

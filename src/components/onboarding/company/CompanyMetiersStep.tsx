@@ -2,8 +2,8 @@
 
 import type { CompanyFormData } from '@/types/company';
 
-import { CollapsibleSection } from '../../ui/CollapsibleSection';
 import { StyledCheckbox } from '../../form/StyledCheckbox';
+import { CollapsibleSection } from '../../ui/CollapsibleSection';
 
 interface Metier {
   id: number;

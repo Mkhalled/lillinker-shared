@@ -51,7 +51,7 @@ export const NavigationButtons = ({
       <div className="flex justify-center">
         <Button 
           onClick={onClose}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 w-full sm:w-auto"
         >
           Fermer
         </Button>
@@ -61,13 +61,13 @@ export const NavigationButtons = ({
 
   // Normal navigation
   return (
-    <div className="flex justify-between">
+    <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
       {/* Previous Button */}
       <Button 
         variant="outline" 
         onClick={onPrevious} 
         disabled={isFirstStep || isLoading}
-        className="flex items-center space-x-2"
+        className="flex items-center justify-center space-x-2 w-full sm:w-auto order-2 sm:order-1"
         aria-label="Étape précédente"
       >
         <ChevronLeft className="h-4 w-4" />
@@ -113,13 +113,14 @@ const NextButton = ({
     <Button 
       onClick={onClick}
       disabled={disabled}
-      className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
+      className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto order-1 sm:order-2"
       aria-label={ariaLabel}
     >
       {isLoading ? (
         <>
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-          <span>Inscription en cours...</span>
+          <span className="hidden sm:inline">Inscription en cours...</span>
+          <span className="sm:hidden">En cours...</span>
         </>
       ) : (
         <>

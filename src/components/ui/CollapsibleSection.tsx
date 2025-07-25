@@ -31,7 +31,7 @@ export const CollapsibleSection = <T,>({
   emptyStateIcon,
   emptyStateText = "Aucun élément disponible",
   className = "",
-  maxHeight = "max-h-45",
+  maxHeight = "max-h-60",
   showItemCount = true
 }: CollapsibleSectionProps<T>) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -75,7 +75,7 @@ export const CollapsibleSection = <T,>({
               <p>{items.length === 0 && !loadingText ? emptyStateText : loadingText}</p>
             </div>
           ) : (
-            <div className={`${maxHeight} overflow-y-auto space-y-1 border border-gray-200 rounded-lg p-4`}>
+            <div className={`${maxHeight} overflow-y-auto space-y-1 border border-gray-200 rounded-lg p-3 sm:p-4`}>
               {items.map((item) => {
                 const itemId = getItemId(item);
                 const isSelected = selectedItems.includes(itemId.toString());

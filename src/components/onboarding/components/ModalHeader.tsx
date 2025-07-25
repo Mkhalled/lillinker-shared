@@ -22,23 +22,23 @@ export const ModalHeader = ({
   const canRestart = showRestartButton && onClearProgress && currentStep > 1;
 
   return (
-    <div className="flex items-center justify-between mb-6">
+    <div className="flex items-center justify-between mb-4 sm:mb-6">
       <div className="flex items-center space-x-2">
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-          <span className="text-white font-bold text-sm">L</span>
+        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <span className="text-white font-bold text-xs sm:text-sm">L</span>
         </div>
-        <span className="text-xl font-bold text-gray-900">{title}</span>
+        <span className="text-lg sm:text-xl font-bold text-gray-900 truncate">{title}</span>
       </div>
       
-      <div className="flex items-center space-x-4">
-        <span className="text-sm text-gray-500">
-          Étape {currentStep} sur {totalSteps}
+      <div className="flex items-center space-x-2 sm:space-x-4">
+        <span className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
+          {currentStep}/{totalSteps}
         </span>
         
         {canRestart && (
           <button
             onClick={onClearProgress}
-            className="text-xs text-red-600 hover:text-red-700 px-2 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+            className="hidden sm:block text-xs text-red-600 hover:text-red-700 px-2 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
             title="Recommencer depuis le début"
             aria-label="Recommencer le processus d'inscription"
           >

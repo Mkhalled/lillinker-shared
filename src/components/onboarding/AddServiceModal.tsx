@@ -3,8 +3,8 @@
 import { Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
-import { Button } from '../ui/button/Button';
 import { StyledCheckbox } from '../form/StyledCheckbox';
+import { Button } from '../ui/button/Button';
 
 interface NewService {
   id: string

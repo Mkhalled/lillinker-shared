@@ -29,7 +29,7 @@ export const CompanyGeneralInfoStep = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 sm:space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700" htmlFor="nom">
@@ -37,7 +37,7 @@ export const CompanyGeneralInfoStep = ({
           </label>
           <input
             id="nom"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={formData.companyName}
             onChange={(e) => onFormDataChange({ companyName: e.target.value })}
             placeholder="Ma Société de Portage"
@@ -57,7 +57,7 @@ export const CompanyGeneralInfoStep = ({
         </label>
         <textarea
           id="desc"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.description}
           onChange={(e) => onFormDataChange({ description: e.target.value })}
           placeholder="Décrivez votre société de portage salarial..."

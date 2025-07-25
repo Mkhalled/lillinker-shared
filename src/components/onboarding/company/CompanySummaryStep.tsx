@@ -18,34 +18,34 @@ export const CompanySummaryStep = ({
   platformServices 
 }: CompanySummaryStepProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Company Information */}
-      <div className="border rounded-lg p-4 bg-gray-50">
+      <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
         <h4 className="font-medium text-gray-900 mb-3">Informations de la société</h4>
-        <div className="space-y-2 text-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 text-sm">
           <div><span className="font-medium">Nom:</span> {formData.companyName}</div>
           <div><span className="font-medium">SIRET:</span> {formData.siret}</div>
           <div><span className="font-medium">Type:</span> {formData.isPortage === "yes" ? "Société de portage salarial" : "Autre société"}</div>
           <div><span className="font-medium">Consultants:</span> {formData.consultantCount}</div>
-          <div><span className="font-medium">Frais de gestion:</span> {formData.managementFeeRate}%</div>
+          <div className="lg:col-span-2"><span className="font-medium">Frais de gestion:</span> {formData.managementFeeRate}%</div>
         </div>
       </div>
 
       {/* Administrator Information */}
-      <div className="border rounded-lg p-4 bg-gray-50">
+      <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
         <h4 className="font-medium text-gray-900 mb-3">Administrateur</h4>
-        <div className="space-y-2 text-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 text-sm">
           <div><span className="font-medium">Nom:</span> {formData.adminFirstName} {formData.adminLastName}</div>
           <div><span className="font-medium">Email:</span> {formData.adminEmail}</div>
-          <div><span className="font-medium">Téléphone:</span> {formData.adminPhone}</div>
+          <div className="lg:col-span-2"><span className="font-medium">Téléphone:</span> {formData.adminPhone}</div>
         </div>
       </div>
 
       {/* Métiers */}
       {formData.selectedMetiers.length > 0 && (
-        <div className="border rounded-lg p-4 bg-gray-50">
+        <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
           <h4 className="font-medium text-gray-900 mb-3">Métiers supportés ({formData.selectedMetiers.length})</h4>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {formData.selectedMetiers.map((metierId: string) => {
               const metier = metiers?.find(m => m.id.toString() === metierId);
               return metier ? (
@@ -60,9 +60,9 @@ export const CompanySummaryStep = ({
 
       {/* Portage Services */}
       {formData.isPortage === "yes" && formData.selectedPortages.length > 0 && (
-        <div className="border rounded-lg p-4 bg-gray-50">
+        <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
           <h4 className="font-medium text-gray-900 mb-3">Associations de portage ({formData.selectedPortages.length})</h4>
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {formData.selectedPortages.map((portageId: string) => {
               const portage = portages?.find(p => p.id.toString() === portageId);
               return portage ? (
@@ -79,9 +79,9 @@ export const CompanySummaryStep = ({
 
       {/* Platform Services */}
       {formData.selectedPlatformServices.length > 0 && (
-        <div className="border rounded-lg p-4 bg-gray-50">
+        <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
           <h4 className="font-medium text-gray-900 mb-3">Services plateforme ({formData.selectedPlatformServices.length})</h4>
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {formData.selectedPlatformServices.map((serviceId: string) => {
               const service = platformServices?.find(s => s.id.toString() === serviceId);
               return service ? (
@@ -101,11 +101,11 @@ export const CompanySummaryStep = ({
 
       {/* New Services */}
       {formData.newServices.filter((s: NewService) => s.label.trim() !== '').length > 0 && (
-        <div className="border rounded-lg p-4 bg-gray-50">
+        <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
           <h4 className="font-medium text-gray-900 mb-3">
             Nouveaux services ({formData.newServices.filter((s: NewService) => s.label.trim() !== '').length})
           </h4>
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {formData.newServices
               .filter((s: NewService) => s.label.trim() !== '')
               .map((service: NewService) => (

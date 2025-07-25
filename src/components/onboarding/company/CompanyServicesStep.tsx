@@ -2,9 +2,9 @@
 
 import { Plus } from 'lucide-react';
 
+import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 import { Button } from '@/components/ui/button/Button';
 import { CollapsibleSection } from '@/components/ui/CollapsibleSection';
-import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 import type { PlatformService } from '@/hooks/useModalData';
 import type { CompanyFormData } from '@/types/company';
 import type { NewService } from '@/types/user';
