@@ -75,11 +75,8 @@ export const useFreelanceValidation = (
       case 2:
         return formData.hasMission; // Must select a mission status
       case 3:
-        // If wants portage, must select at least one portage service
-        if (formData.wantsPortage === "yes") {
-          return formData.selectedPortages.length > 0;
-        }
-        return true; // Valid if doesn't want portage
+        // Portage step is always valid regardless of selection
+        return true;
       case 4:
         // Must have TJM and days
         return formData.tjm && 

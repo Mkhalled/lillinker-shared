@@ -9,3 +9,4 @@ export { CompanySummaryStep } from './CompanySummaryStep';
 export { useCompanyForm } from './useCompanyForm';
 export { useStepNavigation } from './useStepNavigation';
 export { useCompanyCompletion } from './useCompanyCompletion';
+export { useCompanyValidation } from './useCompanyValidation';

@@ -15,7 +15,8 @@ import {
   CompanySummaryStep,
   useCompanyForm,
   useStepNavigation,
-  useCompanyCompletion
+  useCompanyCompletion,
+  useCompanyValidation
 } from './company';
 import { ModalWrapper } from './ModalWrapper';
 import { SuccessStep } from './SuccessStep';
@@ -37,6 +38,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     goToNextStep,
     clearStepProgress
   );
+  const { isStepValid } = useCompanyValidation(formData, currentStep, siretExists, isAdminStepValid);
 
   // Set data error if there's a fetching error
   useEffect(() => {
@@ -179,43 +181,6 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     }
   }
 
-  const isStepValid = () => {
-    switch (currentStep) {
-      case 1: {
-        const basicValid = formData.companyName && 
-                          formData.siret && 
-                          formData.description &&
-                          !siretExists;
-        if (formData.isPortage === "yes") {
-          return basicValid && formData.selectedPortages.length > 0;
-        }
-        return basicValid;
-      }
-      case 2:
-        return formData.consultantCount && formData.managementFeeRate
-      case 3:
-        return formData.selectedMetiers.length > 0
-      case 4:
-        return isAdminStepValid
-      case 5:
-       {
-         const hasSelectedServices = formData.selectedPlatformServices.length > 0
-        const hasValidNewServices = formData.newServices.some((service: NewService) => 
-          service.label.trim() !== "" &&
-          (!service.requiresData || 
-           (service.dataLabel.trim() !== "" && service.dataType.trim() !== ""))
-        )
-        return hasSelectedServices || hasValidNewServices 
-       }
-      case 6:
-        return true // Recap step is always valid
-      case 7:
-        return true
-      default:
-        return false
-    }
-  }
-
   return (
     <>
       <ModalWrapper
@@ -228,7 +193,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         onNext={handleNext}
         onPrevious={handlePrevious}
         onComplete={handleCompleteWrapper}
-        isStepValid={isStepValid() as boolean}
+        isStepValid={isStepValid()}
         isLoading={isLoading}
         error={error}
        showNavigation={true}
