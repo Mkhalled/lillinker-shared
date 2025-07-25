@@ -4,6 +4,8 @@ import type { PlatformService } from '../../../hooks/useModalData';
 import type { FreelanceFormData } from '../../../types/freelance';
 import { SelectedService } from '../../../types/user';
 import ServiceInfoTooltip from '../../ServiceInfoTooltip';
+import { StyledCheckbox } from '../../form/StyledCheckbox';
+import { StyledRadio } from '../../form/StyledRadio';
 
 interface FreelanceServicesStepProps {
   formData: FreelanceFormData;
@@ -51,16 +53,14 @@ export const FreelanceServicesStep = ({
               <div key={service.id} className="border border-gray-200 rounded-lg p-4">
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-3 flex-1">
-                      <input
-                        type="checkbox"
+                    <div className="flex items-start space-x-4 flex-1">
+                      <StyledCheckbox
                         checked={isSelected}
                         onChange={() => handleServiceToggle(service.id)}
-                        className="mt-1"
                         id={`service-${service.id}`}
                       />
                       <div className="flex-1">
-                        <label htmlFor={`service-${service.id}`} className="font-medium cursor-pointer block">
+                        <label htmlFor={`service-${service.id}`} className="font-medium cursor-pointer block select-none">
                           {service.label}
                         </label>
                       </div>
@@ -94,15 +94,12 @@ export const FreelanceServicesStep = ({
                       role="button"
                       tabIndex={0}
                     >
-                      <label className="flex items-center space-x-2 mb-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedService?.isRequired || false}
-                          onChange={(e) => handleServiceRequiredChange(service.id, e.target.checked)}
-                          className="text-blue-600"
-                        />
-                        <span className="text-sm text-gray-700">Ce service est <strong>obligatoire</strong> pour moi</span>
-                      </label>
+                      <StyledCheckbox
+                        checked={selectedService?.isRequired || false}
+                        onChange={(e) => handleServiceRequiredChange(service.id, e.target.checked)}
+                        label={<span className="text-sm text-gray-700 select-none">Ce service est <strong>obligatoire</strong> pour moi</span>}
+                        size="sm"
+                      />
 
                       {/* Data input for services that require data */}
                       {service.requires_data && (
@@ -158,15 +155,13 @@ export const FreelanceServicesStep = ({
                                 const isChecked = currentSelections.includes(choice)
                                 
                                 return (
-                                  <label key={index} className="flex items-center space-x-2">
-                                    <input
-                                      type="checkbox"
-                                      checked={isChecked}
-                                      onChange={(e) => handleMultipleSelectChange(service.id, choice, e.target.checked)}
-                                      className="text-blue-600"
-                                    />
-                                    <span className="text-sm text-gray-700">{choice}</span>
-                                  </label>
+                                  <StyledCheckbox
+                                    key={index}
+                                    checked={isChecked}
+                                    onChange={(e) => handleMultipleSelectChange(service.id, choice, e.target.checked)}
+                                    label={choice}
+                                    size="sm"
+                                  />
                                 )
                               })}
                               {(!selectedService?.responseData || selectedService.responseData.trim() === '') && (
@@ -180,17 +175,15 @@ export const FreelanceServicesStep = ({
                             <div className="space-y-2">
                               <p className="text-xs text-gray-600">Sélectionnez une option <span className="text-red-500">*</span> :</p>
                               {choices.map((choice: string, index: number) => (
-                                <label key={index} className="flex items-center space-x-2">
-                                  <input
-                                    type="radio"
-                                    name={`service-${service.id}-radio`}
-                                    value={choice}
-                                    checked={selectedService?.responseData === choice}
-                                    onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
-                                    className="text-blue-600"
-                                  />
-                                  <span className="text-sm text-gray-700">{choice}</span>
-                                </label>
+                                <StyledRadio
+                                  key={index}
+                                  name={`service-${service.id}-radio`}
+                                  value={choice}
+                                  checked={selectedService?.responseData === choice}
+                                  onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
+                                  label={choice}
+                                  size="sm"
+                                />
                               ))}
                               {(!selectedService?.responseData || selectedService.responseData.trim() === '') && (
                                 <p className="text-xs text-red-500 mt-1">Veuillez sélectionner une option.</p>

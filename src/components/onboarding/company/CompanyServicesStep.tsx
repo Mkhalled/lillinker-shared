@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button/Button';
 import { CollapsibleSection } from '@/components/ui/CollapsibleSection';
+import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 import type { PlatformService } from '@/hooks/useModalData';
 import type { CompanyFormData } from '@/types/company';
 import type { NewService } from '@/types/user';
@@ -66,11 +67,10 @@ export const CompanyServicesStep = ({
               )}
             </div>
             <div className="ml-3">
-              <input
-                type="checkbox"
+              <StyledCheckbox
                 checked={isSelected}
                 onChange={() => toggleServiceSelection(service.id)}
-                className="h-4 w-4 text-blue-600 rounded"
+                size="sm"
               />
             </div>
           </div>

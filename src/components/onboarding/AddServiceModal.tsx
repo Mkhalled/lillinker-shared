@@ -4,6 +4,7 @@ import { Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '../ui/button/Button';
+import { StyledCheckbox } from '../form/StyledCheckbox';
 
 interface NewService {
   id: string
@@ -154,18 +155,12 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
 
             {/* Data Requirements */}
             <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  id="requires-data"
-                  checked={serviceData.requiresData}
-                  onChange={(e) => setServiceData(prev => ({ ...prev, requiresData: e.target.checked }))}
-                  className="h-4 w-4 text-blue-600 rounded"
-                />
-                <label htmlFor="requires-data" className="text-sm font-medium text-gray-700">
-                  Ce service nécessite des données du consultant
-                </label>
-              </div>
+              <StyledCheckbox
+                id="requires-data"
+                checked={serviceData.requiresData}
+                onChange={(e) => setServiceData(prev => ({ ...prev, requiresData: e.target.checked }))}
+                label="Ce service nécessite des données du consultant"
+              />
 
               {serviceData.requiresData && (
                 <div className="pl-7 space-y-4 border-l-2 border-blue-200">

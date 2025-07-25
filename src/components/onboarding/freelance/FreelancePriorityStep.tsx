@@ -1,6 +1,7 @@
 'use client';
 
 import type { FreelanceFormData } from '../../../types/freelance';
+import { StyledRadio } from '../../form/StyledRadio';
 
 interface FreelancePriorityStepProps {
   formData: FreelanceFormData;
@@ -22,20 +23,15 @@ export const FreelancePriorityStep = ({
 
       <div className="space-y-3">
         {priorities.map((priority) => (
-          <label
+          <StyledRadio
             key={priority.value}
-            className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
-          >
-            <input
-              type="radio"
-              name="priority"
-              value={priority.value}
-              checked={formData.priority === priority.value}
-              onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, priority: e.target.value }))}
-              className="text-blue-600"
-            />
-            <span className={`font-medium ${priority.color}`}>{priority.label}</span>
-          </label>
+            name="priority"
+            value={priority.value}
+            checked={formData.priority === priority.value}
+            onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, priority: e.target.value }))}
+            label={priority.label}
+            labelClassName={priority.color}
+          />
         ))}
       </div>
 

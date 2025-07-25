@@ -2,6 +2,7 @@
 
 import type { Metier } from '../../../hooks/useModalData';
 import type { FreelanceFormData } from '../../../types/freelance';
+import { StyledRadio } from '../../form/StyledRadio';
 
 interface FreelanceMissionStatusStepProps {
   formData: FreelanceFormData;
@@ -19,40 +20,28 @@ export const FreelanceMissionStatusStep = ({
 
       <div className="space-y-4">
         <div className="space-y-3">
-          <div className="flex flex-wrap gap-4">
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="radio"
-                name="hasMission"
-                value="no"
-                checked={formData.hasMission === "no"}
-                onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))}
-                className="text-blue-600"
-              />
-              <span className="text-gray-700">Non, je suis en recherche</span>
-            </label>
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="radio"
-                name="hasMission"
-                value="searching"
-                checked={formData.hasMission === "searching"}
-                onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))}
-                className="text-blue-600"
-              />
-              <span className="text-gray-700">En cours de recherche</span>
-            </label>
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="radio"
-                name="hasMission"
-                value="yes"
-                checked={formData.hasMission === "yes"}
-                onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))}
-                className="text-blue-600"
-              />
-              <span className="text-gray-700">Oui, j&apos;ai une mission en cours</span>
-            </label>
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
+            <StyledRadio
+              name="hasMission"
+              value="no"
+              checked={formData.hasMission === "no"}
+              onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))}
+              label="Non, je suis en recherche"
+            />
+            <StyledRadio
+              name="hasMission"
+              value="searching"
+              checked={formData.hasMission === "searching"}
+              onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))}
+              label="En cours de recherche"
+            />
+            <StyledRadio
+              name="hasMission"
+              value="yes"
+              checked={formData.hasMission === "yes"}
+              onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))}
+              label="Oui, j'ai une mission en cours"
+            />
           </div>
         </div>
 

@@ -3,6 +3,7 @@
 import type { CompanyFormData } from '@/types/company';
 
 import { CollapsibleSection } from '../../ui/CollapsibleSection';
+import { StyledCheckbox } from '../../form/StyledCheckbox';
 
 interface Metier {
   id: number;
@@ -40,17 +41,16 @@ export const CompanyMetiersStep = ({
         onToggleItem={toggleMetierSelection}
         getItemId={(metier: Metier) => metier.id}
         renderItem={(metier: Metier, isSelected: boolean) => (
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-700 font-medium">{metier.name}</span>
-            <input
-              type="checkbox"
+          <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-50 transition-all duration-200">
+            <span className="text-sm text-gray-700 font-medium select-none">{metier.name}</span>
+            <StyledCheckbox
               checked={isSelected}
               onChange={(e) => {
                 e.stopPropagation();
                 toggleMetierSelection(metier.id);
               }}
-              onClick={(e) => e.stopPropagation()}
-              className="h-4 w-4 text-blue-600 rounded"
+              onClick={(e: React.MouseEvent<HTMLInputElement>) => e.stopPropagation()}
+              size="sm"
             />
           </div>
         )}
