@@ -6,7 +6,7 @@ import type { FreelanceFormData } from '../../../types/freelance';
 
 export const useFreelanceCompletion = (
   formData: FreelanceFormData,
-  clearLocalStorage: () => void,
+  clearFormData: () => void,
   goToNextStep: () => void
 ) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -82,8 +82,8 @@ export const useFreelanceCompletion = (
         throw new Error(errorData.error || 'Freelance onboarding failed');
       }
       
-      // Clear localStorage on successful completion
-      clearLocalStorage();
+      // Clear form data on successful completion
+      clearFormData();
       // Show success step
       goToNextStep();
     } catch (error) {

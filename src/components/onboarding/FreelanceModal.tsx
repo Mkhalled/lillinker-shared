@@ -28,8 +28,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const { platformServices, metiers, portages, error: dataError } = useModalData();
 
   // Use custom hooks
-  const { formData, setFormData, clearLocalStorage } = useFreelanceForm();
-  const { currentStep, handleNext, handlePrevious, goToNextStep, clearStepProgress } = useFreelanceNavigation(8);
+  const { formData, setFormData, clearFormData } = useFreelanceForm();
+  const { currentStep, handleNext, handlePrevious, goToNextStep, clearStepProgress } = useFreelanceNavigation(8, clearFormData);
   const { isStepValid } = useFreelanceValidation(formData, currentStep, platformServices);
   const { 
     handleServiceToggle, 
@@ -41,7 +41,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   } = useFreelanceHandlers(setFormData);
   const { isLoading, error, setError, handleComplete } = useFreelanceCompletion(
     formData, 
-    clearLocalStorage, 
+    clearFormData, 
     goToNextStep
   );
 
@@ -198,26 +198,8 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       nextButtonText="Suivant"
       completionStep={7} // Specify that completion happens on step 7
       onClearProgress={() => {
-        clearLocalStorage();
+        clearFormData();
         clearStepProgress();
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          metierId: 0,
-          hasMission: "",
-          clientName: "",
-          clientAddress: "",
-          clientSector: "",
-          tjm: "",
-          days: "",
-          wantsPortage: "no",
-          selectedPortages: [],
-          selectedServices: [],
-          newServices: [],
-          priority: "",
-        });
       }}
     >
       {renderStep()}

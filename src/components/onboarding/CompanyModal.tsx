@@ -30,7 +30,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
   // Use custom hooks
   const { formData, updateFormData, clearFormData } = useCompanyForm();
-  const { currentStep, goToNextStep, goToPreviousStep, clearStepProgress } = useStepNavigation(7);
+  const { currentStep, goToNextStep, goToPreviousStep, clearStepProgress } = useStepNavigation(7, clearFormData);
   const { isLoading, error, setError, handleComplete } = useCompanyCompletion(
     formData,
     clearFormData,

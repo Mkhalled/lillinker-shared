@@ -1,45 +1,59 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface UseModalNavigationProps {
   totalSteps: number;
   storageKey: string;
-  hasSubSteps?: boolean;
-  subStepConfig?: {
-    parentStep: number;
-    totalSubSteps: number;
-    subStorageKey: string;
-  };
+  formDataKey?: string; // Optional key for form data that should also be cleared on expiration
+  onFormDataExpired?: () => void; // Callback to reset form state when data expires
 }
 
 export const useModalNavigation = ({
   totalSteps,
   storageKey,
-  hasSubSteps = false,
-  subStepConfig
+  formDataKey,
+  onFormDataExpired
 }: UseModalNavigationProps) => {
-  // Initialize currentStep with localStorage data if available
+  // Expiration time: 4 hours in milliseconds
+  const EXPIRATION_TIME = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+
+  // Helper function to check if localStorage data is expired
+  const isDataExpired = useCallback((timestamp: string): boolean => {
+    const now = Date.now();
+    const savedTime = parseInt(timestamp, 10);
+    return now - savedTime > EXPIRATION_TIME;
+  }, [EXPIRATION_TIME]);
+
+  // Helper function to clear expired data
+  const clearExpiredData = useCallback(() => {
+    localStorage.removeItem(storageKey);
+    localStorage.removeItem(`${storageKey}_timestamp`);
+    if (formDataKey) {
+      localStorage.removeItem(formDataKey);
+    }
+    // Reset form state if callback is provided
+    if (onFormDataExpired) {
+      onFormDataExpired();
+    }
+  }, [storageKey, formDataKey, onFormDataExpired]);
+
+  // Initialize currentStep with localStorage data if available and not expired
   const [currentStep, setCurrentStep] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedStep = localStorage.getItem(storageKey);
-      if (savedStep) {
+      const savedTimestamp = localStorage.getItem(`${storageKey}_timestamp`);
+      
+      if (savedStep && savedTimestamp) {
+        // Check if data is expired
+        if (isDataExpired(savedTimestamp)) {
+          // Data is expired, clear it and return to step 1
+          clearExpiredData();
+          return 1;
+        }
+        
         const step = parseInt(savedStep, 10);
         if (step >= 1 && step <= totalSteps) {
-          return step;
-        }
-      }
-    }
-    return 1;
-  });
-
-  // Initialize subStep for sub-navigation (like mission steps)
-  const [subStep, setSubStep] = useState(() => {
-    if (hasSubSteps && subStepConfig && typeof window !== 'undefined') {
-      const savedSubStep = localStorage.getItem(subStepConfig.subStorageKey);
-      if (savedSubStep) {
-        const step = parseInt(savedSubStep, 10);
-        if (step >= 1 && step <= subStepConfig.totalSubSteps) {
           return step;
         }
       }
@@ -50,39 +64,20 @@ export const useModalNavigation = ({
   // Save current step to localStorage whenever currentStep changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const timestamp = Date.now().toString();
       localStorage.setItem(storageKey, currentStep.toString());
+      localStorage.setItem(`${storageKey}_timestamp`, timestamp);
     }
   }, [currentStep, storageKey]);
 
-  // Save sub step to localStorage whenever subStep changes
-  useEffect(() => {
-    if (hasSubSteps && subStepConfig && typeof window !== 'undefined') {
-      localStorage.setItem(subStepConfig.subStorageKey, subStep.toString());
-    }
-  }, [subStep, hasSubSteps, subStepConfig]);
-
   const handleNext = () => {
-    // Handle sub-step navigation
-    if (hasSubSteps && subStepConfig && currentStep === subStepConfig.parentStep && subStep < subStepConfig.totalSubSteps) {
-      setSubStep(subStep + 1);
-    } else if (currentStep < totalSteps) {
-      // Reset sub-step when moving to next main step
-      if (hasSubSteps && subStepConfig && currentStep === subStepConfig.parentStep) {
-        setSubStep(1);
-      }
+    if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handlePrevious = () => {
-    // Handle sub-step navigation
-    if (hasSubSteps && subStepConfig && currentStep === subStepConfig.parentStep && subStep > 1) {
-      setSubStep(subStep - 1);
-    } else if (currentStep > 1) {
-      // Go back to last sub-step when coming from next main step
-      if (hasSubSteps && subStepConfig && currentStep === subStepConfig.parentStep + 1) {
-        setSubStep(subStepConfig.totalSubSteps);
-      }
+    if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
@@ -107,19 +102,13 @@ export const useModalNavigation = ({
 
   const clearStepProgress = () => {
     setCurrentStep(1);
-    setSubStep(1);
     if (typeof window !== 'undefined') {
-      localStorage.removeItem(storageKey);
-      if (hasSubSteps && subStepConfig) {
-        localStorage.removeItem(subStepConfig.subStorageKey);
-      }
+      clearExpiredData();
     }
   };
 
   return {
     currentStep,
-    subStep,
-    setSubStep,
     handleNext,
     handlePrevious,
     goToStep,
@@ -127,9 +116,6 @@ export const useModalNavigation = ({
     goToPreviousStep,
     clearStepProgress,
     isFirstStep: currentStep === 1,
-    isLastStep: currentStep === totalSteps,
-    // For backward compatibility
-    missionStep: subStep,
-    setMissionStep: setSubStep
+    isLastStep: currentStep === totalSteps
   };
 };
