@@ -16,17 +16,10 @@ export const FreelanceMissionStatusStep = ({
 }: FreelanceMissionStatusStepProps) => {
   return (
     <div className="space-y-6">
-      <div className="text-center mb-4">
-        <h4 className="text-md font-medium text-gray-800">
-          Avez-vous une mission ?
-        </h4>
-        <p className="text-sm text-gray-600 mt-1">Parlez-nous de votre situation actuelle</p>
-      </div>
 
       <div className="space-y-4">
         <div className="space-y-3">
-          <label htmlFor="mission" className="text-sm font-medium text-gray-700">Avez-vous une mission actuellement ? *</label>
-          <div id='mission' className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4">
             <label className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="radio"

@@ -13,13 +13,6 @@ export const FreelanceTjmStep = ({
 }: FreelanceTjmStepProps) => {
   return (
     <div className="space-y-6">
-      <div className="text-center mb-4">
-        <h4 className="text-md font-medium text-gray-800">
-          TJM et jours travaillés
-        </h4>
-        <p className="text-sm text-gray-600 mt-1">Définissez votre tarif et disponibilité</p>
-      </div>
-
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">

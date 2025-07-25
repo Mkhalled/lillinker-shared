@@ -40,13 +40,6 @@ export const FreelanceSummaryStep = ({
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-6">
-        <h4 className="text-lg font-semibold text-gray-800">
-          Récapitulatif de votre demande
-        </h4>
-        <p className="text-sm text-gray-600 mt-1">Vérifiez vos informations avant validation</p>
-      </div>
-
       <div className="space-y-4">
         {/* Personal Information */}
         <div className="bg-gray-50 p-4 rounded-lg">

@@ -29,9 +29,7 @@ export const FreelanceServicesStep = ({
 }: FreelanceServicesStepProps) => {
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="font-medium mb-4">Sélectionnez les services qui vous intéressent</h3>
-        
+      <div>        
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-sm mb-4">
           <p><strong>Information :</strong> Si vous sélectionnez un service, vous devez obligatoirement remplir les données demandées (texte, choix, etc.)</p>
         </div>

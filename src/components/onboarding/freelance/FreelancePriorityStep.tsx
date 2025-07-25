@@ -19,12 +19,6 @@ export const FreelancePriorityStep = ({
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-4">
-        <h4 className="text-md font-medium text-gray-800">
-          Quelle est votre priorité ?
-        </h4>
-        <p className="text-sm text-gray-600 mt-1">Aidez-nous à prioriser votre demande</p>
-      </div>
 
       <div className="space-y-3">
         {priorities.map((priority) => (
