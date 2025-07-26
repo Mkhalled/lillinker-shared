@@ -5,6 +5,8 @@ import type { CompanyFormData } from '@/types/company';
 
 import { SiretValidationInput } from '../../form/SiretValidationInput';
 import { StyledCheckbox } from '../../form/StyledCheckbox';
+import InputField from '../../form/input/InputField';
+import TextAreaField from '../../form/input/TextAreaField';
 
 interface CompanyGeneralInfoStepProps {
   formData: CompanyFormData;
@@ -32,12 +34,9 @@ export const CompanyGeneralInfoStep = ({
     <div className="space-y-4 sm:space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700" htmlFor="nom">
-            Nom de la société *
-          </label>
-          <input
+          <InputField
             id="nom"
-            className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            label="Nom de la société"
             value={formData.companyName}
             onChange={(e) => onFormDataChange({ companyName: e.target.value })}
             placeholder="Ma Société de Portage"
@@ -51,27 +50,22 @@ export const CompanyGeneralInfoStep = ({
         />
       </div>
       
-      <div className="space-y-2">
-        <label htmlFor="desc" className="text-sm font-medium text-gray-700">
-          Description de la société *
-        </label>
-        <textarea
-          id="desc"
-          className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={formData.description}
-          onChange={(e) => onFormDataChange({ description: e.target.value })}
-          placeholder="Décrivez votre société de portage salarial..."
-          rows={4}
-          required
-        />
-      </div>
+      <TextAreaField
+        id="desc"
+        label="Description de la société"
+        value={formData.description}
+        onChange={(e) => onFormDataChange({ description: e.target.value })}
+        placeholder="Décrivez votre société de portage salarial..."
+        rows={4}
+        required
+      />
 
       {/* Portage Company Question */}
       <div className="space-y-3">
         <div className="p-4 border-2 rounded-xl hover:bg-gray-50 transition-all duration-200">
           <StyledCheckbox
             checked={formData.isPortage === "yes"}
-            onChange={(e) => onFormDataChange({ isPortage: e.target.checked ? "yes" : "no" })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFormDataChange({ isPortage: e.target.checked ? "yes" : "no" })}
             label="Nous sommes une société de portage salarial"
           />
         </div>

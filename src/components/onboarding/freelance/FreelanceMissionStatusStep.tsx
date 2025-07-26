@@ -20,7 +20,7 @@ export const FreelanceMissionStatusStep = ({
 
       <div className="space-y-4">
         <div className="space-y-3">
-          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap pb-5 gap-3">
             <StyledRadio
               name="hasMission"
               value="no"

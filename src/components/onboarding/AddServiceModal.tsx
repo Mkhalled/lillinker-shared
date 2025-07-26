@@ -5,6 +5,8 @@ import { useState } from 'react';
 
 import { StyledCheckbox } from '../form/StyledCheckbox';
 import { Button } from '../ui/button/Button';
+import InputField from '../form/input/InputField';
+import TextAreaField from '../form/input/TextAreaField';
 
 interface NewService {
   id: string
@@ -123,34 +125,24 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
           <div className="space-y-6">
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label htmlFor="service-label" className="text-sm font-medium text-gray-700">
-                  Libellé du service *
-                </label>
-                <input
-                  id="service-label"
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.label ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  value={serviceData.label}
-                  onChange={(e) => setServiceData(prev => ({ ...prev, label: e.target.value }))}
-                  placeholder="Ex: Assurance RC Pro"
-                />
-                {errors.label && <p className="text-sm text-red-600">{errors.label}</p>}
-              </div>
+              <InputField
+                id="service-label"
+                label="Libellé du service"
+                value={serviceData.label}
+                onChange={(e) => setServiceData(prev => ({ ...prev, label: e.target.value }))}
+                placeholder="Ex: Assurance RC Pro"
+                error={!!errors.label}
+                hint={errors.label}
+                required
+              />
 
-              <div className="space-y-2">
-                <label htmlFor="service-description" className="text-sm font-medium text-gray-700">
-                  Description
-                </label>
-                <input
-                  id="service-description"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={serviceData.description}
-                  onChange={(e) => setServiceData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Description du service"
-                />
-              </div>
+              <InputField
+                id="service-description"
+                label="Description"
+                value={serviceData.description}
+                onChange={(e) => setServiceData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Description du service"
+              />
             </div>
 
             {/* Data Requirements */}
@@ -158,7 +150,7 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
               <StyledCheckbox
                 id="requires-data"
                 checked={serviceData.requiresData}
-                onChange={(e) => setServiceData(prev => ({ ...prev, requiresData: e.target.checked }))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setServiceData(prev => ({ ...prev, requiresData: e.target.checked }))}
                 label="Ce service nécessite des données du consultant"
               />
 
@@ -183,35 +175,27 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
                     </div>
 
                     <div className="space-y-2">
-                      <label htmlFor="data-label" className="text-sm font-medium text-gray-700">
-                        Label du champ *
-                      </label>
-                      <input
-                        id="data-label"
-                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.dataLabel ? 'border-red-300' : 'border-gray-300'
-                        }`}
-                        value={serviceData.dataLabel}
-                        onChange={(e) => setServiceData(prev => ({ ...prev, dataLabel: e.target.value }))}
-                        placeholder="Ex: Niveau d'expérience"
-                      />
-                      {errors.dataLabel && <p className="text-sm text-red-600">{errors.dataLabel}</p>}
+                    <InputField
+                      id="data-label"
+                      label="Label du champ"
+                      value={serviceData.dataLabel}
+                      onChange={(e) => setServiceData(prev => ({ ...prev, dataLabel: e.target.value }))}
+                      placeholder="Ex: Niveau d'expérience"
+                      error={!!errors.dataLabel}
+                      hint={errors.dataLabel}
+                      required
+                    />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label htmlFor="data-description" className="text-sm font-medium text-gray-700">
-                      Description du champ
-                    </label>
-                    <textarea
-                      id="data-description"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={serviceData.dataDescription}
-                      onChange={(e) => setServiceData(prev => ({ ...prev, dataDescription: e.target.value }))}
-                      placeholder="Instructions pour le freelance"
-                      rows={3}
-                    />
-                  </div>
+                  <TextAreaField
+                    id="data-description"
+                    label="Description du champ"
+                    value={serviceData.dataDescription}
+                    onChange={(e) => setServiceData(prev => ({ ...prev, dataDescription: e.target.value }))}
+                    placeholder="Instructions pour le freelance"
+                    rows={3}
+                  />
 
                   {/* Choices for RADIO and SELECT */}
                   {(serviceData.dataType === "RADIO" || serviceData.dataType === "SELECT") && (

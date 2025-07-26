@@ -18,7 +18,7 @@ export const FreelancePortageStep = ({
   handlePortageToggle
 }: FreelancePortageStepProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-5">
       <div className="space-y-4">
         <div className="space-y-3">
           <StyledCheckbox

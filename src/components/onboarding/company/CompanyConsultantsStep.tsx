@@ -1,6 +1,7 @@
 'use client';
 
 import type { CompanyFormData } from '@/types/company';
+import InputField from '../../form/input/InputField';
 
 interface CompanyConsultantsStepProps {
   formData: CompanyFormData;
@@ -13,20 +14,15 @@ export const CompanyConsultantsStep = ({
 }: CompanyConsultantsStepProps) => {
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <label htmlFor="consu" className="text-sm font-medium text-gray-700">
-          Nombre actuel de consultants portés *
-        </label>
-        <input
-          id="consu"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          type="number"
-          value={formData.consultantCount}
-          onChange={(e) => onFormDataChange({ consultantCount: e.target.value })}
-          placeholder="50"
-          required
-        />
-      </div>
+      <InputField
+        id="consu"
+        label="Nombre actuel de consultants portés"
+        type="number"
+        value={formData.consultantCount}
+        onChange={(e) => onFormDataChange({ consultantCount: e.target.value })}
+        placeholder="50"
+        required
+      />
       
       <div className="space-y-2">
         <label htmlFor="fees" className="text-sm font-medium text-gray-700">
@@ -34,7 +30,7 @@ export const CompanyConsultantsStep = ({
         </label>
         <input
           id="fees"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md"
           type="range"
           step="0.1"
           min="0"

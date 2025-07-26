@@ -3,6 +3,7 @@
 import type { Metier } from '../../../hooks/useModalData';
 import type { FreelanceFormData } from '../../../types/freelance';
 import { BasicEmailInput } from '../../form/BasicEmailInput';
+import InputField from '../../form/input/InputField';
 
 interface FreelancePersonalInfoStepProps {
   formData: FreelanceFormData;
@@ -18,28 +19,22 @@ export const FreelancePersonalInfoStep = ({
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label htmlFor="prenom" className="text-sm font-medium text-gray-700">Prénom *</label>
-          <input
-            id='prenom'
-            className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={formData.firstName}
-            onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, firstName: e.target.value }))}
-            placeholder="Jean"
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="nom" className="text-sm font-medium text-gray-700">Nom *</label>
-          <input
-            id='nom'
-            className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={formData.lastName}
-            onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, lastName: e.target.value }))}
-            placeholder="Dupont"
-            required
-          />
-        </div>
+        <InputField
+          id="prenom"
+          label="Prénom"
+          value={formData.firstName}
+          onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, firstName: e.target.value }))}
+          placeholder="Jean"
+          required
+        />
+        <InputField
+          id="nom"
+          label="Nom"
+          value={formData.lastName}
+          onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, lastName: e.target.value }))}
+          placeholder="Dupont"
+          required
+        />
       </div>
       <BasicEmailInput
         email={formData.email}
@@ -48,17 +43,14 @@ export const FreelancePersonalInfoStep = ({
         placeholder="jean.dupont@email.com"
         id="freelance-email"
       />
-      <div className="space-y-2">
-        <label htmlFor="phone" className="text-sm font-medium text-gray-700">Téléphone *</label>
-        <input
-          id='phone'
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={formData.phone}
-          onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, phone: e.target.value }))}
-          placeholder="06 12 34 56 78"
-          required
-        />
-      </div>
+      <InputField
+        id="phone"
+        label="Téléphone"
+        value={formData.phone}
+        onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, phone: e.target.value }))}
+        placeholder="06 12 34 56 78"
+        required
+      />
       <div className="space-y-2">
         <label htmlFor="metier" className="text-sm font-medium text-gray-700">Métier *</label>
         <select

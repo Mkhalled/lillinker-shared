@@ -5,6 +5,8 @@ import type { FreelanceFormData } from '../../../types/freelance';
 import { SelectedService } from '../../../types/user';
 import { StyledCheckbox } from '../../form/StyledCheckbox';
 import { StyledRadio } from '../../form/StyledRadio';
+import InputField from '../../form/input/InputField';
+import TextAreaField from '../../form/input/TextAreaField';
 import ServiceInfoTooltip from '../../ServiceInfoTooltip';
 
 interface FreelanceServicesStepProps {
@@ -115,32 +117,26 @@ export const FreelanceServicesStep = ({
                           
                           {/* TEXT input */}
                           {service.data_type === 'TEXT' && (
-                            <textarea
-                              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 text-sm ${
-                                (!selectedService?.responseData || selectedService.responseData.trim() === '') 
-                                  ? 'border-red-300 focus:ring-red-500' 
-                                  : 'border-gray-300 focus:ring-blue-500'
-                              }`}
+                            <TextAreaField
+                              id={`service-text-${service.id}`}
                               value={selectedService?.responseData || ""}
                               onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
                               placeholder="Saisissez votre réponse... (obligatoire)"
                               rows={3}
+                              error={!selectedService?.responseData || selectedService.responseData.trim() === ''}
                               required
                             />
                           )}
                           
                           {/* NUMBER input */}
                           {service.data_type === 'NUMBER' && (
-                            <input
+                            <InputField
+                              id={`service-number-${service.id}`}
                               type="number"
-                              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 text-sm ${
-                                (!selectedService?.responseData || selectedService.responseData.trim() === '') 
-                                  ? 'border-red-300 focus:ring-red-500' 
-                                  : 'border-gray-300 focus:ring-blue-500'
-                              }`}
                               value={selectedService?.responseData || ""}
                               onChange={(e) => handleServiceDataChange(service.id, e.target.value)}
                               placeholder="Entrez un nombre... (obligatoire)"
+                              error={!selectedService?.responseData || selectedService.responseData.trim() === ''}
                               required
                             />
                           )}

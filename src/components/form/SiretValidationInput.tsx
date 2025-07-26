@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import InputField from './input/InputField';
 
 interface SiretValidationInputProps {
   siret: string;
@@ -76,18 +77,15 @@ export const SiretValidationInput = ({
     <div className="space-y-2">
       <label htmlFor={id} className="text-sm font-medium text-gray-700">{label}</label>
       <div className="relative">
-        <input
+        <InputField
           id={id}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-            siretExists 
-              ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-              : 'border-gray-300 focus:ring-blue-500'
-          }`}
-          type="text"
           value={siret}
           onChange={(e) => handleSiretChange(e.target.value)}
           placeholder={placeholder}
           required={required}
+          error={siretExists}
+          className="pr-10"
+          type="text"
         />
         {checkingSiret && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">

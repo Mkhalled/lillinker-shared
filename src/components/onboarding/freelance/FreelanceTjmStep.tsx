@@ -1,6 +1,7 @@
 'use client';
 
 import type { FreelanceFormData } from '../../../types/freelance';
+import InputField from '../../form/input/InputField';
 
 interface FreelanceTjmStepProps {
   formData: FreelanceFormData;
@@ -15,33 +16,29 @@ export const FreelanceTjmStep = ({
     <div className="space-y-4 sm:space-y-6">
       <div className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label htmlFor="tjm" className="text-sm font-medium text-gray-700">TJM souhaité (€) *</label>
-            <input
-              id='tjm'
-              type="number"
-              className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.tjm}
-              onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, tjm: e.target.value }))}
-              placeholder="500"
-              min="0"
-              step="10"
-            />
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="day" className="text-sm font-medium text-gray-700">Nombre de jours par semaine *</label>
-            <input
-              id='day'
-              type="number"
-              className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.days}
-              onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, days: e.target.value }))}
-              placeholder="5"
-              min="1"
-              max="7"
-              step="0.5"
-            />
-          </div>
+          <InputField
+            id="tjm"
+            type="number"
+            label="TJM souhaité (€)"
+            value={formData.tjm}
+            onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, tjm: e.target.value }))}
+            placeholder="500"
+            min="0"
+            step="10"
+            required
+          />
+          <InputField
+            id="day"
+            type="number"
+            label="Nombre de jours par semaine"
+            value={formData.days}
+            onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, days: e.target.value }))}
+            placeholder="5"
+            min="1"
+            max="7"
+            step="0.5"
+            required
+          />
         </div>
       </div>
     </div>
