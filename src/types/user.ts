@@ -28,5 +28,5 @@ export interface BaseModalProps {
   onClose: () => void;
 }
 
-export type PortagePreference = "yes" | "no";
-export type PriorityLevel = "HIGH" | "MEDIUM" | "LOW";
+export type PortagePreference = 'yes' | 'no';
+export type PriorityLevel = 'HIGH' | 'MEDIUM' | 'LOW';

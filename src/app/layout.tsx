@@ -4,7 +4,7 @@ import 'jsvectormap/dist/jsvectormap.css';
 import 'flatpickr/dist/flatpickr.min.css';
 import '../css/satoshi.css';
 import '../css/style.css';
-import "./globals.css";
+import './globals.css';
 
 import Loader from '@/components/common/Loader';
 import { Providers } from '@/components/providers';

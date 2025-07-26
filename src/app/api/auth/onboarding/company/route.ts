@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { userId, ...onboardingData } = body;
-    
+
     const enhancedLogContext = {
       ...logContext,
       userId,
@@ -26,21 +26,18 @@ export async function POST(request: NextRequest) {
     };
 
     logger.debug('Company onboarding request received', enhancedLogContext);
-    
+
     if (!userId) {
       logger.warn('Company onboarding attempt without user ID', logContext);
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
     const validatedData = CompanyOnboardingSchema.parse(onboardingData);
 
     logger.debug('Company onboarding data validated successfully', {
       ...enhancedLogContext,
-      hasSelectedServices: !!(validatedData.selected_services?.length),
-      hasNewServices: !!(validatedData.new_services?.length),
+      hasSelectedServices: !!validatedData.selected_services?.length,
+      hasNewServices: !!validatedData.new_services?.length,
       hasLegacyNewService: !!validatedData.service_label,
       consultantCount: validatedData.consultant_count,
     });
@@ -51,7 +48,7 @@ export async function POST(request: NextRequest) {
       const existingCompany = await prisma.company.findUnique({
         where: { siret: validatedData.siret },
       });
-      
+
       if (existingCompany) {
         throw new Error('Une société avec ce numéro SIRET existe déjà');
       }
@@ -93,7 +90,12 @@ export async function POST(request: NextRequest) {
         ...createdServices.map(s => s.id),
       ];
 
-      let companyServices: Array<{ id: number; company_id: number; service_id: number; is_active: boolean }> = [];
+      let companyServices: Array<{
+        id: number;
+        company_id: number;
+        service_id: number;
+        is_active: boolean;
+      }> = [];
       if (allServiceIds.length > 0) {
         companyServices = await CompanyService.linkPlatformServices(company.id, allServiceIds);
       }
@@ -104,7 +106,11 @@ export async function POST(request: NextRequest) {
       }
 
       // Step 5: Link portages if company is a portage company
-      if (validatedData.is_portage && validatedData.selected_portages && validatedData.selected_portages.length > 0) {
+      if (
+        validatedData.is_portage &&
+        validatedData.selected_portages &&
+        validatedData.selected_portages.length > 0
+      ) {
         await CompanyService.linkPortages(company.id, validatedData.selected_portages);
       }
 
@@ -116,7 +122,6 @@ export async function POST(request: NextRequest) {
     });
 
     logger.info('Company onboarding completed, starting finalization', enhancedLogContext);
-
 
     logger.info('Company onboarding API completed successfully', {
       ...enhancedLogContext,
@@ -132,17 +137,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     logger.error('Company onboarding API failed', error as Error, logContext);
-    
+
     if (error instanceof Error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

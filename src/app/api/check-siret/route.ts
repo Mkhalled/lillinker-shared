@@ -7,10 +7,7 @@ export async function POST(request: NextRequest) {
     const { siret } = await request.json();
 
     if (!siret || typeof siret !== 'string') {
-      return NextResponse.json(
-        { error: 'SIRET is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'SIRET is required' }, { status: 400 });
     }
 
     // Check if SIRET already exists in the database
@@ -26,9 +23,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error checking SIRET:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

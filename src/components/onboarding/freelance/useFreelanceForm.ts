@@ -6,20 +6,20 @@ import type { FreelanceFormData } from '../../../types/freelance';
 
 const initialFormData: FreelanceFormData = {
   // Step 1: Personal info
-  firstName: "",
-  lastName: "",
-  email: "",
-  phone: "",
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
   metierId: 0,
 
   // Step 2: Mission info
-  hasMission: "",
-  clientName: "",
-  clientAddress: "",
-  clientSector: "",
-  tjm: "",
-  days: "",
-  wantsPortage: "no",
+  hasMission: '',
+  clientName: '',
+  clientAddress: '',
+  clientSector: '',
+  tjm: '',
+  days: '',
+  wantsPortage: 'no',
   selectedPortages: [],
 
   // Step 3: Services
@@ -27,10 +27,10 @@ const initialFormData: FreelanceFormData = {
   newServices: [],
 
   // Step 4: Priority
-  priority: "",
+  priority: '',
 
   // Step 5: Summary
-  comments: "",
+  comments: '',
 };
 
 export const useFreelanceForm = () => {

@@ -23,12 +23,15 @@ export async function GET() {
     });
   } catch (error) {
     logger.error('Failed to fetch metiers', error as Error);
-    
+
     return NextResponse.json(
       {
         success: false,
         message: 'Failed to fetch metiers',
-        error: process.env.NODE_ENV === 'development' ? (error as Error).message : 'Internal server error',
+        error:
+          process.env.NODE_ENV === 'development'
+            ? (error as Error).message
+            : 'Internal server error',
       },
       { status: 500 }
     );

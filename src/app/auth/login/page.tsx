@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
-import {Button} from '@/components/ui/button/Button';
+import { Button } from '@/components/ui/button/Button';
 import { EyeCloseIcon } from '@/icons';
 
 const LoginPage = () => {
@@ -50,12 +50,12 @@ const LoginPage = () => {
       });
 
       if (result?.error) {
-        setError('Échec de l\'authentification. Veuillez réessayer.');
+        setError("Échec de l'authentification. Veuillez réessayer.");
         return;
       }
 
       if (!result?.ok) {
-        setError('Échec de l\'authentification. Veuillez réessayer.');
+        setError("Échec de l'authentification. Veuillez réessayer.");
         return;
       }
 
@@ -68,24 +68,24 @@ const LoginPage = () => {
       if (role === 'ADMIN') {
         router.push('/admin/dashboard');
       } else {
-          // Redirect based on role
-          switch (role) {
-            case 'COMPANY':
-              router.push('/company/admin/dashboard');
-              break;
-            case 'MANAGER':
-              router.push('/company/manager/dashboard');
-              break;
-            case 'FREELANCE':
-              router.push('/consultant/dashboard');
-              break;
-            default:
-              router.push('/');
-          }
+        // Redirect based on role
+        switch (role) {
+          case 'COMPANY':
+            router.push('/company/admin/dashboard');
+            break;
+          case 'MANAGER':
+            router.push('/company/manager/dashboard');
+            break;
+          case 'FREELANCE':
+            router.push('/consultant/dashboard');
+            break;
+          default:
+            router.push('/');
         }
+      }
     } catch (err) {
       console.error('Login error:', err);
-      setError('Une erreur inattendue s\'est produite. Veuillez réessayer.');
+      setError("Une erreur inattendue s'est produite. Veuillez réessayer.");
     } finally {
       setLoading(false);
     }
@@ -96,15 +96,15 @@ const LoginPage = () => {
       {/* Left side - Form */}
       <div className="flex flex-col w-full md:w-1/2 bg-white">
         <div className="w-full max-w-md sm:pt-10 mx-auto mb-5 px-6">
-            <Link
+          <Link
             href="/"
             className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-            >
+          >
             <ChevronLeftIcon className="w-4 h-4 mr-2" />
             Retour à l&apos;accueil
-            </Link>
+          </Link>
         </div>
-        
+
         <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto px-6">
           <div>
             <div className="mb-5 sm:mb-8">
@@ -115,7 +115,7 @@ const LoginPage = () => {
                 Entrez votre email et mot de passe pour vous connecter!
               </p>
             </div>
-            
+
             <div>
               <form onSubmit={handleSubmit}>
                 <div className="space-y-6">
@@ -124,18 +124,14 @@ const LoginPage = () => {
                       {error}
                     </div>
                   )}
-                  
+
                   <div>
                     <Label>
                       Email <span className="text-red-500">*</span>
                     </Label>
-                    <Input 
-                      name="email"
-                      placeholder="info@gmail.com" 
-                      type="email" 
-                    />
+                    <Input name="email" placeholder="info@gmail.com" type="email" />
                   </div>
-                  
+
                   <div>
                     <Label>
                       Mot de passe <span className="text-red-500">*</span>
@@ -143,7 +139,7 @@ const LoginPage = () => {
                     <div className="relative">
                       <Input
                         name="password"
-                        type={showPassword ? "text" : "password"}
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="Entrez votre mot de passe"
                       />
                       <span
@@ -158,7 +154,7 @@ const LoginPage = () => {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div></div>
                     <Link
@@ -168,11 +164,11 @@ const LoginPage = () => {
                       Mot de passe oublié?
                     </Link>
                   </div>
-                  
+
                   <div>
-                    <Button 
+                    <Button
                       type="submit"
-                      className="w-full text-white bg-blue-600 hover:bg-blue-700" 
+                      className="w-full text-white bg-blue-600 hover:bg-blue-700"
                       size="sm"
                       disabled={loading}
                     >
@@ -184,11 +180,8 @@ const LoginPage = () => {
 
               <div className="mt-5">
                 <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400">
-                  Vous n&apos;avez pas de compte?{" "}
-                  <Link
-                    href="/"
-                    className="text-blue-600 hover:text-blue-700"
-                  >
+                  Vous n&apos;avez pas de compte?{' '}
+                  <Link href="/" className="text-blue-600 hover:text-blue-700">
                     S&apos;inscrire
                   </Link>
                 </p>
@@ -197,7 +190,7 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Right side - Content (hidden on mobile) */}
       <div className="hidden md:flex w-1/2 h-screen bg-[var(--primary-color)] items-center justify-center px-8">
         <div className="max-w-sm text-center text-white">
@@ -206,19 +199,16 @@ const LoginPage = () => {
             <div className="w-24 h-24 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
               <div className="text-3xl font-bold text-white">L</div>
             </div>
-            <h2 className="text-xl font-bold tracking-wider">
-              LILLINKER
-            </h2>
+            <h2 className="text-xl font-bold tracking-wider">LILLINKER</h2>
           </div>
-          
+
           {/* Content */}
           <div className="space-y-6">
-            <h1 className="text-2xl font-bold leading-tight">
-              Bienvenue sur Lillinker!
-            </h1>
-            
+            <h1 className="text-2xl font-bold leading-tight">Bienvenue sur Lillinker!</h1>
+
             <p className="text-white/90 text-sm leading-relaxed">
-              Connectez-vous à votre compte et prenez le contrôle de votre portage salarial. Gérez vos missions, suivez vos paiements, et développez votre activité en toute sérénité.
+              Connectez-vous à votre compte et prenez le contrôle de votre portage salarial. Gérez
+              vos missions, suivez vos paiements, et développez votre activité en toute sérénité.
             </p>
           </div>
         </div>

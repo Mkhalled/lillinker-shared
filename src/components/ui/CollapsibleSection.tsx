@@ -27,26 +27,24 @@ export const CollapsibleSection = <T,>({
   onToggleItem,
   renderItem,
   getItemId,
-  loadingText = "Chargement...",
+  loadingText = 'Chargement...',
   emptyStateIcon,
-  emptyStateText = "Aucun élément disponible",
-  className = "",
-  maxHeight = "max-h-60",
-  showItemCount = true
+  emptyStateText = 'Aucun élément disponible',
+  className = '',
+  maxHeight = 'max-h-60',
+  showItemCount = true,
 }: CollapsibleSectionProps<T>) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div className={`space-y-4 ${className}`}>
-      <div 
+      <div
         className="flex items-center justify-between cursor-pointer p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div>
           <h4 className="font-medium text-gray-900">{title}</h4>
-          {description && (
-            <p className="text-xs text-gray-500">{description}</p>
-          )}
+          {description && <p className="text-xs text-gray-500">{description}</p>}
         </div>
         <div className="flex items-center gap-2">
           {selectedItems.length > 0 && (
@@ -66,7 +64,7 @@ export const CollapsibleSection = <T,>({
           )}
         </div>
       </div>
-      
+
       {isExpanded && (
         <>
           {items.length === 0 ? (
@@ -75,8 +73,10 @@ export const CollapsibleSection = <T,>({
               <p>{items.length === 0 && !loadingText ? emptyStateText : loadingText}</p>
             </div>
           ) : (
-            <div className={`${maxHeight} overflow-y-auto space-y-1 border border-gray-200 rounded-lg p-3 sm:p-4`}>
-              {items.map((item) => {
+            <div
+              className={`${maxHeight} overflow-y-auto space-y-1 border border-gray-200 rounded-lg p-3 sm:p-4`}
+            >
+              {items.map(item => {
                 const itemId = getItemId(item);
                 const isSelected = selectedItems.includes(itemId.toString());
                 return (

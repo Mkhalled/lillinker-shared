@@ -6,7 +6,7 @@ export interface CompanyFormData {
   siret: string;
   description: string;
   isPortage: PortagePreference;
-  
+
   // Step 2: Consultants and fees
   consultantCount: string;
   managementFeeRate: string;

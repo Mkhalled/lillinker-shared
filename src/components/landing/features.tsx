@@ -4,36 +4,41 @@ const Features = () => {
   const features = [
     {
       icon: Shield,
-      title: "Secure",
+      title: 'Secure',
       description:
-        "Sécurité maximale pour vos données avec des protocoles de chiffrement avancés et une protection complète.",
+        'Sécurité maximale pour vos données avec des protocoles de chiffrement avancés et une protection complète.',
     },
     {
       icon: Users,
-      title: "24/7 Support",
-      description: "Support client disponible 24h/24 et 7j/7 pour répondre à toutes vos questions et préoccupations.",
+      title: '24/7 Support',
+      description:
+        'Support client disponible 24h/24 et 7j/7 pour répondre à toutes vos questions et préoccupations.',
     },
     {
       icon: Star,
-      title: "Customizable",
-      description: "Interface entièrement personnalisable selon vos besoins spécifiques et votre identité de marque.",
+      title: 'Customizable',
+      description:
+        'Interface entièrement personnalisable selon vos besoins spécifiques et votre identité de marque.',
     },
     {
       icon: Zap,
-      title: "Reliable",
-      description: "Plateforme fiable avec une disponibilité de 99.9% et des performances optimales en permanence.",
+      title: 'Reliable',
+      description:
+        'Plateforme fiable avec une disponibilité de 99.9% et des performances optimales en permanence.',
     },
     {
       icon: Clock,
-      title: "Fast",
-      description: "Traitement ultra-rapide de vos demandes avec des temps de réponse optimisés pour votre efficacité.",
+      title: 'Fast',
+      description:
+        'Traitement ultra-rapide de vos demandes avec des temps de réponse optimisés pour votre efficacité.',
     },
     {
       icon: Award,
-      title: "Easy",
-      description: "Interface intuitive et facile à utiliser, conçue pour simplifier votre expérience utilisateur.",
+      title: 'Easy',
+      description:
+        'Interface intuitive et facile à utiliser, conçue pour simplifier votre expérience utilisateur.',
     },
-  ]
+  ];
 
   return (
     <section className="py-20 bg-gray-50">
@@ -44,8 +49,8 @@ const Features = () => {
             We have Amazing <span className="text-[var(--primary-color)]">Service.</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Découvrez nos fonctionnalités exceptionnelles conçues pour optimiser votre expérience et maximiser votre
-            efficacité dans la gestion du portage salarial.
+            Découvrez nos fonctionnalités exceptionnelles conçues pour optimiser votre expérience et
+            maximiser votre efficacité dans la gestion du portage salarial.
           </p>
         </div>
 

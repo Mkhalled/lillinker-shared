@@ -66,7 +66,7 @@ tests/unit/api/auth/
 
 ```typescript
 enum Role {
-  COMPANY   // Company administrators  
+  COMPANY, // Company administrators
 }
 ```
 
@@ -88,7 +88,7 @@ interface CompanyFormData {
   companyName: string;
   siret: string;
   description: string;
-  isPortage: "yes" | "no" | "";
+  isPortage: 'yes' | 'no' | '';
   selectedPortages: string[];
   consultantCount: string;
   managementFeeRate: string;
@@ -111,7 +111,7 @@ interface InitialRegistration {
   first_name: string;
   last_name: string;
   email: string;
-  role: "COMPANY";
+  role: 'COMPANY';
   phone_number?: string;
 }
 ```
@@ -162,6 +162,7 @@ static async initiateRegistration(data: InitialRegistration) {
 ### Initial User State
 
 After registration, users have:
+
 - **Temporary password**: Crypto-generated secure placeholder
 - **Unverified email**: `email_verified: false`
 - **Inactive status**: `status: false`
@@ -174,17 +175,19 @@ After registration, users have:
 The company onboarding is handled by `CompanyModal.tsx` with the following steps:
 
 #### Step 1: General Information (`CompanyGeneralInfoStep.tsx`)
+
 ```typescript
 interface GeneralInfoData {
   companyName: string;
   siret: string;
   description: string;
-  isPortage: "yes" | "no";
+  isPortage: 'yes' | 'no';
   selectedPortages?: number[]; // If portage company
 }
 ```
 
 #### Step 2: Consultants & Management (`CompanyConsultantsStep.tsx`)
+
 ```typescript
 interface ConsultantData {
   consultantCount: string;
@@ -193,6 +196,7 @@ interface ConsultantData {
 ```
 
 #### Step 3: Supported Métiers (`CompanyMetiersStep.tsx`)
+
 ```typescript
 interface MetierData {
   selectedMetiers: number[]; // Array of métier IDs
@@ -200,6 +204,7 @@ interface MetierData {
 ```
 
 #### Step 4: Administrator Info (`CompanyAdminStep.tsx`)
+
 ```typescript
 interface AdminData {
   adminFirstName: string;
@@ -210,6 +215,7 @@ interface AdminData {
 ```
 
 #### Step 5: Platform Services (`CompanyServicesStep.tsx`)
+
 ```typescript
 interface ServiceData {
   selectedPlatformServices: number[];
@@ -228,10 +234,12 @@ interface NewService {
 ```
 
 #### Step 6: Summary (`CompanySummaryStep.tsx`)
+
 - Review all collected data
 - Final validation before submission
 
 #### Step 7: Success (`SuccessStep.tsx`)
+
 - Confirmation of successful registration
 - Email verification instructions
 
@@ -264,7 +272,7 @@ await prisma.$transaction(async () => {
   const existingCompany = await prisma.company.findUnique({
     where: { siret: validatedData.siret },
   });
-  
+
   if (existingCompany) {
     throw new Error('Une société avec ce numéro SIRET existe déjà');
   }
@@ -297,7 +305,11 @@ await prisma.$transaction(async () => {
   }
 
   // 6. Link portages if company is a portage company
-  if (validatedData.is_portage && validatedData.selected_portages && validatedData.selected_portages.length > 0) {
+  if (
+    validatedData.is_portage &&
+    validatedData.selected_portages &&
+    validatedData.selected_portages.length > 0
+  ) {
     await CompanyService.linkPortages(company.id, validatedData.selected_portages);
   }
 
@@ -357,7 +369,7 @@ static async verifyEmailAndSetPassword(token: string, password: string) {
 // Initial company user registration
 {
   "first_name": "John",
-  "last_name": "Doe", 
+  "last_name": "Doe",
   "email": "john@company.com",
   "role": "COMPANY",
   "phone_number": "+33123456789"
@@ -435,6 +447,7 @@ static async verifyEmailAndSetPassword(token: string, password: string) {
 ### Company-Specific Tables
 
 #### User Table (Company Role)
+
 ```sql
 User {
   id: String (Primary Key)
@@ -448,7 +461,7 @@ User {
   email_verified: Boolean (Default: false)
   created_at: DateTime
   updated_at: DateTime
-  
+
   // Relations
   company: Company?
   email_verification_tokens: EmailVerificationToken[]
@@ -456,6 +469,7 @@ User {
 ```
 
 #### Company Table
+
 ```sql
 Company {
   id: String (Primary Key)
@@ -468,7 +482,7 @@ Company {
   is_portage: Boolean (Default: false)
   created_at: DateTime
   updated_at: DateTime
-  
+
   // Relations
   user: User
   metier_companies: MetierCompany[]
@@ -479,6 +493,7 @@ Company {
 ```
 
 #### SelectedPlatformService Table (Company)
+
 ```sql
 SelectedPlatformService {
   id: String (Primary Key)
@@ -487,7 +502,7 @@ SelectedPlatformService {
   response_data: Json? // Company's response to the service
   created_at: DateTime
   updated_at: DateTime
-  
+
   // Relations
   company: Company
   platform_service: PlatformService
@@ -495,6 +510,7 @@ SelectedPlatformService {
 ```
 
 #### SelectedPortage Table (Company)
+
 ```sql
 SelectedPortage {
   id: String (Primary Key)
@@ -502,7 +518,7 @@ SelectedPortage {
   portage_id: Int (Foreign Key → Portage.id)
   created_at: DateTime
   updated_at: DateTime
-  
+
   // Relations
   company: Company
   portage: Portage
@@ -534,16 +550,19 @@ SelectedPortage {
 ### Company-Specific Error Scenarios
 
 1. **Duplicate email registration**
+
    ```typescript
    throw new Error('Un utilisateur avec cette adresse e-mail existe déjà');
    ```
 
 2. **Duplicate SIRET registration**
+
    ```typescript
    throw new Error('Une société avec ce numéro SIRET existe déjà');
    ```
 
 3. **Invalid or expired verification token**
+
    ```typescript
    throw new Error('Token de vérification invalide ou expiré');
    ```

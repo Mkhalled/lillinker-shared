@@ -2,9 +2,10 @@
 
 ## Overview
 
-The Lillinker platform implements a comprehensive onboarding system that handles both Company and Freelance user registration through a multi-step, multi-phase approach with email verification, role-based onboarding flows, and platform service integration. 
+The Lillinker platform implements a comprehensive onboarding system that handles both Company and Freelance user registration through a multi-step, multi-phase approach with email verification, role-based onboarding flows, and platform service integration.
 
 **Note**: This documentation has been split into role-specific files for better readability:
+
 - **[Company Signup Documentation](./company-signup.md)** - Complete guide for company registration and onboarding
 - **[Freelance Signup Documentation](./freelance-signup.md)** - Complete guide for freelance registration and onboarding
 
@@ -15,6 +16,7 @@ The Lillinker platform implements a comprehensive onboarding system that handles
 For detailed implementation guides, please refer to the specific documentation:
 
 1. **[Company Signup](./company-signup.md)**
+
    - Company-specific onboarding flow (7 steps)
    - SIRET validation and company profiling
    - Portage company functionality
@@ -33,22 +35,26 @@ For detailed implementation guides, please refer to the specific documentation:
 Both company and freelance onboarding share common infrastructure:
 
 #### Authentication System
+
 - **Initial Registration**: Basic user information via `/api/auth/register`
 - **Email Verification**: Token-based verification via `/api/auth/verify-email`
 - **Password Setting**: Secure password creation during verification
 
 #### Database Models
+
 - **User Table**: Common user data (name, email, role, verification status)
 - **EmailVerificationToken**: Secure token management
 - **PlatformService**: Flexible service architecture
 - **Portage**: Portage company integration
 
 #### Security Features
+
 - **Crypto-secure tokens**: 64-character hex tokens with 24h expiration
 - **Bcrypt password hashing**: 12 salt rounds for production security
 - **Database transactions**: Atomic operations for data integrity
 
 #### Testing Strategy
+
 - **Unit Tests**: API endpoint testing with comprehensive mocking
 
 ### Registration Flow Overview
@@ -67,21 +73,24 @@ graph TD
 ### API Endpoints Summary
 
 #### Common Endpoints
+
 ```typescript
-POST /api/auth/register           // Initial registration
-GET  /api/auth/verify-email       // Email verification redirect
-POST /api/auth/verify-email       // Set password & verify
+POST / api / auth / register; // Initial registration
+GET / api / auth / verify - email; // Email verification redirect
+POST / api / auth / verify - email; // Set password & verify
 ```
 
 #### Role-Specific Endpoints
+
 ```typescript
-POST /api/auth/onboarding/company    // Company onboarding
-POST /api/auth/onboarding/freelance  // Freelance onboarding
+POST / api / auth / onboarding / company; // Company onboarding
+POST / api / auth / onboarding / freelance; // Freelance onboarding
 ```
 
 ### Error Handling
 
 Common error scenarios across both flows:
+
 - **Duplicate email registration**
 - **Invalid or expired verification tokens**
 - **Onboarding before initial registration**

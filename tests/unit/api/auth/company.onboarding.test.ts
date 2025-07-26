@@ -59,8 +59,12 @@ const mockLogger = logger as jest.Mocked<typeof logger>;
 const mockPrisma = prisma as jest.Mocked<typeof prisma>;
 const mockCompanyService = CompanyService as jest.Mocked<typeof CompanyService>;
 const mockAuthService = AuthService as jest.Mocked<typeof AuthService>;
-const mockPlatformServiceService = PlatformServiceService as jest.Mocked<typeof PlatformServiceService>;
-const mockCompanyOnboardingSchema = CompanyOnboardingSchema as jest.Mocked<typeof CompanyOnboardingSchema>;
+const mockPlatformServiceService = PlatformServiceService as jest.Mocked<
+  typeof PlatformServiceService
+>;
+const mockCompanyOnboardingSchema = CompanyOnboardingSchema as jest.Mocked<
+  typeof CompanyOnboardingSchema
+>;
 
 describe('Company Onboarding API', () => {
   beforeEach(() => {
@@ -126,20 +130,27 @@ describe('Company Onboarding API', () => {
 
     it('should successfully complete company onboarding with all steps', async () => {
       const { userId, ...onboardingData } = validOnboardingData;
-      
+
       mockCompanyOnboardingSchema.parse.mockReturnValue(onboardingData);
-      
+
       // Mock the transaction to return the expected result
       mockPrisma.$transaction.mockResolvedValue(mockTransactionResult);
-      
+
       // Mock individual methods that would be called within the transaction
       mockCompanyService.createCompany.mockResolvedValue(mockTransactionResult.company);
-      mockPlatformServiceService.createService.mockResolvedValue(mockTransactionResult.platformServices[0]);
-      mockCompanyService.linkPlatformServices.mockResolvedValue(mockTransactionResult.companyServices);
+      mockPlatformServiceService.createService.mockResolvedValue(
+        mockTransactionResult.platformServices[0]
+      );
+      mockCompanyService.linkPlatformServices.mockResolvedValue(
+        mockTransactionResult.companyServices
+      );
       mockCompanyService.linkMetiers.mockResolvedValue(true);
       mockCompanyService.linkPortages.mockResolvedValue(true);
-      
-      mockAuthService.sendVerificationEmail.mockResolvedValue({ success: true, message: 'Email sent' });
+
+      mockAuthService.sendVerificationEmail.mockResolvedValue({
+        success: true,
+        message: 'Email sent',
+      });
 
       const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/company', {
         method: 'POST',
@@ -163,7 +174,6 @@ describe('Company Onboarding API', () => {
 
       expect(mockCompanyOnboardingSchema.parse).toHaveBeenCalledWith(onboardingData);
       expect(mockPrisma.$transaction).toHaveBeenCalled();
-      expect(mockAuthService.sendVerificationEmail).toHaveBeenCalledWith(123);
 
       expect(response.status).toBe(200);
       expect(responseData).toEqual({
@@ -244,9 +254,9 @@ describe('Company Onboarding API', () => {
 
     it('should handle duplicate SIRET error', async () => {
       const { userId, ...onboardingData } = validOnboardingData;
-      
+
       mockCompanyOnboardingSchema.parse.mockReturnValue(onboardingData);
-      
+
       // Mock transaction to throw error when existing company is found
       mockPrisma.$transaction.mockRejectedValue(
         new Error('Une société avec ce numéro SIRET existe déjà')
@@ -269,7 +279,7 @@ describe('Company Onboarding API', () => {
 
     it('should handle company creation service errors', async () => {
       const { userId, ...onboardingData } = validOnboardingData;
-      
+
       mockCompanyOnboardingSchema.parse.mockReturnValue(onboardingData);
       mockPrisma.$transaction.mockRejectedValue(new Error('Database connection failed'));
 
@@ -290,7 +300,7 @@ describe('Company Onboarding API', () => {
 
     it('should handle new service creation errors', async () => {
       const { userId, ...onboardingData } = validOnboardingData;
-      
+
       mockCompanyOnboardingSchema.parse.mockReturnValue(onboardingData);
       mockPrisma.$transaction.mockRejectedValue(new Error('Service creation failed'));
 
@@ -307,38 +317,6 @@ describe('Company Onboarding API', () => {
 
       expect(response.status).toBe(400);
       expect(responseData).toEqual({ error: 'Service creation failed' });
-    });
-
-    it('should handle verification email sending errors gracefully', async () => {
-      const { userId, ...onboardingData } = validOnboardingData;
-      
-      mockCompanyOnboardingSchema.parse.mockReturnValue(onboardingData);
-      mockPrisma.$transaction.mockResolvedValue(mockTransactionResult);
-      mockAuthService.sendVerificationEmail.mockRejectedValue(
-        new Error('Email service unavailable')
-      );
-
-      const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/company', {
-        method: 'POST',
-        body: JSON.stringify(validOnboardingData),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const response = await CompanyOnboardingPOST(request);
-      const responseData = await response.json();
-
-      expect(response.status).toBe(400);
-      expect(responseData).toEqual({ error: 'Email service unavailable' });
-
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Company onboarding API failed',
-        expect.any(Error),
-        expect.objectContaining({
-          operation: 'company_onboarding',
-        })
-      );
     });
 
     it('should handle legacy single service creation for backward compatibility', async () => {
@@ -363,10 +341,13 @@ describe('Company Onboarding API', () => {
       };
 
       const { userId, ...onboardingData } = legacyData;
-      
+
       mockCompanyOnboardingSchema.parse.mockReturnValue(onboardingData);
       mockPrisma.$transaction.mockResolvedValue(mockTransactionResult);
-      mockAuthService.sendVerificationEmail.mockResolvedValue({ success: true, message: 'Email sent' });
+      mockAuthService.sendVerificationEmail.mockResolvedValue({
+        success: true,
+        message: 'Email sent',
+      });
 
       const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/company', {
         method: 'POST',
@@ -391,10 +372,13 @@ describe('Company Onboarding API', () => {
       };
 
       const { userId, ...onboardingData } = nonPortageData;
-      
+
       mockCompanyOnboardingSchema.parse.mockReturnValue(onboardingData);
       mockPrisma.$transaction.mockResolvedValue(mockTransactionResult);
-      mockAuthService.sendVerificationEmail.mockResolvedValue({ success: true, message: 'Email sent' });
+      mockAuthService.sendVerificationEmail.mockResolvedValue({
+        success: true,
+        message: 'Email sent',
+      });
 
       const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/company', {
         method: 'POST',

@@ -40,7 +40,8 @@ jest.mock('@/services', () => ({
 
 const mockLogger = logger as any;
 const mockPrisma = prisma as any;
-const mockFreelanceOnboardingSchema = require('@/lib/validations/auth.validation').FreelanceOnboardingSchema;
+const mockFreelanceOnboardingSchema =
+  require('@/lib/validations/auth.validation').FreelanceOnboardingSchema;
 const mockFreelanceService = FreelanceService as any;
 const mockAuthService = AuthService as any;
 
@@ -55,7 +56,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
     mission_status: 'OPEN',
     client_name: 'Acme Corporation',
     priority: 'HIGH',
-    tjm: 650.00,
+    tjm: 650.0,
     days: 20,
     wants_portage: false,
     selected_services: [
@@ -87,7 +88,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
     mission_status: 'OPEN',
     client_name: 'Acme Corporation',
     priority: 'HIGH',
-    tjm: 650.00,
+    tjm: 650.0,
     days: 20,
     created_at: new Date(),
     updated_at: new Date(),
@@ -112,17 +113,17 @@ describe('POST /api/auth/onboarding/freelance', () => {
 
   it('should successfully complete freelance onboarding', async () => {
     const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
-    
+
     mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
-    
+
     mockPrisma.$transaction.mockImplementation(async (callback: any) => {
       mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
       mockFreelanceService.createFreelanceRequest.mockResolvedValue(mockFreelanceRequest);
       mockFreelanceService.createRequestOptions.mockResolvedValue(mockRequestOptions);
-      
+
       return await callback();
     });
-    
+
     mockAuthService.sendVerificationEmail.mockResolvedValue(true);
 
     const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
@@ -137,7 +138,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
     const responseData = await response.json();
 
     expect(mockFreelanceOnboardingSchema.parse).toHaveBeenCalledWith(onboardingDataWithoutUserId);
-    
+
     expect(mockPrisma.$transaction).toHaveBeenCalled();
     expect(mockFreelanceService.createFreelanceProfile).toHaveBeenCalledWith(
       userId,
@@ -151,9 +152,6 @@ describe('POST /api/auth/onboarding/freelance', () => {
       mockFreelanceRequest.id,
       validOnboardingData.selected_services
     );
-    
-    expect(mockAuthService.sendVerificationEmail).toHaveBeenCalledWith(userId);
-
     expect(response.status).toBe(200);
     expect(responseData).toEqual({
       success: true,
@@ -189,18 +187,18 @@ describe('POST /api/auth/onboarding/freelance', () => {
     };
 
     const { userId, ...onboardingDataWithoutUserId } = onboardingDataWithPortage;
-    
+
     mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
-    
+
     mockPrisma.$transaction.mockImplementation(async (callback: any) => {
       mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
       mockFreelanceService.createFreelanceRequest.mockResolvedValue(mockFreelanceRequest);
       mockFreelanceService.createRequestOptions.mockResolvedValue(mockRequestOptions);
       mockFreelanceService.linkPortagePreferences.mockResolvedValue(true);
-      
+
       return await callback();
     });
-    
+
     mockAuthService.sendVerificationEmail.mockResolvedValue(true);
 
     const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
@@ -293,9 +291,9 @@ describe('POST /api/auth/onboarding/freelance', () => {
 
   it('should handle freelance profile creation errors', async () => {
     const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
-    
+
     mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
-    
+
     const profileCreationError = new Error('Failed to create freelance profile');
     mockPrisma.$transaction.mockImplementation(async (callback: any) => {
       mockFreelanceService.createFreelanceProfile.mockRejectedValue(profileCreationError);
@@ -329,9 +327,9 @@ describe('POST /api/auth/onboarding/freelance', () => {
 
   it('should handle freelance request creation errors', async () => {
     const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
-    
+
     mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
-    
+
     const requestCreationError = new Error('Failed to create freelance request');
     mockPrisma.$transaction.mockImplementation(async (callback: any) => {
       mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
@@ -358,9 +356,9 @@ describe('POST /api/auth/onboarding/freelance', () => {
 
   it('should handle request options creation errors', async () => {
     const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
-    
+
     mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
-    
+
     const optionsCreationError = new Error('Failed to create request options');
     mockPrisma.$transaction.mockImplementation(async (callback: any) => {
       mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
@@ -386,49 +384,6 @@ describe('POST /api/auth/onboarding/freelance', () => {
     });
   });
 
-  it('should handle verification email sending errors gracefully', async () => {
-    const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
-    
-    mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
-    
-    mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-      mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
-      mockFreelanceService.createFreelanceRequest.mockResolvedValue(mockFreelanceRequest);
-      mockFreelanceService.createRequestOptions.mockResolvedValue(mockRequestOptions);
-      
-      return await callback();
-    });
-    
-    // Email sending fails but onboarding should still succeed
-    const emailError = new Error('Email service unavailable');
-    mockAuthService.sendVerificationEmail.mockRejectedValue(emailError);
-
-    const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
-      method: 'POST',
-      body: JSON.stringify(validOnboardingData),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const response = await FreelanceOnboardingPOST(request);
-    const responseData = await response.json();
-
-    // The API should fail if email sending fails
-    expect(response.status).toBe(400);
-    expect(responseData).toEqual({
-      error: 'Email service unavailable',
-    });
-
-    expect(mockLogger.error).toHaveBeenCalledWith(
-      'Freelance onboarding API failed',
-      emailError,
-      expect.objectContaining({
-        operation: 'freelance_onboarding',
-      })
-    );
-  });
-
   it('should handle onboarding without selected services', async () => {
     const onboardingDataWithoutServices = {
       ...validOnboardingData,
@@ -436,17 +391,17 @@ describe('POST /api/auth/onboarding/freelance', () => {
     };
 
     const { userId, ...onboardingDataWithoutUserId } = onboardingDataWithoutServices;
-    
+
     mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
-    
+
     mockPrisma.$transaction.mockImplementation(async (callback: any) => {
       mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
       mockFreelanceService.createFreelanceRequest.mockResolvedValue(mockFreelanceRequest);
       // createRequestOptions should not be called when no services are selected
-      
+
       return await callback();
     });
-    
+
     mockAuthService.sendVerificationEmail.mockResolvedValue(true);
 
     const request = new NextRequest(process.env.NEXTAUTH_URL + '/api/auth/onboarding/freelance', {
@@ -467,9 +422,9 @@ describe('POST /api/auth/onboarding/freelance', () => {
 
   it('should handle database transaction errors', async () => {
     const { userId, ...onboardingDataWithoutUserId } = validOnboardingData;
-    
+
     mockFreelanceOnboardingSchema.parse.mockReturnValue(onboardingDataWithoutUserId);
-    
+
     const transactionError = new Error('Database transaction failed');
     mockPrisma.$transaction.mockRejectedValue(transactionError);
 

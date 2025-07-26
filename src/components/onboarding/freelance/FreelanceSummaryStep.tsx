@@ -15,10 +15,10 @@ export const FreelanceSummaryStep = ({
   formData,
   metiers,
   platformServices,
-  portages
+  portages,
 }: FreelanceSummaryStepProps) => {
   const selectedMetier = metiers.find(m => m.id === formData.metierId);
-  const selectedServices = platformServices.filter(service => 
+  const selectedServices = platformServices.filter(service =>
     formData.selectedServices.some(selected => selected.serviceId === service.id)
   );
   const selectedPortageServices = portages.filter(portage =>
@@ -26,16 +26,16 @@ export const FreelanceSummaryStep = ({
   );
 
   const priorityLabels: { [key: string]: string } = {
-    urgent: "Urgent (dans la semaine)",
-    high: "Priorité élevée (dans le mois)",
-    medium: "Priorité moyenne (dans les 3 mois)",
-    low: "Pas urgent (quand c'est possible)"
+    urgent: 'Urgent (dans la semaine)',
+    high: 'Priorité élevée (dans le mois)',
+    medium: 'Priorité moyenne (dans les 3 mois)',
+    low: "Pas urgent (quand c'est possible)",
   };
 
   const missionLabels: { [key: string]: string } = {
-    no: "Non, je suis en recherche",
-    searching: "En cours de recherche",
-    yes: "Oui, j'ai une mission en cours"
+    no: 'Non, je suis en recherche',
+    searching: 'En cours de recherche',
+    yes: "Oui, j'ai une mission en cours",
   };
 
   return (
@@ -47,7 +47,9 @@ export const FreelanceSummaryStep = ({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 text-sm">
             <div>
               <span className="text-gray-600">Nom:</span>
-              <span className="ml-2 font-medium">{formData.firstName} {formData.lastName}</span>
+              <span className="ml-2 font-medium">
+                {formData.firstName} {formData.lastName}
+              </span>
             </div>
             <div>
               <span className="text-gray-600">Email:</span>
@@ -70,9 +72,11 @@ export const FreelanceSummaryStep = ({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 text-sm">
             <div className="lg:col-span-2">
               <span className="text-gray-600">Statut mission:</span>
-              <span className="ml-2 font-medium">{missionLabels[formData.hasMission] || formData.hasMission}</span>
+              <span className="ml-2 font-medium">
+                {missionLabels[formData.hasMission] || formData.hasMission}
+              </span>
             </div>
-            {formData.hasMission === "yes" && (
+            {formData.hasMission === 'yes' && (
               <>
                 {formData.clientName && (
                   <div>
@@ -100,14 +104,17 @@ export const FreelanceSummaryStep = ({
         </div>
 
         {/* Portage Information */}
-        {formData.wantsPortage === "yes" && (
+        {formData.wantsPortage === 'yes' && (
           <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
             <h5 className="font-medium text-gray-800 mb-3">Société de portage</h5>
             <div className="text-sm">
               <span className="text-gray-600">Services sélectionnés:</span>
               <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {selectedPortageServices.map(portage => (
-                  <span key={portage.id} className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                  <span
+                    key={portage.id}
+                    className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
+                  >
                     {portage.name}
                   </span>
                 ))}
@@ -138,7 +145,9 @@ export const FreelanceSummaryStep = ({
         <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
           <h5 className="font-medium text-gray-800 mb-3">Priorité</h5>
           <div className="text-sm">
-            <span className="font-medium">{priorityLabels[formData.priority] || formData.priority}</span>
+            <span className="font-medium">
+              {priorityLabels[formData.priority] || formData.priority}
+            </span>
           </div>
         </div>
       </div>

@@ -7,6 +7,6 @@ export const useFreelanceNavigation = (totalSteps: number = 8, onFormDataExpired
     totalSteps,
     storageKey: 'freelance-modal-step',
     formDataKey: 'freelance-modal-data',
-    onFormDataExpired
+    onFormDataExpired,
   });
 };

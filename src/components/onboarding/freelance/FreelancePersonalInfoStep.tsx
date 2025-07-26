@@ -11,10 +11,10 @@ interface FreelancePersonalInfoStepProps {
   metiers: Metier[];
 }
 
-export const FreelancePersonalInfoStep = ({ 
-  formData, 
-  setFormData, 
-  metiers 
+export const FreelancePersonalInfoStep = ({
+  formData,
+  setFormData,
+  metiers,
 }: FreelancePersonalInfoStepProps) => {
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -23,7 +23,9 @@ export const FreelancePersonalInfoStep = ({
           id="prenom"
           label="Prénom"
           value={formData.firstName}
-          onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, firstName: e.target.value }))}
+          onChange={e =>
+            setFormData((prev: FreelanceFormData) => ({ ...prev, firstName: e.target.value }))
+          }
           placeholder="Jean"
           required
         />
@@ -31,14 +33,18 @@ export const FreelancePersonalInfoStep = ({
           id="nom"
           label="Nom"
           value={formData.lastName}
-          onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, lastName: e.target.value }))}
+          onChange={e =>
+            setFormData((prev: FreelanceFormData) => ({ ...prev, lastName: e.target.value }))
+          }
           placeholder="Dupont"
           required
         />
       </div>
       <BasicEmailInput
         email={formData.email}
-        onEmailChange={(email: string) => setFormData((prev: FreelanceFormData) => ({ ...prev, email: email }))}
+        onEmailChange={(email: string) =>
+          setFormData((prev: FreelanceFormData) => ({ ...prev, email: email }))
+        }
         label="Email *"
         placeholder="jean.dupont@email.com"
         id="freelance-email"
@@ -47,20 +53,29 @@ export const FreelancePersonalInfoStep = ({
         id="phone"
         label="Téléphone"
         value={formData.phone}
-        onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, phone: e.target.value }))}
+        onChange={e =>
+          setFormData((prev: FreelanceFormData) => ({ ...prev, phone: e.target.value }))
+        }
         placeholder="06 12 34 56 78"
         required
       />
       <div className="space-y-2">
-        <label htmlFor="metier" className="text-sm font-medium text-gray-700">Métier *</label>
+        <label htmlFor="metier" className="text-sm font-medium text-gray-700">
+          Métier *
+        </label>
         <select
-          id='metier'
+          id="metier"
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.metierId}
-          onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, metierId: parseInt(e.target.value) }))}
+          onChange={e =>
+            setFormData((prev: FreelanceFormData) => ({
+              ...prev,
+              metierId: parseInt(e.target.value),
+            }))
+          }
         >
           <option value={0}>Sélectionnez votre métier</option>
-          {metiers.map((metier) => (
+          {metiers.map(metier => (
             <option key={metier.id} value={metier.id}>
               {metier.name}
             </option>

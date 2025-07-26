@@ -86,7 +86,7 @@ export class FreelanceService {
    * Create freelance request options (service selections)
    */
   static async createRequestOptions(
-    freelanceRequestId: number, 
+    freelanceRequestId: number,
     selectedServices: SelectedServiceData[]
   ) {
     const logContext = {
@@ -99,7 +99,7 @@ export class FreelanceService {
       logger.debug('Creating freelance request options', logContext);
 
       const requestOptions = await Promise.all(
-        selectedServices.map(async (selectedService) => {
+        selectedServices.map(async selectedService => {
           // Verify that the platform service exists
           const platformService = await prisma.platformService.findUnique({
             where: { id: selectedService.serviceId },
@@ -208,7 +208,10 @@ export class FreelanceService {
         return { number: responseData };
       case 'SELECT': {
         // For SELECT type, responseData comes as comma-separated values
-        const selections = responseData.split(',').map(s => s.trim()).filter(s => s !== '');
+        const selections = responseData
+          .split(',')
+          .map(s => s.trim())
+          .filter(s => s !== '');
         return { select: selections };
       }
       case 'RADIO':

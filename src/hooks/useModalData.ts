@@ -43,13 +43,13 @@ export const useModalData = () => {
     const fetchData = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         // Fetch platform services, metiers, and portages in parallel
         const [servicesResponse, metiersResponse, portagesResponse] = await Promise.all([
           fetch('/api/platform-services'),
           fetch('/api/metiers'),
-          fetch('/api/portages')
+          fetch('/api/portages'),
         ]);
 
         if (servicesResponse.ok) {
@@ -88,6 +88,6 @@ export const useModalData = () => {
     metiers,
     portages,
     isLoading,
-    error
+    error,
   };
 };

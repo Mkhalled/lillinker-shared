@@ -63,10 +63,12 @@ export const useCompanyValidation = (
     switch (currentStep) {
       case 1: {
         // General info step validation
-        const basicValid = !!(formData.companyName && 
-                          formData.siret && 
-                          formData.description &&
-                          !siretExists);
+        const basicValid = !!(
+          formData.companyName &&
+          formData.siret &&
+          formData.description &&
+          !siretExists
+        );
         // Portage selection is optional even if company is portage
         return basicValid;
       }
@@ -82,10 +84,11 @@ export const useCompanyValidation = (
       case 5: {
         // Services step validation
         const hasSelectedServices = formData.selectedPlatformServices.length > 0;
-        const hasValidNewServices = formData.newServices.some((service: NewService) => 
-          service.label.trim() !== "" &&
-          (!service.requiresData || 
-           (service.dataLabel.trim() !== "" && service.dataType.trim() !== ""))
+        const hasValidNewServices = formData.newServices.some(
+          (service: NewService) =>
+            service.label.trim() !== '' &&
+            (!service.requiresData ||
+              (service.dataLabel.trim() !== '' && service.dataType.trim() !== ''))
         );
         return hasSelectedServices || hasValidNewServices;
       }
@@ -103,6 +106,6 @@ export const useCompanyValidation = (
   return {
     isStepValid,
     emailExists,
-    isValidEmail
+    isValidEmail,
   };
 };

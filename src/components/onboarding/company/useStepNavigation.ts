@@ -7,6 +7,6 @@ export const useStepNavigation = (totalSteps: number = 7, onFormDataExpired?: ()
     totalSteps,
     storageKey: 'company-modal-step',
     formDataKey: 'company-modal-data',
-    onFormDataExpired
+    onFormDataExpired,
   });
 };

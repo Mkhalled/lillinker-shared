@@ -13,7 +13,7 @@ interface ServiceInfoTooltipProps {
     data_label: string;
     data_description: string | null;
     choices: unknown;
-    user ?: {
+    user?: {
       first_name: string;
       last_name: string;
       ownedCompany: {
@@ -75,11 +75,11 @@ const ServiceInfoTooltip = ({ service }: ServiceInfoTooltipProps) => {
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-25 z-40"
             onClick={() => setIsOpen(false)}
           />
-          
+
           {/* Tooltip Content - Compact design */}
           <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-4 overflow-y-auto max-w-md w-full max-h-[70vh]">
             <div className="flex items-start justify-between mb-3">
@@ -105,7 +105,9 @@ const ServiceInfoTooltip = ({ service }: ServiceInfoTooltipProps) => {
               {/* Data Type */}
               <div>
                 <span className="font-medium text-gray-800">Type de données:</span>
-                <span className="text-gray-600 ml-1">{getDataTypeDescription(service.data_type)}</span>
+                <span className="text-gray-600 ml-1">
+                  {getDataTypeDescription(service.data_type)}
+                </span>
               </div>
 
               {/* Data Requirements */}
@@ -115,14 +117,18 @@ const ServiceInfoTooltip = ({ service }: ServiceInfoTooltipProps) => {
                   <div className="text-gray-600 ml-1">
                     {service.data_label && <span>{service.data_label}</span>}
                     {service.data_description && (
-                      <span>{service.data_label ? ', ' : ''}{service.data_description}</span>
+                      <span>
+                        {service.data_label ? ', ' : ''}
+                        {service.data_description}
+                      </span>
                     )}
-                    
+
                     {/* Show choices for SELECT and RADIO types */}
-                    {(service.data_type === 'SELECT' || service.data_type === 'RADIO') && parseChoices(service.choices).length > 0 && (
-                      <span>. Options: {parseChoices(service.choices).join(', ')}</span>
-                    )}
-                    
+                    {(service.data_type === 'SELECT' || service.data_type === 'RADIO') &&
+                      parseChoices(service.choices).length > 0 && (
+                        <span>. Options: {parseChoices(service.choices).join(', ')}</span>
+                      )}
+
                     {/* Show example for TEXT type */}
                     {service.data_type === 'TEXT' && (
                       <span>. Format: Texte libre (ex: description, commentaire, adresse)</span>
@@ -140,7 +146,10 @@ const ServiceInfoTooltip = ({ service }: ServiceInfoTooltipProps) => {
               {!service.requires_data && (
                 <div>
                   <span className="font-medium text-gray-800">Données requises:</span>
-                  <span className="text-gray-600 ml-1">Aucune donnée requise. Ce service ne nécessite aucune information supplémentaire de la part du freelance</span>
+                  <span className="text-gray-600 ml-1">
+                    Aucune donnée requise. Ce service ne nécessite aucune information supplémentaire
+                    de la part du freelance
+                  </span>
                 </div>
               )}
 

@@ -70,7 +70,7 @@ tests/unit/api/auth/
 
 ```typescript
 enum Role {
-  FREELANCE // Independent contractors
+  FREELANCE, // Independent contractors
 }
 ```
 
@@ -119,7 +119,7 @@ interface InitialRegistration {
   first_name: string;
   last_name: string;
   email: string;
-  role: "FREELANCE";
+  role: 'FREELANCE';
   phone_number?: string;
 }
 ```
@@ -170,6 +170,7 @@ static async initiateRegistration(data: InitialRegistration) {
 ### Initial User State
 
 After registration, users have:
+
 - **Temporary password**: Crypto-generated secure placeholder
 - **Unverified email**: `email_verified: false`
 - **Inactive status**: `status: false`
@@ -182,6 +183,7 @@ After registration, users have:
 The freelance onboarding is handled by `FreelanceModal.tsx` with the following steps:
 
 #### Step 1: Personal Information (`FreelancePersonalInfoStep.tsx`)
+
 ```typescript
 interface PersonalInfoData {
   firstName: string;
@@ -192,6 +194,7 @@ interface PersonalInfoData {
 ```
 
 #### Step 2: Daily Rate (`FreelanceTjmStep.tsx`)
+
 ```typescript
 interface TjmData {
   dailyRate: number; // TJM (Taux Journalier Moyen)
@@ -199,6 +202,7 @@ interface TjmData {
 ```
 
 #### Step 3: Portage Interest (`FreelancePortageStep.tsx`)
+
 ```typescript
 interface PortageData {
   isPortageCandidate: boolean;
@@ -207,6 +211,7 @@ interface PortageData {
 ```
 
 #### Step 4: Mission Preferences (`FreelancePriorityStep.tsx`)
+
 ```typescript
 interface PriorityData {
   priority: 'cost' | 'quality' | 'speed';
@@ -215,6 +220,7 @@ interface PriorityData {
 ```
 
 #### Step 5: Platform Services (`FreelanceServicesStep.tsx`)
+
 ```typescript
 interface ServiceData {
   selectedPlatformServices: number[];
@@ -233,6 +239,7 @@ interface NewService {
 ```
 
 #### Step 6: Mission Status (`FreelanceMissionStatusStep.tsx`)
+
 ```typescript
 interface MissionStatusData {
   currentMissionStatus: 'available' | 'busy' | 'partially_available';
@@ -240,6 +247,7 @@ interface MissionStatusData {
 ```
 
 #### Step 7: Summary (`FreelanceSummaryStep.tsx`)
+
 - Review all collected data
 - Final validation and submission
 
@@ -290,7 +298,11 @@ await prisma.$transaction(async () => {
   }
 
   // 4. Link portages if interested
-  if (validatedData.is_portage_candidate && validatedData.selected_portages && validatedData.selected_portages.length > 0) {
+  if (
+    validatedData.is_portage_candidate &&
+    validatedData.selected_portages &&
+    validatedData.selected_portages.length > 0
+  ) {
     await FreelanceService.linkPortages(freelance.id, validatedData.selected_portages);
   }
 
@@ -350,7 +362,7 @@ static async verifyEmailAndSetPassword(token: string, password: string) {
 // Initial freelance user registration
 {
   "first_name": "Jane",
-  "last_name": "Smith", 
+  "last_name": "Smith",
   "email": "jane@freelance.com",
   "role": "FREELANCE",
   "phone_number": "+33987654321"
@@ -430,6 +442,7 @@ static async verifyEmailAndSetPassword(token: string, password: string) {
 ### Freelance-Specific Tables
 
 #### User Table (Freelance Role)
+
 ```sql
 User {
   id: String (Primary Key)
@@ -443,7 +456,7 @@ User {
   email_verified: Boolean (Default: false)
   created_at: DateTime
   updated_at: DateTime
-  
+
   // Relations
   freelance: Freelance?
   email_verification_tokens: EmailVerificationToken[]
@@ -451,6 +464,7 @@ User {
 ```
 
 #### Freelance Table
+
 ```sql
 Freelance {
   id: String (Primary Key)
@@ -462,7 +476,7 @@ Freelance {
   priority: String?
   created_at: DateTime
   updated_at: DateTime
-  
+
   // Relations
   user: User
   selected_services: SelectedPlatformService[]
@@ -471,6 +485,7 @@ Freelance {
 ```
 
 #### SelectedPlatformService Table (Freelance)
+
 ```sql
 SelectedPlatformService {
   id: String (Primary Key)
@@ -479,7 +494,7 @@ SelectedPlatformService {
   response_data: Json? // Freelancer's response to the service
   created_at: DateTime
   updated_at: DateTime
-  
+
   // Relations
   freelance: Freelance
   platform_service: PlatformService
@@ -487,6 +502,7 @@ SelectedPlatformService {
 ```
 
 #### SelectedPortage Table (Freelance)
+
 ```sql
 SelectedPortage {
   id: String (Primary Key)
@@ -494,7 +510,7 @@ SelectedPortage {
   portage_id: Int (Foreign Key → Portage.id)
   created_at: DateTime
   updated_at: DateTime
-  
+
   // Relations
   freelance: Freelance
   portage: Portage
@@ -504,6 +520,7 @@ SelectedPortage {
 ### Platform Services Architecture
 
 #### PlatformService Table
+
 ```sql
 PlatformService {
   id: Int (Primary Key, Auto-increment)
@@ -516,7 +533,7 @@ PlatformService {
   choices: String[] // For SELECT, CHECKBOX, RADIO types
   created_at: DateTime
   updated_at: DateTime
-  
+
   // Relations
   selected_services: SelectedPlatformService[]
 }
@@ -525,6 +542,7 @@ PlatformService {
 ### Portage System
 
 #### Portage Table
+
 ```sql
 Portage {
   id: Int (Primary Key, Auto-increment)
@@ -532,7 +550,7 @@ Portage {
   portage_description: String?
   created_at: DateTime
   updated_at: DateTime
-  
+
   // Relations
   selected_portages: SelectedPortage[]
 }
@@ -541,6 +559,7 @@ Portage {
 ### Verification System
 
 #### EmailVerificationToken Table
+
 ```sql
 EmailVerificationToken {
   id: String (Primary Key)
@@ -549,7 +568,7 @@ EmailVerificationToken {
   expires_at: DateTime
   used: Boolean (Default: false)
   created_at: DateTime
-  
+
   // Relations
   user: User
 }
@@ -580,21 +599,25 @@ EmailVerificationToken {
 ### Freelance-Specific Error Scenarios
 
 1. **Duplicate email registration**
+
    ```typescript
    throw new Error('Un utilisateur avec cette adresse e-mail existe déjà');
    ```
 
 2. **Invalid or expired verification token**
+
    ```typescript
    throw new Error('Token de vérification invalide ou expiré');
    ```
 
 3. **Onboarding before initial registration**
+
    ```typescript
    throw new Error('User not found or not in valid state for onboarding');
    ```
 
 4. **Platform service validation errors**
+
    ```typescript
    throw new Error('Required platform services not completed');
    ```
@@ -634,6 +657,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
 ```
 
 ### Integration Tests
+
 - Complete freelance registration flow testing
 - Email verification workflow for freelancers
 - Freelance onboarding completion scenarios
@@ -642,21 +666,25 @@ describe('POST /api/auth/onboarding/freelance', () => {
 ## Freelance-Specific Features
 
 ### Daily Rate (TJM) Management
+
 - **Flexible Rate Setting**: Freelancers can set their preferred daily rate
 - **Currency Handling**: Support for EUR with proper decimal precision
 - **Rate Validation**: Ensures positive numeric values
 
 ### Mission Status Tracking
+
 - **Available**: Ready for new missions
 - **Busy**: Currently engaged in missions
 - **Partially Available**: Limited availability
 
 ### Priority Preferences
+
 - **Cost**: Focus on competitive pricing
 - **Quality**: Emphasis on high-quality deliverables
 - **Speed**: Quick turnaround times
 
 ### Portage Integration
+
 - **Candidate Status**: Option to be considered for portage opportunities
 - **Multiple Portage Companies**: Can select multiple preferred portage partners
 - **Flexible Preferences**: Can change portage status during onboarding

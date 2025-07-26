@@ -7,12 +7,7 @@ interface StepContentProps {
   children: React.ReactNode;
 }
 
-export const StepContent = ({ 
-  stepTitle, 
-  stepDescription, 
-  error, 
-  children 
-}: StepContentProps) => {
+export const StepContent = ({ stepTitle, stepDescription, error, children }: StepContentProps) => {
   return (
     <div className="flex-1 flex flex-col min-h-0">
       {/* Step Title and Description */}
@@ -23,15 +18,16 @@ export const StepContent = ({
 
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg flex-shrink-0" role="alert">
+        <div
+          className="mb-4 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg flex-shrink-0"
+          role="alert"
+        >
           <p className="text-red-800 text-sm">{error}</p>
         </div>
       )}
 
       {/* Content - Scrollable */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
-        {children}
-      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>
     </div>
   );
 };

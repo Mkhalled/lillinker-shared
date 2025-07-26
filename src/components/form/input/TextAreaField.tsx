@@ -53,7 +53,7 @@ const TextAreaField: FC<TextAreaProps> = ({
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
-      
+
       <textarea
         id={id}
         name={name}

@@ -1,6 +1,6 @@
 'use client';
 
-import Image from "next/image";
+import Image from 'next/image';
 import { useState } from 'react';
 
 import CompanyModal from '../onboarding/CompanyModal';
@@ -10,7 +10,7 @@ import { Button } from '../ui/button/Button';
 type ModalType = 'none' | 'freelance' | 'company';
 
 const Hero = () => {
-  const [activeModal, setActiveModal] = useState<ModalType>('none')
+  const [activeModal, setActiveModal] = useState<ModalType>('none');
 
   const renderContent = () => {
     switch (activeModal) {
@@ -26,7 +26,7 @@ const Hero = () => {
             </div>
           </div>
         );
-      
+
       case 'company':
         return (
           <div className="min-h-screen py-16 md:pt-20 bg-gradient-to-br from-blue-50 to-blue-100">
@@ -58,13 +58,13 @@ const Hero = () => {
                       Portage Parfaite..
                     </h1>
                     <p className="text-xl text-gray-600 max-w-lg">
-                      Découvrez notre plateforme innovante qui révolutionne la gestion du portage salarial avec des solutions
-                      modernes et efficaces.
+                      Découvrez notre plateforme innovante qui révolutionne la gestion du portage
+                      salarial avec des solutions modernes et efficaces.
                     </p>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button 
-                      size="lg" 
+                    <Button
+                      size="lg"
                       className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-full"
                       onClick={() => setActiveModal('freelance')}
                     >

@@ -6,28 +6,28 @@ import type { CompanyFormData } from '@/types/company';
 
 const initialFormData: CompanyFormData = {
   // Step 1: General info
-  companyName: "",
-  siret: "",
-  description: "",
-  isPortage: "no",
-  
+  companyName: '',
+  siret: '',
+  description: '',
+  isPortage: 'no',
+
   // Step 2: Consultants and fees
-  consultantCount: "",
-  managementFeeRate: "",
+  consultantCount: '',
+  managementFeeRate: '',
 
   // Step 3: Metiers selection
   selectedMetiers: [],
 
   // Step 4: Admin info
-  adminFirstName: "",
-  adminLastName: "",
-  adminEmail: "",
-  adminPhone: "",
+  adminFirstName: '',
+  adminLastName: '',
+  adminEmail: '',
+  adminPhone: '',
 
   // Step 5: Services selection and creation
   selectedPlatformServices: [],
   selectedPortages: [],
-  newServices: []
+  newServices: [],
 };
 
 export const useCompanyForm = () => {
@@ -67,6 +67,6 @@ export const useCompanyForm = () => {
   return {
     formData,
     updateFormData,
-    clearFormData
+    clearFormData,
   };
 };

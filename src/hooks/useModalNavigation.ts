@@ -13,17 +13,20 @@ export const useModalNavigation = ({
   totalSteps,
   storageKey,
   formDataKey,
-  onFormDataExpired
+  onFormDataExpired,
 }: UseModalNavigationProps) => {
   // Expiration time: 4 hours in milliseconds
   const EXPIRATION_TIME = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
   // Helper function to check if localStorage data is expired
-  const isDataExpired = useCallback((timestamp: string): boolean => {
-    const now = Date.now();
-    const savedTime = parseInt(timestamp, 10);
-    return now - savedTime > EXPIRATION_TIME;
-  }, [EXPIRATION_TIME]);
+  const isDataExpired = useCallback(
+    (timestamp: string): boolean => {
+      const now = Date.now();
+      const savedTime = parseInt(timestamp, 10);
+      return now - savedTime > EXPIRATION_TIME;
+    },
+    [EXPIRATION_TIME]
+  );
 
   // Helper function to clear expired data
   const clearExpiredData = useCallback(() => {
@@ -43,7 +46,7 @@ export const useModalNavigation = ({
     if (typeof window !== 'undefined') {
       const savedStep = localStorage.getItem(storageKey);
       const savedTimestamp = localStorage.getItem(`${storageKey}_timestamp`);
-      
+
       if (savedStep && savedTimestamp) {
         // Check if data is expired
         if (isDataExpired(savedTimestamp)) {
@@ -51,7 +54,7 @@ export const useModalNavigation = ({
           clearExpiredData();
           return 1;
         }
-        
+
         const step = parseInt(savedStep, 10);
         if (step >= 1 && step <= totalSteps) {
           return step;
@@ -116,6 +119,6 @@ export const useModalNavigation = ({
     goToPreviousStep,
     clearStepProgress,
     isFirstStep: currentStep === 1,
-    isLastStep: currentStep === totalSteps
+    isLastStep: currentStep === totalSteps,
   };
 };

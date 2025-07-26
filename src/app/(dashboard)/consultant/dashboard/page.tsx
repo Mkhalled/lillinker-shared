@@ -7,7 +7,9 @@ const ConsultantDashboard = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-900">Welcome : {session?.user?.first_name} {session?.user?.last_name}</h1>
+      <h1 className="text-2xl font-semibold text-gray-900">
+        Welcome : {session?.user?.first_name} {session?.user?.last_name}
+      </h1>
     </div>
   );
 };

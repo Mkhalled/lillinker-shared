@@ -1,10 +1,10 @@
 export const Stats = () => {
   const stats = [
-    { number: "1200+", label: "Projects done" },
-    { number: "2354+", label: "Happy Clients" },
-    { number: "3299+", label: "Cup Coffee" },
-    { number: "101+", label: "Award Wins" },
-  ]
+    { number: '1200+', label: 'Projects done' },
+    { number: '2354+', label: 'Happy Clients' },
+    { number: '3299+', label: 'Cup Coffee' },
+    { number: '101+', label: 'Award Wins' },
+  ];
 
   return (
     <section className="py-20 bg-white">
@@ -19,5 +19,5 @@ export const Stats = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};

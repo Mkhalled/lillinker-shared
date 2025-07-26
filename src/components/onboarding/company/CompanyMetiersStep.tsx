@@ -17,17 +17,17 @@ interface CompanyMetiersStepProps {
   metiers: Metier[];
 }
 
-export const CompanyMetiersStep = ({ 
-  formData, 
-  onFormDataChange, 
-  metiers 
+export const CompanyMetiersStep = ({
+  formData,
+  onFormDataChange,
+  metiers,
 }: CompanyMetiersStepProps) => {
   const toggleMetierSelection = (metierId: number) => {
     const metierIdStr = metierId.toString();
     const newSelectedMetiers = formData.selectedMetiers.includes(metierIdStr)
       ? formData.selectedMetiers.filter((id: string) => id !== metierIdStr)
       : [...formData.selectedMetiers, metierIdStr];
-    
+
     onFormDataChange({ selectedMetiers: newSelectedMetiers });
   };
 
@@ -45,7 +45,7 @@ export const CompanyMetiersStep = ({
             <span className="text-sm text-gray-700 font-medium select-none">{metier.name}</span>
             <StyledCheckbox
               checked={isSelected}
-              onChange={(e) => {
+              onChange={e => {
                 e.stopPropagation();
                 toggleMetierSelection(metier.id);
               }}

@@ -10,25 +10,25 @@ interface StyledCheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>
   className?: string;
 }
 
-export const StyledCheckbox = ({ 
-  checked, 
-  onChange, 
-  label, 
+export const StyledCheckbox = ({
+  checked,
+  onChange,
+  label,
   size = 'md',
   className = '',
   id,
-  ...props 
+  ...props
 }: StyledCheckboxProps) => {
   const sizeClasses = {
     sm: 'w-4 h-4',
-    md: 'w-5 h-5', 
-    lg: 'w-6 h-6'
+    md: 'w-5 h-5',
+    lg: 'w-6 h-6',
   };
 
   const iconSizeClasses = {
     sm: 'w-2.5 h-2.5',
     md: 'w-3 h-3',
-    lg: 'w-4 h-4'
+    lg: 'w-4 h-4',
   };
 
   const component = (
@@ -41,14 +41,22 @@ export const StyledCheckbox = ({
         id={id}
         {...props}
       />
-      <div className={`${sizeClasses[size]} rounded-md border-2 transition-all duration-200 flex items-center justify-center cursor-pointer ${
-        checked 
-          ? 'border-blue-600 bg-blue-600' 
-          : 'border-gray-300 bg-white hover:border-blue-400'
-      }`}>
+      <div
+        className={`${sizeClasses[size]} rounded-md border-2 transition-all duration-200 flex items-center justify-center cursor-pointer ${
+          checked ? 'border-blue-600 bg-blue-600' : 'border-gray-300 bg-white hover:border-blue-400'
+        }`}
+      >
         {checked && (
-          <svg className={`${iconSizeClasses[size]} text-white`} fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+          <svg
+            className={`${iconSizeClasses[size]} text-white`}
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fillRule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clipRule="evenodd"
+            />
           </svg>
         )}
       </div>

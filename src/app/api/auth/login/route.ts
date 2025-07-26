@@ -22,10 +22,7 @@ export async function POST(request: NextRequest) {
 
     if (!email || !password) {
       logger.warn('Login API attempt with missing credentials', extendedLogContext);
-      return NextResponse.json(
-        { error: 'Email et mot de passe sont requis' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Email et mot de passe sont requis' }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({
@@ -34,10 +31,7 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       logger.warn('Login API attempt with non-existent email', extendedLogContext);
-      return NextResponse.json(
-        { error: 'Email ou mot de passe invalide' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Email ou mot de passe invalide' }, { status: 401 });
     }
 
     logger.debug('User found for login API attempt', {
@@ -54,10 +48,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         reason: 'email_not_verified',
       });
-      return NextResponse.json(
-        { error: 'Veuillez vérifier votre adresse email' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Veuillez vérifier votre adresse email' }, { status: 403 });
     }
 
     if (!user.status) {
@@ -67,7 +58,7 @@ export async function POST(request: NextRequest) {
         reason: 'account_not_validated',
       });
       return NextResponse.json(
-        { error: 'Votre compte est en cours de validation par l\'administrateur' },
+        { error: "Votre compte est en cours de validation par l'administrateur" },
         { status: 403 }
       );
     }
@@ -80,10 +71,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         reason: 'invalid_password',
       });
-      return NextResponse.json(
-        { error: 'Email ou mot de passe invalide' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Email ou mot de passe invalide' }, { status: 401 });
     }
 
     logger.info('Login API validation successful', {
@@ -94,7 +82,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { 
+      {
         success: true,
         user: {
           id: user.id,
@@ -102,15 +90,14 @@ export async function POST(request: NextRequest) {
           first_name: user.first_name,
           last_name: user.last_name,
           role: user.role,
-        }
+        },
       },
       { status: 200 }
     );
-
   } catch (error) {
     logger.error('Login API failed', error as Error, logContext);
     return NextResponse.json(
-      { error: 'Une erreur inattendue s\'est produite. Veuillez réessayer.' },
+      { error: "Une erreur inattendue s'est produite. Veuillez réessayer." },
       { status: 500 }
     );
   }

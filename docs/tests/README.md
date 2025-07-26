@@ -5,7 +5,9 @@ This directory contains comprehensive documentation for all test suites in the L
 ## Documentation Structure
 
 ### [`auth.md`](./auth.md)
+
 Complete documentation for the authentication system test suite, covering:
+
 - Core authentication service tests
 - Company onboarding flow tests
 - Freelance onboarding flow tests
@@ -29,11 +31,13 @@ tests/
 ## Running Tests
 
 ### Full Test Suite
+
 ```bash
 npm test
 ```
 
 ### Specific Test Categories
+
 ```bash
 # Authentication tests
 npm test auth
@@ -46,6 +50,7 @@ npm test services
 ```
 
 ### Individual Test Files
+
 ```bash
 # Specific test file
 npm test tests/unit/api/auth/auth.onboarding.test.ts
@@ -57,18 +62,22 @@ npm test -- --watch
 ## Test Standards
 
 ### Naming Conventions
+
 - Test files: `*.test.ts`
 - Test descriptions: Should clearly describe the behavior being tested
 - Mock objects: Prefix with `mock` (e.g., `mockUser`, `mockPrisma`)
 
 ### Documentation Requirements
+
 Each test suite should have:
+
 1. **Purpose statement**: What the test suite validates
 2. **Test scenarios**: Detailed description of each test case
 3. **Mock strategy**: How external dependencies are mocked
 4. **Business logic**: What business rules are being validated
 
 ### Coverage Requirements
+
 - **Functional coverage**: All main user flows
 - **Error handling**: All error scenarios and edge cases
 - **Security validation**: Authentication, authorization, data validation
@@ -77,13 +86,16 @@ Each test suite should have:
 ## Mock Strategy
 
 ### Database Mocking
+
 We use comprehensive Prisma mocking that includes:
+
 - CRUD operations
 - Transaction support
 - Relationship handling
 - Error simulation
 
 ### External Service Mocking
+
 - **Email services**: Verification and notification emails
 - **Authentication providers**: NextAuth configuration
 - **Crypto operations**: Token generation and password hashing
@@ -92,8 +104,9 @@ We use comprehensive Prisma mocking that includes:
 ## Writing New Tests
 
 ### Test Structure Template
+
 ```typescript
-import { /* dependencies */ } from '@/lib/...';
+import {} from /* dependencies */ '@/lib/...';
 
 // Mock dependencies
 jest.mock('@/lib/dependency', () => ({
@@ -123,6 +136,7 @@ describe('Feature Name', () => {
 ```
 
 ### Best Practices
+
 1. **AAA Pattern**: Arrange, Act, Assert
 2. **Descriptive names**: Test names should read like specifications
 3. **Single responsibility**: One behavior per test
@@ -133,6 +147,7 @@ describe('Feature Name', () => {
 ## Documentation Maintenance
 
 When adding new test suites:
+
 1. Create detailed documentation in this folder
 2. Update the main README with new test categories
 3. Include examples of complex test scenarios
@@ -142,12 +157,14 @@ When adding new test suites:
 ## Debugging Tests
 
 ### Common Issues
+
 1. **Mock misalignment**: Verify mock setup matches actual implementation
 2. **Token format issues**: Check expected vs actual token formats
 3. **Logging expectations**: Ensure log calls match expectations
 4. **Async timing**: Verify proper async/await usage
 
 ### Debugging Tools
+
 - Jest verbose mode: `npm test -- --verbose`
 - Watch mode: `npm test -- --watch`
 - Coverage report: `npm test -- --coverage`
@@ -156,6 +173,7 @@ When adding new test suites:
 ## Contributing
 
 When contributing tests:
+
 1. Follow existing patterns and conventions
 2. Include comprehensive error scenario testing
 3. Document complex business logic validation
@@ -165,6 +183,7 @@ When contributing tests:
 ## Quality Gates
 
 All tests must:
+
 - ✅ Pass consistently
 - ✅ Have meaningful assertions
 - ✅ Cover error scenarios

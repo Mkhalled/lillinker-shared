@@ -1,7 +1,6 @@
 import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import Link from 'next/link';
 
-
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white py-16">
@@ -10,8 +9,9 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-2xl font-bold">LILLINKER</h3>
             <p className="text-gray-400 leading-relaxed">
-              Rejoignez-Nous Nous sommes ravis de vous accueillir au sein de notre communauté grandissante. Ensemble,
-              nous redéfinissons l&apos;avenir du portage salarial en offrant des solutions innovantes et personnalisées.
+              Rejoignez-Nous Nous sommes ravis de vous accueillir au sein de notre communauté
+              grandissante. Ensemble, nous redéfinissons l&apos;avenir du portage salarial en
+              offrant des solutions innovantes et personnalisées.
             </p>
             <div className="flex space-x-4">
               <Link href="#" className="text-gray-400 hover:text-white transition-colors">

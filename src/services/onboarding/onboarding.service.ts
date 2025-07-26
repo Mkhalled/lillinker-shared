@@ -1,5 +1,9 @@
 import { logger } from '@/lib/logger';
-import type { CompanyOnboarding, FreelanceOnboarding, InitialRegistration } from '@/lib/validations/auth.validation';
+import type {
+  CompanyOnboarding,
+  FreelanceOnboarding,
+  InitialRegistration,
+} from '@/lib/validations/auth.validation';
 import { AuthService } from '@/services/auth/auth.service';
 import { CompanyService } from '@/services/company/company.service';
 import { FreelanceService } from '@/services/freelance/freelance.service';
@@ -9,7 +13,10 @@ export class OnboardingService {
   /**
    * Complete company registration flow
    */
-  static async registerCompany(registrationData: InitialRegistration, onboardingData: CompanyOnboarding) {
+  static async registerCompany(
+    registrationData: InitialRegistration,
+    onboardingData: CompanyOnboarding
+  ) {
     const logContext = {
       operation: 'registerCompany',
       email: registrationData.email,
@@ -67,7 +74,10 @@ export class OnboardingService {
   /**
    * Complete freelance registration flow
    */
-  static async registerFreelance(registrationData: InitialRegistration, onboardingData: FreelanceOnboarding) {
+  static async registerFreelance(
+    registrationData: InitialRegistration,
+    onboardingData: FreelanceOnboarding
+  ) {
     const logContext = {
       operation: 'registerFreelance',
       email: registrationData.email,
@@ -103,10 +113,7 @@ export class OnboardingService {
 
       // Step 6: Create request options for all services
       if (serviceOptions.length > 0) {
-        await FreelanceService.createRequestOptions(
-          freelanceRequest.id,
-          serviceOptions
-        );
+        await FreelanceService.createRequestOptions(freelanceRequest.id, serviceOptions);
       }
 
       // Step 7: Link portage preferences if provided
@@ -128,7 +135,8 @@ export class OnboardingService {
         user,
         freelance,
         freelanceRequest,
-        message: 'Freelance registered successfully. Please check your email to verify your account.',
+        message:
+          'Freelance registered successfully. Please check your email to verify your account.',
       };
     } catch (error) {
       logger.error('Freelance registration failed', error as Error, logContext);
@@ -164,17 +172,14 @@ export class OnboardingService {
     try {
       // Create new services first
       const createdServices = await Promise.all(
-        newServices.map(async (newService) => {
+        newServices.map(async newService => {
           const service = await PlatformServiceService.createService(userId, newService);
           return service.id;
         })
       );
 
       // Combine selected services with created services
-      const allServiceIds = [
-        ...selectedServices,
-        ...createdServices,
-      ];
+      const allServiceIds = [...selectedServices, ...createdServices];
 
       // Link all services to company
       if (allServiceIds.length > 0) {

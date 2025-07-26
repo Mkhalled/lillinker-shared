@@ -6,9 +6,9 @@ import { useModalData } from '@/hooks/useModalData';
 import type { NewService, BaseModalProps } from '@/types/user';
 
 import AddServiceModal from './AddServiceModal';
-import { 
+import {
   CompanyGeneralInfoStep,
-  CompanyConsultantsStep, 
+  CompanyConsultantsStep,
   CompanyMetiersStep,
   CompanyAdminStep,
   CompanyServicesStep,
@@ -16,7 +16,7 @@ import {
   useCompanyForm,
   useStepNavigation,
   useCompanyCompletion,
-  useCompanyValidation
+  useCompanyValidation,
 } from './company';
 import { ModalWrapper } from './ModalWrapper';
 import { SuccessStep } from './SuccessStep';
@@ -31,14 +31,22 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
   // Use custom hooks
   const { formData, updateFormData, clearFormData } = useCompanyForm();
-  const { currentStep, goToNextStep, goToPreviousStep, clearStepProgress } = useStepNavigation(7, clearFormData);
+  const { currentStep, goToNextStep, goToPreviousStep, clearStepProgress } = useStepNavigation(
+    7,
+    clearFormData
+  );
   const { isLoading, error, setError, handleComplete } = useCompanyCompletion(
     formData,
     clearFormData,
     goToNextStep,
     clearStepProgress
   );
-  const { isStepValid } = useCompanyValidation(formData, currentStep, siretExists, isAdminStepValid);
+  const { isStepValid } = useCompanyValidation(
+    formData,
+    currentStep,
+    siretExists,
+    isAdminStepValid
+  );
 
   // Set data error if there's a fetching error
   useEffect(() => {
@@ -86,12 +94,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         );
 
       case 2:
-        return (
-          <CompanyConsultantsStep
-            formData={formData}
-            onFormDataChange={updateFormData}
-          />
-        );
+        return <CompanyConsultantsStep formData={formData} onFormDataChange={updateFormData} />;
 
       case 3:
         return (
@@ -142,44 +145,44 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const getStepTitle = () => {
     switch (currentStep) {
       case 1:
-        return "Informations générales"
+        return 'Informations générales';
       case 2:
-        return "Consultants et frais de gestion"
+        return 'Consultants et frais de gestion';
       case 3:
-        return "Métiers supportés"
+        return 'Métiers supportés';
       case 4:
-        return "Informations de l'administrateur"
+        return "Informations de l'administrateur";
       case 5:
-        return "Services et options"
+        return 'Services et options';
       case 6:
-        return "Récapitulatif"
+        return 'Récapitulatif';
       case 7:
-        return "Demande envoyée"
+        return 'Demande envoyée';
       default:
-        return ""
+        return '';
     }
-  }
+  };
 
   const getStepDescription = () => {
     switch (currentStep) {
       case 1:
-        return "Présentez votre société de portage salarial"
+        return 'Présentez votre société de portage salarial';
       case 2:
-        return "Informations sur vos consultants et tarifs"
+        return 'Informations sur vos consultants et tarifs';
       case 3:
-        return "Sélectionnez les métiers que vous supportez"
+        return 'Sélectionnez les métiers que vous supportez';
       case 4:
-        return "Coordonnées de l'administrateur du compte"
+        return "Coordonnées de l'administrateur du compte";
       case 5:
-        return "Définissez les services que vous proposez"
+        return 'Définissez les services que vous proposez';
       case 6:
-        return "Vérifiez vos informations avant finalisation"
+        return 'Vérifiez vos informations avant finalisation';
       case 7:
-        return "Votre demande a été transmise"
+        return 'Votre demande a été transmise';
       default:
-        return ""
+        return '';
     }
-  }
+  };
 
   return (
     <>
@@ -196,7 +199,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         isStepValid={isStepValid()}
         isLoading={isLoading}
         error={error}
-       showNavigation={true}
+        showNavigation={true}
         completeButtonText="Finaliser l'inscription"
         nextButtonText="Suivant"
         completionStep={6} // Specify that completion happens on step 6

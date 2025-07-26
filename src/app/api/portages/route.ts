@@ -30,12 +30,12 @@ export async function GET() {
     });
   } catch (error) {
     logger.error('Failed to fetch portages', error as Error, logContext);
-    
+
     return NextResponse.json(
-      { 
+      {
         success: false,
         error: 'Failed to fetch portages',
-        data: [] 
+        data: [],
       },
       { status: 500 }
     );

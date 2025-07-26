@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const platformServices = await prisma.platformService.findMany({
       where: {
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       },
       select: {
         id: true,
@@ -23,15 +23,15 @@ export async function GET() {
             last_name: true,
             ownedCompany: {
               select: {
-                name: true
-              }
-            }
-          }
-        }
+                name: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
-        label: 'asc'
-      }
+        label: 'asc',
+      },
     });
 
     return NextResponse.json({
@@ -40,10 +40,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Error fetching platform services:', error);
-    
-    return NextResponse.json(
-      { error: 'Failed to fetch platform services' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Failed to fetch platform services' }, { status: 500 });
   }
 }

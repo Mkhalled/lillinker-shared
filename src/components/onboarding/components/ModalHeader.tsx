@@ -11,13 +11,13 @@ interface ModalHeaderProps {
   showRestartButton?: boolean;
 }
 
-export const ModalHeader = ({ 
-  title, 
-  currentStep, 
-  totalSteps, 
-  onClose, 
+export const ModalHeader = ({
+  title,
+  currentStep,
+  totalSteps,
+  onClose,
   onClearProgress,
-  showRestartButton = true 
+  showRestartButton = true,
 }: ModalHeaderProps) => {
   const canRestart = showRestartButton && onClearProgress && currentStep > 1;
 
@@ -29,12 +29,12 @@ export const ModalHeader = ({
         </div>
         <span className="text-lg sm:text-xl font-bold text-gray-900 truncate">{title}</span>
       </div>
-      
+
       <div className="flex items-center space-x-2 sm:space-x-4">
         <span className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
           {currentStep}/{totalSteps}
         </span>
-        
+
         {canRestart && (
           <button
             onClick={onClearProgress}
@@ -45,7 +45,7 @@ export const ModalHeader = ({
             Recommencer
           </button>
         )}
-        
+
         <button
           onClick={onClose}
           className="text-gray-400 hover:text-gray-600 transition-colors"

@@ -1,8 +1,8 @@
-import Image from "next/image"
+import Image from 'next/image';
 
-import { Button } from "../ui/button/Button"
+import { Button } from '../ui/button/Button';
 
-export const About = ()=> {
+export const About = () => {
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-6 sm:px-8 lg:px-12">
@@ -20,16 +20,20 @@ export const About = ()=> {
                   <span className="font-semibold text-gray-900">Depuis 2023</span>
                 </p>
                 <p className="text-gray-600 leading-relaxed">
-                  Lillinker, votre partenaire dévoué pour simplifier le processus de sélection d&apos;une société de portage
-                  en tant que freelance. En tant qu&apos;agrégateur de plateformes de portage, nous identifions et nous vous
-                  proposons les meilleures sociétés qui correspondent à vos besoins spécifiques.
+                  Lillinker, votre partenaire dévoué pour simplifier le processus de sélection
+                  d&apos;une société de portage en tant que freelance. En tant qu&apos;agrégateur de
+                  plateformes de portage, nous identifions et nous vous proposons les meilleures
+                  sociétés qui correspondent à vos besoins spécifiques.
                 </p>
                 <p className="text-gray-600 leading-relaxed">
                   Rejoignez-nous, rejoignez l&apos;avenir du portage salarial ensemble !
                 </p>
               </div>
             </div>
-            <Button size="lg" className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-full">
+            <Button
+              size="lg"
+              className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-full"
+            >
               En Savoir Plus
             </Button>
           </div>
@@ -49,5 +53,5 @@ export const About = ()=> {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};

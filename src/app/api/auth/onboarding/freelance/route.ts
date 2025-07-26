@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { userId, ...onboardingData } = body;
-    
+
     const enhancedLogContext = {
       ...logContext,
       userId,
@@ -30,13 +30,10 @@ export async function POST(request: NextRequest) {
     };
 
     logger.debug('Freelance onboarding request received', enhancedLogContext);
-    
+
     if (!userId) {
       logger.warn('Freelance onboarding attempt without user ID', logContext);
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
     const validatedData = FreelanceOnboardingSchema.parse(onboardingData);
@@ -45,7 +42,7 @@ export async function POST(request: NextRequest) {
       ...enhancedLogContext,
       missionStatus: validatedData.mission_status,
       priority: validatedData.priority,
-      hasSelectedServices: !!(validatedData.selected_services?.length),
+      hasSelectedServices: !!validatedData.selected_services?.length,
       clientName: validatedData.client_name,
     });
 
@@ -74,7 +71,13 @@ export async function POST(request: NextRequest) {
       });
 
       // Step 3: Create request options for selected services
-      let requestOptions: Array<{ id: number; freelance_request_id: number; service_option_id: number; is_required: boolean; response_data: JsonValue }> = [];
+      let requestOptions: Array<{
+        id: number;
+        freelance_request_id: number;
+        service_option_id: number;
+        is_required: boolean;
+        response_data: JsonValue;
+      }> = [];
       if (validatedData.selected_services && validatedData.selected_services.length > 0) {
         requestOptions = await FreelanceService.createRequestOptions(
           freelanceRequest.id,
@@ -111,17 +114,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     logger.error('Freelance onboarding API failed', error as Error, logContext);
-    
+
     if (error instanceof Error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

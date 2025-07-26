@@ -34,7 +34,8 @@ export class PlatformServiceService {
           requires_data: serviceData.requires_data,
           data_label: serviceData.data_label || '',
           data_description: serviceData.data_description || '',
-          choices: serviceData.choices && serviceData.choices.length > 0 ? serviceData.choices : undefined,
+          choices:
+            serviceData.choices && serviceData.choices.length > 0 ? serviceData.choices : undefined,
           status: 'PENDING',
         },
       });
@@ -87,7 +88,11 @@ export class PlatformServiceService {
   /**
    * Link platform service to company
    */
-  static async linkServiceToCompany(companyId: number, serviceId: number, isActive: boolean = false) {
+  static async linkServiceToCompany(
+    companyId: number,
+    serviceId: number,
+    isActive: boolean = false
+  ) {
     const logContext = {
       operation: 'linkServiceToCompany',
       companyId,

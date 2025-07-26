@@ -3,108 +3,110 @@
 import { Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
-import { StyledCheckbox } from '../form/StyledCheckbox';
-import { Button } from '../ui/button/Button';
 import InputField from '../form/input/InputField';
 import TextAreaField from '../form/input/TextAreaField';
+import { StyledCheckbox } from '../form/StyledCheckbox';
+import { Button } from '../ui/button/Button';
 
 interface NewService {
-  id: string
-  label: string
-  description: string
-  requiresData: boolean
-  dataType: string
-  dataLabel: string
-  dataDescription: string
-  choices: string[]
+  id: string;
+  label: string;
+  description: string;
+  requiresData: boolean;
+  dataType: string;
+  dataLabel: string;
+  dataDescription: string;
+  choices: string[];
 }
 
 interface AddServiceModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSave: (service: NewService) => void
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (service: NewService) => void;
 }
 
 const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
   const [serviceData, setServiceData] = useState<NewService>({
     id: Date.now().toString(),
-    label: "",
-    description: "",
+    label: '',
+    description: '',
     requiresData: false,
-    dataType: "TEXT",
-    dataLabel: "",
-    dataDescription: "",
-    choices: []
-  })
+    dataType: 'TEXT',
+    dataLabel: '',
+    dataDescription: '',
+    choices: [],
+  });
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSave = () => {
-    const newErrors: Record<string, string> = {}
+    const newErrors: Record<string, string> = {};
 
     // Validation
     if (!serviceData.label.trim()) {
-      newErrors.label = "Le libellé est requis"
+      newErrors.label = 'Le libellé est requis';
     }
 
     if (serviceData.requiresData) {
       if (!serviceData.dataLabel.trim()) {
-        newErrors.dataLabel = "Le label du champ est requis"
+        newErrors.dataLabel = 'Le label du champ est requis';
       }
-      if ((serviceData.dataType === "RADIO" || serviceData.dataType === "SELECT") && 
-          serviceData.choices.filter(c => c.trim() !== "").length < 2) {
-        newErrors.choices = "Au moins 2 options sont requises"
+      if (
+        (serviceData.dataType === 'RADIO' || serviceData.dataType === 'SELECT') &&
+        serviceData.choices.filter(c => c.trim() !== '').length < 2
+      ) {
+        newErrors.choices = 'Au moins 2 options sont requises';
       }
     }
 
-    setErrors(newErrors)
+    setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
       onSave({
         ...serviceData,
-        choices: serviceData.choices.filter(c => c.trim() !== "")
-      })
-      handleClose()
+        choices: serviceData.choices.filter(c => c.trim() !== ''),
+      });
+      handleClose();
     }
-  }
+  };
 
   const handleClose = () => {
     setServiceData({
       id: Date.now().toString(),
-      label: "",
-      description: "",
+      label: '',
+      description: '',
       requiresData: false,
-      dataType: "TEXT",
-      dataLabel: "",
-      dataDescription: "",
-      choices: []
-    })
-    setErrors({})
-    onClose()
-  }
+      dataType: 'TEXT',
+      dataLabel: '',
+      dataDescription: '',
+      choices: [],
+    });
+    setErrors({});
+    onClose();
+  };
 
   const addChoice = () => {
     setServiceData(prev => ({
       ...prev,
-      choices: [...prev.choices, ""]
-    }))
-  }
+      choices: [...prev.choices, ''],
+    }));
+  };
 
   const updateChoice = (index: number, value: string) => {
     setServiceData(prev => ({
       ...prev,
-      choices: prev.choices.map((choice, i) => i === index ? value : choice)
-    }))
-  }
+      choices: prev.choices.map((choice, i) => (i === index ? value : choice)),
+    }));
+  };
 
   const removeChoice = (index: number) => {
     setServiceData(prev => ({
       ...prev,
-      choices: prev.choices.filter((_, i) => i !== index)
-    }))
-  }
+      choices: prev.choices.filter((_, i) => i !== index),
+    }));
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -129,7 +131,7 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
                 id="service-label"
                 label="Libellé du service"
                 value={serviceData.label}
-                onChange={(e) => setServiceData(prev => ({ ...prev, label: e.target.value }))}
+                onChange={e => setServiceData(prev => ({ ...prev, label: e.target.value }))}
                 placeholder="Ex: Assurance RC Pro"
                 error={!!errors.label}
                 hint={errors.label}
@@ -140,7 +142,7 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
                 id="service-description"
                 label="Description"
                 value={serviceData.description}
-                onChange={(e) => setServiceData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={e => setServiceData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Description du service"
               />
             </div>
@@ -150,7 +152,9 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
               <StyledCheckbox
                 id="requires-data"
                 checked={serviceData.requiresData}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setServiceData(prev => ({ ...prev, requiresData: e.target.checked }))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setServiceData(prev => ({ ...prev, requiresData: e.target.checked }))
+                }
                 label="Ce service nécessite des données du consultant"
               />
 
@@ -165,7 +169,9 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
                         id="data-type"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={serviceData.dataType}
-                        onChange={(e) => setServiceData(prev => ({ ...prev, dataType: e.target.value }))}
+                        onChange={e =>
+                          setServiceData(prev => ({ ...prev, dataType: e.target.value }))
+                        }
                       >
                         <option value="TEXT">Texte libre</option>
                         <option value="NUMBER">Numérique</option>
@@ -175,16 +181,18 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
                     </div>
 
                     <div className="space-y-2">
-                    <InputField
-                      id="data-label"
-                      label="Label du champ"
-                      value={serviceData.dataLabel}
-                      onChange={(e) => setServiceData(prev => ({ ...prev, dataLabel: e.target.value }))}
-                      placeholder="Ex: Niveau d'expérience"
-                      error={!!errors.dataLabel}
-                      hint={errors.dataLabel}
-                      required
-                    />
+                      <InputField
+                        id="data-label"
+                        label="Label du champ"
+                        value={serviceData.dataLabel}
+                        onChange={e =>
+                          setServiceData(prev => ({ ...prev, dataLabel: e.target.value }))
+                        }
+                        placeholder="Ex: Niveau d'expérience"
+                        error={!!errors.dataLabel}
+                        hint={errors.dataLabel}
+                        required
+                      />
                     </div>
                   </div>
 
@@ -192,18 +200,18 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
                     id="data-description"
                     label="Description du champ"
                     value={serviceData.dataDescription}
-                    onChange={(e) => setServiceData(prev => ({ ...prev, dataDescription: e.target.value }))}
+                    onChange={e =>
+                      setServiceData(prev => ({ ...prev, dataDescription: e.target.value }))
+                    }
                     placeholder="Instructions pour le freelance"
                     rows={3}
                   />
 
                   {/* Choices for RADIO and SELECT */}
-                  {(serviceData.dataType === "RADIO" || serviceData.dataType === "SELECT") && (
+                  {(serviceData.dataType === 'RADIO' || serviceData.dataType === 'SELECT') && (
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <h2  className="text-sm font-medium text-gray-700">
-                          Options disponibles *
-                        </h2>
+                        <h2 className="text-sm font-medium text-gray-700">Options disponibles *</h2>
                         <Button
                           variant="outline"
                           size="sm"
@@ -220,7 +228,7 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
                           <input
                             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={choice}
-                            onChange={(e) => updateChoice(index, e.target.value)}
+                            onChange={e => updateChoice(index, e.target.value)}
                             placeholder={`Option ${index + 1}`}
                           />
                           <button
@@ -250,22 +258,16 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
 
         {/* Footer */}
         <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">
-          <Button
-            variant="outline"
-            onClick={handleClose}
-          >
+          <Button variant="outline" onClick={handleClose}>
             Annuler
           </Button>
-          <Button
-            onClick={handleSave}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
+          <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white">
             Créer le service
           </Button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddServiceModal
+export default AddServiceModal;

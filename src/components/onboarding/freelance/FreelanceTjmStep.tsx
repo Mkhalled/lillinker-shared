@@ -8,10 +8,7 @@ interface FreelanceTjmStepProps {
   setFormData: (updater: (prev: FreelanceFormData) => FreelanceFormData) => void;
 }
 
-export const FreelanceTjmStep = ({
-  formData,
-  setFormData
-}: FreelanceTjmStepProps) => {
+export const FreelanceTjmStep = ({ formData, setFormData }: FreelanceTjmStepProps) => {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="space-y-4">
@@ -21,7 +18,9 @@ export const FreelanceTjmStep = ({
             type="number"
             label="TJM souhaité (€)"
             value={formData.tjm}
-            onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, tjm: e.target.value }))}
+            onChange={e =>
+              setFormData((prev: FreelanceFormData) => ({ ...prev, tjm: e.target.value }))
+            }
             placeholder="500"
             min="0"
             step="10"
@@ -32,7 +31,9 @@ export const FreelanceTjmStep = ({
             type="number"
             label="Nombre de jours par semaine"
             value={formData.days}
-            onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, days: e.target.value }))}
+            onChange={e =>
+              setFormData((prev: FreelanceFormData) => ({ ...prev, days: e.target.value }))
+            }
             placeholder="5"
             min="1"
             max="7"

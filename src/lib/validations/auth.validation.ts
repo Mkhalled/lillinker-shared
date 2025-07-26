@@ -10,58 +10,67 @@ export const InitialRegistrationSchema = z.object({
   phone_number: z.string().optional(),
 });
 
-export const CompanyOnboardingSchema = z.object({
-  // Company data
-  company_name: z.string().min(2, 'Company name is required'),
-  company_description: z.string().optional(),
-  siret: z.string().min(1, 'SIRET number is required'),
-  consultant_count: z.number().min(1, 'Consultant count must be at least 1'),
-  management_fees: z.number().min(0, 'Management fees must be positive'),
-  
-  // Portage company flag and services
-  is_portage: z.boolean().default(false),
-  selected_portages: z.array(z.number()).optional(),
-  
-  // Selected platform services
-  selected_services: z.array(z.number()).optional(),
-  
-  // Selected metiers
-  selected_metiers: z.array(z.number()).min(1, 'Must select at least one metier'),
-  
-  // New services data (array of new services)
-  new_services: z.array(z.object({
-    service_label: z.string().min(1, 'Service label is required'),
+export const CompanyOnboardingSchema = z
+  .object({
+    // Company data
+    company_name: z.string().min(2, 'Company name is required'),
+    company_description: z.string().optional(),
+    siret: z.string().min(1, 'SIRET number is required'),
+    consultant_count: z.number().min(1, 'Consultant count must be at least 1'),
+    management_fees: z.number().min(0, 'Management fees must be positive'),
+
+    // Portage company flag and services
+    is_portage: z.boolean().default(false),
+    selected_portages: z.array(z.number()).optional(),
+
+    // Selected platform services
+    selected_services: z.array(z.number()).optional(),
+
+    // Selected metiers
+    selected_metiers: z.array(z.number()).min(1, 'Must select at least one metier'),
+
+    // New services data (array of new services)
+    new_services: z
+      .array(
+        z.object({
+          service_label: z.string().min(1, 'Service label is required'),
+          service_description: z.string().optional(),
+          data_type: z.enum(['TEXT', 'NUMBER', 'SELECT', 'RADIO']),
+          requires_data: z.boolean(),
+          data_label: z.string().optional(),
+          data_description: z.string().optional(),
+          choices: z.array(z.string()).optional(),
+        })
+      )
+      .optional(),
+
+    // Legacy single service fields (for backward compatibility)
+    service_label: z.string().optional(),
     service_description: z.string().optional(),
-    data_type: z.enum(['TEXT', 'NUMBER', 'SELECT', 'RADIO']),
-    requires_data: z.boolean(),
+    data_type: z.enum(['TEXT', 'NUMBER', 'SELECT', 'RADIO']).optional(),
+    requires_data: z.boolean().optional(),
     data_label: z.string().optional(),
     data_description: z.string().optional(),
     choices: z.array(z.string()).optional(),
-  })).optional(),
-  
-  // Legacy single service fields (for backward compatibility)
-  service_label: z.string().optional(),
-  service_description: z.string().optional(),
-  data_type: z.enum(['TEXT', 'NUMBER', 'SELECT', 'RADIO']).optional(),
-  requires_data: z.boolean().optional(),
-  data_label: z.string().optional(),
-  data_description: z.string().optional(),
-  choices: z.array(z.string()).optional(),
-}).refine((data) => {
-  // Either must have selected services OR provide new service data (array or legacy single)
-  const hasSelectedServices = data.selected_services && data.selected_services.length > 0;
-  const hasNewServices = data.new_services && data.new_services.length > 0;
-  const hasLegacyNewService = data.service_label && data.service_label.trim() !== '';
-  return hasSelectedServices || hasNewServices || hasLegacyNewService;
-}, {
-  message: "Must select at least one service or create a new service",
-  path: ["selected_services"],
-});
+  })
+  .refine(
+    data => {
+      // Either must have selected services OR provide new service data (array or legacy single)
+      const hasSelectedServices = data.selected_services && data.selected_services.length > 0;
+      const hasNewServices = data.new_services && data.new_services.length > 0;
+      const hasLegacyNewService = data.service_label && data.service_label.trim() !== '';
+      return hasSelectedServices || hasNewServices || hasLegacyNewService;
+    },
+    {
+      message: 'Must select at least one service or create a new service',
+      path: ['selected_services'],
+    }
+  );
 
 export const FreelanceOnboardingSchema = z.object({
   // Freelance data
   metier_id: z.number().min(1, 'Metier selection is required'),
-  
+
   // Freelance request data
   mission_status: z.enum(['OPEN', 'CLOSED', 'PENDING']).default('OPEN'),
   client_name: z.string().optional(),
@@ -70,30 +79,36 @@ export const FreelanceOnboardingSchema = z.object({
   priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).default('MEDIUM'),
   tjm: z.number().min(1, 'Daily rate (TJM) is required'),
   days: z.number().min(0.5, 'Days must be at least 0.5'),
-  
+
   // Portage preferences
   wants_portage: z.boolean().default(false),
   selected_portages: z.array(z.number()).optional(),
-  
+
   // Service requirements - array of service objects with required flags
-  selected_services: z.array(z.object({
-    serviceId: z.number(),
-    isRequired: z.boolean(),
-    responseData: z.string().optional(),
-  })).optional(),
-  
+  selected_services: z
+    .array(
+      z.object({
+        serviceId: z.number(),
+        isRequired: z.boolean(),
+        responseData: z.string().optional(),
+      })
+    )
+    .optional(),
+
   // Service responses (for backward compatibility, will be merged with selected_services)
   service_responses: z.record(z.string(), z.string()).optional(),
 });
 
-export const SetPasswordSchema = z.object({
-  token: z.string(),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+export const SetPasswordSchema = z
+  .object({
+    token: z.string(),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 export type InitialRegistration = z.infer<typeof InitialRegistrationSchema>;
 export type CompanyOnboarding = z.infer<typeof CompanyOnboardingSchema>;

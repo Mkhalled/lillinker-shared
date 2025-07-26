@@ -29,19 +29,20 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
   // Use custom hooks
   const { formData, setFormData, clearFormData } = useFreelanceForm();
-  const { currentStep, handleNext, handlePrevious, goToNextStep, clearStepProgress } = useFreelanceNavigation(8, clearFormData);
+  const { currentStep, handleNext, handlePrevious, goToNextStep, clearStepProgress } =
+    useFreelanceNavigation(8, clearFormData);
   const { isStepValid } = useFreelanceValidation(formData, currentStep, platformServices);
-  const { 
-    handleServiceToggle, 
-    handleServiceRequiredChange, 
-    handleServiceDataChange, 
-    handlePortageToggle, 
-    parseChoices, 
-    handleMultipleSelectChange 
+  const {
+    handleServiceToggle,
+    handleServiceRequiredChange,
+    handleServiceDataChange,
+    handlePortageToggle,
+    parseChoices,
+    handleMultipleSelectChange,
   } = useFreelanceHandlers(setFormData);
   const { isLoading, error, setError, handleComplete } = useFreelanceCompletion(
-    formData, 
-    clearFormData, 
+    formData,
+    clearFormData,
     goToNextStep
   );
 
@@ -63,7 +64,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             setFormData={setFormData}
             metiers={metiers}
           />
-        )
+        );
 
       case 2:
         return (
@@ -72,7 +73,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             setFormData={setFormData}
             metiers={metiers}
           />
-        )
+        );
 
       case 3:
         return (
@@ -82,15 +83,10 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             portages={portages}
             handlePortageToggle={handlePortageToggle}
           />
-        )
+        );
 
       case 4:
-        return (
-          <FreelanceTjmStep
-            formData={formData}
-            setFormData={setFormData}
-          />
-        )
+        return <FreelanceTjmStep formData={formData} setFormData={setFormData} />;
       case 5:
         return (
           <FreelanceServicesStep
@@ -104,15 +100,10 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             parseChoices={parseChoices}
             error={error || undefined}
           />
-        )
+        );
 
       case 6:
-        return (
-          <FreelancePriorityStep
-            formData={formData}
-            setFormData={setFormData}
-          />
-        )
+        return <FreelancePriorityStep formData={formData} setFormData={setFormData} />;
 
       case 7:
         return (
@@ -123,61 +114,61 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             platformServices={platformServices}
             portages={portages}
           />
-        )
-       
+        );
+
       case 8:
         return <SuccessStep email={formData.email} />;
 
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   const getStepTitle = () => {
     switch (currentStep) {
       case 1:
-        return "Informations personnelles"
+        return 'Informations personnelles';
       case 2:
-        return "Situation actuelle"
+        return 'Situation actuelle';
       case 3:
-        return "Société de portage"
+        return 'Société de portage';
       case 4:
-        return "TJM et disponibilité"
+        return 'TJM et disponibilité';
       case 5:
-        return "Services souhaités"
+        return 'Services souhaités';
       case 6:
-        return "Priorité de la demande"
+        return 'Priorité de la demande';
       case 7:
-        return "Récapitulatif"
+        return 'Récapitulatif';
       case 8:
-        return "Demande envoyée"
+        return 'Demande envoyée';
       default:
-        return ""
+        return '';
     }
-  }
+  };
 
   const getStepDescription = () => {
     switch (currentStep) {
       case 1:
-        return "Renseignez vos informations de base"
+        return 'Renseignez vos informations de base';
       case 2:
-        return "Avez-vous une mission actuellement ?"
+        return 'Avez-vous une mission actuellement ?';
       case 3:
-        return "Services de portage salarial"
+        return 'Services de portage salarial';
       case 4:
-        return "Définissez votre tarif et disponibilité"
+        return 'Définissez votre tarif et disponibilité';
       case 5:
-        return "Choisissez les services qui vous intéressent (données obligatoires si sélectionnés)"
+        return 'Choisissez les services qui vous intéressent (données obligatoires si sélectionnés)';
       case 6:
-        return "Définissez l'urgence de votre demande"
+        return "Définissez l'urgence de votre demande";
       case 7:
-        return "Vérifiez vos informations avant l'envoi"
+        return "Vérifiez vos informations avant l'envoi";
       case 8:
-        return "Votre demande a été transmise"
+        return 'Votre demande a été transmise';
       default:
-        return ""
+        return '';
     }
-  }
+  };
 
   return (
     <ModalWrapper

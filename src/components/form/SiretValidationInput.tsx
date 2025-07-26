@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import InputField from './input/InputField';
 
 interface SiretValidationInputProps {
@@ -17,10 +18,10 @@ export const SiretValidationInput = ({
   siret,
   onSiretChange,
   onSiretExistsChange,
-  label = "SIRET *",
-  placeholder = "12345678901234",
+  label = 'SIRET *',
+  placeholder = '12345678901234',
   required = true,
-  id = "siret"
+  id = 'siret',
 }: SiretValidationInputProps) => {
   const [siretExists, setSiretExists] = useState(false);
   const [checkingSiret, setCheckingSiret] = useState(false);
@@ -75,12 +76,14 @@ export const SiretValidationInput = ({
 
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="text-sm font-medium text-gray-700">{label}</label>
+      <label htmlFor={id} className="text-sm font-medium text-gray-700">
+        {label}
+      </label>
       <div className="relative">
         <InputField
           id={id}
           value={siret}
-          onChange={(e) => handleSiretChange(e.target.value)}
+          onChange={e => handleSiretChange(e.target.value)}
           placeholder={placeholder}
           required={required}
           error={siretExists}
@@ -93,10 +96,12 @@ export const SiretValidationInput = ({
           </div>
         )}
       </div>
-      
+
       {/* SIRET exists error */}
       {siretExists && siret && (
-        <p className="text-xs text-red-600">Ce numéro SIRET est déjà utilisé par une autre société</p>
+        <p className="text-xs text-red-600">
+          Ce numéro SIRET est déjà utilisé par une autre société
+        </p>
       )}
     </div>
   );

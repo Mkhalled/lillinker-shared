@@ -11,7 +11,12 @@ export const transporter = createTransport({
 });
 
 // Generate verification email HTML without React components
-const generateVerificationEmailHTML = (firstName: string, verificationUrl: string, appName: string, currentYear: number) => {
+const generateVerificationEmailHTML = (
+  firstName: string,
+  verificationUrl: string,
+  appName: string,
+  currentYear: number
+) => {
   return `
     <!DOCTYPE html>
     <html lang="fr">
@@ -135,9 +140,14 @@ export const sendVerificationEmail = async (email: string, token: string, firstN
   const appName = process.env.NEXT_PUBLIC_APP_NAME || 'LiLLinker';
   const verificationUrl = `${baseUrl}/auth/verify-email?token=${token}`;
   const currentYear = new Date().getFullYear();
-  
-  const verificationEmailHTML = generateVerificationEmailHTML(firstName, verificationUrl, appName, currentYear);
-  
+
+  const verificationEmailHTML = generateVerificationEmailHTML(
+    firstName,
+    verificationUrl,
+    appName,
+    currentYear
+  );
+
   await transporter.sendMail({
     from: process.env.EMAIL_FROM,
     to: email,
@@ -147,7 +157,12 @@ export const sendVerificationEmail = async (email: string, token: string, firstN
 };
 
 // Generate account activation email HTML
-const generateActivationEmailHTML = (fullName: string, loginUrl: string, appName: string, currentYear: number) => {
+const generateActivationEmailHTML = (
+  fullName: string,
+  loginUrl: string,
+  appName: string,
+  currentYear: number
+) => {
   return `
     <!DOCTYPE html>
     <html lang="fr">
@@ -217,9 +232,9 @@ export const sendAccountActivationEmail = async (email: string, fullName: string
   const appName = process.env.NEXT_PUBLIC_APP_NAME || 'LilLinker';
   const loginUrl = `${baseUrl}/auth/login`;
   const currentYear = new Date().getFullYear();
-  
+
   const activationEmailHTML = generateActivationEmailHTML(fullName, loginUrl, appName, currentYear);
-  
+
   await transporter.sendMail({
     from: process.env.EMAIL_FROM,
     to: email,

@@ -40,7 +40,7 @@ export const useFreelanceCompletion = (
           first_name: currentFormData.firstName,
           last_name: currentFormData.lastName,
           email: currentFormData.email,
-          role: "FREELANCE",
+          role: 'FREELANCE',
           phone_number: currentFormData.phone,
         }),
       });
@@ -51,7 +51,7 @@ export const useFreelanceCompletion = (
       }
 
       const signupData = await signupResponse.json();
-      
+
       // Step 2: Freelance onboarding
       const onboardingData = {
         userId: signupData.userId,
@@ -60,15 +60,18 @@ export const useFreelanceCompletion = (
         priority: currentFormData.priority,
         tjm: parseFloat(currentFormData.tjm) || 1,
         days: parseFloat(currentFormData.days) || 0.5,
-        wants_portage: currentFormData.wantsPortage === "yes",
-        selected_portages: currentFormData.wantsPortage === "yes" ? currentFormData.selectedPortages.map((id: string) => parseInt(id)) : [],
+        wants_portage: currentFormData.wantsPortage === 'yes',
+        selected_portages:
+          currentFormData.wantsPortage === 'yes'
+            ? currentFormData.selectedPortages.map((id: string) => parseInt(id))
+            : [],
         selected_services: currentFormData.selectedServices,
         // Only include client fields if they have values
         ...(currentFormData.clientName && { client_name: currentFormData.clientName }),
         ...(currentFormData.clientAddress && { client_address: currentFormData.clientAddress }),
         ...(currentFormData.clientSector && { client_sector: currentFormData.clientSector }),
       };
-      
+
       const onboardingResponse = await fetch('/api/auth/onboarding/freelance', {
         method: 'POST',
         headers: {
@@ -76,12 +79,12 @@ export const useFreelanceCompletion = (
         },
         body: JSON.stringify(onboardingData),
       });
-      
+
       if (!onboardingResponse.ok) {
         const errorData = await onboardingResponse.json();
         throw new Error(errorData.error || 'Freelance onboarding failed');
       }
-      
+
       // Clear form data on successful completion
       clearFormData();
       // Show success step

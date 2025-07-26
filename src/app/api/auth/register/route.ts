@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
 import { InitialRegistrationSchema } from '@/lib/validations/auth.validation';
 import { AuthService } from '@/services';
-import {prisma} from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   const logContext = {
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     logger.info('Registration API endpoint called', logContext);
 
     const body = await request.json();
-    
+
     logger.debug('Registration request body received', {
       ...logContext,
       email: body.email,
@@ -33,11 +33,11 @@ export async function POST(request: NextRequest) {
     });
 
     // Transaction: registration and email verification
-  const user = await prisma.$transaction(async (tx) => {
-  const { user } = await AuthService.createUser(validatedData, tx);
-  await AuthService.sendVerificationEmail(user.id, tx);
-   return user;
-});
+    const user = await prisma.$transaction(async tx => {
+      const { user } = await AuthService.createUser(validatedData, tx);
+      await AuthService.sendVerificationEmail(user.id, tx);
+      return user;
+    });
 
     logger.info('Registration API completed successfully', {
       ...logContext,
@@ -54,17 +54,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     logger.error('Registration API failed', error as Error, logContext);
-    
+
     if (error instanceof Error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

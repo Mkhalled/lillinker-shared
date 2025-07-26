@@ -1,84 +1,84 @@
 import { randomBytes } from 'crypto';
 
+import { Prisma } from '@prisma/client';
 import { hash } from 'bcryptjs';
 
 import { logger } from '@/lib/logger';
 import { sendVerificationEmail } from '@/lib/mailer';
 import { prisma } from '@/lib/prisma';
 import type { InitialRegistration } from '@/lib/validations/auth.validation';
-import { Prisma } from '@prisma/client';
 
 type TransactionClient = Prisma.TransactionClient;
 export class AuthService {
   /**
    * Create a new user account with verification token
    */
-    static async createUser(data: InitialRegistration, tx: TransactionClient) {
-        const logContext = {
-          operation: 'createUser',
-          email: data.email,
-          role: data.role,
-        };
+  static async createUser(data: InitialRegistration, tx: TransactionClient) {
+    const logContext = {
+      operation: 'createUser',
+      email: data.email,
+      role: data.role,
+    };
 
-        try {
-          logger.info('Starting user creation process within transaction', logContext);
+    try {
+      logger.info('Starting user creation process within transaction', logContext);
 
-          // Check if user already exists using the transactional client 'tx'
-          const existingUser = await tx.user.findUnique({
-            where: { email: data.email },
-          });
+      // Check if user already exists using the transactional client 'tx'
+      const existingUser = await tx.user.findUnique({
+        where: { email: data.email },
+      });
 
-          if (existingUser) {
-            logger.warn('User creation attempt with existing email', {
-              ...logContext,
-              existingUserId: existingUser.id,
-            });
-            throw new Error('Un utilisateur avec cette adresse e-mail existe déjà');
-          }
-
-          // Generate verification token
-          const verificationToken = randomBytes(32).toString('hex');
-          const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-
-          logger.debug('Generated verification token', {
-            ...logContext,
-            expiresAt: verificationTokenExpires,
-          });
-
-          // Create user with temporary password using the transactional client 'tx'
-          const tempPassword = await hash(randomBytes(32).toString('hex'), 12);
-
-          const user = await tx.user.create({
-            data: {
-              first_name: data.first_name,
-              last_name: data.last_name,
-              email: data.email,
-              password: tempPassword,
-              role: data.role,
-              phone_number: data.phone_number,
-              email_verified: false,
-              verification_token: verificationToken,
-              verification_token_expires: verificationTokenExpires,
-              status: false,
-            },
-          });
-
-          logger.info('User created successfully within transaction', {
-            ...logContext,
-            userId: user.id,
-          });
-          
-          // The user object now contains the token. We can just return the user.
-          return { user };
-        } catch (error) {
-          logger.error('User creation failed within transaction', error as Error, logContext);
-          throw error; // This will cause the transaction to roll back
-        }
+      if (existingUser) {
+        logger.warn('User creation attempt with existing email', {
+          ...logContext,
+          existingUserId: existingUser.id,
+        });
+        throw new Error('Un utilisateur avec cette adresse e-mail existe déjà');
       }
+
+      // Generate verification token
+      const verificationToken = randomBytes(32).toString('hex');
+      const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+      logger.debug('Generated verification token', {
+        ...logContext,
+        expiresAt: verificationTokenExpires,
+      });
+
+      // Create user with temporary password using the transactional client 'tx'
+      const tempPassword = await hash(randomBytes(32).toString('hex'), 12);
+
+      const user = await tx.user.create({
+        data: {
+          first_name: data.first_name,
+          last_name: data.last_name,
+          email: data.email,
+          password: tempPassword,
+          role: data.role,
+          phone_number: data.phone_number,
+          email_verified: false,
+          verification_token: verificationToken,
+          verification_token_expires: verificationTokenExpires,
+          status: false,
+        },
+      });
+
+      logger.info('User created successfully within transaction', {
+        ...logContext,
+        userId: user.id,
+      });
+
+      // The user object now contains the token. We can just return the user.
+      return { user };
+    } catch (error) {
+      logger.error('User creation failed within transaction', error as Error, logContext);
+      throw error; // This will cause the transaction to roll back
+    }
+  }
   /**
    * Send verification email to user
    */
- static async sendVerificationEmail(userId: number, tx: TransactionClient) {
+  static async sendVerificationEmail(userId: number, tx: TransactionClient) {
     const logContext = {
       operation: 'sendVerificationEmail',
       userId,
@@ -106,11 +106,7 @@ export class AuthService {
 
       // The method's only job is now to perform the side-effect: sending the email.
       // It uses the token that was created in the 'createUser' step.
-      await sendVerificationEmail(
-        user.email,
-        user.verification_token,
-        user.first_name
-      );
+      await sendVerificationEmail(user.email, user.verification_token, user.first_name);
 
       logger.info('Verification email sent successfully', {
         ...logContext,
@@ -137,7 +133,7 @@ export class AuthService {
       logger.info('Starting email verification and password setting', logContext);
 
       const user = await prisma.user.findUnique({
-        where: { 
+        where: {
           verification_token: token,
           verification_token_expires: {
             gt: new Date(),

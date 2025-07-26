@@ -5,6 +5,7 @@
 The Lillinker platform implements a secure email verification system using crypto-generated tokens, bcrypt password hashing, and a comprehensive verification flow. This system is shared between both Company and Freelance user registration flows and ensures email authenticity and account security before allowing users to access platform features.
 
 **Related Documentation:**
+
 - **[Company Signup](./company-signup.md)** - Company registration flow that uses this verification system
 - **[Freelance Signup](./freelance-signup.md)** - Freelance registration flow that uses this verification system
 - **[Main Signup Overview](./signup.md)** - Complete system architecture overview
@@ -77,6 +78,7 @@ static async initiateRegistration(data: InitialRegistration) {
 ```
 
 **Initial User State After Registration:**
+
 - `email_verified: false` - Email not yet verified
 - `status: false` - Account not activated (activated after successful onboarding)
 - `verification_token: string` - 64-character hex token
@@ -107,7 +109,7 @@ static async sendVerificationEmail(userId: number) {
 
   // Send email with verification link
   const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify-email?token=${user.verification_token}`;
-  
+
   await sendEmail({
     to: user.email,
     subject: 'Vérifiez votre adresse e-mail - Lillinker',
@@ -123,12 +125,19 @@ static async sendVerificationEmail(userId: number) {
 ```
 
 #### Verification Email Content
+
 ```html
 <!-- Email Template: email-verification -->
 <h2>Vérification de votre adresse e-mail</h2>
 <p>Bonjour {{firstName}} {{lastName}},</p>
-<p>Merci de vous être inscrit sur Lillinker. Veuillez cliquer sur le lien ci-dessous pour vérifier votre adresse e-mail et définir votre mot de passe :</p>
-<a href="{{verificationLink}}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+<p>
+  Merci de vous être inscrit sur Lillinker. Veuillez cliquer sur le lien ci-dessous pour vérifier
+  votre adresse e-mail et définir votre mot de passe :
+</p>
+<a
+  href="{{verificationLink}}"
+  style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;"
+>
   Vérifier mon adresse e-mail
 </a>
 <p><strong>Important :</strong> Ce lien expire dans {{expirationHours}} heures.</p>
@@ -137,12 +146,14 @@ static async sendVerificationEmail(userId: number) {
 ### Phase 3: Token Validation and Password Setting
 
 #### Token Security Features
+
 - **Crypto-secure generation**: Uses `crypto.randomBytes(32)` for 256-bit entropy
 - **Hex encoding**: 64-character hexadecimal string
 - **Expiration**: 24-hour validity window
 - **Single-use**: Token cleared after successful verification
 
 #### Verification Link Format
+
 ```
 https://yourdomain.com/auth/verify-email?token=a1b2c3d4e5f6...64chars
 ```
@@ -150,54 +161,50 @@ https://yourdomain.com/auth/verify-email?token=a1b2c3d4e5f6...64chars
 #### API Endpoints
 
 **1. GET Endpoint - Email Link Redirect**
+
 ```typescript
 // GET /api/auth/verify-email?token=abc123
 // Redirects to password setting page with token
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token = searchParams.get('token');
-  
+
   if (!token) {
     return NextResponse.redirect('/auth/error?message=missing-token');
   }
-  
+
   // Redirect to password setting page
   return NextResponse.redirect(`/auth/set-password?token=${token}`);
 }
 ```
 
 **2. POST Endpoint - Verify Email and Set Password**
+
 ```typescript
 // POST /api/auth/verify-email
 // Verifies token and sets user password
 export async function POST(request: NextRequest) {
   try {
     const { token, password, confirmPassword } = await request.json();
-    
+
     // Validate request data
     if (!token || !password || !confirmPassword) {
-      return NextResponse.json(
-        { error: 'Token et mots de passe requis' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Token et mots de passe requis' }, { status: 400 });
     }
-    
+
     if (password !== confirmPassword) {
       return NextResponse.json(
         { error: 'Les mots de passe ne correspondent pas' },
         { status: 400 }
       );
     }
-    
+
     // Verify email and set password
     const result = await AuthService.verifyEmailAndSetPassword(token, password);
-    
+
     return NextResponse.json(result);
   } catch (error) {
-    return NextResponse.json(
-      { error: error.message },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }
 ```
@@ -211,7 +218,7 @@ Users verify their email and set their actual password:
 static async verifyEmailAndSetPassword(token: string, password: string) {
   // 1. Find user with valid token
   const user = await prisma.user.findFirst({
-    where: { 
+    where: {
       verification_token: token,
       verification_token_expires: {
         gt: new Date(), // Token not expired
@@ -244,8 +251,8 @@ static async verifyEmailAndSetPassword(token: string, password: string) {
     },
   });
 
-  return { 
-    success: true, 
+  return {
+    success: true,
     message: 'Email vérifié et mot de passe défini avec succès',
     user: {
       id: updatedUser.id,
@@ -315,7 +322,7 @@ export default function SetPasswordPage() {
             Veuillez créer un mot de passe sécurisé pour votre compte
           </p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="password" className="block text-sm font-medium">
@@ -331,7 +338,7 @@ export default function SetPasswordPage() {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
-          
+
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium">
               Confirmer le mot de passe
@@ -346,11 +353,11 @@ export default function SetPasswordPage() {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
-          
+
           {error && (
             <div className="text-red-600 text-sm">{error}</div>
           )}
-          
+
           <button
             type="submit"
             disabled={isLoading}
@@ -368,6 +375,7 @@ export default function SetPasswordPage() {
 ## Database Models
 
 ### User Table Schema
+
 ```sql
 User {
   id: String (Primary Key)
@@ -383,7 +391,7 @@ User {
   verification_token_expires: DateTime? -- 24-hour expiration
   created_at: DateTime (Default: now())
   updated_at: DateTime (Updated on change)
-  
+
   // Relations
   company: Company?
   freelance: Freelance?
@@ -399,14 +407,14 @@ stateDiagram-v2
     EmailSent --> TokenValidated: User clicks email link
     TokenValidated --> Verified: Password set successfully
     Verified --> Active: Account fully activated
-    
+
     note right of Registered
         email_verified: false
         status: false
         verification_token: 64-char hex
         password: temporary
     end note
-    
+
     note right of Verified
         email_verified: true
         status: true
@@ -418,16 +426,17 @@ stateDiagram-v2
 ## Integration with Registration Flows
 
 ### Company Registration Integration
+
 ```typescript
 // After company onboarding completion
 const result = await prisma.$transaction(async () => {
   // 1. Create company profile
   const company = await CompanyService.createCompany(userId, companyData);
-  
+
   // 2. Link services and métiers
   await CompanyService.linkPlatformServices(company.id, serviceIds);
   await CompanyService.linkMetiers(company.id, metierIds);
-  
+
   return { company };
 });
 
@@ -436,16 +445,17 @@ await AuthService.sendVerificationEmail(parseInt(userId));
 ```
 
 ### Freelance Registration Integration
+
 ```typescript
 // After freelance onboarding completion
 const result = await prisma.$transaction(async () => {
   // 1. Create freelance profile
   const freelance = await FreelanceService.createFreelanceProfile(userId, freelanceData);
-  
+
   // 2. Link services and portages
   await FreelanceService.linkPlatformServices(freelance.id, serviceIds);
   await FreelanceService.linkPortages(freelance.id, portageIds);
-  
+
   return { freelance };
 });
 
@@ -456,18 +466,21 @@ await AuthService.sendVerificationEmail(parseInt(userId));
 ## Security Implementation
 
 ### Token Security
+
 - **Crypto-secure tokens**: `crypto.randomBytes(32).toString('hex')` generates 256-bit entropy
 - **24-hour expiration**: Automatic token invalidation after 24 hours
 - **Single-use tokens**: Cleared immediately after successful verification
 - **Unique constraint**: Database ensures no token duplication
 
 ### Password Security
+
 - **Temporary passwords**: Initial crypto-generated secure placeholder until verification
 - **bcrypt hashing**: 12 salt rounds for production-level security
 - **Password validation**: Minimum 8 characters (configurable)
 - **Secure replacement**: Temporary password completely replaced during verification
 
 ### Database Security
+
 - **Transaction integrity**: Atomic operations ensure data consistency
 - **Constraint validation**: Unique email and token enforcement
 - **Status controls**: Multi-level activation flags (email_verified + status)
@@ -479,6 +492,7 @@ await AuthService.sendVerificationEmail(parseInt(userId));
 The verification endpoints handle comprehensive error scenarios:
 
 #### 1. Missing or Invalid Token
+
 ```typescript
 // GET /api/auth/verify-email (missing token)
 {
@@ -488,12 +502,13 @@ The verification endpoints handle comprehensive error scenarios:
 
 // POST /api/auth/verify-email (invalid token)
 {
-  "error": "Token de vérification invalide ou expiré", 
+  "error": "Token de vérification invalide ou expiré",
   "code": "INVALID_TOKEN"
 }
 ```
 
 #### 2. Expired Token
+
 ```typescript
 {
   "error": "Token de vérification expiré",
@@ -503,6 +518,7 @@ The verification endpoints handle comprehensive error scenarios:
 ```
 
 #### 3. Already Verified
+
 ```typescript
 {
   "error": "Email déjà vérifié",
@@ -512,6 +528,7 @@ The verification endpoints handle comprehensive error scenarios:
 ```
 
 #### 4. Password Validation Errors
+
 ```typescript
 {
   "error": "Le mot de passe doit contenir au moins 8 caractères",
@@ -563,17 +580,15 @@ describe('Email Verification API', () => {
         verification_token_expires: futureDate,
       });
 
-      const response = await request(app)
-        .post('/api/auth/verify-email')
-        .send({
-          token: 'valid-token',
-          password: 'SecurePassword123!',
-          confirmPassword: 'SecurePassword123!',
-        });
+      const response = await request(app).post('/api/auth/verify-email').send({
+        token: 'valid-token',
+        password: 'SecurePassword123!',
+        confirmPassword: 'SecurePassword123!',
+      });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      
+
       // Verify user state updated
       const updatedUser = await prisma.user.findUnique({
         where: { id: user.id },
@@ -590,13 +605,11 @@ describe('Email Verification API', () => {
         verification_token_expires: pastDate,
       });
 
-      const response = await request(app)
-        .post('/api/auth/verify-email')
-        .send({
-          token: 'expired-token',
-          password: 'SecurePassword123!',
-          confirmPassword: 'SecurePassword123!',
-        });
+      const response = await request(app).post('/api/auth/verify-email').send({
+        token: 'expired-token',
+        password: 'SecurePassword123!',
+        confirmPassword: 'SecurePassword123!',
+      });
 
       expect(response.status).toBe(400);
       expect(response.body.code).toBe('EXPIRED_TOKEN');
@@ -609,13 +622,11 @@ describe('Email Verification API', () => {
         verification_token_expires: futureDate,
       });
 
-      const response = await request(app)
-        .post('/api/auth/verify-email')
-        .send({
-          token: 'valid-token',
-          password: 'Password123!',
-          confirmPassword: 'DifferentPassword!',
-        });
+      const response = await request(app).post('/api/auth/verify-email').send({
+        token: 'valid-token',
+        password: 'Password123!',
+        confirmPassword: 'DifferentPassword!',
+      });
 
       expect(response.status).toBe(400);
       expect(response.body.code).toBe('PASSWORD_MISMATCH');
@@ -640,6 +651,7 @@ describe('Email Verification API', () => {
 ### Success States
 
 After successful verification, users see:
+
 - **Confirmation message**: "Email vérifié avec succès"
 - **Account status**: Full platform access
 - **Login capability**: Can authenticate with email/password

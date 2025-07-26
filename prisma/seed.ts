@@ -127,9 +127,10 @@ async function main(): Promise<void> {
     const mainCompany = await createCompany({
       admin_user_id: staAdminUser.id,
       name: 'STA Portage',
-      description: 'Société de portage salarial spécialisée dans l\'accompagnement des freelances et consultants indépendants',
+      description:
+        "Société de portage salarial spécialisée dans l'accompagnement des freelances et consultants indépendants",
       logo: 'https://lillinker.com/logos/sta-portage.png',
-      siret: "123456789",
+      siret: '123456789',
       consultant_count: 150,
       management_fees: 8.5,
     });
@@ -138,9 +139,9 @@ async function main(): Promise<void> {
     const itgPortage = await createCompany({
       admin_user_id: itgAdminUser.id,
       name: 'ITG Portage',
-      description: 'Société de portage salarial pour les métiers du numérique et de l\'IT',
+      description: "Société de portage salarial pour les métiers du numérique et de l'IT",
       logo: 'https://lillinker.com/logos/itg-portage.png',
-      siret: "234567890",
+      siret: '234567890',
       consultant_count: 200,
       management_fees: 7.8,
     });
@@ -240,7 +241,8 @@ async function main(): Promise<void> {
     const syndicatPortageSalarial = await prisma.portage.create({
       data: {
         name: 'Syndicat National',
-        description: 'Organisation professionnelle représentant les entreprises de portage salarial',
+        description:
+          'Organisation professionnelle représentant les entreprises de portage salarial',
       },
     });
 
@@ -368,7 +370,8 @@ async function main(): Promise<void> {
       data: {
         user_id: adminUser.id,
         label: 'Taux de Gestion',
-        description: 'Pourcentage prélevé par la société de portage sur le chiffre d\'affaires du consultant',
+        description:
+          "Pourcentage prélevé par la société de portage sur le chiffre d'affaires du consultant",
         data_type: 'NUMBER',
         requires_data: true,
         data_label: 'Taux de gestion (%)',
@@ -392,7 +395,7 @@ async function main(): Promise<void> {
           'Assistance juridique',
           'Gestion administrative',
           'Accompagnement commercial',
-          'Mutuelle collective'
+          'Mutuelle collective',
         ],
         status: 'ACTIVE',
       },
@@ -416,11 +419,11 @@ async function main(): Promise<void> {
       data: {
         user_id: adminUser.id,
         label: 'Frais de Dossier',
-        description: 'Frais d\'ouverture et de gestion du dossier consultant',
+        description: "Frais d'ouverture et de gestion du dossier consultant",
         data_type: 'NUMBER',
         requires_data: false,
         data_label: 'Frais de dossier (€)',
-        data_description: 'Montant des frais d\'ouverture de dossier',
+        data_description: "Montant des frais d'ouverture de dossier",
         status: 'ACTIVE',
       },
     });
@@ -492,7 +495,7 @@ async function main(): Promise<void> {
         mission_status: 'OPEN',
         client_name: 'Société Française Tech',
         client_address: '25 Rue de la République, 75011 Paris',
-        client_sector: 'Technologies de l\'Information',
+        client_sector: "Technologies de l'Information",
         priority: 'HIGH',
         tjm: 500.0,
         days: 30.0,
@@ -544,7 +547,9 @@ async function main(): Promise<void> {
         freelance_request_id: freelanceRequest1.id,
         service_option_id: platformService1.id,
         is_required: false,
-        response_data: { text: 'Nous recherchons un taux compétitif pour notre mission de développement' },
+        response_data: {
+          text: 'Nous recherchons un taux compétitif pour notre mission de développement',
+        },
       },
     });
 
@@ -553,7 +558,9 @@ async function main(): Promise<void> {
         freelance_request_id: freelanceRequest1.id,
         service_option_id: platformService2.id,
         is_required: true,
-        response_data: { selected: ['Assurance RC Pro', 'Gestion administrative', 'Formation continue'] },
+        response_data: {
+          selected: ['Assurance RC Pro', 'Gestion administrative', 'Formation continue'],
+        },
       },
     });
 
@@ -592,12 +599,13 @@ async function main(): Promise<void> {
         platform_service_id: platformService1.id,
         management_fees: 8.5,
         response_data: {
-          taux_gestion: "8.5%",
-          proposition: "Nous proposons un accompagnement complet pour votre mission de développement web",
-          delai_paiement: "30 jours",
-          services_inclus: ["Assurance RC Pro", "Formation continue", "Gestion administrative"],
+          taux_gestion: '8.5%',
+          proposition:
+            'Nous proposons un accompagnement complet pour votre mission de développement web',
+          delai_paiement: '30 jours',
+          services_inclus: ['Assurance RC Pro', 'Formation continue', 'Gestion administrative'],
           frais_dossier: 150,
-          contact_commercial: "sophie.laurent@sta-portage.com"
+          contact_commercial: 'sophie.laurent@sta-portage.com',
         },
       },
     });
@@ -609,12 +617,12 @@ async function main(): Promise<void> {
         platform_service_id: platformService1.id,
         management_fees: 7.8,
         response_data: {
-          taux_gestion: "7.8%",
-          proposition: "Spécialistes des métiers IT, nous offrons les meilleurs taux du marché",
-          delai_paiement: "15 jours",
-          services_inclus: ["Assurance RC Pro", "Assistance juridique", "Mutuelle collective"],
+          taux_gestion: '7.8%',
+          proposition: 'Spécialistes des métiers IT, nous offrons les meilleurs taux du marché',
+          delai_paiement: '15 jours',
+          services_inclus: ['Assurance RC Pro', 'Assistance juridique', 'Mutuelle collective'],
           frais_dossier: 0,
-          avantages: "Pas de frais de dossier, paiement rapide"
+          avantages: 'Pas de frais de dossier, paiement rapide',
         },
       },
     });
@@ -626,12 +634,12 @@ async function main(): Promise<void> {
         platform_service_id: platformService2.id,
         management_fees: 8.5,
         response_data: {
-          taux_gestion: "8.5%",
-          proposition: "Expertise en transformation digitale avec accompagnement personnalisé",
-          delai_paiement: "30 jours",
-          services_inclus: ["Assurance RC Pro", "Formation continue", "Accompagnement commercial"],
+          taux_gestion: '8.5%',
+          proposition: 'Expertise en transformation digitale avec accompagnement personnalisé',
+          delai_paiement: '30 jours',
+          services_inclus: ['Assurance RC Pro', 'Formation continue', 'Accompagnement commercial'],
           frais_dossier: 150,
-          expertise_sectorielle: "Spécialisation en conseil et transformation digitale"
+          expertise_sectorielle: 'Spécialisation en conseil et transformation digitale',
         },
       },
     });
@@ -648,14 +656,19 @@ async function main(): Promise<void> {
       metiersCreated: 10, // All job types from developer to formateur
       associationsCreated: 5, // Professional associations instead of services
       platformServices: [
-        platformService1.id, 
-        platformService2.id, 
-        platformService3.id, 
-        platformService4.id, 
+        platformService1.id,
+        platformService2.id,
+        platformService3.id,
+        platformService4.id,
         platformService5.id,
-        platformService6.id
+        platformService6.id,
       ],
-      freelanceRequests: [freelanceRequest1.id, freelanceRequest2.id, freelanceRequest3.id, freelanceRequest4.id],
+      freelanceRequests: [
+        freelanceRequest1.id,
+        freelanceRequest2.id,
+        freelanceRequest3.id,
+        freelanceRequest4.id,
+      ],
     });
   } catch (e) {
     logger.error('Error during seeding', e as Error);

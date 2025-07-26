@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import InputField from './input/InputField';
 
 interface EmailValidationInputProps {
@@ -17,10 +18,10 @@ export const EmailValidationInput = ({
   email,
   onEmailChange,
   onValidityChange,
-  label = "Email *",
-  placeholder = "marie.martin@societe.com",
+  label = 'Email *',
+  placeholder = 'marie.martin@societe.com',
   required = true,
-  id = "email"
+  id = 'email',
 }: EmailValidationInputProps) => {
   const [emailExists, setEmailExists] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
@@ -32,11 +33,11 @@ export const EmailValidationInput = ({
     if (!basicEmailRegex.test(email)) {
       return false;
     }
-    
+
     // Check for excluded domains (Gmail, Yahoo)
     const domain = email.split('@')[1]?.toLowerCase();
     const excludedDomains = ['gmail.com', 'yahoo.com', 'yahoo.fr'];
-    
+
     return !excludedDomains.includes(domain);
   };
 
@@ -92,12 +93,14 @@ export const EmailValidationInput = ({
 
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="text-sm font-medium text-gray-700">{label}</label>
+      <label htmlFor={id} className="text-sm font-medium text-gray-700">
+        {label}
+      </label>
       <div className="relative">
         <InputField
           id={id}
           value={email}
-          onChange={(e) => onEmailChange(e.target.value)}
+          onChange={e => onEmailChange(e.target.value)}
           placeholder={placeholder}
           required={required}
           error={emailExists}
@@ -110,12 +113,14 @@ export const EmailValidationInput = ({
           </div>
         )}
       </div>
-      
+
       {/* Email validation errors */}
       {email && !isValidBusinessEmail(email) && (
-        <p className="text-xs text-red-600">Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)</p>
+        <p className="text-xs text-red-600">
+          Veuillez utiliser une adresse email professionnelle (Gmail et Yahoo non acceptés)
+        </p>
       )}
-      
+
       {/* Email exists error */}
       {emailExists && email && (
         <p className="text-xs text-red-600">Cette adresse email est déjà utilisée</p>
@@ -131,10 +136,10 @@ export const useEmailValidation = () => {
     if (!basicEmailRegex.test(email)) {
       return false;
     }
-    
+
     const domain = email.split('@')[1]?.toLowerCase();
     const excludedDomains = ['gmail.com', 'yahoo.com', 'yahoo.fr'];
-    
+
     return !excludedDomains.includes(domain);
   };
 

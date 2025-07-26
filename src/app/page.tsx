@@ -54,9 +54,7 @@ const ComingSoonPage = () => {
       <div className="text-center max-w-4xl mx-auto">
         {/* Logo/Brand */}
         <div className="mb-12">
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-800 mb-4">
-            Lillinker
-          </h1>
+          <h1 className="text-5xl md:text-7xl font-bold text-gray-800 mb-4">Lillinker</h1>
           <div className="w-20 h-1 bg-blue-500 mx-auto rounded-full"></div>
         </div>
 
@@ -75,14 +73,14 @@ const ComingSoonPage = () => {
           <h3 className="text-xl md:text-2xl font-semibold mb-8 text-gray-700">
             Launch Date: September 10, 2025
           </h3>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-2xl mx-auto">
             {[
               { label: 'Days', value: timeLeft.days },
               { label: 'Hours', value: timeLeft.hours },
               { label: 'Minutes', value: timeLeft.minutes },
               { label: 'Seconds', value: timeLeft.seconds },
-            ].map((item) => (
+            ].map(item => (
               <div
                 key={item.label}
                 className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
@@ -100,12 +98,10 @@ const ComingSoonPage = () => {
 
         {/* Footer */}
         <div className="pt-8 border-t border-gray-300">
-          <p className="text-gray-500">
-            © 2025 Lillinker. All rights reserved.
-          </p>
+          <p className="text-gray-500">© 2025 Lillinker. All rights reserved.</p>
         </div>
       </div>
     </div>
   );
-}
+};
 export default ComingSoonPage;

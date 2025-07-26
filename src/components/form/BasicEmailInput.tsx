@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import InputField from './input/InputField';
 
 interface BasicEmailInputProps {
@@ -15,10 +16,10 @@ interface BasicEmailInputProps {
 export const BasicEmailInput = ({
   email,
   onEmailChange,
-  label = "Email *",
-  placeholder = "marie.martin@email.com",
+  label = 'Email *',
+  placeholder = 'marie.martin@email.com',
   required = true,
-  id = "email"
+  id = 'email',
 }: BasicEmailInputProps) => {
   const [emailExists, setEmailExists] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
@@ -75,12 +76,14 @@ export const BasicEmailInput = ({
 
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="text-sm font-medium text-gray-700">{label}</label>
+      <label htmlFor={id} className="text-sm font-medium text-gray-700">
+        {label}
+      </label>
       <div className="relative">
         <InputField
           id={id}
           value={email}
-          onChange={(e) => onEmailChange(e.target.value)}
+          onChange={e => onEmailChange(e.target.value)}
           placeholder={placeholder}
           required={required}
           error={emailExists}
@@ -93,12 +96,12 @@ export const BasicEmailInput = ({
           </div>
         )}
       </div>
-      
+
       {/* Basic email format validation */}
       {email && !isValidEmail(email) && (
         <p className="text-xs text-red-600">Veuillez saisir une adresse email valide</p>
       )}
-      
+
       {/* Email exists error */}
       {emailExists && email && (
         <p className="text-xs text-red-600">Cette adresse email est déjà utilisée</p>

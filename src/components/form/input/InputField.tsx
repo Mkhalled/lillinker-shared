@@ -61,7 +61,7 @@ const InputField: FC<InputProps> = ({
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
-      
+
       <input
         type={type}
         id={id}

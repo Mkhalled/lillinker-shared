@@ -1,7 +1,7 @@
-import { Compass, Eye, Users } from "lucide-react"
-import Image from "next/image"
+import { Compass, Eye, Users } from 'lucide-react';
+import Image from 'next/image';
 
-export const Services = () =>{
+export const Services = () => {
   return (
     <section className="py-20 bg-gradient-to-br from-[var(--primary-light)] to-blue-50">
       <div className="container mx-auto px-6 sm:px-8 lg:px-12">
@@ -22,8 +22,9 @@ export const Services = () =>{
             <div className="space-y-6">
               <p className="text-[var(--primary-color)] font-semibold text-lg">SERVICES</p>
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                Explorez les vrais <span className="text-[var(--primary-color)]">Obstacles</span> des indépendants,{" "}
-                <span className="text-[var(--primary-color)]">pas seulement</span> notre discours.
+                Explorez les vrais <span className="text-[var(--primary-color)]">Obstacles</span>{' '}
+                des indépendants, <span className="text-[var(--primary-color)]">pas seulement</span>{' '}
+                notre discours.
               </h2>
             </div>
 
@@ -33,10 +34,12 @@ export const Services = () =>{
                   <Compass className="w-6 h-6 text-[var(--primary-color)]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Un Canal Unique Et Unifié</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    Un Canal Unique Et Unifié
+                  </h3>
                   <p className="text-gray-600">
-                    Centralisez toutes vos communications et gérez vos projets de portage en toute simplicité grâce à
-                    notre plateforme unifiée.
+                    Centralisez toutes vos communications et gérez vos projets de portage en toute
+                    simplicité grâce à notre plateforme unifiée.
                   </p>
                 </div>
               </div>
@@ -48,8 +51,8 @@ export const Services = () =>{
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Transparence Totale</h3>
                   <p className="text-gray-600">
-                    Bénéficiez d&apos;une transparence complète sur les tarifs, les services et les conditions de chaque
-                    société de portage.
+                    Bénéficiez d&apos;une transparence complète sur les tarifs, les services et les
+                    conditions de chaque société de portage.
                   </p>
                 </div>
               </div>
@@ -61,8 +64,8 @@ export const Services = () =>{
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Best Service</h3>
                   <p className="text-gray-600">
-                    Profitez d&apos;un service client exceptionnel avec des conseillers experts disponibles pour vous
-                    accompagner.
+                    Profitez d&apos;un service client exceptionnel avec des conseillers experts
+                    disponibles pour vous accompagner.
                   </p>
                 </div>
               </div>
@@ -70,8 +73,8 @@ export const Services = () =>{
 
             <div className="pt-4">
               <p className="text-gray-600 mb-4">
-                Bienvenue à tous, Je cherche une boite pour faire une mission en freelance. Avez-vous des pistes svp ?
-                Merci
+                Bienvenue à tous, Je cherche une boite pour faire une mission en freelance.
+                Avez-vous des pistes svp ? Merci
               </p>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-[var(--primary-color)] rounded-full flex items-center justify-center">
@@ -87,5 +90,5 @@ export const Services = () =>{
         </div>
       </div>
     </section>
-  )
-}
+  );
+};

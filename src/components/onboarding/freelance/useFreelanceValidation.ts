@@ -65,13 +65,15 @@ export const useFreelanceValidation = (
   const isStepValid = () => {
     switch (currentStep) {
       case 1:
-        return formData.firstName && 
-               formData.lastName && 
-               formData.email && 
-               formData.phone && 
-               formData.metierId > 0 &&
-               isValidEmail(formData.email) &&
-               !emailExists;
+        return (
+          formData.firstName &&
+          formData.lastName &&
+          formData.email &&
+          formData.phone &&
+          formData.metierId > 0 &&
+          isValidEmail(formData.email) &&
+          !emailExists
+        );
       case 2:
         return formData.hasMission; // Must select a mission status
       case 3:
@@ -79,17 +81,19 @@ export const useFreelanceValidation = (
         return true;
       case 4:
         // Must have TJM and days
-        return formData.tjm && 
-               parseFloat(formData.tjm) >= 1 && 
-               formData.days && 
-               parseFloat(formData.days) >= 0.5;
+        return (
+          formData.tjm &&
+          parseFloat(formData.tjm) >= 1 &&
+          formData.days &&
+          parseFloat(formData.days) >= 0.5
+        );
       case 5: {
         // Services step validation
         // If no services are selected, step is valid (services are optional)
         if (formData.selectedServices.length === 0) {
           return true;
         }
-        
+
         // If services are selected, validate that required data is provided
         for (const selectedService of formData.selectedServices) {
           const service = platformServices.find(s => s.id === selectedService.serviceId);

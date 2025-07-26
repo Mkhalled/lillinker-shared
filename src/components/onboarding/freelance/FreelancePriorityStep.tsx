@@ -8,27 +8,25 @@ interface FreelancePriorityStepProps {
   setFormData: (updater: (prev: FreelanceFormData) => FreelanceFormData) => void;
 }
 
-export const FreelancePriorityStep = ({
-  formData,
-  setFormData
-}: FreelancePriorityStepProps) => {
+export const FreelancePriorityStep = ({ formData, setFormData }: FreelancePriorityStepProps) => {
   const priorities = [
-    { value: "HIGH", label: "Urgent (dans la semaine)", color: "text-red-600" },
-    { value: "MEDIUM", label: "Priorité moyenne (dans les 3 mois)", color: "text-yellow-600" },
-    { value: "LOW", label: "Pas urgent (quand c'est possible)", color: "text-green-600" }
+    { value: 'HIGH', label: 'Urgent (dans la semaine)', color: 'text-red-600' },
+    { value: 'MEDIUM', label: 'Priorité moyenne (dans les 3 mois)', color: 'text-yellow-600' },
+    { value: 'LOW', label: "Pas urgent (quand c'est possible)", color: 'text-green-600' },
   ];
 
   return (
     <div className="space-y-6">
-
       <div className="space-y-3">
-        {priorities.map((priority) => (
+        {priorities.map(priority => (
           <StyledRadio
             key={priority.value}
             name="priority"
             value={priority.value}
             checked={formData.priority === priority.value}
-            onChange={(e) => setFormData((prev: FreelanceFormData) => ({ ...prev, priority: e.target.value }))}
+            onChange={e =>
+              setFormData((prev: FreelanceFormData) => ({ ...prev, priority: e.target.value }))
+            }
             label={priority.label}
             labelClassName={priority.color}
           />

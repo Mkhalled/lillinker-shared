@@ -31,7 +31,7 @@ export const NavigationButtons = ({
   onComplete,
   onClose,
   completeButtonText,
-  nextButtonText
+  nextButtonText,
 }: NavigationButtonsProps) => {
   const handleNextClick = () => {
     if (isCompleteStep && onComplete) {
@@ -49,7 +49,7 @@ export const NavigationButtons = ({
   if (isCompletionStep) {
     return (
       <div className="flex justify-center">
-        <Button 
+        <Button
           onClick={onClose}
           className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 w-full sm:w-auto"
         >
@@ -63,9 +63,9 @@ export const NavigationButtons = ({
   return (
     <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
       {/* Previous Button */}
-      <Button 
-        variant="outline" 
-        onClick={onPrevious} 
+      <Button
+        variant="outline"
+        onClick={onPrevious}
         disabled={isFirstStep || isLoading}
         className="flex items-center justify-center space-x-2 w-full sm:w-auto order-2 sm:order-1"
         aria-label="Étape précédente"
@@ -98,19 +98,19 @@ interface NextButtonProps {
   nextButtonText: string;
 }
 
-const NextButton = ({ 
-  onClick, 
-  disabled, 
-  isLoading, 
-  isCompleteStep, 
-  completeButtonText, 
-  nextButtonText 
+const NextButton = ({
+  onClick,
+  disabled,
+  isLoading,
+  isCompleteStep,
+  completeButtonText,
+  nextButtonText,
 }: NextButtonProps) => {
   const buttonText = isCompleteStep ? completeButtonText : nextButtonText;
-  const ariaLabel = isCompleteStep ? "Finaliser l'inscription" : "Étape suivante";
+  const ariaLabel = isCompleteStep ? "Finaliser l'inscription" : 'Étape suivante';
 
   return (
-    <Button 
+    <Button
       onClick={onClick}
       disabled={disabled}
       className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto order-1 sm:order-2"

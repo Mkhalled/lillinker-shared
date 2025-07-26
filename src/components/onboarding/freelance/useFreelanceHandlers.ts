@@ -8,19 +8,23 @@ export const useFreelanceHandlers = (
 ) => {
   const handleServiceToggle = (serviceId: number) => {
     setFormData((prev: FreelanceFormData) => {
-      const existingServiceIndex = prev.selectedServices.findIndex((s: SelectedService) => s.serviceId === serviceId);
-      
+      const existingServiceIndex = prev.selectedServices.findIndex(
+        (s: SelectedService) => s.serviceId === serviceId
+      );
+
       if (existingServiceIndex >= 0) {
         // Remove service
         return {
           ...prev,
-          selectedServices: prev.selectedServices.filter((s: SelectedService) => s.serviceId !== serviceId)
+          selectedServices: prev.selectedServices.filter(
+            (s: SelectedService) => s.serviceId !== serviceId
+          ),
         };
       } else {
         // Add service
         return {
           ...prev,
-          selectedServices: [...prev.selectedServices, { serviceId, isRequired: false }]
+          selectedServices: [...prev.selectedServices, { serviceId, isRequired: false }],
         };
       }
     });
@@ -29,18 +33,18 @@ export const useFreelanceHandlers = (
   const handleServiceRequiredChange = (serviceId: number, isRequired: boolean) => {
     setFormData((prev: FreelanceFormData) => ({
       ...prev,
-      selectedServices: prev.selectedServices.map((s: SelectedService) => 
+      selectedServices: prev.selectedServices.map((s: SelectedService) =>
         s.serviceId === serviceId ? { ...s, isRequired } : s
-      )
+      ),
     }));
   };
 
   const handleServiceDataChange = (serviceId: number, value: string) => {
     setFormData((prev: FreelanceFormData) => ({
       ...prev,
-      selectedServices: prev.selectedServices.map((s: SelectedService) => 
+      selectedServices: prev.selectedServices.map((s: SelectedService) =>
         s.serviceId === serviceId ? { ...s, responseData: value } : s
-      )
+      ),
     }));
   };
 
@@ -50,7 +54,7 @@ export const useFreelanceHandlers = (
       ...prev,
       selectedPortages: prev.selectedPortages.includes(portageIdStr)
         ? prev.selectedPortages.filter((id: string) => id !== portageIdStr)
-        : [...prev.selectedPortages, portageIdStr]
+        : [...prev.selectedPortages, portageIdStr],
     }));
   };
 
@@ -73,9 +77,11 @@ export const useFreelanceHandlers = (
     setFormData((prev: FreelanceFormData) => {
       const service = prev.selectedServices.find((s: SelectedService) => s.serviceId === serviceId);
       if (!service) return prev;
-      
-      let currentSelections = service.responseData ? service.responseData.split(',').filter((s: string) => s.trim() !== '') : [];
-      
+
+      let currentSelections = service.responseData
+        ? service.responseData.split(',').filter((s: string) => s.trim() !== '')
+        : [];
+
       if (isChecked) {
         if (!currentSelections.includes(option)) {
           currentSelections.push(option);
@@ -83,12 +89,12 @@ export const useFreelanceHandlers = (
       } else {
         currentSelections = currentSelections.filter((s: string) => s !== option);
       }
-      
+
       return {
         ...prev,
-        selectedServices: prev.selectedServices.map((s: SelectedService) => 
+        selectedServices: prev.selectedServices.map((s: SelectedService) =>
           s.serviceId === serviceId ? { ...s, responseData: currentSelections.join(',') } : s
-        )
+        ),
       };
     });
   };

@@ -11,12 +11,14 @@ This directory contains detailed documentation for all aspects of the onboarding
 ### 📚 Complete Documentation Files
 
 1. **[Main Signup Overview](./signup.md)**
+
    - System architecture overview
    - Common components and security features
    - API endpoints summary
    - Cross-references to detailed documentation
 
 2. **[Company Signup Documentation](./company-signup.md)**
+
    - Complete company registration flow (7 steps)
    - SIRET validation and company profiling
    - Portage company functionality
@@ -25,6 +27,7 @@ This directory contains detailed documentation for all aspects of the onboarding
    - Company-specific database models and API endpoints
 
 3. **[Freelance Signup Documentation](./freelance-signup.md)**
+
    - Complete freelance registration flow (7 steps)
    - Daily rate (TJM) management
    - Mission preferences and availability tracking
@@ -33,6 +36,7 @@ This directory contains detailed documentation for all aspects of the onboarding
    - Freelance-specific database models and API endpoints
 
 4. **[Email Verification Documentation](./email-validation.md)**
+
    - Token-based email verification system
    - Password setting process
    - Security implementation details
@@ -68,7 +72,7 @@ For developers new to the system:
 ```typescript
 enum Role {
   ADMIN     // Platform administrators
-  COMPANY   // Company administrators  
+  COMPANY   // Company administrators
   FREELANCE // Independent contractors
   MANAGER   // Company managers (future)
 }
@@ -125,7 +129,7 @@ interface CompanyFormData {
   companyName: string;
   siret: string;
   description: string;
-  isPortage: "yes" | "no";
+  isPortage: 'yes' | 'no';
   selectedPortages: string[];
   consultantCount: string;
   managementFeeRate: string;
@@ -223,6 +227,7 @@ graph TD
 ### 🔌 Core Endpoints
 
 #### Initial Registration
+
 ```typescript
 POST /api/auth/register
 {
@@ -235,6 +240,7 @@ POST /api/auth/register
 ```
 
 #### Company Onboarding
+
 ```typescript
 POST /api/auth/onboarding/company
 {
@@ -251,6 +257,7 @@ POST /api/auth/onboarding/company
 ```
 
 #### Freelance Onboarding
+
 ```typescript
 POST /api/auth/onboarding/freelance
 {
@@ -266,6 +273,7 @@ POST /api/auth/onboarding/freelance
 ```
 
 #### Email Verification
+
 ```typescript
 POST /api/auth/verify-email
 {
@@ -280,6 +288,7 @@ POST /api/auth/verify-email
 ### 💾 Core Models Overview
 
 #### User Table
+
 ```sql
 User {
   id: String (Primary Key)
@@ -297,6 +306,7 @@ User {
 ```
 
 #### Company & Freelance Models
+
 ```sql
 Company {
   id: String (Primary Key)
@@ -362,12 +372,14 @@ SelectedPlatformService {
 ### 🧪 Test Coverage
 
 #### Unit Tests
+
 - **AuthService methods**: Registration, verification, onboarding
 - **API endpoints**: Company and freelance onboarding APIs
 - **Validation logic**: Input validation and business rule testing
 - **Security features**: Token generation, password handling
 
 #### Integration Tests
+
 - **Complete registration flows**: End-to-end company and freelance flows
 - **Email verification workflows**: Token generation to account activation
 - **Database transactions**: Data consistency and rollback testing
@@ -379,10 +391,8 @@ SelectedPlatformService {
 // Unit test example
 describe('Company Onboarding API', () => {
   it('should create company with services', async () => {
-    const response = await request(app)
-      .post('/api/auth/onboarding/company')
-      .send(validCompanyData);
-    
+    const response = await request(app).post('/api/auth/onboarding/company').send(validCompanyData);
+
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
   });
@@ -401,6 +411,7 @@ describe('Full Registration Flow', () => {
 ### ⚠️ Common Error Scenarios
 
 #### Registration Errors
+
 ```typescript
 // Duplicate email
 {
@@ -416,6 +427,7 @@ describe('Full Registration Flow', () => {
 ```
 
 #### Company-Specific Errors
+
 ```typescript
 // Duplicate SIRET
 {
@@ -431,6 +443,7 @@ describe('Full Registration Flow', () => {
 ```
 
 #### Verification Errors
+
 ```typescript
 // Expired token
 {
@@ -470,7 +483,7 @@ logger.info('Company onboarding completed', {
   userId: user.id,
   companyId: company.id,
   servicesSelected: data.selected_services?.length || 0,
-  timestamp: new Date().toISOString()
+  timestamp: new Date().toISOString(),
 });
 
 logger.warn('Email verification failed', {
@@ -537,6 +550,6 @@ This comprehensive onboarding system provides:
 ✅ **Comprehensive error handling** with clear user feedback  
 ✅ **Role-based access control** with proper authentication  
 ✅ **Extensive testing coverage** for reliability and security  
-✅ **Performance monitoring** and operational insights  
+✅ **Performance monitoring** and operational insights
 
 For detailed implementation guides, refer to the specific documentation files linked throughout this README.

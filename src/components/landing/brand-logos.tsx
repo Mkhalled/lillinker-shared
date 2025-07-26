@@ -1,10 +1,10 @@
 export const BrandLogos = () => {
   const brands = [
-    { name: "Brand One", color: "bg-blue-500" },
-    { name: "Brand Two", color: "bg-[var(--primary-color)]" },
-    { name: "Brand Three", color: "bg-purple-500" },
-    { name: "Brand Four", color: "bg-orange-500" },
-  ]
+    { name: 'Brand One', color: 'bg-blue-500' },
+    { name: 'Brand Two', color: 'bg-[var(--primary-color)]' },
+    { name: 'Brand Three', color: 'bg-purple-500' },
+    { name: 'Brand Four', color: 'bg-orange-500' },
+  ];
 
   return (
     <section className="py-16 bg-white">
@@ -16,7 +16,9 @@ export const BrandLogos = () => {
           {brands.map((brand, index) => (
             <div key={index} className="flex items-center justify-center">
               <div className="flex items-center space-x-3">
-                <div className={`w-10 h-10 ${brand.color} rounded-lg flex items-center justify-center`}>
+                <div
+                  className={`w-10 h-10 ${brand.color} rounded-lg flex items-center justify-center`}
+                >
                   <div className="w-6 h-6 bg-white/30 rounded"></div>
                 </div>
                 <div>
@@ -29,5 +31,5 @@ export const BrandLogos = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};

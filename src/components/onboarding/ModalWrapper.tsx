@@ -39,12 +39,14 @@ export const ModalWrapper = ({
   error,
   showNavigation = true,
   completeButtonText = "Finaliser l'inscription",
-  nextButtonText = "Suivant",
+  nextButtonText = 'Suivant',
   completionStep,
-  onClearProgress
+  onClearProgress,
 }: ModalWrapperProps) => {
   const isCompletionStep = currentStep === totalSteps;
-  const isCompleteStep = completionStep ? currentStep === completionStep : currentStep === totalSteps - 1;
+  const isCompleteStep = completionStep
+    ? currentStep === completionStep
+    : currentStep === totalSteps - 1;
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -58,17 +60,10 @@ export const ModalWrapper = ({
             onClearProgress={onClearProgress}
           />
 
-          <ProgressBar
-            currentStep={currentStep}
-            totalSteps={totalSteps}
-          />
+          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
 
           <div className="flex-1 flex flex-col min-h-0">
-            <StepContent
-              stepTitle={stepTitle}
-              stepDescription={stepDescription}
-              error={error}
-            >
+            <StepContent stepTitle={stepTitle} stepDescription={stepDescription} error={error}>
               {children}
             </StepContent>
           </div>

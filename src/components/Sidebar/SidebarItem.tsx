@@ -22,7 +22,7 @@ const SidebarItem = ({ item, pageName, setPageName }: SidebarItemProps) => {
   const isActive = (menuItem: MenuItem): boolean => {
     if (menuItem.route === pathname) return true;
     if (menuItem.children) {
-      return menuItem.children.some((child) => child.route === pathname);
+      return menuItem.children.some(child => child.route === pathname);
     }
     return false;
   };

@@ -22,7 +22,7 @@ export const useCompanyCompletion = (
     if (currentStep === 6) {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         // Get the most up-to-date form data from localStorage
         let currentFormData = formData;
@@ -47,7 +47,7 @@ export const useCompanyCompletion = (
             first_name: currentFormData.adminFirstName,
             last_name: currentFormData.adminLastName,
             email: currentFormData.adminEmail,
-            role: "COMPANY",
+            role: 'COMPANY',
             phone_number: currentFormData.adminPhone,
           }),
         });
@@ -67,10 +67,15 @@ export const useCompanyCompletion = (
           siret: currentFormData.siret,
           consultant_count: parseInt(currentFormData.consultantCount),
           management_fees: parseFloat(currentFormData.managementFeeRate),
-          is_portage: currentFormData.isPortage === "yes",
-          selected_services: currentFormData.selectedPlatformServices.map((id: string) => parseInt(id)),
+          is_portage: currentFormData.isPortage === 'yes',
+          selected_services: currentFormData.selectedPlatformServices.map((id: string) =>
+            parseInt(id)
+          ),
           selected_metiers: currentFormData.selectedMetiers.map((id: string) => parseInt(id)),
-          selected_portages: currentFormData.isPortage === "yes" ? currentFormData.selectedPortages.map((id: string) => parseInt(id)) : [],
+          selected_portages:
+            currentFormData.isPortage === 'yes'
+              ? currentFormData.selectedPortages.map((id: string) => parseInt(id))
+              : [],
           // Send all new services as array
           new_services: currentFormData.newServices
             .filter((service: NewService) => service.label.trim() !== '')
@@ -82,7 +87,7 @@ export const useCompanyCompletion = (
               data_label: service.dataLabel,
               data_description: service.dataDescription,
               choices: service.choices.filter((choice: string) => choice.trim() !== ''),
-            }))
+            })),
         };
 
         const onboardingResponse = await fetch('/api/auth/onboarding/company', {
@@ -101,16 +106,18 @@ export const useCompanyCompletion = (
         // Clear localStorage on successful completion
         clearFormData();
         clearStepProgress();
-        
+
         // Move to success step
         goToNextStep();
       } catch (error) {
         console.error('Registration error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
-        
+
         // Provide more specific error messages for common cases
         if (errorMessage.includes('SIRET') && errorMessage.includes('existe déjà')) {
-          setError('Ce numéro SIRET est déjà utilisé par une autre société. Veuillez vérifier votre numéro SIRET.');
+          setError(
+            'Ce numéro SIRET est déjà utilisé par une autre société. Veuillez vérifier votre numéro SIRET.'
+          );
         } else if (errorMessage.includes('Unique constraint') && errorMessage.includes('siret')) {
           setError('Ce numéro SIRET est déjà utilisé. Veuillez vérifier votre numéro SIRET.');
         } else {
@@ -126,6 +133,6 @@ export const useCompanyCompletion = (
     isLoading,
     error,
     setError: setErrorState,
-    handleComplete
+    handleComplete,
   };
 };

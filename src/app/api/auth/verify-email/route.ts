@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     logger.info('Email verification and password setting API called', logContext);
 
     const body = await request.json();
-    
+
     logger.debug('Email verification request received', {
       ...logContext,
       hasToken: !!body.token,
@@ -40,18 +40,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     logger.error('Email verification API failed', error as Error, logContext);
-    
+
     if (error instanceof Error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
