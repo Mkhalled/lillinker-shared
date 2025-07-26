@@ -17,6 +17,7 @@ import {
   useStepNavigation,
   useCompanyCompletion,
   useCompanyValidation,
+  CompanyPortageStep,
 } from './company';
 import { ModalWrapper } from './ModalWrapper';
 import { SuccessStep } from './SuccessStep';
@@ -32,7 +33,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   // Use custom hooks
   const { formData, updateFormData, clearFormData } = useCompanyForm();
   const { currentStep, goToNextStep, goToPreviousStep, clearStepProgress } = useStepNavigation(
-    7,
+    8,
     clearFormData
   );
   const { isLoading, error, setError, handleComplete } = useCompanyCompletion(
@@ -55,10 +56,10 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
     }
   }, [dataError, setError]);
 
-  const totalSteps = 7;
+  const totalSteps = 8;
 
   const handleNext = () => {
-    if (currentStep === 6) {
+    if (currentStep === 7) {
       handleComplete(currentStep);
     } else {
       goToNextStep();
@@ -92,11 +93,17 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             portages={portages}
           />
         );
-
       case 2:
-        return <CompanyConsultantsStep formData={formData} onFormDataChange={updateFormData} />;
-
+        return (
+          <CompanyPortageStep
+            formData={formData}
+            onFormDataChange={updateFormData}
+            portages={portages}
+          />
+        );
       case 3:
+        return <CompanyConsultantsStep formData={formData} onFormDataChange={updateFormData} />;
+      case 4:
         return (
           <CompanyMetiersStep
             formData={formData}
@@ -104,8 +111,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             metiers={metiers}
           />
         );
-
-      case 4:
+      case 5:
         return (
           <CompanyAdminStep
             formData={formData}
@@ -113,8 +119,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             onValidityChange={setIsAdminStepValid}
           />
         );
-
-      case 5:
+      case 6:
         return (
           <CompanyServicesStep
             formData={formData}
@@ -123,8 +128,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             onAddNewService={addNewService}
           />
         );
-
-      case 6:
+      case 7:
         return (
           <CompanySummaryStep
             formData={formData}
@@ -133,10 +137,8 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             platformServices={platformServices}
           />
         );
-
-      case 7:
+      case 8:
         return <SuccessStep email={formData.adminEmail} />;
-
       default:
         return null;
     }
@@ -147,16 +149,18 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 1:
         return 'Informations générales';
       case 2:
-        return 'Consultants et frais de gestion';
+        return 'Portage salarial';
       case 3:
-        return 'Métiers supportés';
+        return 'Consultants et frais de gestion';
       case 4:
-        return "Informations de l'administrateur";
+        return 'Métiers supportés';
       case 5:
-        return 'Services et options';
+        return "Informations de l'administrateur";
       case 6:
-        return 'Récapitulatif';
+        return 'Services et options';
       case 7:
+        return 'Récapitulatif';
+      case 8:
         return 'Demande envoyée';
       default:
         return '';
@@ -168,16 +172,18 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
       case 1:
         return 'Présentez votre société de portage salarial';
       case 2:
-        return 'Informations sur vos consultants et tarifs';
+        return 'Sélectionnez votre société de portage';
       case 3:
-        return 'Sélectionnez les métiers que vous supportez';
+        return 'Informations sur vos consultants et tarifs';
       case 4:
-        return "Coordonnées de l'administrateur du compte";
+        return 'Sélectionnez les métiers que vous supportez';
       case 5:
-        return 'Définissez les services que vous proposez';
+        return "Coordonnées de l'administrateur du compte";
       case 6:
-        return 'Vérifiez vos informations avant finalisation';
+        return 'Définissez les services que vous proposez';
       case 7:
+        return 'Vérifiez vos informations avant finalisation';
+      case 8:
         return 'Votre demande a été transmise';
       default:
         return '';
@@ -202,7 +208,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
         showNavigation={true}
         completeButtonText="Finaliser l'inscription"
         nextButtonText="Suivant"
-        completionStep={6} // Specify that completion happens on step 6
+        completionStep={7} // Specify that completion happens on step 7
         onClearProgress={() => {
           clearFormData();
           clearStepProgress();

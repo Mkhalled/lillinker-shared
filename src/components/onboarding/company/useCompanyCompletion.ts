@@ -19,7 +19,7 @@ export const useCompanyCompletion = (
   };
 
   const handleComplete = async (currentStep: number) => {
-    if (currentStep === 6) {
+    if (currentStep === 7) {
       setIsLoading(true);
       setError(null);
 

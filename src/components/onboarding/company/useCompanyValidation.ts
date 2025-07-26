@@ -69,19 +69,21 @@ export const useCompanyValidation = (
           formData.description &&
           !siretExists
         );
-        // Portage selection is optional even if company is portage
         return basicValid;
       }
       case 2:
+        // Portage step is always valid (not required)
+        return true;
+      case 3:
         // Consultants and management fee step
         return !!(formData.consultantCount && formData.managementFeeRate);
-      case 3:
+      case 4:
         // Metiers selection step
         return formData.selectedMetiers.length > 0;
-      case 4:
+      case 5:
         // Admin step validation (includes email uniqueness check)
         return isAdminStepValid && !emailExists;
-      case 5: {
+      case 6: {
         // Services step validation
         const hasSelectedServices = formData.selectedPlatformServices.length > 0;
         const hasValidNewServices = formData.newServices.some(
@@ -92,10 +94,10 @@ export const useCompanyValidation = (
         );
         return hasSelectedServices || hasValidNewServices;
       }
-      case 6:
+      case 7:
         // Recap step is always valid
         return true;
-      case 7:
+      case 8:
         // Success step is always valid
         return true;
       default:

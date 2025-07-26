@@ -4,6 +4,7 @@ export { CompanyMetiersStep } from './CompanyMetiersStep';
 export { CompanyAdminStep } from './CompanyAdminStep';
 export { CompanyServicesStep } from './CompanyServicesStep';
 export { CompanySummaryStep } from './CompanySummaryStep';
+export { CompanyPortageStep } from './CompanyPortageStep';
 
 // Custom Hooks
 export { useCompanyForm } from './useCompanyForm';
