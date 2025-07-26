@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { FreelanceOnboardingSchema } from '@/lib/validations/auth.validation';
-import { FreelanceService, AuthService } from '@/services';
+import { FreelanceService } from '@/services';
 
 type JsonValue = Prisma.JsonValue;
 
@@ -96,11 +96,6 @@ export async function POST(request: NextRequest) {
         requestOptions,
       };
     });
-
-    logger.info('Freelance onboarding completed, starting finalization', enhancedLogContext);
-
-    // Send verification email to complete the registration (outside transaction)
-    await AuthService.sendVerificationEmail(parseInt(userId));
 
     logger.info('Freelance onboarding API completed successfully', {
       ...enhancedLogContext,

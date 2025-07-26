@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { InitialRegistrationSchema } from '@/lib/validations/auth.validation';
 import { AuthService } from '@/services';
+import {prisma} from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   const logContext = {
@@ -31,7 +32,12 @@ export async function POST(request: NextRequest) {
       role: validatedData.role,
     });
 
-    const { user } = await AuthService.createUser(validatedData);
+    // Transaction: registration and email verification
+  const user = await prisma.$transaction(async (tx) => {
+  const { user } = await AuthService.createUser(validatedData, tx);
+  await AuthService.sendVerificationEmail(user.id, tx);
+   return user;
+});
 
     logger.info('Registration API completed successfully', {
       ...logContext,

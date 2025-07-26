@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { CompanyOnboardingSchema } from '@/lib/validations/auth.validation';
-import { CompanyService, AuthService, PlatformServiceService } from '@/services';
+import { CompanyService, PlatformServiceService } from '@/services';
 
 export async function POST(request: NextRequest) {
   const logContext = {
@@ -117,8 +117,6 @@ export async function POST(request: NextRequest) {
 
     logger.info('Company onboarding completed, starting finalization', enhancedLogContext);
 
-    // Step 6: Send verification email to complete the registration (outside transaction)
-    await AuthService.sendVerificationEmail(parseInt(userId));
 
     logger.info('Company onboarding API completed successfully', {
       ...enhancedLogContext,
