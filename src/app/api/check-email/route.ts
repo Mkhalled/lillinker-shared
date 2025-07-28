@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { UserDAO } from '@/dao/user.dao';
+import { AuthService } from '@/services';
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,12 +10,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email est requis' }, { status: 400 });
     }
 
-    // Check if email exists in users table using UserDAO
-    const existingUser = await UserDAO.findByEmail(email.toLowerCase());
+    // Use the checkEmailExists service
+    const exists = await AuthService.checkEmailExists(email);
 
     return NextResponse.json({
-      exists: !!existingUser,
-      message: existingUser ? 'Cette adresse email est déjà utilisée' : 'Email disponible',
+      exists,
+      message: exists ? 'Cette adresse email est déjà utilisée' : 'Email disponible',
     });
   } catch (error) {
     console.error('Email check error:', error);

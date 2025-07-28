@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger';
 import { sendVerificationEmail } from '@/lib/mailer';
 import { prisma } from '@/lib/prisma';
 import type { InitialRegistration } from '@/lib/validations/auth.validation';
+import { UserDAO } from '@/dao/user.dao';
 
 type TransactionClient = Prisma.TransactionClient;
 export class AuthService {
@@ -185,9 +186,7 @@ export class AuthService {
    * Check if email exists in the system
    */
   static async checkEmailExists(email: string): Promise<boolean> {
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = await UserDAO.findByEmail(email.toLowerCase());
     return !!existingUser;
   }
 }
