@@ -4,17 +4,6 @@ import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 
 export class UserDAO {
-  static async findByEmailOrUsername(email: string, username: string): Promise<User | null> {
-    logger.debug('Searching for user by email or username', { email, username });
-    const user = await prisma.user.findFirst({
-      where: {
-        OR: [{ email }, { email: username }], // Username field removed from schema
-      },
-    });
-    logger.debug('User search result', { found: !!user, email, username });
-    return user;
-  }
-
   static async create(data: {
     first_name: string;
     last_name: string;

@@ -189,4 +189,87 @@ export class AuthService {
     const existingUser = await UserDAO.findByEmail(email.toLowerCase());
     return !!existingUser;
   }
+  /**
+   * Login user with email and password
+   */
+  static async login(email: string, password: string) {
+    const logContext = {
+      operation: 'login_service',
+      email,
+    };
+
+    try {
+      logger.info('Login service attempt started', logContext);
+
+      if (!email || !password) {
+        logger.warn('Login service attempt with missing credentials', logContext);
+        throw new Error('Email et mot de passe sont requis');
+      }
+
+      const user = await UserDAO.findByEmail(email);
+
+      if (!user) {
+        logger.warn('Login service attempt with non-existent email', logContext);
+        throw new Error('Email ou mot de passe invalide');
+      }
+
+      logger.debug('User found for login service attempt', {
+        ...logContext,
+        userId: user.id,
+        emailVerified: user.email_verified,
+        status: user.status,
+        role: user.role,
+      });
+
+      if (!user.email_verified) {
+        logger.warn('Login service blocked - email not verified', {
+          ...logContext,
+          userId: user.id,
+          reason: 'email_not_verified',
+        });
+        throw new Error('Veuillez vérifier votre adresse email');
+      }
+
+      if (!user.status) {
+        logger.warn('Login service blocked - account not validated by administrator', {
+          ...logContext,
+          userId: user.id,
+          reason: 'account_not_validated',
+        });
+        throw new Error("Votre compte est en cours de validation par l'administrateur");
+      }
+
+      const isValid = await import('bcryptjs').then(({ compare }) => compare(password, user.password));
+
+      if (!isValid) {
+        logger.warn('Login service attempt with invalid password', {
+          ...logContext,
+          userId: user.id,
+          reason: 'invalid_password',
+        });
+        throw new Error('Email ou mot de passe invalide');
+      }
+
+      logger.info('Login service validation successful', {
+        ...logContext,
+        userId: user.id,
+        role: user.role,
+        firstName: user.first_name,
+      });
+
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          role: user.role,
+        },
+      };
+    } catch (error) {
+      logger.error('Login service failed', error as Error, logContext);
+      throw error;
+    }
+  }
 }
