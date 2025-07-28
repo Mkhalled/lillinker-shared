@@ -4,7 +4,7 @@ import { PlatformServiceService } from '@/services';
 
 export async function GET() {
   try {
-    const metiers = await PlatformServiceService.getMetiers()
+    const metiers = await PlatformServiceService.getMetiers();
     return NextResponse.json({
       success: true,
       data: metiers,

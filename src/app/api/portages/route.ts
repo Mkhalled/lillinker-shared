@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { PlatformServiceService } from '@/services';
 
 export async function GET() {
-
   try {
     const portages = await PlatformServiceService.getPortages();
     return NextResponse.json({

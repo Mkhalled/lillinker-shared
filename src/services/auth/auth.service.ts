@@ -239,7 +239,9 @@ export class AuthService {
         throw new Error("Votre compte est en cours de validation par l'administrateur");
       }
 
-      const isValid = await import('bcryptjs').then(({ compare }) => compare(password, user.password));
+      const isValid = await import('bcryptjs').then(({ compare }) =>
+        compare(password, user.password)
+      );
 
       if (!isValid) {
         logger.warn('Login service attempt with invalid password', {

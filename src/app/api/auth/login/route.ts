@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const result = await AuthService.login(email, password);
 
     return NextResponse.json(result, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Login API failed', error, logContext);
 
     let status = 500;
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         "Votre compte est en cours de validation par l'administrateur",
       ].includes(error.message)
     ) {
-      status = [ 'Email et mot de passe sont requis' ].includes(error.message) ? 400 : 403;
+      status = ['Email et mot de passe sont requis'].includes(error.message) ? 400 : 403;
       if (error.message === 'Email ou mot de passe invalide') status = 401;
       message = error.message;
     }

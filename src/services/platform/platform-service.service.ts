@@ -148,7 +148,7 @@ export class PlatformServiceService {
       throw error;
     }
   }
-  static async getPortages(){
+  static async getPortages() {
     const logContext = {
       operation: 'getPortages',
     };
@@ -169,7 +169,7 @@ export class PlatformServiceService {
       throw error;
     }
   }
-  static async getMetiers(){
+  static async getMetiers() {
     const logContext = {
       operation: 'getMetiers',
     };
@@ -188,6 +188,6 @@ export class PlatformServiceService {
     } catch (error) {
       logger.error('Failed to fetch available metiers', error as Error, logContext);
       throw error;
+    }
   }
-}
 }
