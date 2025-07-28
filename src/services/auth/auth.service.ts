@@ -6,7 +6,6 @@ import { hash } from 'bcryptjs';
 import { UserDAO } from '@/dao/user.dao';
 import { logger } from '@/lib/logger';
 import { sendVerificationEmail } from '@/lib/mailer';
-import { prisma } from '@/lib/prisma';
 import type { InitialRegistration } from '@/lib/validations/auth.validation';
 
 type TransactionClient = Prisma.TransactionClient;
@@ -133,14 +132,7 @@ export class AuthService {
     try {
       logger.info('Starting email verification and password setting', logContext);
 
-      const user = await prisma.user.findUnique({
-        where: {
-          verification_token: token,
-          verification_token_expires: {
-            gt: new Date(),
-          },
-        },
-      });
+      const user = await UserDAO.findByVerificationToken(token)
 
       if (!user) {
         logger.warn('Invalid or expired verification token', {
@@ -158,15 +150,12 @@ export class AuthService {
 
       const hashedPassword = await hash(password, 12);
 
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
+      await UserDAO.update(user.id,{
           password: hashedPassword,
           email_verified: true,
           verification_token: null,
           verification_token_expires: null,
-        },
-      });
+        });
 
       logger.info('Email verification and password setting completed successfully', {
         ...logContext,

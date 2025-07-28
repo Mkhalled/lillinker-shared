@@ -71,17 +71,6 @@ export class UserDAO {
     logger.info('User deleted successfully', { userId: user.id });
     return user;
   }
-  static async findUserBasicInfoById(
-    userId: number
-  ): Promise<{ first_name: string; last_name: string; email: string } | null> {
-    logger.debug('Searching for user basic info by ID', { userId });
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { first_name: true, last_name: true, email: true },
-    });
-    logger.debug('User basic info search result', { found: !!user, userId });
-    return user;
-  }
 
   static async findInactiveVerifiedUsers() {
     logger.debug('Searching for inactive but verified users');
@@ -101,62 +90,27 @@ export class UserDAO {
     logger.debug('Found inactive verified users', { count: users.length });
     return users;
   }
-
   static async findByVerificationToken(token: string): Promise<User | null> {
-    logger.debug('Searching for user by verification token');
-    const user = await prisma.user.findUnique({
-      where: { verification_token: token },
+    return prisma.user.findFirst({
+      where: {
+        verification_token: token,
+        verification_token_expires: {
+          gt: new Date(),
+        },
+      },
     });
-    logger.debug('User search by verification token result', { found: !!user });
-    return user;
   }
 
-  static async findByResetToken(token: string): Promise<User | null> {
-    logger.debug('Searching for user by reset token');
-    const user = await prisma.user.findUnique({
-      where: { reset_token: token },
-    });
-    logger.debug('User search by reset token result', { found: !!user });
-    return user;
-  }
-
-  static async updateVerificationStatus(id: number, verified: boolean): Promise<User> {
-    logger.info('Updating user verification status', { userId: id, verified });
-    const user = await prisma.user.update({
-      where: { id },
+  static async setPasswordAndVerifyEmail(userId: number, hashedPassword: string): Promise<User> {
+    return prisma.user.update({
+      where: { id: userId },
       data: {
-        email_verified: verified,
+        password: hashedPassword,
+        email_verified: true,
         verification_token: null,
         verification_token_expires: null,
       },
     });
-    logger.info('User verification status updated', { userId: user.id });
-    return user;
   }
 
-  static async setResetToken(id: number, token: string, expiresAt: Date): Promise<User> {
-    logger.info('Setting reset token for user', { userId: id });
-    const user = await prisma.user.update({
-      where: { id },
-      data: {
-        reset_token: token,
-        reset_token_expires: expiresAt,
-      },
-    });
-    logger.info('Reset token set for user', { userId: user.id });
-    return user;
-  }
-
-  static async clearResetToken(id: number): Promise<User> {
-    logger.info('Clearing reset token for user', { userId: id });
-    const user = await prisma.user.update({
-      where: { id },
-      data: {
-        reset_token: null,
-        reset_token_expires: null,
-      },
-    });
-    logger.info('Reset token cleared for user', { userId: user.id });
-    return user;
-  }
 }
