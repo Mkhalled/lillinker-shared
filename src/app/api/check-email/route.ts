@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
       message: exists ? 'Cette adresse email est déjà utilisée' : 'Email disponible',
     });
   } catch (error) {
-    console.error('Email check error:', error);
     return NextResponse.json(
       { error: "Erreur lors de la vérification de l'email" },
       { status: 500 }

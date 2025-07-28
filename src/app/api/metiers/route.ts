@@ -1,25 +1,15 @@
 import { NextResponse } from 'next/server';
 
-import { logger } from '@/lib/logger';
 import { PlatformServiceService } from '@/services';
 
 export async function GET() {
   try {
-    logger.debug('Fetching available metiers');
-
     const metiers = await PlatformServiceService.getMetiers()
-
-    logger.info('Available metiers fetched successfully', {
-      metiersCount: metiers.length,
-    });
-
     return NextResponse.json({
       success: true,
       data: metiers,
     });
   } catch (error) {
-    logger.error('Failed to fetch metiers', error as Error);
-
     return NextResponse.json(
       {
         success: false,

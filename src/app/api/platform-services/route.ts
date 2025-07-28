@@ -11,8 +11,6 @@ export async function GET() {
       data: platformServices,
     });
   } catch (error) {
-    console.error('Error fetching platform services:', error);
-
     return NextResponse.json({ error: 'Failed to fetch platform services' }, { status: 500 });
   }
 }
