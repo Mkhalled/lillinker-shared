@@ -1,3 +1,4 @@
+import { FreelanceDao } from '@/dao/freelance.dao';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import type { FreelanceOnboarding } from '@/lib/validations/auth.validation';
@@ -22,12 +23,7 @@ export class FreelanceService {
     try {
       logger.info('Creating freelance profile', logContext);
 
-      const freelance = await prisma.freelance.create({
-        data: {
-          freelance_id: userId,
-          metier_id: metierId,
-        },
-      });
+      const freelance = await FreelanceDao.createFreelanceProfile(userId, metierId);
 
       logger.info('Freelance profile created successfully', {
         ...logContext,
@@ -54,9 +50,7 @@ export class FreelanceService {
     try {
       logger.info('Creating freelance request', logContext);
 
-      const freelanceRequest = await prisma.freelanceRequest.create({
-        data: {
-          freelance_id: freelanceId,
+      const freelanceRequest = await FreelanceDao.createFreelanceRequest(freelanceId, {
           mission_status: data.mission_status,
           client_name: data.client_name,
           client_address: data.client_address,
@@ -64,8 +58,7 @@ export class FreelanceService {
           priority: data.priority,
           tjm: data.tjm,
           days: data.days,
-          wants_portage: data.wants_portage || false,
-        },
+          wants_portage: data.wants_portage || false
       });
 
       logger.info('Freelance request created successfully', {
@@ -113,14 +106,12 @@ export class FreelanceService {
             );
 
             // Create freelance request option with direct reference to platform service
-            const option = await prisma.freelanceRequestOption.create({
-              data: {
-                freelance_request_id: freelanceRequestId,
-                service_option_id: selectedService.serviceId,
-                is_required: selectedService.isRequired,
-                response_data: responseDataJson,
-              },
-            });
+            const option = await FreelanceDao.createFreelanceRequestOption(
+              freelanceRequestId,
+              selectedService.serviceId,
+              selectedService.isRequired,
+              responseDataJson
+            );
 
             logger.debug('Freelance request option created', {
               ...logContext,
@@ -174,12 +165,7 @@ export class FreelanceService {
         portageIds,
       });
 
-      await prisma.freelanceRequestPortage.createMany({
-        data: portageIds.map(portageId => ({
-          freelance_request_id: freelanceRequestId,
-          portage_id: portageId,
-        })),
-      });
+      await FreelanceDao.createFreelanceRequestPortages(freelanceRequestId, portageIds);
 
       logger.info('Portage preferences linked successfully', {
         ...logContext,
