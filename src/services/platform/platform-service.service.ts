@@ -1,17 +1,6 @@
 import { PlatformDAO } from '@/dao/platform.dao';
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/prisma';
-
-interface NewServiceData {
-  service_label: string;
-  service_description?: string;
-  data_type: 'TEXT' | 'NUMBER' | 'SELECT' | 'RADIO';
-  requires_data: boolean;
-  data_label?: string;
-  data_description?: string;
-  choices?: string[];
-}
-
+import { NewServiceData } from '@/types/platform';
 export class PlatformServiceService {
   /**
    * Create a new platform service
@@ -26,20 +15,7 @@ export class PlatformServiceService {
     try {
       logger.info('Creating new platform service', logContext);
 
-      const platformService = await prisma.platformService.create({
-        data: {
-          user_id: userId,
-          label: serviceData.service_label,
-          description: serviceData.service_description || '',
-          data_type: serviceData.data_type,
-          requires_data: serviceData.requires_data,
-          data_label: serviceData.data_label || '',
-          data_description: serviceData.data_description || '',
-          choices:
-            serviceData.choices && serviceData.choices.length > 0 ? serviceData.choices : undefined,
-          status: 'PENDING',
-        },
-      });
+      const platformService = await PlatformDAO.createPlatformService(userId, serviceData);
 
       logger.info('Platform service created successfully', {
         ...logContext,
@@ -104,13 +80,7 @@ export class PlatformServiceService {
     try {
       logger.debug('Linking platform service to company', logContext);
 
-      const companyService = await prisma.companyService.create({
-        data: {
-          company_id: companyId,
-          service_id: serviceId,
-          is_active: isActive,
-        },
-      });
+      const companyService = await PlatformDAO.createCompanyService(companyId, serviceId, isActive);
 
       logger.info('Platform service linked to company successfully', {
         ...logContext,
@@ -148,6 +118,9 @@ export class PlatformServiceService {
       throw error;
     }
   }
+ /**
+   * Get available portages
+   */ 
   static async getPortages() {
     const logContext = {
       operation: 'getPortages',
@@ -169,6 +142,9 @@ export class PlatformServiceService {
       throw error;
     }
   }
+  /**
+   * Get available metiers
+   */
   static async getMetiers() {
     const logContext = {
       operation: 'getMetiers',

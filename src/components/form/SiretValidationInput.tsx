@@ -36,7 +36,8 @@ export const SiretValidationInput = ({
 
       setCheckingSiret(true);
       try {
-        const cleanSiret = siret.replace(/[\s-]/g, '');
+        let cleanSiret = siret.replace(/[^0-9]/g, '');
+        cleanSiret = cleanSiret.trim();
         const response = await fetch('/api/check-siret', {
           method: 'POST',
           headers: {
