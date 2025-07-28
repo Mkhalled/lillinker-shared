@@ -25,3 +25,15 @@ export interface CompanyFormData {
   selectedPortages: string[];
   newServices: NewService[];
 }
+
+export interface CompanyPayload {
+  id?: number;
+  admin_user_id: number;
+  name: string;
+  description?: string;
+  logo?: string;
+  siret?: string;
+  consultant_count: number;
+  management_fees: number;
+  is_portage: boolean;
+}

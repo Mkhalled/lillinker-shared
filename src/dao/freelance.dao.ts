@@ -1,15 +1,6 @@
 import { prisma } from '@/lib/prisma';
+import { FreelanceRequestInput } from '@/types/freelance';
 
-export interface FreelanceRequestInput {
-    mission_status: "OPEN" | "CLOSED" | "PENDING";
-    priority: "HIGH" | "MEDIUM" | "LOW";
-    tjm: number;
-    days: number;
-    wants_portage: boolean;
-    client_name?: string;
-    client_address?: string;
-    client_sector?: string;
-}
 export class FreelanceDao {
   static async createFreelanceProfile(userId: number, metierId: number) {
     return prisma.freelance.create({

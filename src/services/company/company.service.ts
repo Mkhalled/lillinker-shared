@@ -1,6 +1,5 @@
 import { CompanyDAO } from '@/dao/company.dao';
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/prisma';
 import type { CompanyOnboarding } from '@/lib/validations/auth.validation';
 
 export class CompanyService {
@@ -18,8 +17,7 @@ export class CompanyService {
     try {
       logger.info('Creating company record', logContext);
 
-      const company = await prisma.company.create({
-        data: {
+      const company = await CompanyDAO.create({
           admin_user_id: userId,
           name: data.company_name,
           description: data.company_description,
@@ -27,7 +25,6 @@ export class CompanyService {
           consultant_count: data.consultant_count,
           management_fees: data.management_fees,
           is_portage: data.is_portage || false,
-        },
       });
 
       logger.info('Company record created successfully', {
@@ -62,13 +59,7 @@ export class CompanyService {
 
       const companyServices = await Promise.all(
         serviceIds.map(serviceId =>
-          prisma.companyService.create({
-            data: {
-              company_id: companyId,
-              service_id: serviceId,
-              is_active: true, // Active since these are existing approved services
-            },
-          })
+          CompanyDAO.addCompanyService(companyId, serviceId)
         )
       );
 
@@ -100,12 +91,7 @@ export class CompanyService {
         metierIds,
       });
 
-      await prisma.companyMetier.createMany({
-        data: metierIds.map(metierId => ({
-          company_id: companyId,
-          metier_id: metierId,
-        })),
-      });
+      await CompanyDAO.addCompanyMetiers(companyId, metierIds);
 
       logger.info('Metiers linked successfully', {
         ...logContext,
@@ -135,12 +121,7 @@ export class CompanyService {
         portageIds,
       });
 
-      await prisma.companyPortage.createMany({
-        data: portageIds.map(portageId => ({
-          company_id: companyId,
-          portage_id: portageId,
-        })),
-      });
+      await CompanyDAO.addCompanyPortages(companyId, portageIds);
 
       logger.info('Portages linked successfully', {
         ...logContext,

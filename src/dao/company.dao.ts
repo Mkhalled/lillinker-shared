@@ -1,9 +1,10 @@
 import { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
+import { CompanyPayload } from '@/types/company';
 
 export class CompanyDAO {
-  static async create(data: Prisma.CompanyCreateInput) {
+  static async create(data: CompanyPayload) {
     return prisma.company.create({
       data,
     });
@@ -33,6 +34,31 @@ export class CompanyDAO {
   static async delete(id: string) {
     return prisma.company.delete({
       where: { id: parseInt(id) },
+    });
+  }
+  static async addCompanyService(companyId: number, serviceId: number) {
+    return prisma.companyService.create({
+      data: {
+        company_id: companyId,
+        service_id: serviceId,
+        is_active: true,
+      },
+    });
+  }
+  static async addCompanyMetiers(companyId: number, metierIds: number[]) {
+    return prisma.companyMetier.createMany({
+      data: metierIds.map(metierId => ({
+        company_id: companyId,
+        metier_id: metierId,
+      })),
+    });
+  }
+  static async addCompanyPortages(companyId: number, portageIds: number[]) {
+    return prisma.companyPortage.createMany({
+      data: portageIds.map(portageId => ({
+        company_id: companyId,
+        portage_id: portageId,
+      })),
     });
   }
 }
