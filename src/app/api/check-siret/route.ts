@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { prisma } from '@/lib/prisma';
+import { CompanyService } from '@/services';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,11 +11,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if SIRET already exists in the database
-    const existingCompany = await prisma.company.findUnique({
-      where: {
-        siret: siret.trim(),
-      },
-    });
+    const existingCompany = await CompanyService.checkSiretExists(siret.trim());
 
     return NextResponse.json({
       exists: !!existingCompany,

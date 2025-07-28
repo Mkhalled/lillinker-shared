@@ -1,17 +1,13 @@
 import { NextResponse } from 'next/server';
 
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/prisma';
+import { PlatformServiceService } from '@/services';
 
 export async function GET() {
   try {
     logger.debug('Fetching available metiers');
 
-    const metiers = await prisma.metier.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    });
+    const metiers = await PlatformServiceService.getMetiers()
 
     logger.info('Available metiers fetched successfully', {
       metiersCount: metiers.length,

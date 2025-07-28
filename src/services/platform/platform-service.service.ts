@@ -169,4 +169,25 @@ export class PlatformServiceService {
       throw error;
     }
   }
+  static async getMetiers(){
+    const logContext = {
+      operation: 'getMetiers',
+    };
+
+    try {
+      logger.debug('Fetching available metiers', logContext);
+
+      const metiers = await PlatformDAO.getMetiers();
+
+      logger.info('Available metiers fetched successfully', {
+        ...logContext,
+        metiersCount: metiers.length,
+      });
+
+      return metiers;
+    } catch (error) {
+      logger.error('Failed to fetch available metiers', error as Error, logContext);
+      throw error;
+  }
+}
 }

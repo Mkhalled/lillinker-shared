@@ -17,7 +17,9 @@ export class CompanyDAO {
 
   static async findBySiret(siret: string) {
     return prisma.company.findUnique({
-      where: { siret },
+      where: {
+        siret: siret.trim(),
+      },
     });
   }
 

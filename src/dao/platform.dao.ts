@@ -39,4 +39,11 @@ export class PlatformDAO {
             },
         });
     }
+    static async getMetiers() {
+        return prisma.metier.findMany({
+            orderBy: {
+                name: 'asc',
+            },
+        });
+    }
 }

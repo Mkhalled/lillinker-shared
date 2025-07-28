@@ -1,3 +1,4 @@
+import { CompanyDAO } from '@/dao/company.dao';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import type { CompanyOnboarding } from '@/lib/validations/auth.validation';
@@ -149,6 +150,30 @@ export class CompanyService {
       return true;
     } catch (error) {
       logger.error('Portages linking failed', error as Error, logContext);
+      throw error;
+    }
+  }
+  /**
+   * Check if a SIRET already exists in the database
+   */
+  static async checkSiretExists(siret: string): Promise<boolean> {
+    const logContext = {
+      operation: 'checkSiretExists',
+      siret,
+    };
+
+    try {
+      logger.debug('Checking if SIRET exists', logContext);
+
+      const existingCompany = await CompanyDAO.findBySiret(siret);
+      logger.info('SIRET check completed', {
+        ...logContext,
+        exists: !!existingCompany,
+      });
+
+      return !!existingCompany;
+    } catch (error) {
+      logger.error('SIRET check failed', error as Error, logContext);
       throw error;
     }
   }
