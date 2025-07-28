@@ -148,4 +148,25 @@ export class PlatformServiceService {
       throw error;
     }
   }
+  static async getPortages(){
+    const logContext = {
+      operation: 'getPortages',
+    };
+
+    try {
+      logger.debug('Fetching available portages', logContext);
+
+      const portages = await PlatformDAO.getPortages();
+
+      logger.info('Available portages fetched successfully', {
+        ...logContext,
+        portagesCount: portages.length,
+      });
+
+      return portages;
+    } catch (error) {
+      logger.error('Failed to fetch available portages', error as Error, logContext);
+      throw error;
+    }
+  }
 }

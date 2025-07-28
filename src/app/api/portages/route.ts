@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/prisma';
+import { PlatformServiceService } from '@/services';
 
 export async function GET() {
   const logContext = {
@@ -13,11 +13,7 @@ export async function GET() {
   try {
     logger.info('Fetching portages', logContext);
 
-    const portages = await prisma.portage.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    });
+    const portages = await PlatformServiceService.getPortages();
 
     logger.info('Portages fetched successfully', {
       ...logContext,

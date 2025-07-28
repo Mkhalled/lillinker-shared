@@ -32,4 +32,11 @@ export class PlatformDAO {
             },
         });
     }
+    static async getPortages() {
+        return prisma.portage.findMany({
+            orderBy: {
+                name: 'asc',
+            },
+        });
+    }
 }
