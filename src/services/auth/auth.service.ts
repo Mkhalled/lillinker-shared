@@ -3,11 +3,11 @@ import { randomBytes } from 'crypto';
 import { Prisma } from '@prisma/client';
 import { hash } from 'bcryptjs';
 
+import { UserDAO } from '@/dao/user.dao';
 import { logger } from '@/lib/logger';
 import { sendVerificationEmail } from '@/lib/mailer';
 import { prisma } from '@/lib/prisma';
 import type { InitialRegistration } from '@/lib/validations/auth.validation';
-import { UserDAO } from '@/dao/user.dao';
 
 type TransactionClient = Prisma.TransactionClient;
 export class AuthService {

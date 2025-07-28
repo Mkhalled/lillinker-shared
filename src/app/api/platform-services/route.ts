@@ -1,38 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { prisma } from '@/lib/prisma';
+import { PlatformServiceService } from '@/services';
 
 export async function GET() {
   try {
-    const platformServices = await prisma.platformService.findMany({
-      where: {
-        status: 'ACTIVE',
-      },
-      select: {
-        id: true,
-        label: true,
-        description: true,
-        data_type: true,
-        requires_data: true,
-        data_label: true,
-        data_description: true,
-        choices: true,
-        user: {
-          select: {
-            first_name: true,
-            last_name: true,
-            ownedCompany: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-      },
-      orderBy: {
-        label: 'asc',
-      },
-    });
+    const platformServices = await PlatformServiceService.getAvailableServices();
 
     return NextResponse.json({
       success: true,

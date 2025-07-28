@@ -1,3 +1,4 @@
+import { PlatformDAO } from '@/dao/platform.dao';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 
@@ -134,18 +135,7 @@ export class PlatformServiceService {
     try {
       logger.debug('Fetching available services', logContext);
 
-      const services = await prisma.companyService.findMany({
-        where: {
-          is_active: true,
-          service: {
-            status: 'ACTIVE',
-          },
-        },
-        include: {
-          service: true,
-          company: true,
-        },
-      });
+      const services = await PlatformDAO.getActivePlatformServices();
 
       logger.info('Available services fetched successfully', {
         ...logContext,
