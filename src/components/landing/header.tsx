@@ -2,9 +2,14 @@
 
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 
+import { useLoading } from '@/app/context/LoadingContext';
+
 import { Button } from '../ui/button/Button';
+
 
 interface HeaderProps {
   onHomeClick?: () => void;
@@ -15,7 +20,9 @@ interface HeaderProps {
 
 const Header = ({ onHomeClick, onAboutClick, onServicesClick, onContactClick }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const { data: session, status } = useSession();
+  const { setLoading } = useLoading();
+  const router = useRouter();
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -24,6 +31,25 @@ const Header = ({ onHomeClick, onAboutClick, onServicesClick, onContactClick }: 
     setIsMenuOpen(false);
   };
 
+   const getDashboardHref = async () => {
+    setLoading(true)
+    let targetRoute = "";
+    switch (session?.user.role) {
+      case "ADMIN":
+        targetRoute = "/admin/dashboard";
+        break;
+      case "MANAGER":
+        targetRoute = "/company/manager/dashboard";
+        break;
+      case "FREELANCE":
+        targetRoute = "/consultant/dashboard";
+        break;
+      case "COMPANY":
+        targetRoute = "/company/admin/dashboard";
+        break;
+    }
+     router.push(targetRoute);
+  };
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
       <div className="container mx-auto px-6 sm:px-8 lg:px-12">
@@ -63,11 +89,17 @@ const Header = ({ onHomeClick, onAboutClick, onServicesClick, onContactClick }: 
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/auth/login">
+           {status === "authenticated" ? (
+              <Button onClick={getDashboardHref} className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white">
+                Dashboard
+              </Button>
+           ) : (
+             <Link href="/auth/login">
               <Button className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white">
                 Login
               </Button>
             </Link>
+           )}
           </div>
 
           {/* Mobile menu button */}

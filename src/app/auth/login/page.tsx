@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import React, { useState } from 'react';
 
+import { useLoading } from '@/app/context/LoadingContext';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import { Button } from '@/components/ui/button/Button';
@@ -14,13 +15,14 @@ import { EyeCloseIcon } from '@/icons';
 const LoginPage = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loginLoading, setloginLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { setLoading } = useLoading();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    setloginLoading(true);
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
@@ -63,7 +65,7 @@ const LoginPage = () => {
       const response = await fetch('/api/auth/session');
       const session = await response.json();
       const role = session.user?.role;
-
+      setLoading(true);
       // Redirect based on role
       if (role === 'ADMIN') {
         router.push('/admin/dashboard');
@@ -87,7 +89,7 @@ const LoginPage = () => {
       console.error('Login error:', err);
       setError("Une erreur inattendue s'est produite. Veuillez réessayer.");
     } finally {
-      setLoading(false);
+      setloginLoading(false);
     }
   };
 
@@ -170,9 +172,9 @@ const LoginPage = () => {
                       type="submit"
                       className="w-full text-white bg-blue-600 hover:bg-blue-700"
                       size="sm"
-                      disabled={loading}
+                      disabled={loginLoading}
                     >
-                      {loading ? 'Connexion...' : 'Se connecter'}
+                      {loginLoading ? 'Connexion...' : 'Se connecter'}
                     </Button>
                   </div>
                 </div>
@@ -181,7 +183,7 @@ const LoginPage = () => {
               <div className="mt-5">
                 <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400">
                   Vous n&apos;avez pas de compte?{' '}
-                  <Link href="/" className="text-blue-600 hover:text-blue-700">
+                  <Link href="/" onClick={() => setLoading(true)} className="text-blue-600 hover:text-blue-700">
                     S&apos;inscrire
                   </Link>
                 </p>
