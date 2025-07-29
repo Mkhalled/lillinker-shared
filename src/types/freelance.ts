@@ -26,12 +26,12 @@ export interface FreelanceFormData extends BaseUserInfo {
 }
 
 export interface FreelanceRequestInput {
-    mission_status: "OPEN" | "CLOSED" | "PENDING";
-    priority: "HIGH" | "MEDIUM" | "LOW";
-    tjm: number;
-    days: number;
-    wants_portage: boolean;
-    client_name?: string;
-    client_address?: string;
-    client_sector?: string;
+  mission_status: 'OPEN' | 'CLOSED' | 'PENDING';
+  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  tjm: number;
+  days: number;
+  wants_portage: boolean;
+  client_name?: string;
+  client_address?: string;
+  client_sector?: string;
 }

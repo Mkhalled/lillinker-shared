@@ -10,7 +10,6 @@ import { useLoading } from '@/app/context/LoadingContext';
 
 import { Button } from '../ui/button/Button';
 
-
 interface HeaderProps {
   onHomeClick?: () => void;
   onAboutClick?: () => void;
@@ -31,24 +30,24 @@ const Header = ({ onHomeClick, onAboutClick, onServicesClick, onContactClick }: 
     setIsMenuOpen(false);
   };
 
-   const getDashboardHref = async () => {
-    setLoading(true)
-    let targetRoute = "";
+  const getDashboardHref = async () => {
+    setLoading(true);
+    let targetRoute = '';
     switch (session?.user.role) {
-      case "ADMIN":
-        targetRoute = "/admin/dashboard";
+      case 'ADMIN':
+        targetRoute = '/admin/dashboard';
         break;
-      case "MANAGER":
-        targetRoute = "/company/manager/dashboard";
+      case 'MANAGER':
+        targetRoute = '/company/manager/dashboard';
         break;
-      case "FREELANCE":
-        targetRoute = "/consultant/dashboard";
+      case 'FREELANCE':
+        targetRoute = '/consultant/dashboard';
         break;
-      case "COMPANY":
-        targetRoute = "/company/admin/dashboard";
+      case 'COMPANY':
+        targetRoute = '/company/admin/dashboard';
         break;
     }
-     router.push(targetRoute);
+    router.push(targetRoute);
   };
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
@@ -89,17 +88,20 @@ const Header = ({ onHomeClick, onAboutClick, onServicesClick, onContactClick }: 
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
-           {status === "authenticated" ? (
-              <Button onClick={getDashboardHref} className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white">
+            {status === 'authenticated' ? (
+              <Button
+                onClick={getDashboardHref}
+                className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white"
+              >
                 Dashboard
               </Button>
-           ) : (
-             <Link href="/auth/login">
-              <Button className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white">
-                Login
-              </Button>
-            </Link>
-           )}
+            ) : (
+              <Link href="/auth/login">
+                <Button className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white">
+                  Login
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}

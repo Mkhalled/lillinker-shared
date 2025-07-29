@@ -118,9 +118,9 @@ export class PlatformServiceService {
       throw error;
     }
   }
- /**
+  /**
    * Get available portages
-   */ 
+   */
   static async getPortages() {
     const logContext = {
       operation: 'getPortages',

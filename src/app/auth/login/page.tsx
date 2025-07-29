@@ -183,7 +183,11 @@ const LoginPage = () => {
               <div className="mt-5">
                 <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400">
                   Vous n&apos;avez pas de compte?{' '}
-                  <Link href="/" onClick={() => setLoading(true)} className="text-blue-600 hover:text-blue-700">
+                  <Link
+                    href="/"
+                    onClick={() => setLoading(true)}
+                    className="text-blue-600 hover:text-blue-700"
+                  >
                     S&apos;inscrire
                   </Link>
                 </p>

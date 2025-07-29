@@ -11,17 +11,14 @@ export class FreelanceDao {
     });
   }
 
-static async createFreelanceRequest(
-    freelanceId: number,
-    data: FreelanceRequestInput
-) {
+  static async createFreelanceRequest(freelanceId: number, data: FreelanceRequestInput) {
     return prisma.freelanceRequest.create({
-        data: {
-            ...data,
-            freelance: { connect: { id: freelanceId } },
-        },
+      data: {
+        ...data,
+        freelance: { connect: { id: freelanceId } },
+      },
     });
-}
+  }
 
   static async createFreelanceRequestOption(
     freelanceRequestId: number,

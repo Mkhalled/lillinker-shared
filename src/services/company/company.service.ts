@@ -18,13 +18,13 @@ export class CompanyService {
       logger.info('Creating company record', logContext);
 
       const company = await CompanyDAO.create({
-          admin_user_id: userId,
-          name: data.company_name,
-          description: data.company_description,
-          siret: data.siret,
-          consultant_count: data.consultant_count,
-          management_fees: data.management_fees,
-          is_portage: data.is_portage || false,
+        admin_user_id: userId,
+        name: data.company_name,
+        description: data.company_description,
+        siret: data.siret,
+        consultant_count: data.consultant_count,
+        management_fees: data.management_fees,
+        is_portage: data.is_portage || false,
       });
 
       logger.info('Company record created successfully', {
@@ -58,9 +58,7 @@ export class CompanyService {
       });
 
       const companyServices = await Promise.all(
-        serviceIds.map(serviceId =>
-          CompanyDAO.addCompanyService(companyId, serviceId)
-        )
+        serviceIds.map(serviceId => CompanyDAO.addCompanyService(companyId, serviceId))
       );
 
       logger.info('Platform services linked successfully', {

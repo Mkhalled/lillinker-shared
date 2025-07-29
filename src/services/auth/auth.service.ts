@@ -132,7 +132,7 @@ export class AuthService {
     try {
       logger.info('Starting email verification and password setting', logContext);
 
-      const user = await UserDAO.findByVerificationToken(token)
+      const user = await UserDAO.findByVerificationToken(token);
 
       if (!user) {
         logger.warn('Invalid or expired verification token', {
@@ -150,12 +150,12 @@ export class AuthService {
 
       const hashedPassword = await hash(password, 12);
 
-      await UserDAO.update(user.id,{
-          password: hashedPassword,
-          email_verified: true,
-          verification_token: null,
-          verification_token_expires: null,
-        });
+      await UserDAO.update(user.id, {
+        password: hashedPassword,
+        email_verified: true,
+        verification_token: null,
+        verification_token_expires: null,
+      });
 
       logger.info('Email verification and password setting completed successfully', {
         ...logContext,

@@ -13,12 +13,11 @@ const RootLayout = ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
         <div className="dark:bg-boxdark-2 dark:text-bodydark">
-         <Providers>{children}</Providers>
+          <Providers>{children}</Providers>
         </div>
       </body>
     </html>

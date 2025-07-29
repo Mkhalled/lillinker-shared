@@ -35,7 +35,8 @@ export class PlatformDAO {
         requires_data: serviceData.requires_data,
         data_label: serviceData.data_label || '',
         data_description: serviceData.data_description || '',
-        choices: serviceData.choices && serviceData.choices.length > 0 ? serviceData.choices : undefined,
+        choices:
+          serviceData.choices && serviceData.choices.length > 0 ? serviceData.choices : undefined,
         status: 'PENDING',
       },
     });
