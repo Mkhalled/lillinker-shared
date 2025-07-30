@@ -50,4 +50,23 @@ export class FreelanceDao {
       })),
     });
   }
+  static async getFreelanceRequestsByUserId(userId: number) {
+    // Find the freelance record by userId
+    const freelance = await prisma.freelance.findUnique({
+      where: { freelance_id: userId },
+      select: { id: true },
+    });
+    if (!freelance) return [];
+
+    // Use the freelance table's id to find requests
+    return prisma.freelanceRequest.findMany({
+      where: { freelance_id: freelance.id },
+      include: {
+        freelance: true,
+        options: true,
+        responses: true,
+        portages: true,
+      },
+    });
+  }
 }

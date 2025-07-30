@@ -35,7 +35,7 @@ const Settings = () => {
 
   const user = profile.user;
   const freelance = profile.roleData;
-console.log(profile)
+  console.log(profile);
   return (
     <div className="mx-auto max-w-270">
       <Breadcrumb pageName="Paramètres" />

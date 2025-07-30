@@ -1,6 +1,8 @@
 export type demande = {
-  name: string;
-  price: number;
-  invoiceDate: string;
-  status: string;
+  id: number;
+  tjm: number;
+  created_at: string;
+  priority: string;
+  mission_status: string;
+  responses: Array<unknown>;
 };

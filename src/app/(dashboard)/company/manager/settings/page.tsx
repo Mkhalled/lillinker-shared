@@ -34,9 +34,7 @@ const Settings = () => {
       <Breadcrumb pageName="Paramètres" />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mt-8">
         <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
-          <h3 className="font-medium text-black dark:text-white">
-            Informations personnelles
-          </h3>
+          <h3 className="font-medium text-black dark:text-white">Informations personnelles</h3>
         </div>
         <div className="p-7">
           <form action="#">

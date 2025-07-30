@@ -206,4 +206,29 @@ export class FreelanceService {
         return { value: responseData };
     }
   }
+  /**
+   * Get freelance requests by freelance ID
+   */
+  static async getFreelanceRequestsByFreelanceId(freelanceId: number) {
+    const logContext = {
+      operation: 'getFreelanceRequestsByFreelanceId',
+      freelanceId,
+    };
+
+    try {
+      logger.info('Fetching freelance requests', logContext);
+
+      const requests = await FreelanceDao.getFreelanceRequestsByUserId(freelanceId);
+
+      logger.info('Freelance requests fetched successfully', {
+        ...logContext,
+        requestCount: requests.length,
+      });
+
+      return requests;
+    } catch (error) {
+      logger.error('Fetching freelance requests failed', error as Error, logContext);
+      throw error;
+    }
+  }
 }
