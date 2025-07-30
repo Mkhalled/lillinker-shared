@@ -10,9 +10,9 @@ export class CompanyDAO {
     });
   }
 
-  static async findById(id: string) {
+  static async findByUserId(id: number) {
     return prisma.company.findUnique({
-      where: { id: parseInt(id) },
+      where: { admin_user_id: id },
     });
   }
 
@@ -24,16 +24,16 @@ export class CompanyDAO {
     });
   }
 
-  static async update(id: string, data: Prisma.CompanyUpdateInput) {
+  static async update(id: number, data: Prisma.CompanyUpdateInput) {
     return prisma.company.update({
-      where: { id: parseInt(id) },
+      where: { id: id },
       data,
     });
   }
 
-  static async delete(id: string) {
+  static async delete(id: number) {
     return prisma.company.delete({
-      where: { id: parseInt(id) },
+      where: { id: id },
     });
   }
   static async addCompanyService(companyId: number, serviceId: number) {

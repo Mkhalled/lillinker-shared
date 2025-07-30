@@ -2,6 +2,11 @@ import { prisma } from '@/lib/prisma';
 import { FreelanceRequestInput } from '@/types/freelance';
 
 export class FreelanceDao {
+  static async findByFreelanceId(id: number) {
+    return prisma.freelance.findUnique({
+      where: { id: id },
+    });
+  }
   static async createFreelanceProfile(userId: number, metierId: number) {
     return prisma.freelance.create({
       data: {

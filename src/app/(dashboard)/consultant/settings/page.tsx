@@ -1,7 +1,6 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import Image from 'next/image';
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Profile Settings',

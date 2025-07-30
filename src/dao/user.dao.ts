@@ -37,9 +37,18 @@ export class UserDAO {
 
   static async findById(id: number): Promise<User | null> {
     logger.debug('Searching for user by ID', { userId: id });
-    const user = await prisma.user.findUnique({
+    const user = (await prisma.user.findUnique({
       where: { id },
-    });
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        email: true,
+        role: true,
+        status: true,
+        phone_number: true,
+      },
+    })) as User | null;
     logger.debug('User search by ID result', { found: !!user, userId: id });
     return user;
   }
