@@ -173,6 +173,7 @@ model FreelanceRequest {
   tjm             Float
   days            Float
   wants_portage   Boolean                @default(false)
+  created_at     DateTime         @default(now())
   freelance       Freelance              @relation(fields: [freelance_id], references: [id])
   options         FreelanceRequestOption[]
   responses       CompanyResponse[]
