@@ -1,8 +1,15 @@
-export type demande = {
+export interface demande {
   id: number;
-  tjm: number;
-  created_at: string;
-  priority: string;
   mission_status: string;
-  responses: Array<unknown>;
-};
+  client_name?: string;
+  client_sector?: string;
+  client_address?: string;
+  priority: string;
+  tjm: number;
+  days: number;
+  wants_portage: boolean;
+  created_at: string;
+  portages?: any[];
+  options?: any[];
+  responses: Array<any>;
+}

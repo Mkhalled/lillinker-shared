@@ -63,9 +63,17 @@ export class FreelanceDao {
       where: { freelance_id: freelance.id },
       include: {
         freelance: true,
-        options: true,
+        options: {
+          include: {
+            platformService: true,
+          },
+        },
         responses: true,
-        portages: true,
+        portages: {
+          include: {
+            portage: true,
+          },
+        },
       },
     });
   }
