@@ -7,18 +7,18 @@ export const menuManagerCompany = [
       {
         icon: <LayoutDashboardIcon className="w-5 h-5" />,
         label: 'Dashboard',
-        route: '/company/admin/dashboard',
+        route: '/company/manager/dashboard',
       },
       {
         icon: <InboxIcon className="w-5 h-5" />,
         label: 'Demandes',
-        route: 'company/admin/societies',
+        route: '/company/manager/societies',
       },
 
       {
         icon: <SettingsIcon className="w-5 h-5" />,
         label: 'Paramètres',
-        route: '/company/admin/settings',
+        route: '/company/manager/settings',
       },
     ],
   },
