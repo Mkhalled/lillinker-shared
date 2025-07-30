@@ -4,7 +4,8 @@ import { FreelanceRequestInput } from '@/types/freelance';
 export class FreelanceDao {
   static async findByFreelanceId(id: number) {
     return prisma.freelance.findUnique({
-      where: { id: id },
+      where: { freelance_id: id },
+      include: { metier: true },
     });
   }
   static async createFreelanceProfile(userId: number, metierId: number) {

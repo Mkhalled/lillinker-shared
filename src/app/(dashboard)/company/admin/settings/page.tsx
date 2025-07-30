@@ -66,6 +66,7 @@ const Settings = () => {
                     id="prenom"
                     placeholder="Prénom"
                     defaultValue={user?.first_name || ''}
+                    readOnly
                   />
                 </div>
               </div>
@@ -84,6 +85,7 @@ const Settings = () => {
                     id="nom"
                     placeholder="Nom"
                     defaultValue={user?.last_name || ''}
+                    readOnly
                   />
                 </div>
               </div>
@@ -103,6 +105,7 @@ const Settings = () => {
                   id="emailAddress"
                   placeholder="Adresse e-mail"
                   defaultValue={user?.email || ''}
+                  readOnly
                 />
               </div>
             </div>
@@ -120,6 +123,7 @@ const Settings = () => {
                 id="phoneNumber"
                 placeholder="Numéro de téléphone"
                 defaultValue={user?.phone_number || ''}
+                readOnly
               />
             </div>
             {/* Infos entreprise */}
@@ -138,6 +142,7 @@ const Settings = () => {
                   id="name"
                   placeholder="Nom de l'entreprise"
                   defaultValue={company?.name || ''}
+                  readOnly
                 />
               </div>
               <div className="w-full sm:w-1/2">
@@ -155,6 +160,7 @@ const Settings = () => {
                   placeholder="Nombre de consultants"
                   min={0}
                   defaultValue={company?.consultant_count || ''}
+                  readOnly
                 />
               </div>
             </div>
@@ -172,6 +178,7 @@ const Settings = () => {
                 id="siret"
                 placeholder="Numéro SIRET"
                 defaultValue={company?.siret || ''}
+                readOnly
               />
             </div>
             <div className="mb-5.5">
@@ -188,6 +195,7 @@ const Settings = () => {
                 placeholder="Description de l'entreprise"
                 rows={3}
                 defaultValue={company?.description || ''}
+                readOnly
               />
             </div>
             <div className="flex justify-end gap-4.5">
