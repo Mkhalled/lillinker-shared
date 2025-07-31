@@ -22,13 +22,12 @@ interface OptionInfoTooltipProps {
         } | null;
       };
     };
-    response_data?: any;
+    response_data?: Record<string, string | number | boolean | null>;
     description?: string | null;
   };
 }
 
 const OptionInfoTooltip = ({ option }: OptionInfoTooltipProps) => {
-
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggle = (e: React.MouseEvent) => {
@@ -102,7 +101,7 @@ const OptionInfoTooltip = ({ option }: OptionInfoTooltipProps) => {
               {/* Option Description */}
               {option.description && (
                 <div>
-                  <span className="font-medium text-gray-800">Description de l'option:</span>
+                  <span className="font-medium text-gray-800">Description de l&apos;option:</span>
                   <span className="text-gray-600 ml-1">{option.description}</span>
                 </div>
               )}
@@ -128,7 +127,9 @@ const OptionInfoTooltip = ({ option }: OptionInfoTooltipProps) => {
                 <div>
                   <span className="font-medium text-gray-800">Données requises:</span>
                   <div className="text-gray-600 ml-1">
-                    {option.platformService.data_label && <span>{option.platformService.data_label}</span>}
+                    {option.platformService.data_label && (
+                      <span>{option.platformService.data_label}</span>
+                    )}
                     {option.platformService.data_description && (
                       <span>
                         {option.platformService.data_label ? ', ' : ''}
@@ -137,9 +138,12 @@ const OptionInfoTooltip = ({ option }: OptionInfoTooltipProps) => {
                     )}
 
                     {/* Show choices for SELECT and RADIO types */}
-                    {(option.platformService.data_type === 'SELECT' || option.platformService.data_type === 'RADIO') &&
+                    {(option.platformService.data_type === 'SELECT' ||
+                      option.platformService.data_type === 'RADIO') &&
                       parseChoices(option.platformService.choices).length > 0 && (
-                        <span>. Options: {parseChoices(option.platformService.choices).join(', ')}</span>
+                        <span>
+                          . Options: {parseChoices(option.platformService.choices).join(', ')}
+                        </span>
                       )}
 
                     {/* Show example for TEXT type */}
@@ -182,7 +186,9 @@ const OptionInfoTooltip = ({ option }: OptionInfoTooltipProps) => {
               {option.platformService.user?.ownedCompany && (
                 <div className="pt-2 border-t border-gray-200">
                   <span className="font-medium text-gray-800">Proposé par:</span>
-                  <span className="text-gray-600 ml-1">{option.platformService.user.ownedCompany.name}</span>
+                  <span className="text-gray-600 ml-1">
+                    {option.platformService.user.ownedCompany.name}
+                  </span>
                 </div>
               )}
             </div>

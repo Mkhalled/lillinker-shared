@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma';
 import { FreelanceRequestInput } from '@/types/freelance';
-
 export class FreelanceDao {
   static async findByFreelanceId(id: number) {
     return prisma.freelance.findUnique({
@@ -30,7 +29,7 @@ export class FreelanceDao {
     freelanceRequestId: number,
     service_option_id: number,
     is_required: boolean,
-    responseDataJson?: any
+    responseDataJson?: Record<string, string | number | boolean | null>
   ) {
     const option = await prisma.freelanceRequestOption.create({
       data: {
