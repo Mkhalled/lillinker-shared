@@ -3,7 +3,7 @@ import { demande, PortageInfo, OptionInfo } from '@/types/demande';
 
 import OptionInfoTooltip from './OptionInfoTooltip';
 
-export const FreelanceRequestDetails = ({ demandeItem }: { demandeItem: demande }) => {
+export const FreelanceRequestDetails = ({ demandeItem, onClose  }: { demandeItem: demande, onClose?: () => void }) => {
   const priorityLabels: { [key: string]: string } = {
     urgent: 'Urgent (dans la semaine)',
     high: 'Priorité élevée (dans le mois)',
@@ -47,16 +47,42 @@ export const FreelanceRequestDetails = ({ demandeItem }: { demandeItem: demande 
     <div className="w-full mt-8">
       <div className="bg-white rounded-lg shadow border border-gray-200 dark:border-gray-700 dark:bg-gray-800 overflow-hidden">
         {/* Header */}
-        <div className="bg-[var(--primary-color)] dark:bg-blue-700 px-6 py-4">
-          <h2 className="text-xl font-semibold text-white mb-1">Détails de la demande</h2>
-          <p className="text-blue-100 dark:text-blue-200 text-sm">
-            Créée le{' '}
-            {new Date(demandeItem.created_at).toLocaleDateString('fr-FR', {
-              day: '2-digit',
-              month: 'short',
-              year: '2-digit',
-            })}
-          </p>
+        <div className="bg-[var(--primary-color)] dark:bg-blue-700 px-6 py-4 relative">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-1">Détails de la demande</h2>
+              <p className="text-blue-100 dark:text-blue-200 text-sm">
+                Créée le{' '}
+                {new Date(demandeItem.created_at).toLocaleDateString('fr-FR', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: '2-digit',
+                })}
+              </p>
+            </div>
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="text-white hover:text-blue-200 dark:hover:text-blue-300 transition-colors duration-200 p-1 rounded-md hover:bg-white/10"
+                aria-label="Fermer les détails"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="p-6 space-y-6">

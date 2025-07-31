@@ -12,7 +12,7 @@ const MesDemandes = ({ demandeData }: MesDemandesProps) => {
   const [selectedDemande, setSelectedDemande] = useState<demande | null>(null);
 
   if (selectedDemande) {
-    return <FreelanceRequestDetails demandeItem={selectedDemande} />;
+    return <FreelanceRequestDetails demandeItem={selectedDemande} onClose={() => setSelectedDemande(null)} />;
   }
 
   return (
