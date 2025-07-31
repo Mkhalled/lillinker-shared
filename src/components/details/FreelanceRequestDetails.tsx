@@ -20,36 +20,36 @@ export const FreelanceRequestDetails = ({ demandeItem }: { demandeItem: demande 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'HIGH':
-        return 'bg-red-50 text-red-700 border-red-200';
+        return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30';
       case 'MEDIUM':
-        return 'bg-orange-50 text-orange-700 border-orange-200';
+        return 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800/30';
       case 'LOW':
-        return 'bg-green-50 text-green-700 border-green-200';
+        return 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30';
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
+        return 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800/50 dark:text-gray-300 dark:border-gray-600';
     }
   };
 
   const getMissionStatusColor = (status: string) => {
     switch (status) {
       case 'yes':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/30';
       case 'searching':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
+        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/30';
       case 'no':
-        return 'bg-slate-50 text-slate-700 border-slate-200';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800/50 dark:text-slate-300 dark:border-slate-600';
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
+        return 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800/50 dark:text-gray-300 dark:border-gray-600';
     }
   };
 
   return (
     <div className="w-full mt-8">
-      <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg shadow border border-gray-200 dark:border-gray-700 dark:bg-gray-800 overflow-hidden">
         {/* Header */}
-        <div className="bg-black px-6 py-4">
+        <div className="bg-[var(--primary-color)] dark:bg-blue-700 px-6 py-4">
           <h2 className="text-xl font-semibold text-white mb-1">Détails de la demande</h2>
-          <p className="text-blue-100 text-sm">
+          <p className="text-blue-100 dark:text-blue-200 text-sm">
             Créée le{' '}
             {new Date(demandeItem.created_at).toLocaleDateString('fr-FR', {
               day: '2-digit',
@@ -63,9 +63,9 @@ export const FreelanceRequestDetails = ({ demandeItem }: { demandeItem: demande 
           {/* Mission Information */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-6 h-6 bg-blue-100 rounded-md flex items-center justify-center">
+              <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-md flex items-center justify-center">
                 <svg
-                  className="w-3 h-3 text-blue-600"
+                  className="w-3 h-3 text-blue-600 dark:text-blue-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -78,13 +78,13 @@ export const FreelanceRequestDetails = ({ demandeItem }: { demandeItem: demande 
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-800">Informations de la mission</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Informations de la mission</h3>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* Mission Status */}
               <div>
-                <span className="block text-xs font-medium text-gray-600 mb-1">Statut mission</span>
+                <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Statut mission</span>
                 <div
                   className={`inline-flex items-center px-3 py-1 rounded-md border font-medium text-sm ${getMissionStatusColor(demandeItem.mission_status)}`}
                 >
@@ -94,20 +94,20 @@ export const FreelanceRequestDetails = ({ demandeItem }: { demandeItem: demande 
               </div>
 
               {/* TJM */}
-              <div className="bg-green-50 p-3 rounded-md border border-green-100">
-                <span className="block text-xs font-medium text-green-600 mb-1">TJM</span>
-                <p className="text-lg font-bold text-green-700">{demandeItem.tjm}€</p>
+              <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-md border border-green-100 dark:border-green-800/30">
+                <span className="block text-xs font-medium text-green-600 dark:text-green-400 mb-1">TJM</span>
+                <p className="text-lg font-bold text-green-700 dark:text-green-400">{demandeItem.tjm}€</p>
               </div>
 
               {/* Days */}
-              <div className="bg-blue-50 p-3 rounded-md border border-blue-100">
-                <span className="block text-xs font-medium text-blue-600 mb-1">Jours/semaine</span>
-                <p className="text-lg font-bold text-blue-700">{demandeItem.days}</p>
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md border border-blue-100 dark:border-blue-800/30">
+                <span className="block text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">Jours/semaine</span>
+                <p className="text-lg font-bold text-blue-700 dark:text-blue-400">{demandeItem.days}</p>
               </div>
 
               {/* Priority */}
               <div>
-                <span className="block text-xs font-medium text-gray-600 mb-1">Priorité</span>
+                <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Priorité</span>
                 <div
                   className={`inline-flex items-center px-3 py-1 rounded-md border font-medium text-sm ${getPriorityColor(demandeItem.priority)}`}
                 >
@@ -126,23 +126,23 @@ export const FreelanceRequestDetails = ({ demandeItem }: { demandeItem: demande 
               {demandeItem.mission_status === 'OPEN' && (
                 <>
                   {demandeItem.client_name && (
-                    <div className="bg-gray-50 p-3 rounded-md">
-                      <span className="block text-xs font-medium text-gray-600 mb-1">Client</span>
-                      <p className="text-gray-900 font-medium text-sm">{demandeItem.client_name}</p>
+                    <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border border-gray-100 dark:border-gray-600">
+                      <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Client</span>
+                      <p className="text-gray-900 dark:text-gray-100 font-medium text-sm">{demandeItem.client_name}</p>
                     </div>
                   )}
                   {demandeItem.client_sector && (
-                    <div className="bg-gray-50 p-3 rounded-md">
-                      <span className="block text-xs font-medium text-gray-600 mb-1">Secteur</span>
-                      <p className="text-gray-900 font-medium text-sm">
+                    <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border border-gray-100 dark:border-gray-600">
+                      <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Secteur</span>
+                      <p className="text-gray-900 dark:text-gray-100 font-medium text-sm">
                         {demandeItem.client_sector}
                       </p>
                     </div>
                   )}
                   {demandeItem.client_address && (
-                    <div className="bg-gray-50 p-3 rounded-md lg:col-span-3">
-                      <span className="block text-xs font-medium text-gray-600 mb-1">Adresse</span>
-                      <p className="text-gray-900 font-medium text-sm">
+                    <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border border-gray-100 dark:border-gray-600 lg:col-span-3">
+                      <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Adresse</span>
+                      <p className="text-gray-900 dark:text-gray-100 font-medium text-sm">
                         {demandeItem.client_address}
                       </p>
                     </div>
@@ -156,9 +156,9 @@ export const FreelanceRequestDetails = ({ demandeItem }: { demandeItem: demande 
           {demandeItem.wants_portage && (
             <div className="space-y-3">
               <div className="flex items-center space-x-2 mb-3">
-                <div className="w-6 h-6 bg-green-100 rounded-md flex items-center justify-center">
+                <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-md flex items-center justify-center">
                   <svg
-                    className="w-3 h-3 text-green-600"
+                    className="w-3 h-3 text-green-600 dark:text-green-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -171,33 +171,33 @@ export const FreelanceRequestDetails = ({ demandeItem }: { demandeItem: demande 
                     />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-800">Portage salarial</h3>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Portage salarial</h3>
               </div>
 
-              <div className="bg-green-50 border border-green-200 rounded-md p-4">
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30 rounded-md p-4">
                 <div className="flex items-center space-x-2 mb-2">
-                  <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-green-800 font-medium text-sm">
+                  <span className="text-green-800 dark:text-green-300 font-medium text-sm">
                     Le freelance souhaite du portage
                   </span>
                 </div>
 
                 {demandeItem.portages && demandeItem.portages.length > 0 && (
                   <div className="mt-3">
-                    <p className="text-xs text-green-700 mb-2 font-medium">
+                    <p className="text-xs text-green-700 dark:text-green-400 mb-2 font-medium">
                       Sociétés de portage sélectionnées :
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {demandeItem.portages.map((portage: PortageInfo) => (
                         <span
                           key={portage.portage?.id || portage.id}
-                          className="inline-flex items-center px-2 py-1 bg-white border border-green-200 text-green-800 rounded-md text-xs font-medium"
+                          className="inline-flex items-center px-2 py-1 bg-white dark:bg-gray-800 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-300 rounded-md text-xs font-medium"
                         >
                           <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1"></div>
                           {portage.portage?.name || portage.name}
@@ -214,9 +214,9 @@ export const FreelanceRequestDetails = ({ demandeItem }: { demandeItem: demande 
           {demandeItem.options && demandeItem.options.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center space-x-2 mb-3">
-                <div className="w-6 h-6 bg-purple-100 rounded-md flex items-center justify-center">
+                <div className="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 rounded-md flex items-center justify-center">
                   <svg
-                    className="w-3 h-3 text-purple-600"
+                    className="w-3 h-3 text-purple-600 dark:text-purple-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -229,20 +229,20 @@ export const FreelanceRequestDetails = ({ demandeItem }: { demandeItem: demande 
                     />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-800">Options demandées</h3>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Options demandées</h3>
               </div>
 
-              <div className="bg-purple-50 border border-purple-200 rounded-md p-4">
+              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/30 rounded-md p-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {(demandeItem.options ?? []).map((option: OptionInfo) => (
                     <div
                       key={option.id}
-                      className="bg-white border border-purple-100 rounded-md p-3"
+                      className="bg-white dark:bg-gray-800 border border-purple-100 dark:border-purple-700/50 rounded-md p-3"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></div>
-                          <span className="font-medium text-gray-900 text-sm">
+                          <div className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full flex-shrink-0"></div>
+                          <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">
                             {option.platformService?.data_label || option.platformService?.label}
                           </span>
                         </div>
