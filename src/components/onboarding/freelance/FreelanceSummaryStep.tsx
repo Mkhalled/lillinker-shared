@@ -2,6 +2,8 @@
 
 import type { Metier, PlatformService, Portage } from '../../../hooks/useModalData';
 import type { FreelanceFormData } from '../../../types/freelance';
+import OptionInfoTooltip from '../../details/OptionInfoTooltip';
+import ServiceInfoTooltip from '../../ServiceInfoTooltip';
 
 interface FreelanceSummaryStepProps {
   formData: FreelanceFormData;
@@ -127,17 +129,35 @@ export const FreelanceSummaryStep = ({
         <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
           <h5 className="font-medium text-gray-800 mb-3">Services demandés</h5>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {selectedServices.map(service => (
-              <div key={service.id} className="flex items-start space-x-2 text-sm">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                <div>
-                  <div className="font-medium">{service.label}</div>
-                  {service.description && (
-                    <div className="text-gray-600 text-xs">{service.description}</div>
-                  )}
+            {selectedServices.map(service => {
+              const selectedService = formData.selectedServices.find(s => s.serviceId === service.id);
+              const hasResponseData = selectedService?.responseData;
+              
+              const mockOption = {
+                id: service.id,
+                platformService: service,
+                response_data: hasResponseData
+                  ? { response: selectedService.responseData ?? null }
+                  : undefined,
+                description: null
+              };
+              
+              return (
+                <div key={service.id} className="flex items-start space-x-2 text-sm">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="font-medium">{service.label}</div>
+                      {hasResponseData ? (
+                        <OptionInfoTooltip option={mockOption} />
+                      ) : (
+                        <ServiceInfoTooltip service={service} />
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
