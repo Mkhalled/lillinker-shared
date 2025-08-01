@@ -43,9 +43,9 @@ src/
 │   └── onboarding/
 │       └── freelance/route.ts # Freelance onboarding API
 ├── services/                  # Business logic layer
-│   ├── AuthService.ts         # Authentication operations
-│   ├── FreelanceService.ts    # Freelance-specific operations
-│   └── PlatformServiceService.ts # Platform service management
+│   ├── auth/auth.service.ts         # Authentication operations
+│   ├── freelance/freelance.service.ts    # Freelance-specific operations
+│   └── platform/platform.service.ts # Platform service management
 ├── lib/
 │   ├── prisma.ts             # Database client
 │   ├── logger.ts             # Structured logging
@@ -165,6 +165,9 @@ static async initiateRegistration(data: InitialRegistration) {
 
   return { user, verificationToken };
 }
+
+// AuthService for email verification:
+AuthService.sendVerificationEmail(userId);
 ```
 
 ### Initial User State
@@ -264,8 +267,6 @@ FreelanceService.linkPortages(freelanceId, portageIds);
 // PlatformServiceService for new services:
 PlatformServiceService.createService(userId, newServiceData);
 
-// AuthService for email verification:
-AuthService.sendVerificationEmail(userId);
 ```
 
 ### Database Transaction Pattern
@@ -309,8 +310,6 @@ await prisma.$transaction(async () => {
   return { freelance, createdServices };
 });
 
-// 5. Send verification email (outside transaction)
-await AuthService.sendVerificationEmail(parseInt(userId));
 ```
 
 ## Phase 3: Email Verification

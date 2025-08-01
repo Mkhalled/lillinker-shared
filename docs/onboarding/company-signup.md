@@ -21,6 +21,7 @@ src/components/onboarding/
     ├── CompanyConsultantsStep.tsx
     ├── CompanyMetiersStep.tsx
     ├── CompanyAdminStep.tsx
+    ├── CompanyPortageStep.tsx
     ├── CompanyServicesStep.tsx
     ├── CompanySummaryStep.tsx
     ├── useCompanyForm.ts      # Company form state management
@@ -39,9 +40,9 @@ src/
 │   └── onboarding/
 │       └── company/route.ts   # Company onboarding API
 ├── services/                  # Business logic layer
-│   ├── AuthService.ts         # Authentication operations
-│   ├── CompanyService.ts      # Company-specific operations
-│   └── PlatformServiceService.ts # Platform service management
+│   ├── auth/auth.service.ts         # Authentication operations
+│   ├── company/company.service.ts      # Company-specific operations
+│   └──platform/platform.service.ts # Platform service management
 ├── lib/
 │   ├── prisma.ts             # Database client
 │   ├── logger.ts             # Structured logging
@@ -157,6 +158,9 @@ static async initiateRegistration(data: InitialRegistration) {
 
   return { user, verificationToken };
 }
+
+// AuthService for email verification:
+AuthService.sendVerificationEmail(userId);
 ```
 
 ### Initial User State
@@ -257,8 +261,6 @@ CompanyService.linkPortages(companyId, portageIds);
 // PlatformServiceService for new services:
 PlatformServiceService.createService(userId, newServiceData);
 
-// AuthService for email verification:
-AuthService.sendVerificationEmail(userId);
 ```
 
 ### Database Transaction Pattern
@@ -316,8 +318,6 @@ await prisma.$transaction(async () => {
   return { company, createdServices };
 });
 
-// 7. Send verification email (outside transaction)
-await AuthService.sendVerificationEmail(parseInt(userId));
 ```
 
 ## Phase 3: Email Verification
