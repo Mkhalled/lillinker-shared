@@ -61,22 +61,35 @@ export class CompanyDAO {
       })),
     });
   }
-    static async getAllFreelanceRequests() {
-      return prisma.freelanceRequest.findMany({
+    static async getAllFreelanceRequests(page: number = 1, pageSize: number = 5) {
+      const skip = (page - 1) * pageSize;
+      const [data, total] = await Promise.all([
+      prisma.freelanceRequest.findMany({
+        skip,
+        take: pageSize,
         include: {
-          freelance: true,
-          options: {
-            include: {
-              platformService: true,
-            },
-          },
-          responses: true,
-          portages: {
-            include: {
-              portage: true,
-            },
+        freelance: true,
+        options: {
+          include: {
+          platformService: true,
           },
         },
-      });
+        responses: true,
+        portages: {
+          include: {
+          portage: true,
+          },
+        },
+        },
+      }),
+      prisma.freelanceRequest.count(),
+      ]);
+      return {
+      data,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+      };
     }
 }

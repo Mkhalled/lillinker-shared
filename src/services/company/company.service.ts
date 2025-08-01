@@ -159,7 +159,7 @@ export class CompanyService {
     /**
      * Get freelance requests for company
      */
-    static async getFreelanceRequests() {
+    static async getFreelanceRequests(page: number, pageSize: number) {
       const logContext = {
         operation: 'getFreelanceRequests',
       };
@@ -167,12 +167,7 @@ export class CompanyService {
       try {
         logger.info('Fetching freelance requests', logContext);
 
-        const requests = await CompanyDAO.getAllFreelanceRequests();
-
-        logger.info('Freelance requests fetched successfully', {
-          ...logContext,
-          requestCount: requests.length,
-        });
+        const requests = await CompanyDAO.getAllFreelanceRequests(page, pageSize);
   
         return requests;
       } catch (error) {
