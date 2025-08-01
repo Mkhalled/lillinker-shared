@@ -61,4 +61,22 @@ export class CompanyDAO {
       })),
     });
   }
+    static async getAllFreelanceRequests() {
+      return prisma.freelanceRequest.findMany({
+        include: {
+          freelance: true,
+          options: {
+            include: {
+              platformService: true,
+            },
+          },
+          responses: true,
+          portages: {
+            include: {
+              portage: true,
+            },
+          },
+        },
+      });
+    }
 }

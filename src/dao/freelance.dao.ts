@@ -29,7 +29,7 @@ export class FreelanceDao {
     freelanceRequestId: number,
     service_option_id: number,
     is_required: boolean,
-    responseDataJson?: Record<string, string | number | boolean | null>
+    responseDataJson?: any
   ) {
     const option = await prisma.freelanceRequestOption.create({
       data: {

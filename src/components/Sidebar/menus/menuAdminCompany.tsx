@@ -17,7 +17,7 @@ export const menuAdminCompany = [
       {
         icon: <InboxIcon className="w-5 h-5" />,
         label: 'Demandes',
-        route: 'company/admin/societies',
+        route: '/company/admin/societies',
       },
 
       {

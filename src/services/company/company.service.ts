@@ -156,4 +156,28 @@ export class CompanyService {
       throw error;
     }
   }
+    /**
+     * Get freelance requests for company
+     */
+    static async getFreelanceRequests() {
+      const logContext = {
+        operation: 'getFreelanceRequests',
+      };
+  
+      try {
+        logger.info('Fetching freelance requests', logContext);
+
+        const requests = await CompanyDAO.getAllFreelanceRequests();
+
+        logger.info('Freelance requests fetched successfully', {
+          ...logContext,
+          requestCount: requests.length,
+        });
+  
+        return requests;
+      } catch (error) {
+        logger.error('Fetching freelance requests failed', error as Error, logContext);
+        throw error;
+      }
+    }
 }
