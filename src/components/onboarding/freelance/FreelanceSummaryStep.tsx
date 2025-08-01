@@ -130,18 +130,20 @@ export const FreelanceSummaryStep = ({
           <h5 className="font-medium text-gray-800 mb-3">Services demandés</h5>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {selectedServices.map(service => {
-              const selectedService = formData.selectedServices.find(s => s.serviceId === service.id);
+              const selectedService = formData.selectedServices.find(
+                s => s.serviceId === service.id
+              );
               const hasResponseData = selectedService?.responseData;
-              
+
               const mockOption = {
                 id: service.id,
                 platformService: service,
                 response_data: hasResponseData
                   ? { response: selectedService.responseData ?? null }
                   : undefined,
-                description: null
+                description: null,
               };
-              
+
               return (
                 <div key={service.id} className="flex items-start space-x-2 text-sm">
                   <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>

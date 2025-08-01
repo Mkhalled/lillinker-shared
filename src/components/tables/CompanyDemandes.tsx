@@ -11,13 +11,13 @@ type PaginationProps = {
   totalPages: number;
 };
 
-type MesDemandesProps = {
+type CompanyDemandesProps = {
   demandeData: demande[];
   pagination: PaginationProps;
   onPageChange?: (page: number) => void;
 };
 
-const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps) => {
+const CompanyDemandes = ({ demandeData, pagination, onPageChange }: CompanyDemandesProps) => {
   const [selectedDemande, setSelectedDemande] = useState<demande | null>(null);
 
   const handlePageChange = (page: number) => {
@@ -86,9 +86,6 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
                 <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
                   Status
                 </th>
-                <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
-                  Reponses
-                </th>
                 <th className="px-4 py-4 font-medium text-black dark:text-white">Actions</th>
               </tr>
             </thead>
@@ -126,9 +123,6 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
                       </span>
                     </td>
                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                      {demandeItem.responses.length}
-                    </td>
-                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                       <div className="flex items-center space-x-3.5">
                         <button
                           className="group"
@@ -153,44 +147,7 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
                             />
                           </svg>
                         </button>
-                        <button className="group" title="Archiver">
-                          <svg
-                            className="fill-current group-hover:text-yellow-500"
-                            width="18"
-                            height="18"
-                            viewBox="0 0 18 18"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <rect
-                              x="3"
-                              y="7"
-                              width="12"
-                              height="8"
-                              rx="2"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              fill="none"
-                            />
-                            <path
-                              d="M6 10h6"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                            />
-                            <rect
-                              x="2"
-                              y="3"
-                              width="14"
-                              height="3"
-                              rx="1.5"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              fill="none"
-                            />
-                          </svg>
-                        </button>
-                        <button className="group" title="Voir les réponses">
+                        <button className="group" title="Répondre à la demande">
                           <svg
                             className="fill-current group-hover:text-green-500"
                             width="18"
@@ -345,4 +302,4 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
   );
 };
 
-export default MesDemandes;
+export default CompanyDemandes;

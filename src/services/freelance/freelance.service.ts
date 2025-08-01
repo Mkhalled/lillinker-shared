@@ -209,20 +209,25 @@ export class FreelanceService {
   /**
    * Get freelance requests by freelance ID
    */
-  static async getFreelanceRequestsByFreelanceId(freelanceId: number) {
+  static async getFreelanceRequestsByFreelanceId(
+    freelanceId: number,
+    page: number = 1,
+    pageSize: number = 10
+  ) {
     const logContext = {
       operation: 'getFreelanceRequestsByFreelanceId',
       freelanceId,
+      page,
+      pageSize,
     };
 
     try {
       logger.info('Fetching freelance requests', logContext);
 
-      const requests = await FreelanceDao.getFreelanceRequestsByUserId(freelanceId);
+      const requests = await FreelanceDao.getFreelanceRequestsByUserId(freelanceId, page, pageSize);
 
       logger.info('Freelance requests fetched successfully', {
         ...logContext,
-        requestCount: requests.length,
       });
 
       return requests;

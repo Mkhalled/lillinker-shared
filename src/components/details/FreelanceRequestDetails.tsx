@@ -3,7 +3,13 @@ import { demande, PortageInfo, OptionInfo } from '@/types/demande';
 
 import OptionInfoTooltip from './OptionInfoTooltip';
 
-export const FreelanceRequestDetails = ({ demandeItem, onClose  }: { demandeItem: demande, onClose?: () => void }) => {
+export const FreelanceRequestDetails = ({
+  demandeItem,
+  onClose,
+}: {
+  demandeItem: demande;
+  onClose?: () => void;
+}) => {
   const priorityLabels: { [key: string]: string } = {
     urgent: 'Urgent (dans la semaine)',
     high: 'Priorité élevée (dans le mois)',
@@ -104,13 +110,17 @@ export const FreelanceRequestDetails = ({ demandeItem, onClose  }: { demandeItem
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Informations de la mission</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                Informations de la mission
+              </h3>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* Mission Status */}
               <div>
-                <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Statut mission</span>
+                <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                  Statut mission
+                </span>
                 <div
                   className={`inline-flex items-center px-3 py-1 rounded-md border font-medium text-sm ${getMissionStatusColor(demandeItem.mission_status)}`}
                 >
@@ -121,19 +131,29 @@ export const FreelanceRequestDetails = ({ demandeItem, onClose  }: { demandeItem
 
               {/* TJM */}
               <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-md border border-green-100 dark:border-green-800/30">
-                <span className="block text-xs font-medium text-green-600 dark:text-green-400 mb-1">TJM</span>
-                <p className="text-lg font-bold text-green-700 dark:text-green-400">{demandeItem.tjm}€</p>
+                <span className="block text-xs font-medium text-green-600 dark:text-green-400 mb-1">
+                  TJM
+                </span>
+                <p className="text-lg font-bold text-green-700 dark:text-green-400">
+                  {demandeItem.tjm}€
+                </p>
               </div>
 
               {/* Days */}
               <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md border border-blue-100 dark:border-blue-800/30">
-                <span className="block text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">Jours/semaine</span>
-                <p className="text-lg font-bold text-blue-700 dark:text-blue-400">{demandeItem.days}</p>
+                <span className="block text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">
+                  Jours/semaine
+                </span>
+                <p className="text-lg font-bold text-blue-700 dark:text-blue-400">
+                  {demandeItem.days}
+                </p>
               </div>
 
               {/* Priority */}
               <div>
-                <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Priorité</span>
+                <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                  Priorité
+                </span>
                 <div
                   className={`inline-flex items-center px-3 py-1 rounded-md border font-medium text-sm ${getPriorityColor(demandeItem.priority)}`}
                 >
@@ -153,13 +173,19 @@ export const FreelanceRequestDetails = ({ demandeItem, onClose  }: { demandeItem
                 <>
                   {demandeItem.client_name && (
                     <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border border-gray-100 dark:border-gray-600">
-                      <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Client</span>
-                      <p className="text-gray-900 dark:text-gray-100 font-medium text-sm">{demandeItem.client_name}</p>
+                      <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        Client
+                      </span>
+                      <p className="text-gray-900 dark:text-gray-100 font-medium text-sm">
+                        {demandeItem.client_name}
+                      </p>
                     </div>
                   )}
                   {demandeItem.client_sector && (
                     <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border border-gray-100 dark:border-gray-600">
-                      <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Secteur</span>
+                      <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        Secteur
+                      </span>
                       <p className="text-gray-900 dark:text-gray-100 font-medium text-sm">
                         {demandeItem.client_sector}
                       </p>
@@ -167,7 +193,9 @@ export const FreelanceRequestDetails = ({ demandeItem, onClose  }: { demandeItem
                   )}
                   {demandeItem.client_address && (
                     <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border border-gray-100 dark:border-gray-600 lg:col-span-3">
-                      <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Adresse</span>
+                      <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        Adresse
+                      </span>
                       <p className="text-gray-900 dark:text-gray-100 font-medium text-sm">
                         {demandeItem.client_address}
                       </p>
@@ -197,12 +225,18 @@ export const FreelanceRequestDetails = ({ demandeItem, onClose  }: { demandeItem
                     />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Portage salarial</h3>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                  Portage salarial
+                </h3>
               </div>
 
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30 rounded-md p-4">
                 <div className="flex items-center space-x-2 mb-2">
-                  <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="w-4 h-4 text-green-600 dark:text-green-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -255,7 +289,9 @@ export const FreelanceRequestDetails = ({ demandeItem, onClose  }: { demandeItem
                     />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Options demandées</h3>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                  Options demandées
+                </h3>
               </div>
 
               <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/30 rounded-md p-4">

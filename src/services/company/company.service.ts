@@ -156,23 +156,23 @@ export class CompanyService {
       throw error;
     }
   }
-    /**
-     * Get freelance requests for company
-     */
-    static async getFreelanceRequests(page: number, pageSize: number) {
-      const logContext = {
-        operation: 'getFreelanceRequests',
-      };
-  
-      try {
-        logger.info('Fetching freelance requests', logContext);
+  /**
+   * Get freelance requests for company
+   */
+  static async getFreelanceRequests(page: number, pageSize: number) {
+    const logContext = {
+      operation: 'getFreelanceRequests',
+    };
 
-        const requests = await CompanyDAO.getAllFreelanceRequests(page, pageSize);
-  
-        return requests;
-      } catch (error) {
-        logger.error('Fetching freelance requests failed', error as Error, logContext);
-        throw error;
-      }
+    try {
+      logger.info('Fetching freelance requests', logContext);
+
+      const requests = await CompanyDAO.getAllFreelanceRequests(page, pageSize);
+
+      return requests;
+    } catch (error) {
+      logger.error('Fetching freelance requests failed', error as Error, logContext);
+      throw error;
     }
+  }
 }
