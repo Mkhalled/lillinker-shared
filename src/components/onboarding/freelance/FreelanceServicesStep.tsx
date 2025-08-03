@@ -11,7 +11,7 @@ import ServiceInfoTooltip from '../../ServiceInfoTooltip';
 
 interface FreelanceServicesStepProps {
   formData: FreelanceFormData | FreelanceRequestData;
-  setFormData: (updater: (prev: any) => any) => void;
+  setFormData: (updater: (prev: FreelanceFormData | FreelanceRequestData) => FreelanceFormData | FreelanceRequestData) => void;
   platformServices: PlatformService[];
   handleServiceToggle: (serviceId: number) => void;
   handleServiceRequiredChange: (serviceId: number, isRequired: boolean) => void;

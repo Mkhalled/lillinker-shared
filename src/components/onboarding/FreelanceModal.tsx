@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 
 import { useModalData } from '../../hooks/useModalData';
 import { BaseModalProps } from '../../types/user';
+import type { FreelanceFormData, FreelanceRequest, FreelanceRequestData } from '../../types/freelance';
 
 import {
   FreelancePersonalInfoStep,
@@ -32,6 +33,16 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const { currentStep, handleNext, handlePrevious, goToNextStep, clearStepProgress } =
     useFreelanceNavigation(8, clearFormData);
   const { isStepValid } = useFreelanceValidation(formData, currentStep, platformServices);
+  
+  // Create wrapper functions to match the expected interfaces
+  const setFormDataWrapper = (updater: (prev: FreelanceFormData | FreelanceRequest) => FreelanceFormData | FreelanceRequest) => {
+    setFormData(prev => updater(prev) as FreelanceFormData);
+  };
+
+  const setFormDataSummaryWrapper = (updater: (prev: FreelanceFormData | FreelanceRequestData) => FreelanceFormData | FreelanceRequestData) => {
+    setFormData(prev => updater(prev) as FreelanceFormData);
+  };
+
   const {
     handleServiceToggle,
     handleServiceRequiredChange,
@@ -39,7 +50,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
     handlePortageToggle,
     parseChoices,
     handleMultipleSelectChange,
-  } = useFreelanceHandlers(setFormData as any);
+  } = useFreelanceHandlers(setFormDataWrapper);
   const { isLoading, error, setError, handleComplete } = useFreelanceCompletion(
     formData,
     clearFormData,
@@ -70,7 +81,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         return (
           <FreelanceMissionStatusStep
             formData={formData}
-            setFormData={setFormData}
+            setFormData={setFormDataSummaryWrapper}
             metiers={metiers}
           />
         );
@@ -79,19 +90,19 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         return (
           <FreelancePortageStep
             formData={formData}
-            setFormData={setFormData}
+            setFormData={setFormDataSummaryWrapper}
             portages={portages}
             handlePortageToggle={handlePortageToggle}
           />
         );
 
       case 4:
-        return <FreelanceTjmStep formData={formData} setFormData={setFormData} />;
+        return <FreelanceTjmStep formData={formData} setFormData={setFormDataSummaryWrapper} />;
       case 5:
         return (
           <FreelanceServicesStep
             formData={formData}
-            setFormData={setFormData}
+            setFormData={setFormDataSummaryWrapper}
             platformServices={platformServices}
             handleServiceToggle={handleServiceToggle}
             handleServiceRequiredChange={handleServiceRequiredChange}
@@ -103,13 +114,13 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         );
 
       case 6:
-        return <FreelancePriorityStep formData={formData} setFormData={setFormData} />;
+        return <FreelancePriorityStep formData={formData} setFormData={setFormDataSummaryWrapper} />;
 
       case 7:
         return (
           <FreelanceSummaryStep
             formData={formData}
-            setFormData={setFormData}
+            setFormData={setFormDataSummaryWrapper}
             metiers={metiers}
             platformServices={platformServices}
             portages={portages}

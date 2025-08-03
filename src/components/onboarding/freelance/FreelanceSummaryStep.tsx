@@ -7,7 +7,7 @@ import ServiceInfoTooltip from '../../ServiceInfoTooltip';
 
 interface FreelanceSummaryStepProps {
   formData: FreelanceFormData | FreelanceRequestData;
-  setFormData: (updater: (prev: any) => any) => void;
+  setFormData: (updater: (prev: FreelanceFormData | FreelanceRequestData) => FreelanceFormData | FreelanceRequestData) => void;
   metiers: Metier[];
   platformServices: PlatformService[];
   portages: Portage[];
@@ -22,7 +22,7 @@ export const FreelanceSummaryStep = ({
   // Type guard to check if formData has personal info
   const hasPersonalInfo = (data: FreelanceFormData | FreelanceRequestData): data is FreelanceFormData => {
     return 'firstName' in data && 'lastName' in data && 'email' in data && 'phone' in data &&
-           !!(data as any).firstName && !!(data as any).lastName;
+           !!(data as FreelanceFormData).firstName && !!(data as FreelanceFormData).lastName;
   };
 
   const selectedMetier = hasPersonalInfo(formData) && (formData as FreelanceFormData).metierId 

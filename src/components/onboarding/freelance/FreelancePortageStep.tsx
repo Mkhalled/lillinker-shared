@@ -6,7 +6,7 @@ import { StyledCheckbox } from '../../form/StyledCheckbox';
 
 interface FreelancePortageStepProps {
   formData: FreelanceFormData | FreelanceRequestData;
-  setFormData: (updater: (prev: any) => any) => void;
+  setFormData: (updater: (prev: FreelanceFormData | FreelanceRequestData) => FreelanceFormData | FreelanceRequestData) => void;
   portages: Portage[];
   handlePortageToggle: (portageId: number) => void;
 }
@@ -24,7 +24,7 @@ export const FreelancePortageStep = ({
           <StyledCheckbox
             checked={formData.wantsPortage === 'yes'}
             onChange={e =>
-              setFormData((prev: FreelanceFormData) => ({
+              setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({
                 ...prev,
                 wantsPortage: e.target.checked ? 'yes' : 'no',
               }))

@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+
 import { prisma } from '@/lib/prisma';
 import { FreelanceRequestInput } from '@/types/freelance';
 export class FreelanceDao {
@@ -29,7 +31,7 @@ export class FreelanceDao {
     freelanceRequestId: number,
     service_option_id: number,
     is_required: boolean,
-    responseDataJson?: any
+    responseDataJson?: Prisma.InputJsonValue
   ) {
     const option = await prisma.freelanceRequestOption.create({
       data: {

@@ -5,7 +5,7 @@ import { StyledRadio } from '../../form/StyledRadio';
 
 interface FreelancePriorityStepProps {
   formData: FreelanceFormData | FreelanceRequestData;
-  setFormData: (updater: (prev: any) => any) => void;
+  setFormData: (updater: (prev: FreelanceFormData | FreelanceRequestData) => FreelanceFormData | FreelanceRequestData) => void;
 }
 
 export const FreelancePriorityStep = ({ formData, setFormData }: FreelancePriorityStepProps) => {
@@ -25,7 +25,7 @@ export const FreelancePriorityStep = ({ formData, setFormData }: FreelancePriori
             value={priority.value}
             checked={formData.priority === priority.value}
             onChange={e =>
-              setFormData((prev: FreelanceFormData) => ({ ...prev, priority: e.target.value }))
+              setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({ ...prev, priority: e.target.value }))
             }
             label={priority.label}
             labelClassName={priority.color}

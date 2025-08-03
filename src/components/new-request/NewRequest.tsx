@@ -38,7 +38,7 @@ const NewRequest = ({ onClose }: NewRequestProps) => {
     handlePortageToggle,
     parseChoices,
     handleMultipleSelectChange,
-  } = useFreelanceHandlers(setFormData as any);
+  } = useFreelanceHandlers(setFormData);
   const { isLoading, error, setError, handleComplete } = useRequestCompletion(
     formData,
     clearFormData,

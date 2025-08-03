@@ -6,7 +6,7 @@ import { StyledRadio } from '../../form/StyledRadio';
 
 interface FreelanceMissionStatusStepProps {
   formData: FreelanceFormData | FreelanceRequestData;
-  setFormData: (updater: (prev: any) => any) => void;
+  setFormData: (updater: (prev: FreelanceFormData | FreelanceRequestData) => FreelanceFormData | FreelanceRequestData) => void;
   metiers: Metier[];
 }
 
@@ -34,7 +34,7 @@ export const FreelanceMissionStatusStep = ({
               value="searching"
               checked={formData.hasMission === 'searching'}
               onChange={e =>
-                setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))
+                setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({ ...prev, hasMission: e.target.value }))
               }
               label="En cours de recherche"
             />
@@ -43,7 +43,7 @@ export const FreelanceMissionStatusStep = ({
               value="yes"
               checked={formData.hasMission === 'yes'}
               onChange={e =>
-                setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))
+                setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({ ...prev, hasMission: e.target.value }))
               }
               label="Oui, j'ai une mission en cours"
             />
@@ -68,7 +68,7 @@ export const FreelanceMissionStatusStep = ({
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.clientName}
                   onChange={e =>
-                    setFormData((prev: FreelanceFormData) => ({
+                    setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({
                       ...prev,
                       clientName: e.target.value,
                     }))
@@ -85,7 +85,7 @@ export const FreelanceMissionStatusStep = ({
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.clientAddress}
                   onChange={e =>
-                    setFormData((prev: FreelanceFormData) => ({
+                    setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({
                       ...prev,
                       clientAddress: e.target.value,
                     }))
@@ -103,7 +103,7 @@ export const FreelanceMissionStatusStep = ({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.clientSector}
                 onChange={e =>
-                  setFormData((prev: FreelanceFormData) => ({
+                  setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({
                     ...prev,
                     clientSector: e.target.value,
                   }))
