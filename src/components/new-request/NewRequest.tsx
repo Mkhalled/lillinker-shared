@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 
 import { useModalData } from '../../hooks/useModalData';
 import { BaseModalProps } from '../../types/user';
-
 import {
   FreelanceMissionStatusStep,
   FreelancePortageStep,
@@ -12,13 +11,14 @@ import {
   FreelancePriorityStep,
   FreelanceSummaryStep,
   FreelanceServicesStep,
-  useFreelanceForm,
-  useFreelanceNavigation,
   useFreelanceHandlers,
-  useFreelanceCompletion,
 } from '../onboarding/freelance';
 import { ModalWrapper } from '../onboarding/ModalWrapper';
 import { SuccessStep } from '../onboarding/SuccessStep';
+
+import { useRequestCompletion } from './useRequestCompletion';
+import { useRequestForm } from './useRequestForm';
+import { useRequestNavigation } from './useRequestNavigation';
 import { useRequestValidation } from './useRequestValidation';
 
 interface NewRequestProps extends BaseModalProps {}
@@ -27,9 +27,9 @@ const NewRequest = ({ onClose }: NewRequestProps) => {
   const { platformServices, metiers, portages, error: dataError } = useModalData();
 
   // Use custom hooks
-  const { formData, setFormData, clearFormData } = useFreelanceForm();
+  const { formData, setFormData, clearFormData } = useRequestForm();
   const { currentStep, handleNext, handlePrevious, goToNextStep, clearStepProgress } =
-    useFreelanceNavigation(7, clearFormData);
+    useRequestNavigation(7, clearFormData);
   const { isStepValid } = useRequestValidation(formData, currentStep, platformServices);
   const {
     handleServiceToggle,
@@ -38,8 +38,8 @@ const NewRequest = ({ onClose }: NewRequestProps) => {
     handlePortageToggle,
     parseChoices,
     handleMultipleSelectChange,
-  } = useFreelanceHandlers(setFormData);
-  const { isLoading, error, setError, handleComplete } = useFreelanceCompletion(
+  } = useFreelanceHandlers(setFormData as any);
+  const { isLoading, error, setError, handleComplete } = useRequestCompletion(
     formData,
     clearFormData,
     goToNextStep
@@ -107,7 +107,17 @@ const NewRequest = ({ onClose }: NewRequestProps) => {
         );
 
       case 7:
-        return <SuccessStep email={formData.email} />;
+        return (
+          <SuccessStep
+            title="Votre demande a été envoyée !"
+            message="Votre demande a bien été envoyée. Veuillez suivre les étapes ci-dessous pour finaliser le processus."
+            steps={[
+              'Votre demande sera visible par les entreprises',
+              'Les entreprises intéressées vous contacteront',
+              'Acceptez une proposition pour poursuivre avec l\'entreprise de votre choix',
+            ]}
+          />
+        );
 
       default:
         return null;

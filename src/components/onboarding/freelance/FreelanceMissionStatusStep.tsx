@@ -1,12 +1,12 @@
 'use client';
 
 import type { Metier } from '../../../hooks/useModalData';
-import type { FreelanceFormData } from '../../../types/freelance';
+import type { FreelanceFormData, FreelanceRequestData } from '../../../types/freelance';
 import { StyledRadio } from '../../form/StyledRadio';
 
 interface FreelanceMissionStatusStepProps {
-  formData: FreelanceFormData;
-  setFormData: (updater: (prev: FreelanceFormData) => FreelanceFormData) => void;
+  formData: FreelanceFormData | FreelanceRequestData;
+  setFormData: (updater: (prev: any) => any) => void;
   metiers: Metier[];
 }
 
@@ -25,7 +25,7 @@ export const FreelanceMissionStatusStep = ({
               value="no"
               checked={formData.hasMission === 'no'}
               onChange={e =>
-                setFormData((prev: FreelanceFormData) => ({ ...prev, hasMission: e.target.value }))
+                setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({ ...prev, hasMission: e.target.value }))
               }
               label="Non, je suis en recherche"
             />

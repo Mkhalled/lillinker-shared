@@ -1,8 +1,8 @@
 'use client';
 
-import { FreelanceRequest } from '@/types/freelance';
 import { useState, useEffect } from 'react';
 
+import { FreelanceRequest } from '@/types/freelance';
 
 const initialFormData: FreelanceRequest = {
 
@@ -27,7 +27,7 @@ const initialFormData: FreelanceRequest = {
   comments: '',
 };
 
-export const useFreelanceForm = () => {
+export const useRequestForm = () => {
   // Initialize formData with localStorage data if available
   const [formData, setFormData] = useState<FreelanceRequest>(() => {
     if (typeof window !== 'undefined') {

@@ -1,11 +1,11 @@
 'use client';
 
-import type { FreelanceFormData } from '../../../types/freelance';
+import type { FreelanceFormData, FreelanceRequestData } from '../../../types/freelance';
 import InputField from '../../form/input/InputField';
 
 interface FreelanceTjmStepProps {
-  formData: FreelanceFormData;
-  setFormData: (updater: (prev: FreelanceFormData) => FreelanceFormData) => void;
+  formData: FreelanceFormData | FreelanceRequestData;
+  setFormData: (updater: (prev: any) => any) => void;
 }
 
 export const FreelanceTjmStep = ({ formData, setFormData }: FreelanceTjmStepProps) => {

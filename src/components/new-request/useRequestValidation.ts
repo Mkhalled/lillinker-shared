@@ -1,10 +1,10 @@
 'use client';
 
 import type { PlatformService } from '../../hooks/useModalData';
-import type { FreelanceFormData } from '../../types/freelance';
+import type { FreelanceRequest } from '../../types/freelance';
 
 export const useRequestValidation = (
-  formData: FreelanceFormData,
+  formData: FreelanceRequest,
   currentStep: number,
   platformServices: PlatformService[]
 ) => {

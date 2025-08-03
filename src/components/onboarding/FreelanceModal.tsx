@@ -39,7 +39,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
     handlePortageToggle,
     parseChoices,
     handleMultipleSelectChange,
-  } = useFreelanceHandlers(setFormData);
+  } = useFreelanceHandlers(setFormData as any);
   const { isLoading, error, setError, handleComplete } = useFreelanceCompletion(
     formData,
     clearFormData,

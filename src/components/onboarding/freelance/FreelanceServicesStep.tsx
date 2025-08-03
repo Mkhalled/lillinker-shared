@@ -1,7 +1,7 @@
 'use client';
 
 import type { PlatformService } from '../../../hooks/useModalData';
-import type { FreelanceFormData } from '../../../types/freelance';
+import type { FreelanceFormData, FreelanceRequestData } from '../../../types/freelance';
 import { SelectedService } from '../../../types/user';
 import InputField from '../../form/input/InputField';
 import TextAreaField from '../../form/input/TextAreaField';
@@ -10,8 +10,8 @@ import { StyledRadio } from '../../form/StyledRadio';
 import ServiceInfoTooltip from '../../ServiceInfoTooltip';
 
 interface FreelanceServicesStepProps {
-  formData: FreelanceFormData;
-  setFormData: (updater: (prev: FreelanceFormData) => FreelanceFormData) => void;
+  formData: FreelanceFormData | FreelanceRequestData;
+  setFormData: (updater: (prev: any) => any) => void;
   platformServices: PlatformService[];
   handleServiceToggle: (serviceId: number) => void;
   handleServiceRequiredChange: (serviceId: number, isRequired: boolean) => void;

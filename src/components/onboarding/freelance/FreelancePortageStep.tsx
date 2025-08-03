@@ -1,12 +1,12 @@
 'use client';
 
 import type { Portage } from '../../../hooks/useModalData';
-import type { FreelanceFormData } from '../../../types/freelance';
+import type { FreelanceFormData, FreelanceRequestData } from '../../../types/freelance';
 import { StyledCheckbox } from '../../form/StyledCheckbox';
 
 interface FreelancePortageStepProps {
-  formData: FreelanceFormData;
-  setFormData: (updater: (prev: FreelanceFormData) => FreelanceFormData) => void;
+  formData: FreelanceFormData | FreelanceRequestData;
+  setFormData: (updater: (prev: any) => any) => void;
   portages: Portage[];
   handlePortageToggle: (portageId: number) => void;
 }

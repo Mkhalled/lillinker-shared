@@ -1,13 +1,13 @@
 'use client';
 
-import type { FreelanceFormData } from '../../../types/freelance';
+import type { FreelanceFormData, FreelanceRequest } from '../../../types/freelance';
 import type { SelectedService } from '../../../types/user';
 
 export const useFreelanceHandlers = (
-  setFormData: (updater: (prev: FreelanceFormData) => FreelanceFormData) => void
+  setFormData: (updater: (prev: FreelanceFormData | FreelanceRequest) => FreelanceFormData | FreelanceRequest) => void
 ) => {
   const handleServiceToggle = (serviceId: number) => {
-    setFormData((prev: FreelanceFormData) => {
+    setFormData((prev: FreelanceFormData | FreelanceRequest) => {
       const existingServiceIndex = prev.selectedServices.findIndex(
         (s: SelectedService) => s.serviceId === serviceId
       );
@@ -31,7 +31,7 @@ export const useFreelanceHandlers = (
   };
 
   const handleServiceRequiredChange = (serviceId: number, isRequired: boolean) => {
-    setFormData((prev: FreelanceFormData) => ({
+    setFormData((prev: FreelanceFormData | FreelanceRequest) => ({
       ...prev,
       selectedServices: prev.selectedServices.map((s: SelectedService) =>
         s.serviceId === serviceId ? { ...s, isRequired } : s
@@ -40,7 +40,7 @@ export const useFreelanceHandlers = (
   };
 
   const handleServiceDataChange = (serviceId: number, value: string) => {
-    setFormData((prev: FreelanceFormData) => ({
+    setFormData((prev: FreelanceFormData | FreelanceRequest) => ({
       ...prev,
       selectedServices: prev.selectedServices.map((s: SelectedService) =>
         s.serviceId === serviceId ? { ...s, responseData: value } : s
@@ -50,7 +50,7 @@ export const useFreelanceHandlers = (
 
   const handlePortageToggle = (portageId: number) => {
     const portageIdStr = portageId.toString();
-    setFormData((prev: FreelanceFormData) => ({
+    setFormData((prev: FreelanceFormData | FreelanceRequest) => ({
       ...prev,
       selectedPortages: prev.selectedPortages.includes(portageIdStr)
         ? prev.selectedPortages.filter((id: string) => id !== portageIdStr)
@@ -74,7 +74,7 @@ export const useFreelanceHandlers = (
 
   // Handle multiple selections for SELECT type
   const handleMultipleSelectChange = (serviceId: number, option: string, isChecked: boolean) => {
-    setFormData((prev: FreelanceFormData) => {
+    setFormData((prev: FreelanceFormData | FreelanceRequest) => {
       const service = prev.selectedServices.find((s: SelectedService) => s.serviceId === serviceId);
       if (!service) return prev;
 

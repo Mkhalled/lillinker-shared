@@ -1,9 +1,7 @@
 import { BaseUserInfo, SelectedService, PortagePreference } from './user';
 
-export interface FreelanceFormData extends BaseUserInfo {
-  // Step 1: Personal info (inherited from BaseUserInfo)
-  metierId: number;
-  // Step 2: Mission info
+// Common interface for request data (without personal info)
+export interface FreelanceRequestData {
   hasMission: string;
   clientName: string;
   clientAddress: string;
@@ -12,37 +10,19 @@ export interface FreelanceFormData extends BaseUserInfo {
   days: string;
   wantsPortage: PortagePreference;
   selectedPortages: string[];
-
-  // Step 3: Services
   selectedServices: SelectedService[];
   newServices: string[];
-
-  // Step 4: Priority
   priority: string;
-
-  // Step 5: Summary
   comments?: string;
 }
-export interface FreelanceRequest {
-    // Step 2: Mission info
-  hasMission: string;
-  clientName: string;
-  clientAddress: string;
-  clientSector: string;
-  tjm: string;
-  days: string;
-  wantsPortage: PortagePreference;
-  selectedPortages: string[];
 
-  // Step 3: Services
-  selectedServices: SelectedService[];
-  newServices: string[];
+export interface FreelanceFormData extends BaseUserInfo, FreelanceRequestData {
+  // Step 1: Personal info (inherited from BaseUserInfo)
+  metierId: number;
+}
 
-  // Step 4: Priority
-  priority: string;
-
-  // Step 5: Summary
-  comments?: string;
+export interface FreelanceRequest extends FreelanceRequestData {
+  // Only request data, no personal info or metierId
 }
 export interface FreelanceRequestInput {
   mission_status: 'OPEN' | 'CLOSED' | 'PENDING';

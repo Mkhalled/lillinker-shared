@@ -1,11 +1,11 @@
 'use client';
 
-import type { FreelanceFormData } from '../../../types/freelance';
+import type { FreelanceFormData, FreelanceRequestData } from '../../../types/freelance';
 import { StyledRadio } from '../../form/StyledRadio';
 
 interface FreelancePriorityStepProps {
-  formData: FreelanceFormData;
-  setFormData: (updater: (prev: FreelanceFormData) => FreelanceFormData) => void;
+  formData: FreelanceFormData | FreelanceRequestData;
+  setFormData: (updater: (prev: any) => any) => void;
 }
 
 export const FreelancePriorityStep = ({ formData, setFormData }: FreelancePriorityStepProps) => {

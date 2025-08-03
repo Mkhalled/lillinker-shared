@@ -3,7 +3,7 @@
 import { CheckCircle } from 'lucide-react';
 
 interface SuccessStepProps {
-  email: string;
+  email?: string;
   title?: string;
   message?: string;
   steps?: string[];

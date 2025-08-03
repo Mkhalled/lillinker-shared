@@ -1,13 +1,13 @@
 'use client';
 
 import type { Metier, PlatformService, Portage } from '../../../hooks/useModalData';
-import type { FreelanceFormData } from '../../../types/freelance';
+import type { FreelanceFormData, FreelanceRequestData } from '../../../types/freelance';
 import OptionInfoTooltip from '../../details/OptionInfoTooltip';
 import ServiceInfoTooltip from '../../ServiceInfoTooltip';
 
 interface FreelanceSummaryStepProps {
-  formData: FreelanceFormData;
-  setFormData: (updater: (prev: FreelanceFormData) => FreelanceFormData) => void;
+  formData: FreelanceFormData | FreelanceRequestData;
+  setFormData: (updater: (prev: any) => any) => void;
   metiers: Metier[];
   platformServices: PlatformService[];
   portages: Portage[];
@@ -19,7 +19,15 @@ export const FreelanceSummaryStep = ({
   platformServices,
   portages,
 }: FreelanceSummaryStepProps) => {
-  const selectedMetier = metiers.find(m => m.id === formData.metierId);
+  // Type guard to check if formData has personal info
+  const hasPersonalInfo = (data: FreelanceFormData | FreelanceRequestData): data is FreelanceFormData => {
+    return 'firstName' in data && 'lastName' in data && 'email' in data && 'phone' in data &&
+           !!(data as any).firstName && !!(data as any).lastName;
+  };
+
+  const selectedMetier = hasPersonalInfo(formData) && (formData as FreelanceFormData).metierId 
+    ? metiers.find(m => m.id === (formData as FreelanceFormData).metierId)
+    : undefined;
   const selectedServices = platformServices.filter(service =>
     formData.selectedServices.some(selected => selected.serviceId === service.id)
   );
@@ -44,7 +52,8 @@ export const FreelanceSummaryStep = ({
     <div className="space-y-4 sm:space-y-6">
       <div className="space-y-4">
         {/* Personal Information */}
-        <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+       {hasPersonalInfo(formData) && (
+         <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
           <h5 className="font-medium text-gray-800 mb-3">Informations personnelles</h5>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 text-sm">
             <div>
@@ -67,6 +76,7 @@ export const FreelanceSummaryStep = ({
             </div>
           </div>
         </div>
+       )}
 
         {/* Mission Information */}
         <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
