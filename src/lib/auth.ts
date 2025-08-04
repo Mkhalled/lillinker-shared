@@ -6,6 +6,7 @@ import Credentials from 'next-auth/providers/credentials';
 import { logger } from './logger';
 import { prisma } from './prisma';
 
+
 // Extend the built-in session types
 declare module 'next-auth' {
   interface Session {
@@ -20,6 +21,7 @@ declare module 'next-auth' {
       email_verified: boolean;
       image?: string;
       created_at: string;
+      sex?: string;
     };
   }
 }
@@ -33,6 +35,7 @@ declare module 'next-auth/jwt' {
     last_name: string;
     phone_number?: string;
     created_at: string;
+    sex?: string;
   }
 }
 
@@ -47,6 +50,7 @@ type AuthUser = {
   email_verified: boolean;
   image?: string;
   created_at: string;
+  sex?: string;
 };
 
 export const authOptions: NextAuthOptions = {
@@ -128,6 +132,7 @@ export const authOptions: NextAuthOptions = {
             email_verified: user.email_verified,
             image: user.image || undefined,
             created_at: user.created_at.toISOString(),
+            sex: user.sex || undefined,
           };
 
           logger.info('NextAuth authorize successful', {
@@ -157,6 +162,7 @@ export const authOptions: NextAuthOptions = {
         token.last_name = authUser.last_name;
         token.first_name = authUser.first_name;
         token.phone_number = authUser.phone_number;
+        token.sex = authUser.sex;
 
         logger.debug('JWT token created', {
           operation: 'jwt_callback',
@@ -176,12 +182,15 @@ export const authOptions: NextAuthOptions = {
         session.user.first_name = token.first_name;
         session.user.last_name = token.last_name;
         session.user.phone_number = token.phone_number;
+        session.user.sex = token.sex;
 
         logger.debug('Session created', {
           operation: 'session_callback',
           userId: session.user.id,
           email: session.user.email,
           role: session.user.role,
+          sex: session.user.sex,
+
         });
       }
       return session;
