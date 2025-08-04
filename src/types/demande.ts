@@ -39,6 +39,9 @@ export interface demande {
   tjm: number;
   days: number;
   wants_portage: boolean;
+  want_salaried?: boolean;
+  salary?: number;
+  start_date?: string;
   created_at: string;
   portages?: PortageInfo[];
   options?: OptionInfo[];

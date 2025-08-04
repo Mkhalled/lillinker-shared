@@ -149,6 +149,7 @@ export const FreelanceRequestDetails = ({
                 </p>
               </div>
 
+             
               {/* Priority */}
               <div>
                 <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
@@ -205,6 +206,79 @@ export const FreelanceRequestDetails = ({
               )}
             </div>
           </div>
+                           {/* Start Date */}
+              {demandeItem.start_date && (
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border border-gray-100 dark:border-gray-600 lg:col-span-3">
+                  <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    Date de début souhaitée
+                  </span>
+                  <p className="text-gray-900 dark:text-gray-100 font-medium text-sm">
+                    {new Date(demandeItem.start_date).toLocaleDateString('fr-FR', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </p>
+                </div>
+              )}
+  
+          {/* Salary Preferences */}
+          {demandeItem.want_salaried && (
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-6 h-6 bg-emerald-100 dark:bg-emerald-900/30 rounded-md flex items-center justify-center">
+                  <svg
+                    className="w-3 h-3 text-emerald-600 dark:text-emerald-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                  Préférences salariales
+                </h3>
+              </div>
+
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/30 rounded-md p-4">
+                <div className="flex items-center space-x-2 mb-2">
+                  <svg
+                    className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-emerald-800 dark:text-emerald-300 font-medium text-sm">
+                    Le freelance souhaite également un poste salarié
+                  </span>
+                </div>
+
+                {demandeItem.salary && (
+                  <div className="mt-3">
+                    <div className="bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-md p-3">
+                      <span className="block text-xs font-medium text-emerald-600 dark:text-emerald-400 mb-1">
+                        Salaire brut souhaité
+                      </span>
+                      <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">
+                        {demandeItem.salary.toLocaleString('fr-FR')}€/mois
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Portage Information */}
           {demandeItem.wants_portage && (
