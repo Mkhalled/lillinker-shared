@@ -82,6 +82,7 @@ model Company {
   responses         CompanyResponse[]
   metiers           CompanyMetier[]
   portages          CompanyPortage[]
+  organismes        Organisme[]
 
   @@map("companies")
 }
@@ -291,4 +292,34 @@ model Portage {
   freelanceRequests FreelanceRequestPortage[]
   
   @@map("portages")
+}
+model Organisme {
+  id          Int      @id @default(autoincrement())
+  company_id  Int
+  label       String
+  description String?  @db.Text
+  company     Company  @relation(fields: [company_id], references: [id])
+
+  cotisations Cotisation[]
+
+  @@map("organismes")
+}
+
+enum CotisationType {
+  PATRONAL
+  SALARIAL
+  DEUX
+}
+
+model Cotisation {
+  id                    Int            @id @default(autoincrement())
+  organisme_id          Int
+  label                 String
+  description           String?        @db.Text
+  type                  CotisationType
+  pourcentage_salarial  Float?
+  pourcentage_patronal  Float?
+  organisme             Organisme      @relation(fields: [organisme_id], references: [id])
+
+  @@map("cotisations")
 }
