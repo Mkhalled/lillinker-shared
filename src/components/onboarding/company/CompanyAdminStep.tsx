@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react';
 import type { CompanyFormData } from '@/types/company';
 
 import { EmailValidationInput } from '../../form/EmailValidationInput';
-import { StyledSelect } from '../../form/StyledSelect';
 import InputField from '../../form/input/InputField';
+import { StyledSelect } from '../../form/StyledSelect';
 
 interface CompanyAdminStepProps {
   formData: CompanyFormData;

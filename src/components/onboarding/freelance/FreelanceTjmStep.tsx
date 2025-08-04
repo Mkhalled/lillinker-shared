@@ -119,7 +119,7 @@ export const FreelanceTjmStep = ({ formData, setFormData }: FreelanceTjmStepProp
               placeholder=""
             />
             <p className="text-sm text-gray-500">
-              Indiquez quand vous souhaitez commencer votre prochaine mission (à partir d'aujourd'hui)
+              Indiquez quand vous souhaitez commencer votre prochaine mission (à partir d&apos;aujourd&apos;hui)
             </p>
           </div>
         </div>

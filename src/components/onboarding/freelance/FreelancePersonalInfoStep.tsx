@@ -3,8 +3,8 @@
 import type { Metier } from '../../../hooks/useModalData';
 import type { FreelanceFormData } from '../../../types/freelance';
 import { BasicEmailInput } from '../../form/BasicEmailInput';
-import { StyledSelect } from '../../form/StyledSelect';
 import InputField from '../../form/input/InputField';
+import { StyledSelect } from '../../form/StyledSelect';
 
 interface FreelancePersonalInfoStepProps {
   formData: FreelanceFormData;

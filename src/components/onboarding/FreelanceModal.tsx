@@ -3,8 +3,8 @@
 import { useEffect } from 'react';
 
 import { useModalData } from '../../hooks/useModalData';
-import { BaseModalProps } from '../../types/user';
 import type { FreelanceFormData, FreelanceRequest, FreelanceRequestData } from '../../types/freelance';
+import { BaseModalProps } from '../../types/user';
 
 import {
   FreelancePersonalInfoStep,
