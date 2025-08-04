@@ -53,9 +53,15 @@ export const CompanySummaryStep = ({
           <div>
             <span className="font-medium">Email:</span> {formData.adminEmail}
           </div>
-          <div className="lg:col-span-2">
+          <div>
             <span className="font-medium">Téléphone:</span> {formData.adminPhone}
           </div>
+          {formData.adminSex && (
+            <div>
+              <span className="font-medium">Sexe:</span>{' '}
+              {formData.adminSex === 'MALE' ? 'Homme' : formData.adminSex === 'FEMALE' ? 'Femme' : formData.adminSex}
+            </div>
+          )}
         </div>
       </div>
 

@@ -50,7 +50,7 @@ export class FreelanceService {
     try {
       logger.info('Creating freelance request', logContext);
 
-      const freelanceRequest = await FreelanceDao.createFreelanceRequest(freelanceId, {
+            const freelanceRequest = await FreelanceDao.createFreelanceRequest(freelanceId, {
         mission_status: data.mission_status,
         client_name: data.client_name,
         client_address: data.client_address,
@@ -59,6 +59,9 @@ export class FreelanceService {
         tjm: data.tjm,
         days: data.days,
         wants_portage: data.wants_portage || false,
+        want_salaried: data.want_salaried || false,
+        salary: data.salary,
+        start_date: data.start_date,
       });
 
       logger.info('Freelance request created successfully', {

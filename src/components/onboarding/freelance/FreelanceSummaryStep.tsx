@@ -74,6 +74,14 @@ export const FreelanceSummaryStep = ({
               <span className="text-gray-600">Métier:</span>
               <span className="ml-2 font-medium">{selectedMetier?.name || 'Non spécifié'}</span>
             </div>
+            {formData.sex && (
+              <div>
+                <span className="text-gray-600">Sexe:</span>
+                <span className="ml-2 font-medium">
+                  {formData.sex === 'MALE' ? 'Homme' : formData.sex === 'FEMALE' ? 'Femme' : formData.sex}
+                </span>
+              </div>
+            )}
           </div>
         </div>
        )}
@@ -112,8 +120,35 @@ export const FreelanceSummaryStep = ({
               <span className="text-gray-600">Jours/semaine:</span>
               <span className="ml-2 font-medium">{formData.days}</span>
             </div>
+            {formData.startDate && (
+              <div>
+                <span className="text-gray-600">Date de début souhaitée:</span>
+                <span className="ml-2 font-medium">
+                  {new Date(formData.startDate).toLocaleDateString('fr-FR')}
+                </span>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Salary Preferences */}
+        {formData.wantSalaried && (
+          <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+            <h5 className="font-medium text-gray-800 mb-3">Préférences salariales</h5>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 text-sm">
+              <div>
+                <span className="text-gray-600">Poste salarié:</span>
+                <span className="ml-2 font-medium text-green-600">Oui, intéressé(e)</span>
+              </div>
+              {formData.salary && (
+                <div>
+                  <span className="text-gray-600">Salaire souhaité:</span>
+                  <span className="ml-2 font-medium">{formData.salary.toLocaleString('fr-FR')}€/mois</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Portage Information */}
         {formData.wantsPortage === 'yes' && (

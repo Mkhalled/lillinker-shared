@@ -10,6 +10,7 @@ const initialFormData: FreelanceFormData = {
   lastName: '',
   email: '',
   phone: '',
+  sex: undefined,
   metierId: 0,
 
   // Step 2: Mission info
@@ -21,6 +22,11 @@ const initialFormData: FreelanceFormData = {
   days: '',
   wantsPortage: 'no',
   selectedPortages: [],
+
+  // Salary preferences
+  wantSalaried: false,
+  salary: undefined,
+  startDate: undefined,
 
   // Step 3: Services
   selectedServices: [],

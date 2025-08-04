@@ -66,10 +66,13 @@ export async function POST(request: NextRequest) {
         tjm: body.tjm,
         days: body.days,
         wants_portage: body.wants_portage || false,
-        // Only include client fields if they have values
+        want_salaried: body.want_salaried || false,
+        // Only include optional fields if they have values
         ...(body.client_name && { client_name: body.client_name }),
         ...(body.client_address && { client_address: body.client_address }),
         ...(body.client_sector && { client_sector: body.client_sector }),
+        ...(body.salary !== undefined && body.salary !== null && { salary: body.salary }),
+        ...(body.start_date && { start_date: body.start_date }),
       };
 
       const freelanceRequest = await FreelanceService.createFreelanceRequest(

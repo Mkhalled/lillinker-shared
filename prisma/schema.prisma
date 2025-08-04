@@ -11,6 +11,11 @@ datasource db {
 }
 
 // User model
+enum Sex {
+  MALE
+  FEMALE
+}
+
 model User {
   id             Int              @id @default(autoincrement())
   first_name     String
@@ -20,6 +25,7 @@ model User {
   role           Role
   status         Boolean          @default(true)
   phone_number   String?
+  sex            Sex?
   email_verified        Boolean   @default(false)
   verification_token    String?   @unique
   verification_token_expires DateTime?
@@ -171,6 +177,9 @@ model FreelanceRequest {
   client_sector   String?
   priority        Priority
   tjm             Float
+  want_salaried   Boolean                @default(false)
+  salary          Float?
+  start_date      DateTime?
   days            Float
   wants_portage   Boolean                @default(false)
   created_at     DateTime         @default(now())

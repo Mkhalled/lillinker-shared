@@ -19,6 +19,7 @@ export interface CompanyFormData {
   adminLastName: string;
   adminEmail: string;
   adminPhone: string;
+  adminSex: 'MALE' | 'FEMALE' | '';
 
   // Step 5: Services selection and creation
   selectedPlatformServices: string[];

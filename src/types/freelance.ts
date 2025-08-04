@@ -14,6 +14,9 @@ export interface FreelanceRequestData {
   newServices: string[];
   priority: string;
   comments?: string;
+  wantSalaried?: boolean;
+  salary?: number;
+  startDate?: Date;
 }
 
 export interface FreelanceFormData extends BaseUserInfo, FreelanceRequestData {
@@ -30,6 +33,9 @@ export interface FreelanceRequestInput {
   tjm: number;
   days: number;
   wants_portage: boolean;
+  want_salaried?: boolean;
+  salary?: number;
+  start_date?: Date;
   client_name?: string;
   client_address?: string;
   client_sector?: string;

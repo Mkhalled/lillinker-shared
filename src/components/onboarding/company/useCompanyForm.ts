@@ -23,6 +23,7 @@ const initialFormData: CompanyFormData = {
   adminLastName: '',
   adminEmail: '',
   adminPhone: '',
+  adminSex: '',
 
   // Step 5: Services selection and creation
   selectedPlatformServices: [],

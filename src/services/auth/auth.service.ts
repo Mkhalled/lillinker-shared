@@ -56,6 +56,7 @@ export class AuthService {
           password: tempPassword,
           role: data.role,
           phone_number: data.phone_number,
+          sex: data.sex,
           email_verified: false,
           verification_token: verificationToken,
           verification_token_expires: verificationTokenExpires,

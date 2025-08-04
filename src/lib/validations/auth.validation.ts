@@ -4,6 +4,9 @@ export const InitialRegistrationSchema = z.object({
   email: z.string().email('Invalid email address'),
   first_name: z.string().min(2, 'First name must be at least 2 characters'),
   last_name: z.string().min(2, 'Last name must be at least 2 characters'),
+  sex: z.enum(['MALE', 'FEMALE'], {
+    required_error: 'Please select your sex',
+  }),
   role: z.enum(['COMPANY', 'FREELANCE'], {
     required_error: 'Please select a role',
   }),
@@ -79,6 +82,11 @@ export const FreelanceOnboardingSchema = z.object({
   priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).default('MEDIUM'),
   tjm: z.number().min(1, 'Daily rate (TJM) is required'),
   days: z.number().min(0.5, 'Days must be at least 0.5'),
+
+  // Salary preferences
+  want_salaried: z.boolean().default(false),
+  salary: z.number().optional(),
+  start_date: z.string().transform((str) => new Date(str)).or(z.date()).optional(),
 
   // Portage preferences
   wants_portage: z.boolean().default(false),

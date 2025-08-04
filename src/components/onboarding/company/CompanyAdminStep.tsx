@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import type { CompanyFormData } from '@/types/company';
 
 import { EmailValidationInput } from '../../form/EmailValidationInput';
+import { StyledSelect } from '../../form/StyledSelect';
 import InputField from '../../form/input/InputField';
 
 interface CompanyAdminStepProps {
@@ -23,13 +24,18 @@ export const CompanyAdminStep = ({
   // Check overall form validity
   useEffect(() => {
     const isFormValid = Boolean(
-      formData.adminFirstName && formData.adminLastName && formData.adminPhone && isEmailValid
+      formData.adminFirstName && 
+      formData.adminLastName && 
+      formData.adminPhone && 
+      formData.adminSex &&
+      isEmailValid
     );
     onValidityChange?.(isFormValid);
   }, [
     formData.adminFirstName,
     formData.adminLastName,
     formData.adminPhone,
+    formData.adminSex,
     isEmailValid,
     onValidityChange,
   ]);
@@ -71,6 +77,21 @@ export const CompanyAdminStep = ({
         placeholder="01 23 45 67 89"
         required
       />
+
+      <div className="grid grid-cols-2 gap-4">
+        <StyledSelect
+          id="adminSex"
+          label="Sexe de l'administrateur"
+          value={formData.adminSex}
+          onChange={e => onFormDataChange({ adminSex: e.target.value as 'MALE' | 'FEMALE' | '' })}
+          options={[
+            { value: 'MALE', label: 'Homme' },
+            { value: 'FEMALE', label: 'Femme' }
+          ]}
+          placeholder="Sélectionner..."
+          required
+        />
+      </div>
     </div>
   );
 };

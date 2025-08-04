@@ -42,6 +42,7 @@ export const useFreelanceCompletion = (
           email: currentFormData.email,
           role: 'FREELANCE',
           phone_number: currentFormData.phone,
+          sex: currentFormData.sex,
         }),
       });
 
@@ -66,6 +67,14 @@ export const useFreelanceCompletion = (
             ? currentFormData.selectedPortages.map((id: string) => parseInt(id))
             : [],
         selected_services: currentFormData.selectedServices,
+        // Salary preferences
+        want_salaried: currentFormData.wantSalaried || false,
+        ...(currentFormData.salary !== undefined && currentFormData.salary !== null && { salary: currentFormData.salary }),
+        ...(currentFormData.startDate && { 
+          start_date: currentFormData.startDate instanceof Date 
+            ? currentFormData.startDate.toISOString() 
+            : new Date(currentFormData.startDate).toISOString() 
+        }),
         // Only include client fields if they have values
         ...(currentFormData.clientName && { client_name: currentFormData.clientName }),
         ...(currentFormData.clientAddress && { client_address: currentFormData.clientAddress }),

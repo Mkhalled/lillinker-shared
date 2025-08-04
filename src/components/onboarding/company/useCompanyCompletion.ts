@@ -49,6 +49,7 @@ export const useCompanyCompletion = (
             email: currentFormData.adminEmail,
             role: 'COMPANY',
             phone_number: currentFormData.adminPhone,
+            sex: currentFormData.adminSex,
           }),
         });
 

@@ -3,6 +3,7 @@
 import type { Metier } from '../../../hooks/useModalData';
 import type { FreelanceFormData } from '../../../types/freelance';
 import { BasicEmailInput } from '../../form/BasicEmailInput';
+import { StyledSelect } from '../../form/StyledSelect';
 import InputField from '../../form/input/InputField';
 
 interface FreelancePersonalInfoStepProps {
@@ -63,24 +64,40 @@ export const FreelancePersonalInfoStep = ({
         <label htmlFor="metier" className="text-sm font-medium text-gray-700">
           Métier *
         </label>
-        <select
-          id="metier"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-          value={formData.metierId}
-          onChange={e =>
-            setFormData((prev: FreelanceFormData) => ({
-              ...prev,
-              metierId: parseInt(e.target.value),
-            }))
-          }
-        >
-          <option value={0}>Sélectionnez votre métier</option>
-          {metiers.map(metier => (
-            <option key={metier.id} value={metier.id}>
-              {metier.name}
-            </option>
-          ))}
-        </select>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <StyledSelect
+            id="metier"
+            value={formData.metierId}
+            onChange={e =>
+              setFormData((prev: FreelanceFormData) => ({
+                ...prev,
+                metierId: parseInt(e.target.value),
+              }))
+            }
+            options={[
+              { value: 0, label: 'Sélectionnez votre métier' },
+              ...metiers.map(metier => ({ value: metier.id, label: metier.name }))
+            ]}
+            placeholder=""
+            required
+          />
+          <StyledSelect
+            id="sex"
+            value={formData.sex || ''}
+            onChange={e =>
+              setFormData((prev: FreelanceFormData) => ({
+                ...prev,
+                sex: e.target.value as 'MALE' | 'FEMALE',
+              }))
+            }
+            options={[
+              { value: 'MALE', label: 'Homme' },
+              { value: 'FEMALE', label: 'Femme' }
+            ]}
+            placeholder="Sexe *"
+            required
+          />
+        </div>
       </div>
     </div>
   );

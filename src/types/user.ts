@@ -5,6 +5,7 @@ export interface BaseUserInfo {
   lastName: string;
   email: string;
   phone: string;
+  sex?: 'MALE' | 'FEMALE';
 }
 
 export interface SelectedService {
