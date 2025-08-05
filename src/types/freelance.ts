@@ -40,3 +40,18 @@ export interface FreelanceRequestInput {
   client_address?: string;
   client_sector?: string;
 }
+
+export interface ProfileData {
+  user: {
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    phone_number?: string;
+    sex?: string;
+  };
+  roleData?: {
+    id?: number;
+    freelance_id?: number;
+    metier?: { name?: string };
+  };
+}

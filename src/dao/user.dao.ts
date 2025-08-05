@@ -47,6 +47,7 @@ export class UserDAO {
         role: true,
         status: true,
         phone_number: true,
+        sex: true,
       },
     })) as User | null;
     logger.debug('User search by ID result', { found: !!user, userId: id });

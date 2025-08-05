@@ -38,3 +38,20 @@ export interface CompanyPayload {
   management_fees: number;
   is_portage: boolean;
 }
+
+export interface ProfileData {
+  user: {
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    phone_number?: string;
+    sex?: string;
+  };
+  roleData?: {
+    name?: string;
+    consultant_count?: number;
+    siret?: string;
+    description?: string;
+    management_fees?: number;
+  };
+}
