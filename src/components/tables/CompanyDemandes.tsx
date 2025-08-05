@@ -15,14 +15,46 @@ type CompanyDemandesProps = {
   demandeData: demande[];
   pagination: PaginationProps;
   onPageChange?: (page: number) => void;
+  onSortChange?: (sortOrder: 'newest' | 'oldest') => void;
+  onDateFilter?: (date: string) => void;
+  sortOrder?: 'newest' | 'oldest';
+  selectedDate?: string;
+  loading?: boolean;
 };
 
-const CompanyDemandes = ({ demandeData, pagination, onPageChange }: CompanyDemandesProps) => {
+const CompanyDemandes = ({ 
+  demandeData, 
+  pagination, 
+  onPageChange,
+  onSortChange,
+  onDateFilter,
+  sortOrder = 'newest',
+  selectedDate = '',
+  loading = false
+}: CompanyDemandesProps) => {
   const [selectedDemande, setSelectedDemande] = useState<demande | null>(null);
 
   const handlePageChange = (page: number) => {
     if (onPageChange && page >= 1 && page <= pagination.totalPages) {
       onPageChange(page);
+    }
+  };
+
+  const handleSortChange = (newSortOrder: 'newest' | 'oldest') => {
+    if (onSortChange) {
+      onSortChange(newSortOrder);
+    }
+  };
+
+  const handleDateChange = (date: string) => {
+    if (onDateFilter) {
+      onDateFilter(date);
+    }
+  };
+
+  const clearDateFilter = () => {
+    if (onDateFilter) {
+      onDateFilter('');
     }
   };
 
@@ -65,6 +97,51 @@ const CompanyDemandes = ({ demandeData, pagination, onPageChange }: CompanyDeman
 
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      {/* Filters Section */}
+      <div className="border-b border-stroke px-5 py-4 dark:border-strokedark">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          {/* Sort Filter */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-black dark:text-white">
+              Trier par:
+            </label>
+            <select 
+              value={sortOrder}
+              onChange={(e) => handleSortChange(e.target.value as 'newest' | 'oldest')}
+              disabled={loading}
+              className="rounded border border-stroke bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed dark:border-strokedark dark:bg-boxdark dark:text-white"
+            >
+              <option value="newest">Plus récent</option>
+              <option value="oldest">Plus ancien</option>
+            </select>
+          </div>
+
+          {/* Date Filter */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-black dark:text-white">
+              Filtrer par date:
+            </label>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => handleDateChange(e.target.value)}
+              disabled={loading}
+              className="rounded border border-stroke bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed dark:border-strokedark dark:bg-boxdark dark:text-white"
+            />
+            {selectedDate && (
+              <button
+                onClick={clearDateFilter}
+                disabled={loading}
+                className="text-sm text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed dark:text-red-400 dark:hover:text-red-300"
+                title="Effacer le filtre de date"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Table Container */}
       <div className="px-5 pb-2.5 pt-6 sm:px-7.5 xl:pb-1">
         <div className="max-w-full overflow-x-auto">
@@ -75,7 +152,24 @@ const CompanyDemandes = ({ demandeData, pagination, onPageChange }: CompanyDeman
                   TJM
                 </th>
                 <th className="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white">
-                  Date
+                  <div className="flex items-center gap-2">
+                    Date
+                    <button
+                      onClick={() => handleSortChange(sortOrder === 'newest' ? 'oldest' : 'newest')}
+                      disabled={loading}
+                      className="text-gray-500 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:text-white"
+                      title="Trier par date"
+                    >
+                      <svg
+                        className={`h-4 w-4 transition-transform ${sortOrder === 'oldest' ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </div>
                 </th>
                 <th className="min-w-[100px] px-4 py-4 font-medium text-black dark:text-white">
                   Priorité
@@ -87,7 +181,31 @@ const CompanyDemandes = ({ demandeData, pagination, onPageChange }: CompanyDeman
               </tr>
             </thead>
             <tbody>
-              {demandeData && demandeData.length > 0 ? (
+              {loading ? (
+                // Loading skeleton rows
+                Array.from({ length: 5 }).map((_, index) => (
+                  <tr key={`skeleton-${index}`}>
+                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                      <div className="h-4 bg-gray-200 rounded animate-pulse dark:bg-gray-700"></div>
+                    </td>
+                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                      <div className="h-4 bg-gray-200 rounded animate-pulse dark:bg-gray-700"></div>
+                    </td>
+                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                      <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse dark:bg-gray-700"></div>
+                    </td>
+                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                      <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse dark:bg-gray-700"></div>
+                    </td>
+                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                      <div className="flex items-center space-x-3.5">
+                        <div className="h-5 w-5 bg-gray-200 rounded animate-pulse dark:bg-gray-700"></div>
+                        <div className="h-5 w-5 bg-gray-200 rounded animate-pulse dark:bg-gray-700"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : demandeData && demandeData.length > 0 ? (
                 demandeData.map(demandeItem => (
                   <tr key={demandeItem.id}>
                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -172,8 +290,8 @@ const CompanyDemandes = ({ demandeData, pagination, onPageChange }: CompanyDeman
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center py-4 text-gray-500 dark:text-gray-400">
-                    Aucune demande trouvée.
+                  <td colSpan={5} className="text-center py-8 text-gray-500 dark:text-gray-400">
+                    {selectedDate ? 'Aucune demande trouvée pour cette date.' : 'Aucune demande trouvée.'}
                   </td>
                 </tr>
               )}
@@ -183,7 +301,7 @@ const CompanyDemandes = ({ demandeData, pagination, onPageChange }: CompanyDeman
       </div>
 
       {/* Pagination */}
-      {pagination.totalPages > 1 && (
+      {pagination.totalPages > 1 && !loading && (
         <div className="border-t border-stroke bg-gray-50 px-4 py-3 sm:px-6 dark:border-strokedark dark:bg-gray-800/50">
           <div className="flex items-center justify-between">
             {/* Results Info */}

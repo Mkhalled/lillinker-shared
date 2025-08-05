@@ -23,11 +23,29 @@ const Societies = () => {
     data: [],
   });
   const [loading, setLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [selectedDate, setSelectedDate] = useState<string>('');
 
-  const fetchRequests = useCallback(async (page: number) => {
+  const fetchRequests = useCallback(async (
+    page: number, 
+    sort: 'newest' | 'oldest' = 'newest', 
+    date: string = ''
+  ) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/company/admin/requests?page=${page}&pageSize=5`);
+      // Build query parameters
+      const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: '4',
+        sortOrder: sort,
+      });
+
+      // Add date filter if provided
+      if (date) {
+        params.append('date', date);
+      }
+
+      const res = await fetch(`/api/company/admin/requests?${params.toString()}`);
 
       if (!res.ok) {
         throw new Error('Failed to fetch requests');
@@ -44,16 +62,28 @@ const Societies = () => {
 
   // Initial fetch
   useEffect(() => {
-    fetchRequests(1);
-  }, [fetchRequests]);
+    fetchRequests(1, sortOrder, selectedDate);
+  }, [fetchRequests, sortOrder, selectedDate]);
 
   const handlePageChange = (page: number) => {
     if (page !== responses.page && page >= 1 && page <= responses.totalPages) {
-      fetchRequests(page);
+      fetchRequests(page, sortOrder, selectedDate);
     }
   };
 
-  if (loading) {
+  const handleSortChange = (newSortOrder: 'newest' | 'oldest') => {
+    setSortOrder(newSortOrder);
+    // Reset to page 1 when changing sort order
+    fetchRequests(1, newSortOrder, selectedDate);
+  };
+
+  const handleDateFilter = (date: string) => {
+    setSelectedDate(date);
+    // Reset to page 1 when changing date filter
+    fetchRequests(1, sortOrder, date);
+  };
+
+  if (loading && responses.data.length === 0) {
     return <TableSkeleton />;
   }
 
@@ -70,6 +100,11 @@ const Societies = () => {
             totalPages: responses.totalPages,
           }}
           onPageChange={handlePageChange}
+          onSortChange={handleSortChange}
+          onDateFilter={handleDateFilter}
+          sortOrder={sortOrder}
+          selectedDate={selectedDate}
+          loading={loading}
         />
       </div>
     </div>
