@@ -16,6 +16,7 @@ const TrashIcon = ({ className }: { className?: string }) => (
 interface SubCategory {
   id: string;
   label: string;
+  description: string;
   isPatronial: boolean;
   isSalarial: boolean;
   patronialPercentage: string;
@@ -25,6 +26,7 @@ interface SubCategory {
 interface Category {
   id: string;
   name: string;
+  description: string;
   subCategories: SubCategory[];
 }
 
@@ -33,10 +35,12 @@ const OrganismesForm = () => {
     {
       id: '1',
       name: 'Healthcare',
+      description: 'Healthcare related organismes',
       subCategories: [
         {
           id: '1-1',
           label: 'Medical Insurance',
+          description: 'Medical insurance coverage',
           isPatronial: false,
           isSalarial: false,
           patronialPercentage: '',
@@ -50,6 +54,7 @@ const OrganismesForm = () => {
     const newCategory: Category = {
       id: Date.now().toString(),
       name: '',
+      description: '',
       subCategories: []
     };
     setCategories([...categories, newCategory]);
@@ -61,10 +66,17 @@ const OrganismesForm = () => {
     ));
   };
 
+  const updateCategoryDescription = (categoryId: string, description: string) => {
+    setCategories(categories.map(cat => 
+      cat.id === categoryId ? { ...cat, description } : cat
+    ));
+  };
+
   const addSubCategory = (categoryId: string) => {
     const newSubCategory: SubCategory = {
       id: `${categoryId}-${Date.now()}`,
       label: '',
+      description: '',
       isPatronial: false,
       isSalarial: false,
       patronialPercentage: '',
@@ -112,7 +124,7 @@ const OrganismesForm = () => {
         <h4 className="text-lg font-medium text-gray-900">Organismes Management</h4>
         <button
           onClick={addCategory}
-          className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
+          className="flex items-center px-4 py-2 bg-[var(--primary-color)] text-white rounded-md hover:bg-[var(--primary-hover)] focus:outline-none focus:ring-2 transition-colors duration-200"
         >
           <PlusIcon className="h-4 w-4 mr-2" />
           Add Category
@@ -122,32 +134,52 @@ const OrganismesForm = () => {
       {categories.map((category) => (
         <div key={category.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
           <div className="flex items-center justify-between mb-4">
-            <input
-              type="text"
-              value={category.name}
-              onChange={(e) => updateCategoryName(category.id, e.target.value)}
-              placeholder="Category name"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-4"
-            />
-            <button
-              onClick={() => removeCategory(category.id)}
-              className="p-2 text-red-600 hover:text-red-800 focus:outline-none"
-            >
-              <TrashIcon className="h-4 w-4" />
-            </button>
+            <div className="flex-1 space-y-3 mr-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={category.name}
+                  onChange={(e) => updateCategoryName(category.id, e.target.value)}
+                  placeholder="Category name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-hover)] focus:border-[var(--primary-hover)]"
+                />
+                <button
+                  onClick={() => removeCategory(category.id)}
+                  className="p-2 text-red-600 hover:text-red-800 focus:outline-none"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </button>
+              </div>
+              <textarea
+                value={category.description}
+                onChange={(e) => updateCategoryDescription(category.id, e.target.value)}
+                placeholder="Category description"
+                rows={2}
+                className="w-full ml-4 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-hover)] focus:border-[var(--primary-hover)] resize-none"
+              />
+            </div>
           </div>
 
           <div className="space-y-4">
             {category.subCategories.map((subCategory) => (
               <div key={subCategory.id} className="bg-white p-4 rounded-md border border-gray-200">
-                <div className="flex items-center justify-between mb-3">
-                  <input
-                    type="text"
-                    value={subCategory.label}
-                    onChange={(e) => updateSubCategory(category.id, subCategory.id, { label: e.target.value })}
-                    placeholder="Subcategory label"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-4"
-                  />
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1 space-y-3 mr-4">
+                    <input
+                      type="text"
+                      value={subCategory.label}
+                      onChange={(e) => updateSubCategory(category.id, subCategory.id, { label: e.target.value })}
+                      placeholder="Subcategory label"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-hover)] focus:border-[var(--primary-hover)]"
+                    />
+                    <textarea
+                      value={subCategory.description}
+                      onChange={(e) => updateSubCategory(category.id, subCategory.id, { description: e.target.value })}
+                      placeholder="Subcategory description"
+                      rows={2}
+                      className="w-full ml-4 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-hover)] focus:border-[var(--primary-hover)] resize-none"
+                    />
+                  </div>
                   <button
                     onClick={() => removeSubCategory(category.id, subCategory.id)}
                     className="p-2 text-red-600 hover:text-red-800 focus:outline-none"
@@ -166,7 +198,7 @@ const OrganismesForm = () => {
                           isPatronial: e.target.checked,
                           patronialPercentage: e.target.checked ? subCategory.patronialPercentage : ''
                         })}
-                        className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="mr-2 h-4 w-4 text-[var(--primary-color)] focus:ring-[var(--primary-hover)] border-gray-300 rounded"
                       />
                       <span className="text-sm font-medium text-gray-700">Patronial</span>
                     </label>
@@ -179,7 +211,7 @@ const OrganismesForm = () => {
                         min="0"
                         max="100"
                         step="0.01"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-hover)] focus:border-[var(--primary-hover)]"
                       />
                     )}
                   </div>
@@ -193,7 +225,7 @@ const OrganismesForm = () => {
                           isSalarial: e.target.checked,
                           salarialPercentage: e.target.checked ? subCategory.salarialPercentage : ''
                         })}
-                        className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="mr-2 h-4 w-4 text-[var(--primary-color)] focus:ring-[var(--primary-hover)] border-gray-300 rounded"
                       />
                       <span className="text-sm font-medium text-gray-700">Salarial</span>
                     </label>
@@ -206,7 +238,7 @@ const OrganismesForm = () => {
                         min="0"
                         max="100"
                         step="0.01"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-hover)] focus:border-[var(--primary-hover)]"
                       />
                     )}
                   </div>
@@ -216,7 +248,7 @@ const OrganismesForm = () => {
 
             <button
               onClick={() => addSubCategory(category.id)}
-              className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 text-sm"
+              className="flex items-center px-3 py-2 bg-[var(--primary-color)] text-white rounded-md hover:bg-[var(--primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-hover)] focus:ring-offset-2 transition-colors duration-200 text-sm"
             >
               <PlusIcon className="h-4 w-4 mr-1" />
               Add Subcategory
@@ -228,7 +260,7 @@ const OrganismesForm = () => {
       <div className="flex justify-end">
         <button
           type="button"
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+          className="px-6 py-2 bg-[var(--primary-color)] text-white rounded-md hover:bg-[var(--primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-hover)] focus:ring-offset-2 transition-colors duration-200"
         >
           Save Organismes
         </button>

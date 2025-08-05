@@ -4,11 +4,6 @@ const CompanyInfoForm = ({profile}: {profile: ProfileData}) =>{
     const company = profile.roleData;
   return (
    <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
-          <h3 className="font-medium text-black dark:text-white">
-            Informations personnelles
-          </h3>
-        </div>
         <div className="p-7">
           <form action="#">
                {/* Infos entreprise */}
@@ -21,7 +16,7 @@ const CompanyInfoForm = ({profile}: {profile: ProfileData}) =>{
                   Nom de l&apos;entreprise
                 </label>
                 <input
-                  className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                  className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
                   type="text"
                   name="name"
                   id="name"
@@ -38,7 +33,7 @@ const CompanyInfoForm = ({profile}: {profile: ProfileData}) =>{
                   Nombre de consultants
                 </label>
                 <input
-                  className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                  className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
                   type="number"
                   name="consultant_count"
                   id="consultant_count"
@@ -57,7 +52,7 @@ const CompanyInfoForm = ({profile}: {profile: ProfileData}) =>{
                 SIRET
               </label>
               <input
-                className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
                 type="text"
                 name="siret"
                 id="siret"
@@ -74,7 +69,7 @@ const CompanyInfoForm = ({profile}: {profile: ProfileData}) =>{
                 Description de l&apos;entreprise
               </label>
               <textarea
-                className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
                 name="description"
                 id="description"
                 placeholder="Description de l'entreprise"
@@ -85,7 +80,7 @@ const CompanyInfoForm = ({profile}: {profile: ProfileData}) =>{
             </div>
             <div className="flex justify-end gap-4.5">
               <button
-                className="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90"
+                className="flex justify-center rounded bg-[var(--primary-color)] px-6 py-2 font-medium text-gray hover:bg-[var(--primary-hover)]"
                 type="submit"
               >
                 Enregistrer

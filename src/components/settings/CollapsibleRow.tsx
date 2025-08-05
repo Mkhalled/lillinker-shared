@@ -33,7 +33,7 @@ const CollapsibleRow = ({ title, children, defaultOpen = false }: CollapsibleRow
       </button>
       
       {isOpen && (
-        <div className="px-6 py-6 bg-white border-t border-gray-200">
+        <div className="px-6 py-6 bg-white dark:bg-boxdark-2 border-t border-gray-200">
           {children}
         </div>
       )}

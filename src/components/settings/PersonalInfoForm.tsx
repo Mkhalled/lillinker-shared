@@ -5,11 +5,6 @@ const PersonalInfoForm = ({profile}: {profile: company | freelance }) =>{
     const user = profile.user;
   return (
    <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
-          <h3 className="font-medium text-black dark:text-white">
-            Informations personnelles
-          </h3>
-        </div>
         <div className="p-7">
           <form action="#">
             {/* Infos personnelles */}
@@ -23,7 +18,7 @@ const PersonalInfoForm = ({profile}: {profile: company | freelance }) =>{
                 </label>
                 <div className="relative">
                   <input
-                    className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
                     type="text"
                     name="prenom"
                     id="prenom"
@@ -42,7 +37,7 @@ const PersonalInfoForm = ({profile}: {profile: company | freelance }) =>{
                 </label>
                 <div className="relative">
                   <input
-                    className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
                     type="text"
                     name="nom"
                     id="nom"
@@ -63,7 +58,7 @@ const PersonalInfoForm = ({profile}: {profile: company | freelance }) =>{
               </label>
               <div className="relative">
                 <input
-                className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
                 type="email"
                 name="emailAddress"
                 id="emailAddress"
@@ -82,7 +77,7 @@ const PersonalInfoForm = ({profile}: {profile: company | freelance }) =>{
               </label>
               <div className="relative">
                 <input
-                className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
                 type="text"
                 name="sex"
                 id="sex"
@@ -101,7 +96,7 @@ const PersonalInfoForm = ({profile}: {profile: company | freelance }) =>{
                 Numéro de téléphone
               </label>
               <input
-                className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
                 type="text"
                 name="phoneNumber"
                 id="phoneNumber"
@@ -112,7 +107,7 @@ const PersonalInfoForm = ({profile}: {profile: company | freelance }) =>{
             </div>
             <div className="flex justify-end gap-4.5">
               <button
-                className="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90"
+                className="flex justify-center rounded bg-[var(--primary-color)] px-6 py-2 font-medium text-gray hover:bg-opacity-90"
                 type="submit"
               >
                 Enregistrer
