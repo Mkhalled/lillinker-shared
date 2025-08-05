@@ -67,6 +67,7 @@ export class CompanyDAO {
       prisma.freelanceRequest.findMany({
         skip,
         take: pageSize,
+        orderBy: { created_at: 'desc' },
         include: {
           freelance: true,
           options: {
