@@ -159,15 +159,24 @@ export class CompanyService {
   /**
    * Get freelance requests for company
    */
-  static async getFreelanceRequests(page: number, pageSize: number) {
+  static async getFreelanceRequests(
+    page: number = 1,
+    pageSize: number = 5,
+    sort: string,
+    date: string
+  ) {
     const logContext = {
       operation: 'getFreelanceRequests',
+      page,
+      pageSize,
+      sort,
+      date,
     };
 
     try {
       logger.info('Fetching freelance requests', logContext);
 
-      const requests = await CompanyDAO.getAllFreelanceRequests(page, pageSize);
+      const requests = await CompanyDAO.getAllFreelanceRequests(page, pageSize, sort, date);
 
       return requests;
     } catch (error) {

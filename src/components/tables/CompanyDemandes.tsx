@@ -102,11 +102,12 @@ const CompanyDemandes = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           {/* Sort Filter */}
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-black dark:text-white">
+            <label htmlFor='sortDate' className="text-sm font-medium text-black dark:text-white">
               Trier par:
             </label>
             <select 
               value={sortOrder}
+              id='sortDate'
               onChange={(e) => handleSortChange(e.target.value as 'newest' | 'oldest')}
               disabled={loading}
               className="rounded border border-stroke bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed dark:border-strokedark dark:bg-boxdark dark:text-white"
@@ -118,14 +119,16 @@ const CompanyDemandes = ({
 
           {/* Date Filter */}
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-black dark:text-white">
+            <label htmlFor='filterDate' className="text-sm font-medium text-black dark:text-white">
               Filtrer par date:
             </label>
             <input
+              id='filterDate'
               type="date"
               value={selectedDate}
               onChange={(e) => handleDateChange(e.target.value)}
               disabled={loading}
+              max={new Date().toISOString().split('T')[0]}
               className="rounded border border-stroke bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed dark:border-strokedark dark:bg-boxdark dark:text-white"
             />
             {selectedDate && (
