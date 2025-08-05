@@ -108,9 +108,6 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                <th className="min-w-[80px] px-4 py-4 font-medium text-black dark:text-white">
-                  ID
-                </th>
                 <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
                   TJM
                 </th>
@@ -133,9 +130,6 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
               {demandeData && demandeData.length > 0 ? (
                 demandeData.map(demandeItem => (
                   <tr key={demandeItem.id}>
-                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                      {demandeItem.id}
-                    </td>
                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                       {demandeItem.tjm} €
                     </td>
