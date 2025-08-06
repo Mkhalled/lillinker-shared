@@ -50,7 +50,7 @@ export const StyledSelect = ({
   `.trim().replace(/\s+/g, ' ');
 
   const component = (
-    <div className="relative">
+    <div className="relative mt-2">
       {label && (
         <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
           {label} {required && <span className="text-red-500">*</span>}

@@ -1,3 +1,4 @@
+import { OrganismeWithCotisations } from './organisme';
 import { NewService, PortagePreference } from './user';
 
 export interface CompanyFormData {
@@ -37,6 +38,10 @@ export interface CompanyPayload {
   consultant_count: number;
   management_fees: number;
   is_portage: boolean;
+}
+
+export interface CompanyWithOrganismes extends CompanyPayload {
+  organismes?: OrganismeWithCotisations[];
 }
 
 export interface ProfileData {

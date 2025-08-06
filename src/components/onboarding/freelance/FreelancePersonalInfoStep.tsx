@@ -61,12 +61,10 @@ export const FreelancePersonalInfoStep = ({
         required
       />
       <div className="space-y-2">
-        <label htmlFor="metier" className="text-sm font-medium text-gray-700">
-          Métier *
-        </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <StyledSelect
             id="metier"
+            label="Métier"
             value={formData.metierId}
             onChange={e =>
               setFormData((prev: FreelanceFormData) => ({
@@ -82,6 +80,7 @@ export const FreelancePersonalInfoStep = ({
             required
           />
           <StyledSelect
+          label="Sexe"
             id="sex"
             value={formData.sex || ''}
             onChange={e =>

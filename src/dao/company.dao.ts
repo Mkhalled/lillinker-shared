@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import { CompanyPayload } from '@/types/company';
+import { CotisationPayload, CreateOrganismeRequest, UpdateOrganismeRequest } from '@/types/organisme';
 
 export class CompanyDAO {
   static async create(data: CompanyPayload) {
@@ -104,5 +105,164 @@ export class CompanyDAO {
       pageSize,
       totalPages: Math.ceil(total / pageSize),
     };
+  }
+
+  // Organisme methods
+  static async createOrganisme(companyId: number, data: CreateOrganismeRequest) {
+    // Validate that at least one cotisation is provided
+    if (!data.cotisations || data.cotisations.length === 0) {
+      throw new Error('At least one cotisation is required to create an organisme');
+    }
+
+    return prisma.organisme.create({
+      data: {
+        company_id: companyId,
+        label: data.label,
+        description: data.description,
+        cotisations: {
+          create: data.cotisations.map(cotisation => ({
+            label: cotisation.label,
+            description: cotisation.description,
+            type: cotisation.type,
+            pourcentage_salarial: cotisation.pourcentage_salarial,
+            pourcentage_patronal: cotisation.pourcentage_patronal,
+          }))
+        }
+      },
+      include: {
+        cotisations: true
+      }
+    });
+  }
+
+  static async getCompanyOrganismes(companyId: number) {
+    return prisma.organisme.findMany({
+      where: {
+        company_id: companyId
+      },
+      include: {
+        cotisations: true
+      },
+      orderBy: {
+        id: 'asc'
+      }
+    });
+  }
+
+  static async getOrganismeById(id: number, companyId: number) {
+    return prisma.organisme.findFirst({
+      where: {
+        id: id,
+        company_id: companyId
+      },
+      include: {
+        cotisations: true
+      }
+    });
+  }
+
+  static async updateOrganisme(id: number, companyId: number, data: UpdateOrganismeRequest) {
+    // If cotisations are being updated, validate that at least one exists
+    if (data.cotisations !== undefined && data.cotisations.length === 0) {
+      throw new Error('At least one cotisation is required for an organisme');
+    }
+
+    // First, delete existing cotisations if new ones are provided
+    if (data.cotisations) {
+      await prisma.cotisation.deleteMany({
+        where: {
+          organisme_id: id
+        }
+      });
+    }
+
+    return prisma.organisme.update({
+      where: {
+        id: id,
+        company_id: companyId
+      },
+      data: {
+        ...(data.label && { label: data.label }),
+        ...(data.description !== undefined && { description: data.description }),
+        ...(data.cotisations && {
+          cotisations: {
+            create: data.cotisations.map(cotisation => ({
+              label: cotisation.label,
+              description: cotisation.description,
+              type: cotisation.type,
+              pourcentage_salarial: cotisation.pourcentage_salarial,
+              pourcentage_patronal: cotisation.pourcentage_patronal,
+            }))
+          }
+        })
+      },
+      include: {
+        cotisations: true
+      }
+    });
+  }
+
+  static async deleteOrganisme(id: number, companyId: number) {
+    // Delete cotisations first (cascade delete)
+    await prisma.cotisation.deleteMany({
+      where: {
+        organisme_id: id
+      }
+    });
+
+    return prisma.organisme.delete({
+      where: {
+        id: id,
+        company_id: companyId
+      }
+    });
+  }
+
+  // Cotisation methods
+  static async createCotisation(organismeId: number, data: CotisationPayload) {
+    return prisma.cotisation.create({
+      data: {
+        organisme_id: organismeId,
+        label: data.label,
+        description: data.description,
+        type: data.type,
+        pourcentage_salarial: data.pourcentage_salarial,
+        pourcentage_patronal: data.pourcentage_patronal,
+      }
+    });
+  }
+
+  static async updateCotisation(id: number, data: Partial<CotisationPayload>) {
+    return prisma.cotisation.update({
+      where: {
+        id: id
+      },
+      data: {
+        ...(data.label && { label: data.label }),
+        ...(data.description !== undefined && { description: data.description }),
+        ...(data.type && { type: data.type }),
+        ...(data.pourcentage_salarial !== undefined && { pourcentage_salarial: data.pourcentage_salarial }),
+        ...(data.pourcentage_patronal !== undefined && { pourcentage_patronal: data.pourcentage_patronal }),
+      }
+    });
+  }
+
+  static async deleteCotisation(id: number) {
+    return prisma.cotisation.delete({
+      where: {
+        id: id
+      }
+    });
+  }
+
+  static async getCotisationsByOrganisme(organismeId: number) {
+    return prisma.cotisation.findMany({
+      where: {
+        organisme_id: organismeId
+      },
+      orderBy: {
+        id: 'asc'
+      }
+    });
   }
 }

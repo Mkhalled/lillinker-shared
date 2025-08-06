@@ -1,6 +1,7 @@
 import { CompanyDAO } from '@/dao/company.dao';
 import { logger } from '@/lib/logger';
 import type { CompanyOnboarding } from '@/lib/validations/auth.validation';
+import { CreateOrganismeRequest, UpdateOrganismeRequest, CotisationPayload } from '@/types/organisme';
 
 export class CompanyService {
   /**
@@ -181,6 +182,223 @@ export class CompanyService {
       return requests;
     } catch (error) {
       logger.error('Fetching freelance requests failed', error as Error, logContext);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new organisme with cotisations for a company
+   */
+  static async createOrganisme(companyId: number, data: CreateOrganismeRequest) {
+    const logContext = {
+      operation: 'createOrganisme',
+      companyId,
+      organismeLabel: data.label,
+      cotisationsCount: data.cotisations?.length || 0,
+    };
+
+    try {
+      logger.info('Creating organisme', logContext);
+
+      const organisme = await CompanyDAO.createOrganisme(companyId, data);
+
+      logger.info('Organisme created successfully', {
+        ...logContext,
+        organismeId: organisme.id,
+      });
+
+      return organisme;
+    } catch (error) {
+      logger.error('Organisme creation failed', error as Error, logContext);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all organismes for a company
+   */
+  static async getCompanyOrganismes(companyId: number) {
+    const logContext = {
+      operation: 'getCompanyOrganismes',
+      companyId,
+    };
+
+    try {
+      logger.info('Fetching company organismes', logContext);
+
+      const organismes = await CompanyDAO.getCompanyOrganismes(companyId);
+
+      logger.info('Company organismes fetched successfully', {
+        ...logContext,
+        count: organismes.length,
+      });
+
+      return organismes;
+    } catch (error) {
+      logger.error('Fetching company organismes failed', error as Error, logContext);
+      throw error;
+    }
+  }
+
+  /**
+   * Get a specific organisme by ID
+   */
+  static async getOrganisme(organismeId: number, companyId: number) {
+    const logContext = {
+      operation: 'getOrganisme',
+      organismeId,
+      companyId,
+    };
+
+    try {
+      logger.info('Fetching organisme', logContext);
+
+      const organisme = await CompanyDAO.getOrganismeById(organismeId, companyId);
+
+      if (!organisme) {
+        throw new Error('Organisme not found or access denied');
+      }
+
+      logger.info('Organisme fetched successfully', {
+        ...logContext,
+        organismeLabel: organisme.label,
+      });
+
+      return organisme;
+    } catch (error) {
+      logger.error('Fetching organisme failed', error as Error, logContext);
+      throw error;
+    }
+  }
+
+  /**
+   * Update an organisme
+   */
+  static async updateOrganisme(organismeId: number, companyId: number, data: UpdateOrganismeRequest) {
+    const logContext = {
+      operation: 'updateOrganisme',
+      organismeId,
+      companyId,
+    };
+
+    try {
+      logger.info('Updating organisme', logContext);
+
+      const organisme = await CompanyDAO.updateOrganisme(organismeId, companyId, data);
+
+      logger.info('Organisme updated successfully', {
+        ...logContext,
+        organismeLabel: organisme.label,
+      });
+
+      return organisme;
+    } catch (error) {
+      logger.error('Organisme update failed', error as Error, logContext);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete an organisme
+   */
+  static async deleteOrganisme(organismeId: number, companyId: number) {
+    const logContext = {
+      operation: 'deleteOrganisme',
+      organismeId,
+      companyId,
+    };
+
+    try {
+      logger.info('Deleting organisme', logContext);
+
+      await CompanyDAO.deleteOrganisme(organismeId, companyId);
+
+      logger.info('Organisme deleted successfully', logContext);
+    } catch (error) {
+      logger.error('Organisme deletion failed', error as Error, logContext);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new cotisation for an organisme
+   */
+  static async createCotisation(organismeId: number, companyId: number, data: CotisationPayload) {
+    const logContext = {
+      operation: 'createCotisation',
+      organismeId,
+      companyId,
+      cotisationLabel: data.label,
+    };
+
+    try {
+      logger.info('Creating cotisation', logContext);
+
+      // Verify the organisme belongs to the company
+      const organisme = await CompanyDAO.getOrganismeById(organismeId, companyId);
+      if (!organisme) {
+        throw new Error('Organisme not found or access denied');
+      }
+
+      const cotisation = await CompanyDAO.createCotisation(organismeId, data);
+
+      logger.info('Cotisation created successfully', {
+        ...logContext,
+        cotisationId: cotisation.id,
+      });
+
+      return cotisation;
+    } catch (error) {
+      logger.error('Cotisation creation failed', error as Error, logContext);
+      throw error;
+    }
+  }
+
+  /**
+   * Update a cotisation
+   */
+  static async updateCotisation(cotisationId: number, companyId: number, data: Partial<CotisationPayload>) {
+    const logContext = {
+      operation: 'updateCotisation',
+      cotisationId,
+      companyId,
+    };
+
+    try {
+      logger.info('Updating cotisation', logContext);
+
+      const cotisation = await CompanyDAO.updateCotisation(cotisationId, data);
+
+      logger.info('Cotisation updated successfully', {
+        ...logContext,
+        cotisationLabel: cotisation.label,
+      });
+
+      return cotisation;
+    } catch (error) {
+      logger.error('Cotisation update failed', error as Error, logContext);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete a cotisation
+   */
+  static async deleteCotisation(cotisationId: number, companyId: number) {
+    const logContext = {
+      operation: 'deleteCotisation',
+      cotisationId,
+      companyId,
+    };
+
+    try {
+      logger.info('Deleting cotisation', logContext);
+
+      await CompanyDAO.deleteCotisation(cotisationId);
+
+      logger.info('Cotisation deleted successfully', logContext);
+    } catch (error) {
+      logger.error('Cotisation deletion failed', error as Error, logContext);
       throw error;
     }
   }
