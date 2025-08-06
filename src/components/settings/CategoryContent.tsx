@@ -4,6 +4,7 @@ import { CotisationType } from '@prisma/client';
 import InputField from '@/components/form/input/InputField';
 import TextAreaField from '@/components/form/input/TextAreaField';
 import { StyledSelect } from '@/components/form/StyledSelect';
+import { hasIncompleteCotisations, canAddCotisation } from '@/validations/organismes.validation';
 import CollapsibleRow from './CollapsibleRow';
 
 // Simple SVG icons
@@ -146,7 +147,13 @@ const CotisationContent = ({
     </div>
     <button
       onClick={() => {
-        if (window.confirm(`Êtes-vous sûr de vouloir supprimer la cotisation "${cotisation.label}" ? Cette action est irréversible.`)) {
+        // Only show confirmation for saved cotisations (positive IDs)
+        if (cotisation.id > 0) {
+          if (window.confirm(`Êtes-vous sûr de vouloir supprimer la cotisation "${cotisation.label}" ? Cette action est irréversible.`)) {
+            removeSubCategory(category.id, cotisation.id);
+          }
+        } else {
+          // For new/unsaved cotisations, delete directly without confirmation
           removeSubCategory(category.id, cotisation.id);
         }
       }}
@@ -201,7 +208,13 @@ const CategoryContent: React.FC<CategoryContentProps> = ({
         </div>
         <button
           onClick={() => {
-            if (window.confirm(`Êtes-vous sûr de vouloir supprimer l'organisme "${category.label}" et toutes ses cotisations ? Cette action est irréversible.`)) {
+            // Only show confirmation for saved organismes (positive IDs)
+            if (category.id > 0) {
+              if (window.confirm(`Êtes-vous sûr de vouloir supprimer l'organisme "${category.label}" et toutes ses cotisations ? Cette action est irréversible.`)) {
+                removeCategory(category.id);
+              }
+            } else {
+              // For new/unsaved organismes, delete directly without confirmation
               removeCategory(category.id);
             }
           }}
@@ -218,7 +231,19 @@ const CategoryContent: React.FC<CategoryContentProps> = ({
         <h3 className="text-lg font-medium text-gray-900">Cotisations</h3>
         <button
           onClick={() => addSubCategory(category.id)}
-          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+          disabled={!canAddCotisation(category)}
+          className={`inline-flex items-center px-3 py-2 border text-sm font-medium rounded-md focus:outline-none ${
+            !canAddCotisation(category)
+              ? 'border-gray-200 text-gray-400 bg-gray-100 cursor-not-allowed'
+              : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-offset-2'
+          }`}
+          title={
+            !category.label.trim() 
+              ? "Veuillez d'abord saisir le nom de l'organisme" 
+              : hasIncompleteCotisations(category)
+              ? "Veuillez d'abord compléter toutes les cotisations existantes"
+              : ""
+          }
         >
           <PlusIcon className="h-4 w-4 mr-2" />
           Ajouter une cotisation

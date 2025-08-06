@@ -3,6 +3,11 @@ import { useState, useEffect } from 'react';
 import { CotisationType } from '@prisma/client';
 
 import { OrganismeWithCotisations, CreateOrganismeRequest } from '@/types/organisme';
+import { 
+  isOrganismeValid, 
+  hasIncompleteOrganismes, 
+  getCotisationValidationMessage 
+} from '@/validations/organismes.validation';
 import CollapsibleRow from './CollapsibleRow';
 import CategoryContent from './CategoryContent';
 
@@ -249,42 +254,6 @@ const OrganismesForm = () => {
     ));
   };
 
-  // Validation helper functions
-  const isOrganismeValid = (category: Category) => {
-    if (!category.label.trim() || category.cotisations.length === 0) {
-      return false;
-    }
-    
-    return category.cotisations.every(cot => {
-      // Check basic required fields
-      if (!cot.label.trim() || !cot.type) {
-        return false;
-      }
-      
-      // Check required percentage fields based on type
-      if (cot.type === CotisationType.PATRONAL || cot.type === CotisationType.DEUX) {
-        if (cot.pourcentage_patronal === null || cot.pourcentage_patronal === undefined) {
-          return false;
-        }
-      }
-      
-      if (cot.type === CotisationType.SALARIAL || cot.type === CotisationType.DEUX) {
-        if (cot.pourcentage_salarial === null || cot.pourcentage_salarial === undefined) {
-          return false;
-        }
-      }
-      
-      return true;
-    });
-  };
-
-  const getCotisationValidationMessage = (category: Category) => {
-    if (category.label.trim() && category.cotisations.length === 0) {
-      return 'Au moins une cotisation est requise';
-    }
-    return null;
-  };
-
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -363,6 +332,9 @@ const OrganismesForm = () => {
     );
   }
 
+  // Calculate if button should be disabled
+  const hasIncompleteOrgs = hasIncompleteOrganismes(categories);
+
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white">
       {/* Header */}
@@ -374,7 +346,13 @@ const OrganismesForm = () => {
           </div>
           <button
             onClick={addCategory}
-            className="inline-flex items-center px-4 py-2 bg-[var(--primary-color)] text-white text-sm font-medium rounded-md hover:bg-[var(--primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-offset-2"
+            disabled={hasIncompleteOrgs}
+            className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+              hasIncompleteOrgs
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] focus:ring-[var(--primary-color)]'
+            }`}
+            title={hasIncompleteOrgs ? "Veuillez d'abord compléter tous les organismes existants (nom + au moins une cotisation complète)" : ""}
           >
             <PlusIcon className="h-4 w-4 mr-2" />
             Ajouter un organisme
