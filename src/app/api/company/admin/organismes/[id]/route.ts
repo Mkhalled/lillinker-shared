@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 
-import { authOptions } from '@/lib/auth';
 import { CompanyDAO } from '@/dao/company.dao';
+import { authOptions } from '@/lib/auth';
 import { CompanyService } from '@/services/company/company.service';
 import { UpdateOrganismeRequest } from '@/types/organisme';
 

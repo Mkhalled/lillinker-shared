@@ -1,10 +1,11 @@
-import React from 'react';
 import { CotisationType } from '@prisma/client';
+import React from 'react';
 
 import InputField from '@/components/form/input/InputField';
 import TextAreaField from '@/components/form/input/TextAreaField';
 import { StyledSelect } from '@/components/form/StyledSelect';
 import { hasIncompleteCotisations, canAddCotisation } from '@/validations/organismes.validation';
+
 import CollapsibleRow from './CollapsibleRow';
 
 // Simple SVG icons

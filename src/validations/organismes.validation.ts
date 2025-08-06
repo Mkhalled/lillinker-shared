@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { CotisationType } from '@prisma/client';
+import { z } from 'zod';
 
 // Cotisation validation schema
 const cotisationSchema = z.object({
@@ -170,7 +170,14 @@ export function hasIncompleteOrganismes(organismes: Array<{
  */
 export function getCotisationValidationMessage(organisme: {
   label: string;
-  cotisations: Array<any>;
+  cotisations: Array<{
+    id: number;
+    label: string;
+    description: string;
+    type: CotisationType;
+    pourcentage_salarial: number | null;
+    pourcentage_patronal: number | null;
+  }>;
 }): string | null {
   if (organisme.label.trim() && organisme.cotisations.length === 0) {
     return 'Au moins une cotisation est requise';

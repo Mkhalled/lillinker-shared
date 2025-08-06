@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-
 import { CotisationType } from '@prisma/client';
+import { useState, useEffect } from 'react';
 
 import { OrganismeWithCotisations, CreateOrganismeRequest } from '@/types/organisme';
 import { 
@@ -8,8 +7,9 @@ import {
   hasIncompleteOrganismes, 
   getCotisationValidationMessage 
 } from '@/validations/organismes.validation';
-import CollapsibleRow from './CollapsibleRow';
+
 import CategoryContent from './CategoryContent';
+import CollapsibleRow from './CollapsibleRow';
 
 // Simple SVG icons
 const PlusIcon = ({ className }: { className?: string }) => (
