@@ -28,7 +28,7 @@ const Settings = () => {
     <div className="mx-auto max-w-270">
       <Breadcrumb pageName="Paramètres" />
         <div className="space-y-6">
-          <CollapsibleRow title="Informations de société" defaultOpen={true}>
+          <CollapsibleRow title="Informations de société">
             <CompanyInfoForm profile={profile} />
           </CollapsibleRow>
 

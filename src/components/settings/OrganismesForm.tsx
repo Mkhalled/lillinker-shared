@@ -3,20 +3,13 @@ import { useState, useEffect } from 'react';
 import { CotisationType } from '@prisma/client';
 
 import { OrganismeWithCotisations, CreateOrganismeRequest } from '@/types/organisme';
-import InputField from '@/components/form/input/InputField';
-import TextAreaField from '@/components/form/input/TextAreaField';
-import { StyledSelect } from '@/components/form/StyledSelect';
+import CollapsibleRow from './CollapsibleRow';
+import CategoryContent from './CategoryContent';
 
 // Simple SVG icons
 const PlusIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-  </svg>
-);
-
-const TrashIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
   </svg>
 );
 
@@ -41,6 +34,7 @@ const OrganismesForm = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [nextCategoryId, setNextCategoryId] = useState(-1);
   const [nextCotisationId, setNextCotisationId] = useState(-1);
 
@@ -85,19 +79,29 @@ const OrganismesForm = () => {
     try {
       // Frontend validation: ensure at least one cotisation exists
       if (organisme.cotisations.length === 0) {
-        alert('At least one cotisation is required to create an organisme.');
-        return false;
+        return { success: false, error: 'Au moins une cotisation est requise pour créer un organisme.' };
       }
 
       // Validate that all cotisations have required fields
       for (const cotisation of organisme.cotisations) {
         if (!cotisation.label.trim()) {
-          alert('All cotisations must have a label.');
-          return false;
+          return { success: false, error: 'Toutes les cotisations doivent avoir un libellé.' };
         }
         if (!cotisation.type) {
-          alert('All cotisations must have a type selected.');
-          return false;
+          return { success: false, error: 'Toutes les cotisations doivent avoir un type sélectionné.' };
+        }
+        
+        // Validate required percentage fields based on type
+        if (cotisation.type === CotisationType.PATRONAL || cotisation.type === CotisationType.DEUX) {
+          if (cotisation.pourcentage_patronal === null || cotisation.pourcentage_patronal === undefined) {
+            return { success: false, error: `La cotisation "${cotisation.label}" nécessite un taux patronal.` };
+          }
+        }
+        
+        if (cotisation.type === CotisationType.SALARIAL || cotisation.type === CotisationType.DEUX) {
+          if (cotisation.pourcentage_salarial === null || cotisation.pourcentage_salarial === undefined) {
+            return { success: false, error: `La cotisation "${cotisation.label}" nécessite un taux salarial.` };
+          }
         }
       }
 
@@ -134,14 +138,14 @@ const OrganismesForm = () => {
       const result = await response.json();
       if (result.success) {
         await fetchOrganismes(); // Refresh the list
-        return true;
+        return { success: true };
       } else {
         console.error('Failed to save organisme:', result.error);
-        return false;
+        return { success: false, error: result.error };
       }
     } catch (error) {
       console.error('Error saving organisme:', error);
-      return false;
+      return { success: false, error: 'Une erreur est survenue lors de l\'enregistrement.' };
     }
   };
 
@@ -224,7 +228,8 @@ const OrganismesForm = () => {
       // Delete from backend (positive IDs are existing organismes)
       const success = await deleteOrganisme(categoryId);
       if (!success) {
-        alert('Failed to delete organisme. Please try again.');
+        // Could add inline error handling here instead of alert
+        console.error('Échec de la suppression de l\'organisme');
         return;
       }
     } else {
@@ -246,13 +251,36 @@ const OrganismesForm = () => {
 
   // Validation helper functions
   const isOrganismeValid = (category: Category) => {
-    return category.label.trim() && category.cotisations.length > 0 && 
-           category.cotisations.every(cot => cot.label.trim() && cot.type);
+    if (!category.label.trim() || category.cotisations.length === 0) {
+      return false;
+    }
+    
+    return category.cotisations.every(cot => {
+      // Check basic required fields
+      if (!cot.label.trim() || !cot.type) {
+        return false;
+      }
+      
+      // Check required percentage fields based on type
+      if (cot.type === CotisationType.PATRONAL || cot.type === CotisationType.DEUX) {
+        if (cot.pourcentage_patronal === null || cot.pourcentage_patronal === undefined) {
+          return false;
+        }
+      }
+      
+      if (cot.type === CotisationType.SALARIAL || cot.type === CotisationType.DEUX) {
+        if (cot.pourcentage_salarial === null || cot.pourcentage_salarial === undefined) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
   };
 
   const getCotisationValidationMessage = (category: Category) => {
     if (category.label.trim() && category.cotisations.length === 0) {
-      return 'At least one cotisation is required';
+      return 'Au moins une cotisation est requise';
     }
     return null;
   };
@@ -260,6 +288,7 @@ const OrganismesForm = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
+      setSaveMessage(null);
       let allSuccess = true;
       const errors: string[] = [];
 
@@ -267,42 +296,60 @@ const OrganismesForm = () => {
         if (category.label.trim()) { // Only save categories with names
           // Validate before saving
           if (category.cotisations.length === 0) {
-            errors.push(`Organisme "${category.label}" must have at least one cotisation.`);
+            errors.push(`L'organisme "${category.label}" doit avoir au moins une cotisation.`);
             allSuccess = false;
             continue;
           }
 
           // Check if all cotisations have required fields
-          const invalidCotisations = category.cotisations.filter(
-            cot => !cot.label.trim() || !cot.type
-          );
+          const invalidCotisations = category.cotisations.filter(cot => {
+            // Check basic required fields
+            if (!cot.label.trim() || !cot.type) {
+              return true;
+            }
+            
+            // Check required percentage fields based on type
+            if (cot.type === CotisationType.PATRONAL || cot.type === CotisationType.DEUX) {
+              if (cot.pourcentage_patronal === null || cot.pourcentage_patronal === undefined) {
+                return true;
+              }
+            }
+            
+            if (cot.type === CotisationType.SALARIAL || cot.type === CotisationType.DEUX) {
+              if (cot.pourcentage_salarial === null || cot.pourcentage_salarial === undefined) {
+                return true;
+              }
+            }
+            
+            return false;
+          });
           
           if (invalidCotisations.length > 0) {
-            errors.push(`Organisme "${category.label}" has cotisations with missing label or type.`);
+            errors.push(`L'organisme "${category.label}" a des cotisations avec des champs obligatoires manquants (libellé, type ou taux requis).`);
             allSuccess = false;
             continue;
           }
 
-          const success = await saveOrganisme(category);
-          if (!success) {
-            errors.push(`Failed to save organisme "${category.label}".`);
+          const result = await saveOrganisme(category);
+          if (!result.success) {
+            errors.push(`Échec de l'enregistrement de l'organisme "${category.label}": ${result.error}`);
             allSuccess = false;
           }
         }
       }
 
       if (allSuccess) {
-        alert('Organismes saved successfully!');
+        setSaveMessage({ type: 'success', message: 'Organismes enregistrés avec succès!' });
         await fetchOrganismes(); // Refresh the list
       } else {
         const errorMessage = errors.length > 0 
-          ? `Validation errors:\n${errors.join('\n')}` 
-          : 'Some organismes failed to save. Please check and try again.';
-        alert(errorMessage);
+          ? errors.join('\n') 
+          : 'Certains organismes n\'ont pas pu être enregistrés. Veuillez vérifier et réessayer.';
+        setSaveMessage({ type: 'error', message: errorMessage });
       }
     } catch (error) {
       console.error('Error saving organismes:', error);
-      alert('An error occurred while saving. Please try again.');
+      setSaveMessage({ type: 'error', message: 'Une erreur est survenue lors de l\'enregistrement. Veuillez réessayer.' });
     } finally {
       setSaving(false);
     }
@@ -311,7 +358,7 @@ const OrganismesForm = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center p-8">
-        <div className="text-gray-600">Loading...</div>
+        <div className="text-gray-600">Chargement...</div>
       </div>
     );
   }
@@ -322,15 +369,15 @@ const OrganismesForm = () => {
       <div className="mb-8">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Organismes Management</h1>
-            <p className="text-gray-600 mt-1">Configure contribution categories and rates</p>
+            <h1 className="text-2xl font-semibold text-gray-900">Gestion des Organismes</h1>
+            <p className="text-gray-600 mt-1">Configurer les catégories et taux de cotisations</p>
           </div>
           <button
             onClick={addCategory}
             className="inline-flex items-center px-4 py-2 bg-[var(--primary-color)] text-white text-sm font-medium rounded-md hover:bg-[var(--primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-offset-2"
           >
             <PlusIcon className="h-4 w-4 mr-2" />
-            Add Organisme
+            Ajouter un organisme
           </button>
         </div>
       </div>
@@ -341,160 +388,59 @@ const OrganismesForm = () => {
           <div key={category.id} className={`border rounded-lg bg-white ${
             isOrganismeValid(category) ? 'border-gray-200' : 'border-red-300'
           }`}>
-            {/* Category Header */}
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-start space-x-4">
-                <div className="flex-1">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <InputField
-                      label="Organisme Name"
-                      type="text"
-                      value={category.label}
-                      onChange={(e) => updateCategoryName(category.id, e.target.value)}
-                      placeholder="Enter organisme name"
-                      error={!category.label.trim()}
-                      required
-                    />
-                    <InputField
-                      label="Description"
-                      type="text"
-                      value={category.description}
-                      onChange={(e) => updateCategoryDescription(category.id, e.target.value)}
-                      placeholder="Enter description"
-                    />
-                  </div>
-                  {/* Validation message */}
-                  {getCotisationValidationMessage(category) && (
-                    <div className="mt-2 text-red-600 text-sm font-medium bg-red-50 p-2 rounded border border-red-200">
-                      ⚠️ {getCotisationValidationMessage(category)}
-                    </div>
-                  )}
-                </div>
-                <button
-                  onClick={() => removeCategory(category.id)}
-                  className="p-2 text-gray-400 hover:text-red-600 focus:outline-none"
-                >
-                  <TrashIcon className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Cotisations Section */}
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Contributions</h3>
-                <button
-                  onClick={() => addSubCategory(category.id)}
-                  className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-offset-2"
-                >
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Contribution
-                </button>
-              </div>
-              
-              {category.cotisations.length === 0 ? (
-                <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-md">
-                  No contributions added yet
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {category.cotisations.map((cotisation) => (
-                    <div key={cotisation.id} className="border border-gray-200 rounded-md p-4 bg-gray-50">
-                      <div className="flex items-start space-x-4">
-                        <div className="flex-1">
-                          <div className="space-y-4 mb-4">
-                            {/* First row: Label and Type */}
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                              <InputField
-                                label="Label"
-                                type="text"
-                                value={cotisation.label}
-                                onChange={(e) => updateSubCategory(category.id, cotisation.id, { label: e.target.value })}
-                                placeholder="Contribution label"
-                                error={!cotisation.label.trim()}
-                                required
-                              />
-                              <StyledSelect
-                                label="Type"
-                                value={cotisation.type}
-                                onChange={(e) => updateSubCategory(category.id, cotisation.id, { type: e.target.value as CotisationType })}
-                                options={[
-                                  { value: CotisationType.PATRONAL, label: 'Employer Only' },
-                                  { value: CotisationType.SALARIAL, label: 'Employee Only' },
-                                  { value: CotisationType.DEUX, label: 'Both' },
-                                ]}
-                                required
-                              />
-                            </div>
-                            
-                            {/* Second row: Description (full width) */}
-                            <TextAreaField
-                              label="Description"
-                              value={cotisation.description}
-                              onChange={(e) => updateSubCategory(category.id, cotisation.id, { description: e.target.value })}
-                              placeholder="Contribution description"
-                              rows={2}
-                            />
-                          </div>
-
-                          {/* Percentage Configuration */}
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {(cotisation.type === CotisationType.PATRONAL || cotisation.type === CotisationType.DEUX) && (
-                              <InputField
-                                label="Employer Rate (%)"
-                                type="number"
-                                value={cotisation.pourcentage_patronal || ''}
-                                onChange={(e) => updateSubCategory(category.id, cotisation.id, { 
-                                  pourcentage_patronal: e.target.value ? parseFloat(e.target.value) : null 
-                                })}
-                                placeholder="0.00"
-                                min="0"
-                                max="100"
-                                step="0.01"
-                              />
-                            )}
-
-                            {(cotisation.type === CotisationType.SALARIAL || cotisation.type === CotisationType.DEUX) && (
-                              <InputField
-                                label="Employee Rate (%)"
-                                type="number"
-                                value={cotisation.pourcentage_salarial || ''}
-                                onChange={(e) => updateSubCategory(category.id, cotisation.id, { 
-                                  pourcentage_salarial: e.target.value ? parseFloat(e.target.value) : null 
-                                })}
-                                placeholder="0.00"
-                                min="0"
-                                max="100"
-                                step="0.01"
-                              />
-                            )}
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => removeSubCategory(category.id, cotisation.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 focus:outline-none"
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Only wrap in CollapsibleRow if category is saved (positive ID) AND has a label */}
+            {category.id > 0 && category.label.trim() ? (
+              <CollapsibleRow title={category.label}>
+                <CategoryContent 
+                  category={category}
+                  updateCategoryName={updateCategoryName}
+                  updateCategoryDescription={updateCategoryDescription}
+                  removeCategory={removeCategory}
+                  getCotisationValidationMessage={getCotisationValidationMessage}
+                  addSubCategory={addSubCategory}
+                  updateSubCategory={updateSubCategory}
+                  removeSubCategory={removeSubCategory}
+                />
+              </CollapsibleRow>
+            ) : (
+              /* New/unsaved categories (negative IDs) should not be collapsed */
+              <CategoryContent 
+                category={category}
+                updateCategoryName={updateCategoryName}
+                updateCategoryDescription={updateCategoryDescription}
+                removeCategory={removeCategory}
+                getCotisationValidationMessage={getCotisationValidationMessage}
+                addSubCategory={addSubCategory}
+                updateSubCategory={updateSubCategory}
+                removeSubCategory={removeSubCategory}
+              />
+            )}
           </div>
         ))}
       </div>
 
       {/* Save Button */}
-      <div className="mt-8 flex justify-end">
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="inline-flex items-center px-6 py-2 bg-[var(--primary-color)] text-white text-sm font-medium rounded-md hover:bg-[var(--primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
+      <div className="mt-8">
+        {/* Save Message */}
+        {saveMessage && (
+          <div className={`mb-4 p-4 rounded-md ${
+            saveMessage.type === 'success' 
+              ? 'bg-green-50 border border-green-200 text-green-800' 
+              : 'bg-red-50 border border-red-200 text-red-800'
+          }`}>
+            <div className="whitespace-pre-line">{saveMessage.message}</div>
+          </div>
+        )}
+        
+        <div className="flex justify-end">
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="inline-flex items-center px-6 py-2 bg-[var(--primary-color)] text-white text-sm font-medium rounded-md hover:bg-[var(--primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+          </button>
+        </div>
       </div>
     </div>
   );
