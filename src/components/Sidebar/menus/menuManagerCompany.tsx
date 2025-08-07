@@ -12,7 +12,7 @@ export const menuManagerCompany = [
       {
         icon: <InboxIcon className="w-5 h-5" />,
         label: 'Demandes',
-        route: '/company/manager/societies',
+        route: '/company/manager/requests',
       },
 
       {

@@ -18,7 +18,7 @@ export const menuAdmin = [
       {
         icon: <Building2Icon className="w-5 h-5" />,
         label: 'Societies',
-        route: '/admin/societies',
+        route: '/admin/requests',
       },
       {
         icon: <SettingsIcon className="w-5 h-5" />,

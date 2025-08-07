@@ -1,6 +1,14 @@
 import { CotisationType } from '@prisma/client';
 import { z } from 'zod';
 
+interface Cotisation {
+  id: number;
+  label: string;
+  description?: string;
+  type: CotisationType;
+  pourcentage_salarial: number | null;
+  pourcentage_patronal: number | null;
+}
 // Cotisation validation schema
 const cotisationSchema = z.object({
   id: z.number(),
@@ -49,14 +57,7 @@ export function isOrganismeValid(organisme: {
   id: number;
   label: string;
   description: string;
-  cotisations: Array<{
-    id: number;
-    label: string;
-    description: string;
-    type: CotisationType;
-    pourcentage_salarial: number | null;
-    pourcentage_patronal: number | null;
-  }>;
+  cotisations: Array<Cotisation>;
 }): boolean {
   if (!organisme.label.trim() || organisme.cotisations.length === 0) {
     return false;

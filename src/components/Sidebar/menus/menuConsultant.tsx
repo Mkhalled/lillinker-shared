@@ -12,7 +12,7 @@ export const menuConsultant = [
       {
         icon: <SendIcon className="w-5 h-5" />,
         label: 'Mes Demandes',
-        route: '/consultant/societies',
+        route: '/consultant/requests',
       },
 
       {
