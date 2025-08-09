@@ -99,6 +99,19 @@ interface FreelanceFormData {
   lastName: string;
   email: string;
   phone: string;
+  sex: 'MALE' | 'FEMALE';
+  priority: 'cost' | 'quality' | 'speed';
+  dailyRate: number;
+  wantSalaried: boolean;
+  salary: number;
+  startDate: Date;
+  isPortageCandidate: boolean;
+  selectedPortages: number[];
+  metier: number;
+  selectedPlatformServices: number[];
+  newServices: NewService[];
+}
+  phone: string;
   dailyRate: number;
   isPortageCandidate: boolean;
   selectedPortages: number[];
@@ -121,6 +134,7 @@ interface InitialRegistration {
   email: string;
   role: 'FREELANCE';
   phone_number?: string;
+  sex?: 'MALE' | 'FEMALE';
 }
 ```
 
@@ -193,14 +207,18 @@ interface PersonalInfoData {
   lastName: string;
   email: string;
   phone: string;
+  sex: 'MALE' | 'FEMALE';
 }
 ```
 
-#### Step 2: Daily Rate (`FreelanceTjmStep.tsx`)
+#### Step 2: Daily Rate and Employment Preferences (`FreelanceTjmStep.tsx`)
 
 ```typescript
 interface TjmData {
   dailyRate: number; // TJM (Taux Journalier Moyen)
+  wantSalaried: boolean; // Option for salaried employment
+  salary: number; // Requested salary if salaried
+  startDate: Date; // Preferred start date
 }
 ```
 
@@ -444,17 +462,22 @@ static async verifyEmailAndSetPassword(token: string, password: string) {
 
 ```sql
 User {
-  id: String (Primary Key)
+  id: Int (Primary Key)
   first_name: String
   last_name: String
   email: String (Unique)
-  password_hash: String?
+  password: String
   phone_number: String?
+  sex: Sex? (MALE/FEMALE)
   role: Role (FREELANCE)
-  status: Boolean (Default: false)
+  status: Boolean (Default: true)
   email_verified: Boolean (Default: false)
-  created_at: DateTime
-  updated_at: DateTime
+  verification_token: String? (Unique)
+  verification_token_expires: DateTime?
+  reset_token: String? (Unique)
+  reset_token_expires: DateTime?
+  created_at: DateTime (Default: now())
+  image: String?
 
   // Relations
   freelance: Freelance?
@@ -466,20 +489,71 @@ User {
 
 ```sql
 Freelance {
-  id: String (Primary Key)
-  user_id: String (Foreign Key → User.id)
-  daily_rate: Float?
-  is_portage_candidate: Boolean (Default: false)
-  preferred_missions: String[]
-  current_mission_status: String?
-  priority: String?
-  created_at: DateTime
-  updated_at: DateTime
-
+  id: Int (Primary Key)
+  freelance_id: Int (Unique)
+  metier_id: Int
+  
   // Relations
+  metier: Metier
   user: User
-  selected_services: SelectedPlatformService[]
-  selected_portages: SelectedPortage[]
+  requests: FreelanceRequest[]
+}
+```
+
+#### FreelanceRequest Table (NEW)
+
+```sql
+FreelanceRequest {
+  id: Int (Primary Key)
+  freelance_id: Int
+  mission_status: MissionStatus (OPEN/CLOSED/PENDING)
+  client_name: String?
+  client_address: String?
+  client_sector: String?
+  priority: Priority (HIGH/MEDIUM/LOW)
+  tjm: Float
+  want_salaried: Boolean (Default: false)
+  salary: Float?
+  start_date: DateTime?
+  days: Float
+  wants_portage: Boolean (Default: false)
+  created_at: DateTime (Default: now())
+  
+  // Relations
+  freelance: Freelance
+  options: FreelanceRequestOption[]
+  responses: CompanyResponse[]
+  portages: FreelanceRequestPortage[]
+}
+```
+
+#### FreelanceRequestOption Table (NEW)
+
+```sql
+FreelanceRequestOption {
+  id: Int (Primary Key)
+  freelance_request_id: Int
+  service_option_id: Int
+  is_required: Boolean (Default: false)
+  response_data: Json?
+  
+  // Relations
+  request: FreelanceRequest
+  platformService: PlatformService
+}
+```
+
+#### FreelanceRequestPortage Table (NEW)
+
+```sql
+FreelanceRequestPortage {
+  id: Int (Primary Key)
+  freelance_request_id: Int
+  portage_id: Int
+  
+  // Relations
+  request: FreelanceRequest
+  portage: Portage
 }
 ```
 
@@ -670,6 +744,13 @@ describe('POST /api/auth/onboarding/freelance', () => {
 - **Currency Handling**: Support for EUR with proper decimal precision
 - **Rate Validation**: Ensures positive numeric values
 
+### Salary and Employment Preferences (NEW)
+
+- **Salaried Employment Option**: Freelancers can opt for salaried employment
+- **Salary Specification**: Can specify desired salary amount
+- **Start Date Selection**: Can specify preferred start date for missions
+- **Days Calculation**: Track mission duration in days
+
 ### Mission Status Tracking
 
 - **Available**: Ready for new missions
@@ -678,9 +759,9 @@ describe('POST /api/auth/onboarding/freelance', () => {
 
 ### Priority Preferences
 
-- **Cost**: Focus on competitive pricing
-- **Quality**: Emphasis on high-quality deliverables
-- **Speed**: Quick turnaround times
+- **High**: Critical priority missions
+- **Medium**: Standard priority missions
+- **Low**: Lower priority missions
 
 ### Portage Integration
 
@@ -694,6 +775,9 @@ The LilLinker freelance onboarding system provides a comprehensive, multi-step f
 
 - **Tailored Freelance Experience**: Specialized for independent contractors and consultants
 - **Rate and Preference Management**: Daily rate setting and mission preferences
+- **Salaried Employment Options**: Support for freelancers seeking salaried positions
+- **Schedule Planning**: Start date and mission duration tracking
+- **Gender Information**: Support for gender information for administrative requirements
 - **Portage Integration**: Seamless connection with portage companies
 - **Flexible Service Selection**: Platform services with custom service creation
 - **Mission Status Tracking**: Current availability and work status

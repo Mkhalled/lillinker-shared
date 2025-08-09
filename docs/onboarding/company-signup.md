@@ -53,7 +53,7 @@ src/
 
 ### Testing Architecture
 
-Comprehensive testing strategy with unit and integration tests:
+Comprehensive testing strategy with unit tests:
 
 ```
 tests/unit/api/auth/
@@ -98,6 +98,7 @@ interface CompanyFormData {
   adminLastName: string;
   adminEmail: string;
   adminPhone: string;
+  adminSex: 'MALE' | 'FEMALE';
   selectedPlatformServices: string[];
   newServices: NewService[];
 }
@@ -114,6 +115,7 @@ interface InitialRegistration {
   email: string;
   role: 'COMPANY';
   phone_number?: string;
+  sex?: 'MALE' | 'FEMALE';
 }
 ```
 
@@ -215,6 +217,7 @@ interface AdminData {
   adminLastName: string;
   adminEmail: string;
   adminPhone: string;
+  adminSex: 'MALE' | 'FEMALE';
 }
 ```
 
@@ -450,20 +453,26 @@ static async verifyEmailAndSetPassword(token: string, password: string) {
 
 ```sql
 User {
-  id: String (Primary Key)
+  id: Int (Primary Key)
   first_name: String
   last_name: String
   email: String (Unique)
-  password_hash: String?
+  password: String
   phone_number: String?
+  sex: Sex? (MALE/FEMALE)
   role: Role (COMPANY)
-  status: Boolean (Default: false)
+  status: Boolean (Default: true)
   email_verified: Boolean (Default: false)
-  created_at: DateTime
-  updated_at: DateTime
+  verification_token: String? (Unique)
+  verification_token_expires: DateTime?
+  reset_token: String? (Unique)
+  reset_token_expires: DateTime?
+  created_at: DateTime (Default: now())
+  image: String?
 
   // Relations
-  company: Company?
+  ownedCompany: Company?
+  managedCompanies: CompanyManager[]
   email_verification_tokens: EmailVerificationToken[]
 }
 ```
@@ -472,23 +481,23 @@ User {
 
 ```sql
 Company {
-  id: String (Primary Key)
-  user_id: String (Foreign Key → User.id)
-  company_name: String
-  company_description: String?
-  siret: String (Unique)
-  consultant_count: Int?
-  management_fees: Float?
+  id: Int (Primary Key)
+  admin_user_id: Int (Unique)
+  name: String
+  description: String? (Text)
+  logo: String? (Text)
+  siret: String? (Unique)
+  consultant_count: Int
+  management_fees: Float
   is_portage: Boolean (Default: false)
-  created_at: DateTime
-  updated_at: DateTime
-
+  
   // Relations
-  user: User
-  metier_companies: MetierCompany[]
-  freelance_request_options: FreelanceRequestOption[]
-  selected_services: SelectedPlatformService[]
-  selected_portages: SelectedPortage[]
+  admin: User
+  managers: CompanyManager[]
+  services: CompanyService[]
+  responses: CompanyResponse[]
+  metiers: CompanyMetier[]
+  portages: CompanyPortage[]
 }
 ```
 
@@ -605,6 +614,7 @@ The LilLinker company onboarding system provides a comprehensive, multi-step com
 - **Comprehensive Company Profiling**: Detailed company information collection including SIRET validation
 - **Flexible Service Integration**: Platform services and custom service creation
 - **Portage Company Support**: Specialized handling for portage companies
+- **Gender Information**: Support for gender information for administrative requirements
 - **Data Integrity**: Database transactions ensure consistent data state
 - **Robust Testing**: Comprehensive unit and integration test coverage
 
