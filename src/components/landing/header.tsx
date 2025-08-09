@@ -153,15 +153,28 @@ const Header = ({ onHomeClick, onAboutClick, onServicesClick, onContactClick }: 
                 Contact
               </button>
               <div className="flex flex-col space-y-3 pt-4 border-t border-gray-100">
-                <Button
-                  variant="outline"
-                  className="border-[var(--primary-color)] text-[var(--primary-color)] hover:bg-[var(--primary-light)] bg-transparent"
-                >
-                  Login
-                </Button>
-                <Button className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white">
-                  Get Started
-                </Button>
+                {status === 'authenticated' ? (
+                  <Button
+                    onClick={() => {
+                      getDashboardHref();
+                      closeMenu();
+                    }}
+                    className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white"
+                  >
+                    Dashboard
+                  </Button>
+                ) : (
+                  <>
+                    <Link href="/auth/login" onClick={closeMenu}>
+                      <Button
+                        variant="outline"
+                        className="w-full border-[var(--primary-color)] text-[var(--primary-color)] hover:bg-[var(--primary-light)] bg-transparent"
+                      >
+                        Login
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </div>
