@@ -1,7 +1,7 @@
-import type React from "react"
 import { User } from "lucide-react"
-import type { FreelanceRequest } from "@/types/company-response"
+import type React from "react"
 
+import type { FreelanceRequest } from "@/types/company-response"
 interface RequestOverviewProps {
   freelanceRequest: FreelanceRequest
 }

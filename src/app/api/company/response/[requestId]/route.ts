@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+
 import { authOptions } from '@/lib/auth';
-import { CompanyResponseService } from '@/services/CompanyResponseService';
-import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
+import { CompanyResponseService } from '@/services/CompanyResponseService';
 
 // GET - Get response data for a specific request
 export async function GET(
@@ -186,7 +187,7 @@ export async function POST(
       userId: session.user.id,
       servicesCount: Array.isArray(body.services) ? body.services.length : 0,
       selectedOrganismesCount: Array.isArray(body.selected_organismes) ? body.selected_organismes.length : 0,
-      availableServicesCount: Array.isArray(body.services) ? body.services.filter((s: any) => s.is_available).length : 0
+      availableServicesCount: Array.isArray(body.services) ? body.services.filter((s: { is_available: boolean }) => s.is_available).length : 0
     });
     
     // Validate request body
@@ -244,7 +245,7 @@ export async function POST(
       userId: session.user.id,
       companyId: companyData.id,
       responseCount: Array.isArray(response) ? response.length : 1,
-      servicesResponded: body.services.filter((s: any) => s.is_available).length,
+      servicesResponded: body.services.filter((s: { is_available: boolean }) => s.is_available).length,
       selectedOrganismesCount: body.selected_organismes?.length || 0
     });
 
@@ -331,7 +332,7 @@ export async function PUT(
       userId: session.user.id,
       servicesCount: Array.isArray(body.services) ? body.services.length : 0,
       selectedOrganismesCount: Array.isArray(body.selected_organismes) ? body.selected_organismes.length : 0,
-      availableServicesCount: Array.isArray(body.services) ? body.services.filter((s: any) => s.is_available).length : 0
+      availableServicesCount: Array.isArray(body.services) ? body.services.filter((s: { is_available: boolean }) => s.is_available).length : 0
     });
     
     // Validate request body
@@ -390,7 +391,7 @@ export async function PUT(
       userId: session.user.id,
       companyId: companyData.id,
       responseCount: Array.isArray(response) ? response.length : 1,
-      servicesUpdated: body.services.filter((s: any) => s.is_available).length,
+      servicesUpdated: body.services.filter((s: { is_available: boolean }) => s.is_available).length,
       selectedOrganismesCount: body.selected_organismes?.length || 0
     });
 

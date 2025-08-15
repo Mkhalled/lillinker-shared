@@ -3,8 +3,8 @@ import { useState } from 'react';
 
 import { demande } from '@/types/demande';
 
-import { FreelanceRequestDetails } from '../details/FreelanceRequestDetails';
 import CompanyResponse from '../company-response/CompanyResponse';
+import { FreelanceRequestDetails } from '../details/FreelanceRequestDetails';
 
 type PaginationProps = {
   currentPage: number;

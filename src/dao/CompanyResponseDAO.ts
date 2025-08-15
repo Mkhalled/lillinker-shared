@@ -1,6 +1,6 @@
+import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { CompanyResponseRequest } from '@/types/company-response';
-import { logger } from '@/lib/logger';
 
 export class CompanyResponseDAO {
   static async getFreelanceRequestDetails(requestId: number) {

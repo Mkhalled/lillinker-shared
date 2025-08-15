@@ -6,7 +6,7 @@ export interface CompanyResponse {
   management_fee: number;
   comment?: string;
   is_available: boolean;
-  additional_data?: Record<string, any>;
+  additional_data?: Record<string, unknown>;
   created_at: Date;
   updated_at: Date;
 }
@@ -15,7 +15,7 @@ export interface CompanyResponseOrganisme {
   id: number;
   company_response_id: number;
   organisme_id: number;
-  additional_data?: Record<string, any>;
+  additional_data?: Record<string, unknown>;
   organisme: Organisme;
 }
 
@@ -44,7 +44,7 @@ export interface ServiceResponse {
   is_available: boolean;
   management_fee: number;
   comment: string;
-  requirements?: Record<string, any>;
+  requirements?: Record<string, unknown>;
 }
 
 export interface CompanyResponseRequest {
@@ -106,7 +106,7 @@ export interface FreelanceRequest {
     freelance_request_id: number;
     service_option_id: number;
     is_required: boolean;
-    response_data: any;
+    response_data: Record<string, unknown>;
     platformService: {
       id: number;
       label: string;
@@ -124,7 +124,7 @@ export interface ExistingCompanyResponse {
   company_id: number;
   platform_service_id: number;
   management_fees: number;
-  response_data: Record<string, any>;
+  response_data: Record<string, unknown>;
   platformService: {
     id: number;
     label: string;
@@ -134,7 +134,7 @@ export interface ExistingCompanyResponse {
     id: number;
     company_response_id: number;
     organisme_id: number;
-    additional_data?: Record<string, any>;
+    additional_data?: Record<string, unknown>;
     organisme: {
       id: number;
       company_id: number;

@@ -1,6 +1,6 @@
 import { CompanyResponseDAO } from '@/dao/CompanyResponseDAO';
-import { CompanyResponseRequest, CompanyResponseData } from '@/types/company-response';
 import { logger } from '@/lib/logger';
+import { CompanyResponseRequest, CompanyResponseData } from '@/types/company-response';
 
 export class CompanyResponseService {
   static async getResponseData(requestId: number, companyId: number): Promise<CompanyResponseData | null> {
@@ -37,7 +37,18 @@ export class CompanyResponseService {
       });
 
       return {
-        freelance_request: freelanceRequest,
+        freelance_request: {
+          ...freelanceRequest,
+          options: freelanceRequest.options.map(option => ({
+            ...option,
+            response_data: option.response_data as Record<string, string | number | boolean | null>,
+            platformService: {
+              ...option.platformService,
+              data_type: option.platformService.data_type as string,
+              description: option.platformService.description as string | null | undefined,
+            }
+          }))
+        },
         company_services: companyServices,
         organismes: [], // Will be fetched separately in the frontend
       };

@@ -1,17 +1,37 @@
 "use client"
-
-import type React from "react"
 import { CheckCircle } from "lucide-react"
-import type { ServiceResponse } from "@/types/company-response"
-import { StyledCheckbox } from "@/components/form/StyledCheckbox"
+import type React from "react"
+
 import InputField from "@/components/form/input/InputField"
 import TextAreaField from "@/components/form/input/TextAreaField"
+import { StyledCheckbox } from "@/components/form/StyledCheckbox"
+import type { ServiceResponse } from "@/types/company-response"
 
 interface ServiceCardProps {
-  service: any
+  service: {
+    service: {
+      id: number;
+      label: string;
+      description?: string | null;
+    };
+    is_active: boolean;
+  }
   response: ServiceResponse
   isRequested: boolean
-  requestedOption?: any
+  requestedOption?: {
+    id: number;
+    freelance_request_id: number;
+    service_option_id: number;
+    is_required: boolean;
+    response_data?: Record<string, unknown>;
+    platformService?: {
+      id: number;
+      label: string;
+      description?: string | null;
+      data_type: string;
+      requires_data: boolean;
+    };
+  }
   onToggle: (serviceId: number, isAvailable: boolean) => void
   onFeeChange: (serviceId: number, fee: string) => void
   onCommentChange: (serviceId: number, comment: string) => void
@@ -68,7 +88,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       <td className="py-6 px-6">
         {isRequested && requestedOption?.response_data ? (
           <div className="space-y-2">
-            {Object.entries(requestedOption.response_data as Record<string, any>).map(([key, value]) => {
+            {Object.entries(requestedOption.response_data).map(([key, value]) => {
               // Format the value properly
               let displayValue = '';
               if (Array.isArray(value)) {
@@ -76,11 +96,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 displayValue = value.join(', ');
               } else if (typeof value === 'object' && value !== null) {
                 // If it's an object, try to extract meaningful values
-                if (value.label || value.name || value.value) {
-                  displayValue = value.label || value.name || value.value;
+                const objectValue = value as Record<string, unknown>;
+                if (objectValue.label || objectValue.name || objectValue.value) {
+                  displayValue = String(objectValue.label || objectValue.name || objectValue.value);
                 } else {
                   // For other objects, join all values
-                  displayValue = Object.values(value).filter(v => v != null).join(', ');
+                  displayValue = Object.values(objectValue).filter(v => v != null).join(', ');
                 }
               } else {
                 // For primitive types, just convert to string

@@ -1,15 +1,16 @@
 "use client"
-
+import { Send, X, Trash2 } from "lucide-react"
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Send, X, Trash2 } from "lucide-react"
-import type { CompanyResponseData, ServiceResponse } from "@/types/company-response"
-import CollapsibleRow from "@/components/settings/CollapsibleRow"
-import RequestOverview from "./RequestOverview"
-import RequestedServices from "./RequestedServices"
-import ServiceCard from "./ServiceCard"
+
 import { StyledCheckbox } from "@/components/form/StyledCheckbox"
 import SimpleModal from "@/components/modals/SimpleModal"
+import CollapsibleRow from "@/components/settings/CollapsibleRow"
+import type { CompanyResponseData, ServiceResponse } from "@/types/company-response"
+
+import RequestedServices from "./RequestedServices"
+import RequestOverview from "./RequestOverview"
+import ServiceCard from "./ServiceCard"
 
 
 interface CompanyResponseProps {
@@ -49,67 +50,72 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
   }
 
   useEffect(() => {
-    fetchResponseData()
-  }, [requestId])
+    const fetchResponseData = async () => {
+      try {
+        setLoading(true)
 
-  const fetchResponseData = async () => {
-    try {
-      setLoading(true)
+        // Fetch response data
+        const response = await fetch(`/api/company/response/${requestId}`)
+        if (!response.ok) {
+          throw new Error("Failed to fetch response data")
+        }
+        const data = await response.json()
 
-      // Fetch response data
-      const response = await fetch(`/api/company/response/${requestId}`)
-      if (!response.ok) {
-        throw new Error("Failed to fetch response data")
-      }
-      const data = await response.json()
+        // Fetch company organismes separately
+        const organismesResponse = await fetch("/api/company/admin/organismes")
+        if (!organismesResponse.ok) {
+          throw new Error("Failed to fetch organismes")
+        }
+        const organismesData = await organismesResponse.json()
 
-      // Fetch company organismes separately
-      const organismesResponse = await fetch("/api/company/admin/organismes")
-      if (!organismesResponse.ok) {
-        throw new Error("Failed to fetch organismes")
-      }
-      const organismesData = await organismesResponse.json()
+        // Combine the data
+        const combinedData = {
+          ...data,
+          organismes: organismesData.success ? organismesData.data : [],
+        }
 
-      // Combine the data
-      const combinedData = {
-        ...data,
-        organismes: organismesData.success ? organismesData.data : [],
-      }
+        setResponseData(combinedData)
 
-      setResponseData(combinedData)
-
-      // Check if existing response exists
-      if (data.existing_response && data.existing_response.length > 0) {
-        setIsUpdating(true)
-        
-        // Pre-populate form with existing response data
-        const existingResponses: Record<number, ServiceResponse> = {}
-        const existingSelectedOrganismes: number[] = []
-        
-        data.existing_response.forEach((existingResp: any) => {
-          const responseData = existingResp.response_data || {}
+        // Check if existing response exists
+        if (data.existing_response && data.existing_response.length > 0) {
+          setIsUpdating(true)
           
-          existingResponses[existingResp.platform_service_id] = {
-            service_id: existingResp.platform_service_id,
-            service_name: existingResp.platformService.label,
-            service_description: existingResp.platformService.description || "",
-            is_available: true, // If it exists, it was available
-            management_fee: existingResp.management_fees || 8.5,
-            comment: responseData.comment || "",
-          }
+          // Pre-populate form with existing response data
+          const existingResponses: Record<number, ServiceResponse> = {}
+          const existingSelectedOrganismes: number[] = []
           
-          // Extract selected organismes from existing response
-          if (existingResp.organismes && existingResp.organismes.length > 0) {
-            existingResp.organismes.forEach((org: any) => {
-              if (!existingSelectedOrganismes.includes(org.organisme_id)) {
-                existingSelectedOrganismes.push(org.organisme_id)
-              }
-            })
-          }
-        })
+          data.existing_response.forEach((existingResp: { 
+            platform_service_id: number; 
+            response_data?: Record<string, string | number | boolean>; 
+            management_fees?: number;
+            platformService: { label: string; description?: string | null };
+            organismes?: { organisme_id: number }[]
+          }) => {
+            const responseData = existingResp.response_data || {}
+            
+            existingResponses[existingResp.platform_service_id] = {
+              service_id: existingResp.platform_service_id,
+              service_name: existingResp.platformService.label,
+              service_description: existingResp.platformService.description || "",
+              is_available: true, // If it exists, it was available
+              management_fee: existingResp.management_fees || 8.5,
+              comment: (typeof responseData.comment === 'string' ? responseData.comment : "") || "",
+            }
+            
+            // Extract selected organismes from existing response
+            if (existingResp.organismes && existingResp.organismes.length > 0) {
+              existingResp.organismes.forEach((org: { organisme_id: number }) => {
+                if (!existingSelectedOrganismes.includes(org.organisme_id)) {
+                  existingSelectedOrganismes.push(org.organisme_id)
+                }
+              })
+            }
+          })
 
         // Fill in services that weren't in the existing response
-        data.company_services.forEach((service: any) => {
+        data.company_services.forEach((service: { 
+          service: { id: number; label: string; description?: string | null } 
+        }) => {
           if (!existingResponses[service.service.id]) {
             existingResponses[service.service.id] = {
               service_id: service.service.id,
@@ -127,7 +133,9 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
       } else {
         // Initialize responses state - start with all services unchecked
         const initialResponses: Record<number, ServiceResponse> = {}
-        data.company_services.forEach((service: any) => {
+        data.company_services.forEach((service: { 
+          service: { id: number; label: string; description?: string | null } 
+        }) => {
           initialResponses[service.service.id] = {
             service_id: service.service.id,
             service_name: service.service.label,
@@ -145,7 +153,10 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
     } finally {
       setLoading(false)
     }
-  }
+    }
+    
+    fetchResponseData()
+  }, [requestId])
 
   const handleServiceToggle = (serviceId: number, isAvailable: boolean) => {
     setResponses((prev) => ({
@@ -183,16 +194,24 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
     }
   }
 
-  const calculateOrganismeTotals = (organisme: any) => {
+  const calculateOrganismeTotals = (organisme: {
+    cotisations: Array<{
+      pourcentage_patronal?: number | null;
+      pourcentage_salarial?: number | null;
+    }>
+  }) => {
     let totalPatronal = 0
     let totalSalarial = 0
     
-    organisme.cotisations.forEach((cotisation: any) => {
+    organisme.cotisations.forEach((cotisation: {
+      pourcentage_patronal?: number | null;
+      pourcentage_salarial?: number | null;
+    }) => {
       if (cotisation.pourcentage_patronal) {
-        totalPatronal += Number.parseFloat(cotisation.pourcentage_patronal) || 0
+        totalPatronal += Number.parseFloat(cotisation.pourcentage_patronal.toString()) || 0
       }
       if (cotisation.pourcentage_salarial) {
-        totalSalarial += Number.parseFloat(cotisation.pourcentage_salarial) || 0
+        totalSalarial += Number.parseFloat(cotisation.pourcentage_salarial.toString()) || 0
       }
     })
 
@@ -417,7 +436,10 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           <RequestOverview freelanceRequest={freelance_request} />
 
           {/* Requested Services */}
-          <RequestedServices options={freelance_request.options} />
+          <RequestedServices options={freelance_request.options.map(option => ({
+            ...option,
+            response_data: option.response_data as Record<string, string | number | boolean | null>
+          }))} />
 
           {/* Available Services */}
           <CollapsibleRow title="Vos Services Disponibles" defaultOpen={true}>
