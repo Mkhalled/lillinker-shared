@@ -2,13 +2,14 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Send, X } from "lucide-react"
+import { Send, X, Trash2 } from "lucide-react"
 import type { CompanyResponseData, ServiceResponse } from "@/types/company-response"
 import CollapsibleRow from "@/components/settings/CollapsibleRow"
 import RequestOverview from "./RequestOverview"
 import RequestedServices from "./RequestedServices"
 import ServiceCard from "./ServiceCard"
 import { StyledCheckbox } from "@/components/form/StyledCheckbox"
+import SimpleModal from "@/components/modals/SimpleModal"
 
 
 interface CompanyResponseProps {
@@ -16,12 +17,36 @@ interface CompanyResponseProps {
   onClose: () => void
 }
 
+interface ModalState {
+  isOpen: boolean
+  type: 'success' | 'error' | 'info'
+  title: string
+  message: string
+  onConfirm?: () => void
+}
+
 const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose }) => {
   const [responseData, setResponseData] = useState<CompanyResponseData | null>(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [responses, setResponses] = useState<Record<number, ServiceResponse>>({})
   const [selectedOrganismes, setSelectedOrganismes] = useState<number[]>([])
+  const [isUpdating, setIsUpdating] = useState(false)
+  const [modal, setModal] = useState<ModalState>({
+    isOpen: false,
+    type: 'info',
+    title: '',
+    message: ''
+  })
+
+  const showModal = (type: 'success' | 'error' | 'info', title: string, message: string, onConfirm?: () => void) => {
+    setModal({ isOpen: true, type, title, message, onConfirm })
+  }
+
+  const closeModal = () => {
+    setModal({ isOpen: false, type: 'info', title: '', message: '' })
+  }
 
   useEffect(() => {
     fetchResponseData()
@@ -53,19 +78,68 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
 
       setResponseData(combinedData)
 
-      // Initialize responses state - start with all services unchecked
-      const initialResponses: Record<number, ServiceResponse> = {}
-      data.company_services.forEach((service: any) => {
-        initialResponses[service.service.id] = {
-          service_id: service.service.id,
-          service_name: service.service.label,
-          service_description: service.service.description || "",
-          is_available: false, // Start unchecked - company decides what to offer
-          management_fee: 8.5, // Default fee
-          comment: "",
-        }
-      })
-      setResponses(initialResponses)
+      // Check if existing response exists
+      if (data.existing_response && data.existing_response.length > 0) {
+        setIsUpdating(true)
+        
+        // Pre-populate form with existing response data
+        const existingResponses: Record<number, ServiceResponse> = {}
+        const existingSelectedOrganismes: number[] = []
+        
+        data.existing_response.forEach((existingResp: any) => {
+          const responseData = existingResp.response_data || {}
+          
+          existingResponses[existingResp.platform_service_id] = {
+            service_id: existingResp.platform_service_id,
+            service_name: existingResp.platformService.label,
+            service_description: existingResp.platformService.description || "",
+            is_available: true, // If it exists, it was available
+            management_fee: existingResp.management_fees || 8.5,
+            comment: responseData.comment || "",
+          }
+          
+          // Extract selected organismes from existing response
+          if (existingResp.organismes && existingResp.organismes.length > 0) {
+            existingResp.organismes.forEach((org: any) => {
+              if (!existingSelectedOrganismes.includes(org.organisme_id)) {
+                existingSelectedOrganismes.push(org.organisme_id)
+              }
+            })
+          }
+        })
+
+        // Fill in services that weren't in the existing response
+        data.company_services.forEach((service: any) => {
+          if (!existingResponses[service.service.id]) {
+            existingResponses[service.service.id] = {
+              service_id: service.service.id,
+              service_name: service.service.label,
+              service_description: service.service.description || "",
+              is_available: false,
+              management_fee: 8.5,
+              comment: "",
+            }
+          }
+        })
+        
+        setResponses(existingResponses)
+        setSelectedOrganismes(existingSelectedOrganismes)
+      } else {
+        // Initialize responses state - start with all services unchecked
+        const initialResponses: Record<number, ServiceResponse> = {}
+        data.company_services.forEach((service: any) => {
+          initialResponses[service.service.id] = {
+            service_id: service.service.id,
+            service_name: service.service.label,
+            service_description: service.service.description || "",
+            is_available: false, // Start unchecked - company decides what to offer
+            management_fee: 8.5, // Default fee
+            comment: "",
+          }
+        })
+        setResponses(initialResponses)
+        setIsUpdating(false)
+      }
     } catch (error) {
       console.error("Error fetching response data:", error)
     } finally {
@@ -148,8 +222,10 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         selected_organismes: selectedOrganismeDetails,
       }
 
+      // Use PUT for updates, POST for new responses
+      const method = isUpdating ? "PUT" : "POST"
       const response = await fetch(`/api/company/response/${requestId}`, {
-        method: "POST",
+        method: method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -157,16 +233,76 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
       })
 
       if (!response.ok) {
-        throw new Error("Failed to submit response")
+        const errorData = await response.json()
+        throw new Error(errorData.error || `Failed to ${isUpdating ? 'update' : 'submit'} response`)
       }
 
-      // Success - close the component
-      onClose()
+      // Success - show success modal
+      showModal(
+        'success',
+        'Succès!',
+        `Votre réponse a été ${isUpdating ? 'mise à jour' : 'envoyée'} avec succès.`,
+        () => {
+          closeModal()
+          onClose()
+        }
+      )
     } catch (error) {
-      console.error("Error submitting response:", error)
+      console.error(`Error ${isUpdating ? 'updating' : 'submitting'} response:`, error)
+      const actionText = isUpdating ? 'mise à jour' : 'envoi'
+      showModal(
+        'error',
+        'Erreur',
+        error instanceof Error ? error.message : `Erreur lors du ${actionText} de la réponse. Veuillez réessayer.`
+      )
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const handleDelete = async () => {
+    if (!isUpdating) return
+
+    showModal(
+      'info',
+      'Confirmer la suppression',
+      'Êtes-vous sûr de vouloir supprimer cette réponse ? Cette action est irréversible.',
+      async () => {
+        try {
+          closeModal()
+          setDeleting(true)
+
+          const response = await fetch(`/api/company/response/${requestId}`, {
+            method: "DELETE",
+          })
+
+          if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.error || 'Failed to delete response')
+          }
+
+          // Success - show success modal
+          showModal(
+            'success',
+            'Réponse supprimée',
+            'Votre réponse a été supprimée avec succès.',
+            () => {
+              closeModal()
+              onClose()
+            }
+          )
+        } catch (error) {
+          console.error('Error deleting response:', error)
+          showModal(
+            'error',
+            'Erreur',
+            error instanceof Error ? error.message : 'Erreur lors de la suppression. Veuillez réessayer.'
+          )
+        } finally {
+          setDeleting(false)
+        }
+      }
+    )
   }
 
   if (loading) {
@@ -247,6 +383,36 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         </div>
 
         <div className="p-6 space-y-6">
+          {/* Flash Message for Existing Response */}
+          {isUpdating && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-blue-400"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                    Réponse déjà envoyée
+                  </h3>
+                  <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
+                    Vous avez déjà répondu à cette demande. Vous pouvez modifier votre réponse et la mettre à jour.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Request Overview */}
           <RequestOverview freelanceRequest={freelance_request} />
 
@@ -371,34 +537,71 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           )}
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-4 pt-6 border-t border-slate-200 dark:border-slate-700">
-            <button
-              onClick={onClose}
-              className="inline-flex items-center px-6 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all font-semibold border border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500"
-            >
-              Annuler
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="inline-flex items-center px-6 py-3 text-white rounded-lg transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
-              style={{ backgroundColor: 'var(--primary-color)' }}
-            >
-              {submitting ? (
-                <>
-                  <div className="w-5 h-5 mr-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Envoi en cours...
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5 mr-3" />
-                  Envoyer la réponse
-                </>
+          <div className="flex justify-between items-center pt-6 border-t border-slate-200 dark:border-slate-700">
+            {/* Left side - Delete button (only when updating) */}
+            <div>
+              {isUpdating && (
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="inline-flex items-center px-4 py-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all font-semibold border border-red-300 dark:border-red-600 hover:border-red-400 dark:hover:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {deleting ? (
+                    <>
+                      <div className="w-4 h-4 mr-2 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                      Suppression...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Supprimer
+                    </>
+                  )}
+                </button>
               )}
-            </button>
+            </div>
+
+            {/* Right side - Cancel and Submit buttons */}
+            <div className="flex space-x-4">
+              <button
+                onClick={onClose}
+                className="inline-flex items-center px-6 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all font-semibold border border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="inline-flex items-center px-6 py-3 text-white rounded-lg transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                style={{ backgroundColor: 'var(--primary-color)' }}
+              >
+                {submitting ? (
+                  <>
+                    <div className="w-5 h-5 mr-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    {isUpdating ? 'Mise à jour en cours...' : 'Envoi en cours...'}
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5 mr-3" />
+                    {isUpdating ? 'Mettre à jour la réponse' : 'Envoyer la réponse'}
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Simple Modal */}
+      <SimpleModal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        onConfirm={modal.onConfirm}
+        confirmText={modal.onConfirm ? 'Confirmer' : 'OK'}
+      />
     </div>
   )
 }

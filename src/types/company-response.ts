@@ -53,20 +53,9 @@ export interface CompanyResponseRequest {
   selected_organismes: {
     organisme_id: number;
     label: string;
-    cotisations: {
-      id: number;
-      label: string;
-      type: 'PATRONAL' | 'SALARIAL' | 'DEUX';
-      pourcentage_patronal?: number | null;
-      pourcentage_salarial?: number | null;
-    }[];
-  }[];
-  cotisation_summary: {
     total_patronal: number;
     total_salarial: number;
-    total_combined: number;
-  };
-  overall_message: string;
+  }[];
 }
 
 export interface CompanyResponseData {
