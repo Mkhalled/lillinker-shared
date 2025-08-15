@@ -240,10 +240,22 @@ model CompanyResponse {
   request             FreelanceRequest @relation(fields: [request_id], references: [id])
   company             Company         @relation(fields: [company_id], references: [id])
   platformService     PlatformService @relation(fields: [platform_service_id], references: [id])
+  organismes          CompanyResponseOrganisme[]
 
   @@map("company_responses")
 }
 
+model CompanyResponseOrganisme {
+  id                  Int         @id @default(autoincrement())
+  company_response_id Int
+  organisme_id        Int
+  additional_data     Json?       // store extra info like cotisation details
+  
+  companyResponse     CompanyResponse @relation(fields: [company_response_id], references: [id])
+  organisme           Organisme       @relation(fields: [organisme_id], references: [id])
+
+  @@map("company_response_organismes")
+}
 // NextAuth models preserved as-is
 model Account {
   id                String  @id @default(cuid())
@@ -301,6 +313,7 @@ model Organisme {
   company     Company  @relation(fields: [company_id], references: [id])
 
   cotisations Cotisation[]
+  companyResponseOrganismes CompanyResponseOrganisme[]
 
   @@map("organismes")
 }

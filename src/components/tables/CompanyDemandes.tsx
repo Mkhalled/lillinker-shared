@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { demande } from '@/types/demande';
 
 import { FreelanceRequestDetails } from '../details/FreelanceRequestDetails';
+import CompanyResponse from './CompanyResponse';
 
 type PaginationProps = {
   currentPage: number;
@@ -33,6 +34,7 @@ const CompanyDemandes = ({
   loading = false
 }: CompanyDemandesProps) => {
   const [selectedDemande, setSelectedDemande] = useState<demande | null>(null);
+  const [responseRequestId, setResponseRequestId] = useState<number | null>(null);
 
   const handlePageChange = (page: number) => {
     if (onPageChange && page >= 1 && page <= pagination.totalPages) {
@@ -85,6 +87,15 @@ const CompanyDemandes = ({
 
     return pages;
   };
+
+  if (responseRequestId) {
+    return (
+      <CompanyResponse
+        requestId={responseRequestId}
+        onClose={() => setResponseRequestId(null)}
+      />
+    );
+  }
 
   if (selectedDemande) {
     return (
@@ -262,7 +273,11 @@ const CompanyDemandes = ({
                             />
                           </svg>
                         </button>
-                        <button className="group" title="Répondre à la demande">
+                        <button 
+                          className="group" 
+                          title="Répondre à la demande"
+                          onClick={() => setResponseRequestId(demandeItem.id)}
+                        >
                           <svg
                             className="fill-current group-hover:text-green-500"
                             width="18"
