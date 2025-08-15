@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { demande } from '@/types/demande';
 
 import { FreelanceRequestDetails } from '../details/FreelanceRequestDetails';
-import CompanyResponse from './CompanyResponse';
+import CompanyResponse from '../company-response/CompanyResponse';
 
 type PaginationProps = {
   currentPage: number;

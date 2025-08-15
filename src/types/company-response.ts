@@ -70,36 +70,7 @@ export interface CompanyResponseRequest {
 }
 
 export interface CompanyResponseData {
-  freelance_request: {
-    id: number;
-    freelance: {
-      user: {
-        first_name: string;
-        last_name: string;
-      };
-    };
-    tjm: number;
-    days: number;
-    priority: 'HIGH' | 'MEDIUM' | 'LOW';
-    mission_status: 'OPEN' | 'PENDING' | 'CLOSED';
-    client_name?: string | null;
-    client_address?: string | null;
-    client_sector?: string | null;
-    options: {
-      id: number;
-      freelance_request_id: number;
-      service_option_id: number;
-      is_required: boolean;
-      response_data: any;
-      platformService: {
-        id: number;
-        label: string;
-        description?: string | null;
-        data_type: string;
-        requires_data: boolean;
-      };
-    }[];
-  };
+  freelance_request: FreelanceRequest;
   company_services: {
     id: number;
     service: {
@@ -123,6 +94,37 @@ export interface CompanyResponseData {
       pourcentage_salarial?: number | null;
       pourcentage_patronal?: number | null;
     }[];
+  }[];
+}
+
+export interface FreelanceRequest {
+  id: number;
+  freelance: {
+    user: {
+      first_name: string;
+      last_name: string;
+    };
+  };
+  tjm: number;
+  days: number;
+  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  mission_status: 'OPEN' | 'PENDING' | 'CLOSED';
+  client_name?: string | null;
+  client_address?: string | null;
+  client_sector?: string | null;
+  options: {
+    id: number;
+    freelance_request_id: number;
+    service_option_id: number;
+    is_required: boolean;
+    response_data: any;
+    platformService: {
+      id: number;
+      label: string;
+      description?: string | null;
+      data_type: string;
+      requires_data: boolean;
+    };
   }[];
 }
 
