@@ -43,8 +43,16 @@ export const StyledCheckbox = ({
       />
       <div
         className={`${sizeClasses[size]} rounded-md border-2 transition-all duration-200 flex items-center justify-center cursor-pointer ${
-          checked ? 'border-blue-600 bg-blue-600' : 'border-gray-300 bg-white hover:border-blue-400'
+          checked ? 'border-indigo-600 bg-indigo-600' : 'border-gray-300 bg-white hover:border-indigo-400'
         }`}
+        onClick={() => {
+          // Create a synthetic event to trigger onChange
+          const syntheticEvent = {
+            target: { checked: !checked },
+            currentTarget: { checked: !checked },
+          } as React.ChangeEvent<HTMLInputElement>;
+          onChange(syntheticEvent);
+        }}
       >
         {checked && (
           <svg

@@ -379,7 +379,7 @@ export const FreelanceRequestDetails = ({
                         <div className="flex items-center space-x-2">
                           <div className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full flex-shrink-0"></div>
                           <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">
-                            {option.platformService?.data_label || option.platformService?.label}
+                            {option.platformService?.label}
                           </span>
                         </div>
                         <OptionInfoTooltip option={option} />
