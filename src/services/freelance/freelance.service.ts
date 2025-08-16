@@ -2,12 +2,7 @@ import { FreelanceDao } from '@/dao/freelance.dao';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import type { FreelanceOnboarding } from '@/lib/validations/auth.validation';
-
-interface SelectedServiceData {
-  serviceId: number;
-  isRequired: boolean;
-  responseData?: string;
-}
+import type { SelectedService } from '@/types/user';
 
 export class FreelanceService {
   /**
@@ -83,7 +78,7 @@ export class FreelanceService {
    */
   static async createRequestOptions(
     freelanceRequestId: number,
-    selectedServices: SelectedServiceData[]
+    selectedServices: SelectedService[]
   ) {
     const logContext = {
       operation: 'createRequestOptions',

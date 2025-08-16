@@ -1,10 +1,7 @@
 import { User } from "lucide-react"
 import type React from "react"
 
-import type { FreelanceRequest } from "@/types/company-response"
-interface RequestOverviewProps {
-  freelanceRequest: FreelanceRequest
-}
+import type { RequestOverviewProps } from "@/types/company-response"
 
 const RequestOverview: React.FC<RequestOverviewProps> = ({ freelanceRequest }) => {
   const getPriorityStyles = (priority: string) => {
@@ -38,7 +35,7 @@ const RequestOverview: React.FC<RequestOverviewProps> = ({ freelanceRequest }) =
         <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800/30">
           <span className="block text-xs font-medium text-blue-600 dark:text-blue-400 mb-2">Freelancer</span>
           <p className="text-sm font-bold text-blue-700 dark:text-blue-400">
-            {freelanceRequest.freelance.user.first_name} {freelanceRequest.freelance.user.last_name}
+            {freelanceRequest.freelance?.user.first_name} {freelanceRequest.freelance?.user.last_name}
           </p>
         </div>
 

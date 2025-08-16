@@ -6,25 +6,11 @@ import { useState, useEffect } from "react"
 import { StyledCheckbox } from "@/components/form/StyledCheckbox"
 import SimpleModal from "@/components/modals/SimpleModal"
 import CollapsibleRow from "@/components/settings/CollapsibleRow"
-import type { CompanyResponseData, ServiceResponse } from "@/types/company-response"
+import type { CompanyResponseData, ServiceResponse, CompanyResponseProps, ModalState } from "@/types/company-response"
 
 import RequestedServices from "./RequestedServices"
 import RequestOverview from "./RequestOverview"
 import ServiceCard from "./ServiceCard"
-
-
-interface CompanyResponseProps {
-  requestId: number
-  onClose: () => void
-}
-
-interface ModalState {
-  isOpen: boolean
-  type: 'success' | 'error' | 'info'
-  title: string
-  message: string
-  onConfirm?: () => void
-}
 
 const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose }) => {
   const [responseData, setResponseData] = useState<CompanyResponseData | null>(null)
@@ -436,10 +422,10 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           <RequestOverview freelanceRequest={freelance_request} />
 
           {/* Requested Services */}
-          <RequestedServices options={freelance_request.options.map(option => ({
+          <RequestedServices options={freelance_request.options?.map(option => ({
             ...option,
             response_data: option.response_data as Record<string, string | number | boolean | null>
-          }))} />
+          })) || []} />
 
           {/* Available Services */}
           <CollapsibleRow title="Vos Services Disponibles" defaultOpen={true}>
@@ -465,10 +451,10 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
                   </thead>
                   <tbody>
                     {company_services.map((service) => {
-                      const isRequested = freelance_request.options.some(
+                      const isRequested = freelance_request.options?.some(
                         (option) => option.platformService.id === service.service.id,
-                      )
-                      const requestedOption = freelance_request.options.find(
+                      ) || false
+                      const requestedOption = freelance_request.options?.find(
                         (option) => option.platformService.id === service.service.id,
                       )
 
@@ -478,7 +464,20 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
                           service={service}
                           response={responses[service.service.id]}
                           isRequested={isRequested}
-                          requestedOption={requestedOption}
+                          requestedOption={requestedOption ? {
+                            id: requestedOption.id,
+                            freelance_request_id: requestedOption.freelance_request_id || 0,
+                            service_option_id: requestedOption.service_option_id || 0,
+                            is_required: requestedOption.is_required || false,
+                            response_data: requestedOption.response_data as Record<string, unknown>,
+                            platformService: requestedOption.platformService.id ? {
+                              id: requestedOption.platformService.id,
+                              label: requestedOption.platformService.label,
+                              description: requestedOption.platformService.description,
+                              data_type: requestedOption.platformService.data_type,
+                              requires_data: requestedOption.platformService.requires_data
+                            } : undefined
+                          } : undefined}
                           onToggle={handleServiceToggle}
                           onFeeChange={handleFeeChange}
                           onCommentChange={handleCommentChange}

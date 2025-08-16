@@ -9,7 +9,11 @@ export interface PortageInfo {
 
 export interface OptionInfo {
   id: number;
+  freelance_request_id?: number;
+  service_option_id?: number;
+  is_required?: boolean;
   platformService: {
+    id?: number;
     label: string;
     data_label?: string;
     description?: string | null;
@@ -32,18 +36,24 @@ export interface OptionInfo {
 export interface demande {
   id: number;
   mission_status: string;
-  client_name?: string;
-  client_sector?: string;
-  client_address?: string;
+  client_name?: string | null;
+  client_sector?: string | null;
+  client_address?: string | null;
   priority: string;
   tjm: number;
   days: number;
   wants_portage: boolean;
   want_salaried?: boolean;
-  salary?: number;
-  start_date?: string;
-  created_at: string;
+  salary?: number | null;
+  start_date?: Date | null;
+  created_at: Date | string;
+  freelance?: {
+    user: {
+      first_name: string;
+      last_name: string;
+    };
+  };
   portages?: PortageInfo[];
   options?: OptionInfo[];
-  responses: Record<string, string | number | boolean | null>[];
+  responses?: Record<string, string | number | boolean | null>[];
 }

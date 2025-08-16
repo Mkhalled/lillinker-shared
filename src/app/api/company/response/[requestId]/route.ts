@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
-import { CompanyResponseService } from '@/services/CompanyResponseService';
+import { CompanyResponseService } from '@/services/company/CompanyResponse.service';
 
 // GET - Get response data for a specific request
 export async function GET(

@@ -14,7 +14,6 @@ interface ServiceCardProps {
       label: string;
       description?: string | null;
     };
-    is_active: boolean;
   }
   response: ServiceResponse
   isRequested: boolean

@@ -3,21 +3,12 @@
 import { Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
+import type { NewService } from '@/types/user';
+
 import InputField from '../form/input/InputField';
 import TextAreaField from '../form/input/TextAreaField';
 import { StyledCheckbox } from '../form/StyledCheckbox';
 import { Button } from '../ui/button/Button';
-
-interface NewService {
-  id: string;
-  label: string;
-  description: string;
-  requiresData: boolean;
-  dataType: string;
-  dataLabel: string;
-  dataDescription: string;
-  choices: string[];
-}
 
 interface AddServiceModalProps {
   isOpen: boolean;

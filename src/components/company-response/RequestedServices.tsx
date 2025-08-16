@@ -1,23 +1,7 @@
 import type React from "react"
 
 import OptionInfoTooltip from "@/components/details/OptionInfoTooltip"
-
-interface RequestedServicesProps {
-  options: Array<{
-    id: number;
-    freelance_request_id: number;
-    service_option_id: number;
-    is_required: boolean;
-    response_data: Record<string, string | number | boolean | null>;
-    platformService: {
-      id: number;
-      label: string;
-      description?: string | null;
-      data_type: string;
-      requires_data: boolean;
-    };
-  }>
-}
+import type { RequestedServicesProps } from "@/types/company-response"
 
 const RequestedServices: React.FC<RequestedServicesProps> = ({ options }) => {
   if (!options || options.length === 0) return null

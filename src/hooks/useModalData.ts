@@ -2,24 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-export interface PlatformService {
-  id: number;
-  label: string;
-  description: string | null;
-  data_type: string;
-  requires_data: boolean;
-  data_label: string;
-  data_description: string | null;
-  choices: unknown;
-  status?: string;
-  user?: {
-    first_name: string;
-    last_name: string;
-    ownedCompany: {
-      name: string;
-    } | null;
-  };
-}
+import type { PlatformService } from '@/types/platform';
 
 export interface Metier {
   id: number;
