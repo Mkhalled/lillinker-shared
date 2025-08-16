@@ -137,7 +137,6 @@ model PlatformService {
   status           ServiceStatus
   user             User            @relation(fields: [user_id], references: [id])
   companyServices  CompanyService[]
-  companyResponses CompanyResponse[]
   freelanceRequests FreelanceRequestOption[]
 
   @@map("platform_services")
@@ -234,14 +233,15 @@ model CompanyResponse {
   id                  Int             @id @default(autoincrement())
   request_id          Int
   company_id          Int
-  platform_service_id Int
-  management_fees     Float
-  response_data       Json
+  response_data       Json            // Contains all services responses and other data
+  created_at         DateTime        @default(now())
+  updated_at         DateTime        @updatedAt
   request             FreelanceRequest @relation(fields: [request_id], references: [id])
   company             Company         @relation(fields: [company_id], references: [id])
-  platformService     PlatformService @relation(fields: [platform_service_id], references: [id])
   organismes          CompanyResponseOrganisme[]
 
+  // Ensure one response per company per request
+  @@unique([request_id, company_id])
   @@map("company_responses")
 }
 

@@ -101,7 +101,7 @@ export class CompanyResponseService {
         operation: 'createResponse',
         requestId: data.request_id,
         companyId,
-        responseCount: Array.isArray(response) ? response.length : 1
+        responseId: response.id
       });
 
       return response;
@@ -145,7 +145,7 @@ export class CompanyResponseService {
         operation: 'updateResponse',
         requestId,
         companyId,
-        responseCount: Array.isArray(response) ? response.length : 1
+        responseId: response.id
       });
 
       return response;

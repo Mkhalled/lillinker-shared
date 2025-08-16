@@ -1,6 +1,8 @@
+import { Prisma } from '@prisma/client';
+
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
-import { CompanyResponseRequest } from '@/types/company-response';
+import { CompanyResponseRequest, CompanyResponseContent, ServiceResponseData } from '@/types/company-response';
 
 export class CompanyResponseDAO {
   static async getFreelanceRequestDetails(requestId: number) {
@@ -74,42 +76,46 @@ export class CompanyResponseDAO {
     });
 
     return await prisma.$transaction(async (tx) => {
-      const responses = [];
-      
-      // Create responses for each selected service
-      for (const service of data.services) {
-        if (service.is_available) {
-          const response = await tx.companyResponse.create({
-            data: {
-              request_id: data.request_id,
-              company_id: companyId,
-              platform_service_id: service.service_id,
-              management_fees: service.management_fee,
-              response_data: {
-                comment: service.comment || '',
-                selected_organismes_details: data.selected_organismes,
-              },
-            },
-          });
-          responses.push(response);
-        }
-      }
+      // Transform ServiceResponse[] to ServiceResponseData[]
+      const serviceResponses: ServiceResponseData[] = data.services
+        .filter(service => service.is_available)
+        .map(service => ({
+          service_id: service.service_id,
+          service_name: service.service_name,
+          service_description: service.service_description,
+          is_available: service.is_available,
+          management_fee: service.management_fee,
+          comment: service.comment || ''
+        }));
 
-      // Link organismes to each response with detailed cotisation data
-      if (responses.length > 0 && data.selected_organismes.length > 0) {
-        for (const response of responses) {
-          await tx.companyResponseOrganisme.createMany({
-            data: data.selected_organismes.map(organisme => ({
-              company_response_id: response.id,
-              organisme_id: organisme.organisme_id,
-              additional_data: {
-                organisme_label: organisme.label,
-                total_patronal: organisme.total_patronal,
-                total_salarial: organisme.total_salarial,
-              },
-            })),
-          });
-        }
+      // Create the response data structure
+      const responseData: CompanyResponseContent = {
+        services: serviceResponses,
+        selected_organismes: data.selected_organismes,
+      };
+
+      // Create single response record
+      const response = await tx.companyResponse.create({
+        data: {
+          request_id: data.request_id,
+          company_id: companyId,
+          response_data: responseData as unknown as Prisma.InputJsonValue,
+        },
+      });
+
+      // Link organismes to the response
+      if (data.selected_organismes.length > 0) {
+        await tx.companyResponseOrganisme.createMany({
+          data: data.selected_organismes.map(organisme => ({
+            company_response_id: response.id,
+            organisme_id: organisme.organisme_id,
+            additional_data: {
+              organisme_label: organisme.label,
+              total_patronal: organisme.total_patronal,
+              total_salarial: organisme.total_salarial,
+            } as unknown as Prisma.InputJsonValue,
+          })),
+        });
       }
 
       logger.info('Company response creation completed successfully', {
@@ -117,28 +123,22 @@ export class CompanyResponseDAO {
         operation: 'createCompanyResponse',
         requestId: data.request_id,
         companyId,
-        totalResponsesCreated: responses.length,
-        organismesLinked: responses.length > 0 ? data.selected_organismes.length : 0
+        responseId: response.id,
+        servicesCount: serviceResponses.length,
+        organismesLinked: data.selected_organismes.length
       });
 
-      return responses;
+      return response;
     });
   }
 
   static async getCompanyResponsesByRequest(requestId: number, companyId: number) {
-    return await prisma.companyResponse.findMany({
+    return await prisma.companyResponse.findFirst({
       where: {
         request_id: requestId,
         company_id: companyId,
       },
       include: {
-        platformService: {
-          select: {
-            id: true,
-            label: true,
-            description: true,
-          },
-        },
         organismes: {
           include: {
             organisme: {
@@ -164,8 +164,8 @@ export class CompanyResponseDAO {
     });
 
     return await prisma.$transaction(async (tx) => {
-      // First, delete all existing responses for this request
-      const existingResponses = await tx.companyResponse.findMany({
+      // Find existing response
+      const existingResponse = await tx.companyResponse.findFirst({
         where: {
           request_id: data.request_id,
           company_id: companyId,
@@ -173,57 +173,55 @@ export class CompanyResponseDAO {
         select: { id: true },
       });
 
-      // Delete organisme relationships first
-      for (const response of existingResponses) {
-        await tx.companyResponseOrganisme.deleteMany({
-          where: { company_response_id: response.id },
-        });
+      if (!existingResponse) {
+        throw new Error('No existing response found to update');
       }
 
-      // Delete existing responses
-      await tx.companyResponse.deleteMany({
-        where: {
-          request_id: data.request_id,
-          company_id: companyId,
+      // Delete existing organisme relationships
+      await tx.companyResponseOrganisme.deleteMany({
+        where: { company_response_id: existingResponse.id },
+      });
+
+      // Transform ServiceResponse[] to ServiceResponseData[]
+      const serviceResponses: ServiceResponseData[] = data.services
+        .filter(service => service.is_available)
+        .map(service => ({
+          service_id: service.service_id,
+          service_name: service.service_name,
+          service_description: service.service_description,
+          is_available: service.is_available,
+          management_fee: service.management_fee,
+          comment: service.comment || ''
+        }));
+
+      // Create the response data structure
+      const responseData: CompanyResponseContent = {
+        services: serviceResponses,
+        selected_organismes: data.selected_organismes,
+      };
+
+      // Update the response
+      const response = await tx.companyResponse.update({
+        where: { id: existingResponse.id },
+        data: {
+          response_data: responseData as unknown as Prisma.InputJsonValue,
+          updated_at: new Date(),
         },
       });
 
-      // Create new responses
-      const responses = [];
-      
-      for (const service of data.services) {
-        if (service.is_available) {
-          const response = await tx.companyResponse.create({
-            data: {
-              request_id: data.request_id,
-              company_id: companyId,
-              platform_service_id: service.service_id,
-              management_fees: service.management_fee,
-              response_data: {
-                comment: service.comment || '',
-                selected_organismes_details: data.selected_organismes,
-              },
-            },
-          });
-          responses.push(response);
-        }
-      }
-
-      // Link organismes to each response
-      if (responses.length > 0 && data.selected_organismes.length > 0) {
-        for (const response of responses) {
-          await tx.companyResponseOrganisme.createMany({
-            data: data.selected_organismes.map(organisme => ({
-              company_response_id: response.id,
-              organisme_id: organisme.organisme_id,
-              additional_data: {
-                organisme_label: organisme.label,
-                total_patronal: organisme.total_patronal,
-                total_salarial: organisme.total_salarial,
-              },
-            })),
-          });
-        }
+      // Create new organisme relationships
+      if (data.selected_organismes.length > 0) {
+        await tx.companyResponseOrganisme.createMany({
+          data: data.selected_organismes.map(organisme => ({
+            company_response_id: response.id,
+            organisme_id: organisme.organisme_id,
+            additional_data: {
+              organisme_label: organisme.label,
+              total_patronal: organisme.total_patronal,
+              total_salarial: organisme.total_salarial,
+            } as unknown as Prisma.InputJsonValue,
+          })),
+        });
       }
 
       logger.info('Company response update completed successfully', {
@@ -231,11 +229,12 @@ export class CompanyResponseDAO {
         operation: 'updateCompanyResponse',
         requestId: data.request_id,
         companyId,
-        totalResponsesUpdated: responses.length,
-        organismesLinked: responses.length > 0 ? data.selected_organismes.length : 0
+        responseId: response.id,
+        servicesCount: serviceResponses.length,
+        organismesLinked: data.selected_organismes.length
       });
 
-      return responses;
+      return response;
     });
   }
 
@@ -248,8 +247,8 @@ export class CompanyResponseDAO {
     });
 
     return await prisma.$transaction(async (tx) => {
-      // Get all responses for this request
-      const responses = await tx.companyResponse.findMany({
+      // Get the response for this request
+      const response = await tx.companyResponse.findFirst({
         where: {
           request_id: requestId,
           company_id: companyId,
@@ -257,19 +256,24 @@ export class CompanyResponseDAO {
         select: { id: true },
       });
 
-      // Delete organisme relationships first
-      for (const response of responses) {
-        await tx.companyResponseOrganisme.deleteMany({
-          where: { company_response_id: response.id },
+      if (!response) {
+        logger.warn('No response found to delete', {
+          dao: 'CompanyResponseDAO',
+          operation: 'deleteCompanyResponse',
+          requestId,
+          companyId
         });
+        return { count: 0 };
       }
 
-      // Delete the responses
-      const deletedResponses = await tx.companyResponse.deleteMany({
-        where: {
-          request_id: requestId,
-          company_id: companyId,
-        },
+      // Delete organisme relationships first
+      await tx.companyResponseOrganisme.deleteMany({
+        where: { company_response_id: response.id },
+      });
+
+      // Delete the response
+      const deletedResponse = await tx.companyResponse.delete({
+        where: { id: response.id },
       });
 
       logger.info('Company response deletion completed successfully', {
@@ -277,10 +281,10 @@ export class CompanyResponseDAO {
         operation: 'deleteCompanyResponse',
         requestId,
         companyId,
-        deletedCount: deletedResponses.count
+        responseId: deletedResponse.id
       });
 
-      return deletedResponses;
+      return { count: 1 };
     });
   }
 

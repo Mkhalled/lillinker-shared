@@ -110,8 +110,7 @@ export async function GET(
       requestId: requestId,
       companyId: companyData.id,
       userId: session.user.id,
-      hasExistingResponse: existingResponse && existingResponse.length > 0,
-      existingResponseCount: existingResponse?.length || 0,
+      hasExistingResponse: !!existingResponse,
       companyServicesCount: responseData.company_services.length
     });
 
@@ -244,7 +243,7 @@ export async function POST(
       requestId: requestId,
       userId: session.user.id,
       companyId: companyData.id,
-      responseCount: Array.isArray(response) ? response.length : 1,
+      responseId: response.id,
       servicesResponded: body.services.filter((s: { is_available: boolean }) => s.is_available).length,
       selectedOrganismesCount: body.selected_organismes?.length || 0
     });

@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import { StyledCheckbox } from "@/components/form/StyledCheckbox"
 import SimpleModal from "@/components/modals/SimpleModal"
 import CollapsibleRow from "@/components/settings/CollapsibleRow"
-import type { CompanyResponseData, ServiceResponse, CompanyResponseProps, ModalState } from "@/types/company-response"
+import type { CompanyResponseData, ServiceResponse, CompanyResponseProps, ModalState, ServiceResponseData, SelectedOrganisme } from "@/types/company-response"
 
 import RequestedServices from "./RequestedServices"
 import RequestOverview from "./RequestOverview"
@@ -63,40 +63,38 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         setResponseData(combinedData)
 
         // Check if existing response exists
-        if (data.existing_response && data.existing_response.length > 0) {
+        if (data.existing_response) {
           setIsUpdating(true)
           
           // Pre-populate form with existing response data
           const existingResponses: Record<number, ServiceResponse> = {}
           const existingSelectedOrganismes: number[] = []
           
-          data.existing_response.forEach((existingResp: { 
-            platform_service_id: number; 
-            response_data?: Record<string, string | number | boolean>; 
-            management_fees?: number;
-            platformService: { label: string; description?: string | null };
-            organismes?: { organisme_id: number }[]
-          }) => {
-            const responseData = existingResp.response_data || {}
-            
-            existingResponses[existingResp.platform_service_id] = {
-              service_id: existingResp.platform_service_id,
-              service_name: existingResp.platformService.label,
-              service_description: existingResp.platformService.description || "",
-              is_available: true, // If it exists, it was available
-              management_fee: existingResp.management_fees || 8.5,
-              comment: (typeof responseData.comment === 'string' ? responseData.comment : "") || "",
-            }
-            
-            // Extract selected organismes from existing response
-            if (existingResp.organismes && existingResp.organismes.length > 0) {
-              existingResp.organismes.forEach((org: { organisme_id: number }) => {
-                if (!existingSelectedOrganismes.includes(org.organisme_id)) {
-                  existingSelectedOrganismes.push(org.organisme_id)
-                }
-              })
-            }
-          })
+          const existingResp = data.existing_response
+          const responseData = existingResp.response_data
+          
+          // Process services from response_data
+          if (responseData?.services && Array.isArray(responseData.services)) {
+            responseData.services.forEach((service: ServiceResponseData) => {
+              existingResponses[service.service_id] = {
+                service_id: service.service_id,
+                service_name: service.service_name,
+                service_description: service.service_description || "",
+                is_available: service.is_available,
+                management_fee: service.management_fee || 8.5,
+                comment: service.comment || "",
+              }
+            })
+          }
+          
+          // Process selected organismes from response_data
+          if (responseData?.selected_organismes && Array.isArray(responseData.selected_organismes)) {
+            responseData.selected_organismes.forEach((organisme: SelectedOrganisme) => {
+              if (!existingSelectedOrganismes.includes(organisme.organisme_id)) {
+                existingSelectedOrganismes.push(organisme.organisme_id)
+              }
+            })
+          }
 
         // Fill in services that weren't in the existing response
         data.company_services.forEach((service: { 

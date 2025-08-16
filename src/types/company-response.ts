@@ -6,13 +6,25 @@ export interface CompanyResponse {
   id: number;
   request_id: number;
   company_id: number;
-  service_id: number;
-  management_fee: number;
-  comment?: string;
-  is_available: boolean;
-  additional_data?: Record<string, unknown>;
+  response_data: CompanyResponseContent; // Changed from Json to structured type
   created_at: Date;
   updated_at: Date;
+}
+
+// Structure for the response data JSON field
+export interface CompanyResponseContent {
+  services: ServiceResponseData[];
+  selected_organismes: SelectedOrganisme[];
+  additional_info?: Record<string, unknown>;
+}
+
+export interface ServiceResponseData {
+  service_id: number;
+  service_name: string;
+  service_description?: string;
+  is_available: boolean;
+  management_fee: number;
+  comment?: string;
 }
 
 export interface CompanyResponseOrganisme {
@@ -23,6 +35,14 @@ export interface CompanyResponseOrganisme {
   organisme: OrganismeWithCotisations;
 }
 
+export interface SelectedOrganisme {
+  organisme_id: number;
+  label: string;
+  total_patronal: number;
+  total_salarial: number;
+}
+
+// Keep legacy ServiceResponse for compatibility (will be deprecated)
 export interface ServiceResponse {
   service_id: number;
   service_name: string;
@@ -33,16 +53,9 @@ export interface ServiceResponse {
   requirements?: Record<string, unknown>;
 }
 
-export interface SelectedOrganisme {
-  organisme_id: number;
-  label: string;
-  total_patronal: number;
-  total_salarial: number;
-}
-
 export interface CompanyResponseRequest {
   request_id: number;
-  services: ServiceResponse[];
+  services: ServiceResponse[]; // Will be transformed to ServiceResponseData
   selected_organismes: SelectedOrganisme[];
 }
 
@@ -66,14 +79,9 @@ export interface ExistingCompanyResponse {
   id: number;
   request_id: number;
   company_id: number;
-  platform_service_id: number;
-  management_fees: number;
-  response_data: Record<string, unknown>;
-  platformService: {
-    id: number;
-    label: string;
-    description?: string | null;
-  };
+  response_data: CompanyResponseContent;
+  created_at: Date;
+  updated_at: Date;
   organismes: CompanyResponseOrganisme[];
 }
 
