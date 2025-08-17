@@ -11,6 +11,7 @@ import type { CompanyResponseData, ServiceResponse, CompanyResponseProps, ModalS
 import RequestedServices from "./RequestedServices"
 import RequestOverview from "./RequestOverview"
 import ServiceCard from "./ServiceCard"
+import Loader from "../common/Loader"
 
 const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose }) => {
   const [responseData, setResponseData] = useState<CompanyResponseData | null>(null)
@@ -81,7 +82,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
                 service_name: service.service_name,
                 service_description: service.service_description || "",
                 is_available: service.is_available,
-                management_fee: service.management_fee || 8.5,
+                management_fee: service.management_fee || 0,
                 comment: service.comment || "",
               }
             })
@@ -106,7 +107,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
               service_name: service.service.label,
               service_description: service.service.description || "",
               is_available: false,
-              management_fee: 8.5,
+              management_fee: 0,
               comment: "",
             }
           }
@@ -125,7 +126,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
             service_name: service.service.label,
             service_description: service.service.description || "",
             is_available: false, // Start unchecked - company decides what to offer
-            management_fee: 8.5, // Default fee
+            management_fee: 0, // Default fee
             comment: "",
           }
         })
@@ -310,17 +311,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
 
   if (loading) {
     return (
-      <div className="w-full flex items-center justify-center py-24">
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <div className="relative">
-              <div className="w-12 h-12 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
-              <div className="absolute top-0 left-0 w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          </div>
-          <p className="text-slate-600 dark:text-slate-400 font-medium">Chargement des données de la demande...</p>
-        </div>
-      </div>
+        <Loader />
     )
   }
 
