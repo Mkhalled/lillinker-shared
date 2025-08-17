@@ -6,7 +6,11 @@ import { StyledCheckbox } from '../../form/StyledCheckbox';
 
 interface FreelancePortageStepProps {
   formData: FreelanceFormData | FreelanceRequestData;
-  setFormData: (updater: (prev: FreelanceFormData | FreelanceRequestData) => FreelanceFormData | FreelanceRequestData) => void;
+  setFormData: (
+    updater: (
+      prev: FreelanceFormData | FreelanceRequestData
+    ) => FreelanceFormData | FreelanceRequestData
+  ) => void;
   portages: Portage[];
   handlePortageToggle: (portageId: number) => void;
 }

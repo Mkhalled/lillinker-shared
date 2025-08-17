@@ -1,7 +1,11 @@
 import { CompanyDAO } from '@/dao/company.dao';
 import { logger } from '@/lib/logger';
 import type { CompanyOnboarding } from '@/lib/validations/auth.validation';
-import { CreateOrganismeRequest, UpdateOrganismeRequest, CotisationPayload } from '@/types/organisme';
+import {
+  CreateOrganismeRequest,
+  UpdateOrganismeRequest,
+  CotisationPayload,
+} from '@/types/organisme';
 
 export class CompanyService {
   /**
@@ -274,7 +278,11 @@ export class CompanyService {
   /**
    * Update an organisme
    */
-  static async updateOrganisme(organismeId: number, companyId: number, data: UpdateOrganismeRequest) {
+  static async updateOrganisme(
+    organismeId: number,
+    companyId: number,
+    data: UpdateOrganismeRequest
+  ) {
     const logContext = {
       operation: 'updateOrganisme',
       organismeId,
@@ -357,7 +365,11 @@ export class CompanyService {
   /**
    * Update a cotisation
    */
-  static async updateCotisation(cotisationId: number, companyId: number, data: Partial<CotisationPayload>) {
+  static async updateCotisation(
+    cotisationId: number,
+    companyId: number,
+    data: Partial<CotisationPayload>
+  ) {
     const logContext = {
       operation: 'updateCotisation',
       cotisationId,

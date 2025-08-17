@@ -4,7 +4,9 @@ import type { FreelanceFormData, FreelanceRequest } from '../../../types/freelan
 import type { SelectedService } from '../../../types/user';
 
 export const useFreelanceHandlers = (
-  setFormData: (updater: (prev: FreelanceFormData | FreelanceRequest) => FreelanceFormData | FreelanceRequest) => void
+  setFormData: (
+    updater: (prev: FreelanceFormData | FreelanceRequest) => FreelanceFormData | FreelanceRequest
+  ) => void
 ) => {
   const handleServiceToggle = (serviceId: number) => {
     setFormData((prev: FreelanceFormData | FreelanceRequest) => {

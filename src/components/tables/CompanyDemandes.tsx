@@ -23,15 +23,15 @@ type CompanyDemandesProps = {
   loading?: boolean;
 };
 
-const CompanyDemandes = ({ 
-  demandeData, 
-  pagination, 
+const CompanyDemandes = ({
+  demandeData,
+  pagination,
   onPageChange,
   onSortChange,
   onDateFilter,
   sortOrder = 'newest',
   selectedDate = '',
-  loading = false
+  loading = false,
 }: CompanyDemandesProps) => {
   const [selectedDemande, setSelectedDemande] = useState<demande | null>(null);
   const [responseRequestId, setResponseRequestId] = useState<number | null>(null);
@@ -90,10 +90,7 @@ const CompanyDemandes = ({
 
   if (responseRequestId) {
     return (
-      <CompanyResponse
-        requestId={responseRequestId}
-        onClose={() => setResponseRequestId(null)}
-      />
+      <CompanyResponse requestId={responseRequestId} onClose={() => setResponseRequestId(null)} />
     );
   }
 
@@ -113,13 +110,13 @@ const CompanyDemandes = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           {/* Sort Filter */}
           <div className="flex items-center gap-2">
-            <label htmlFor='sortDate' className="text-sm font-medium text-black dark:text-white">
+            <label htmlFor="sortDate" className="text-sm font-medium text-black dark:text-white">
               Trier par:
             </label>
-            <select 
+            <select
               value={sortOrder}
-              id='sortDate'
-              onChange={(e) => handleSortChange(e.target.value as 'newest' | 'oldest')}
+              id="sortDate"
+              onChange={e => handleSortChange(e.target.value as 'newest' | 'oldest')}
               disabled={loading}
               className="rounded border border-stroke bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed dark:border-strokedark dark:bg-boxdark dark:text-white"
             >
@@ -130,14 +127,14 @@ const CompanyDemandes = ({
 
           {/* Date Filter */}
           <div className="flex items-center gap-2">
-            <label htmlFor='filterDate' className="text-sm font-medium text-black dark:text-white">
+            <label htmlFor="filterDate" className="text-sm font-medium text-black dark:text-white">
               Filtrer par date:
             </label>
             <input
-              id='filterDate'
+              id="filterDate"
               type="date"
               value={selectedDate}
-              onChange={(e) => handleDateChange(e.target.value)}
+              onChange={e => handleDateChange(e.target.value)}
               disabled={loading}
               max={new Date().toISOString().split('T')[0]}
               className="rounded border border-stroke bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed dark:border-strokedark dark:bg-boxdark dark:text-white"
@@ -180,7 +177,12 @@ const CompanyDemandes = ({
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -273,8 +275,8 @@ const CompanyDemandes = ({
                             />
                           </svg>
                         </button>
-                        <button 
-                          className="group" 
+                        <button
+                          className="group"
                           title="Répondre à la demande"
                           onClick={() => setResponseRequestId(demandeItem.id)}
                         >
@@ -309,7 +311,9 @@ const CompanyDemandes = ({
               ) : (
                 <tr>
                   <td colSpan={5} className="text-center py-8 text-gray-500 dark:text-gray-400">
-                    {selectedDate ? 'Aucune demande trouvée pour cette date.' : 'Aucune demande trouvée.'}
+                    {selectedDate
+                      ? 'Aucune demande trouvée pour cette date.'
+                      : 'Aucune demande trouvée.'}
                   </td>
                 </tr>
               )}

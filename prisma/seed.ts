@@ -147,7 +147,8 @@ async function main(): Promise<void> {
     const staPortage = await createCompany({
       admin_user_id: staAdminUser.id,
       name: 'STA Portage',
-      description: "Société de portage salarial spécialisée dans l'accompagnement des freelances et consultants indépendants. Leader français du portage salarial avec plus de 15 ans d'expérience.",
+      description:
+        "Société de portage salarial spécialisée dans l'accompagnement des freelances et consultants indépendants. Leader français du portage salarial avec plus de 15 ans d'expérience.",
       logo: 'https://lillinker.com/logos/sta-portage.png',
       siret: '12345678900012',
       consultant_count: 1500,
@@ -158,7 +159,8 @@ async function main(): Promise<void> {
     const itgPortage = await createCompany({
       admin_user_id: itgAdminUser.id,
       name: 'ITG Portage',
-      description: "Société de portage salarial pour les métiers du numérique et de l'IT. Spécialiste des profils techniques avec un accompagnement personnalisé.",
+      description:
+        "Société de portage salarial pour les métiers du numérique et de l'IT. Spécialiste des profils techniques avec un accompagnement personnalisé.",
       logo: 'https://lillinker.com/logos/itg-portage.png',
       siret: '23456789000123',
       consultant_count: 800,
@@ -169,7 +171,8 @@ async function main(): Promise<void> {
     const freelancePlus = await createCompany({
       admin_user_id: freelanceAdminUser.id,
       name: 'Freelance Plus',
-      description: "Portage salarial nouvelle génération, 100% digital. Taux compétitifs et services premium pour les consultants modernes.",
+      description:
+        'Portage salarial nouvelle génération, 100% digital. Taux compétitifs et services premium pour les consultants modernes.',
       logo: 'https://lillinker.com/logos/freelance-plus.png',
       siret: '34567890001234',
       consultant_count: 450,
@@ -250,7 +253,7 @@ async function main(): Promise<void> {
     // Create portage associations (professional associations)
     const peps = await prisma.portage.create({
       data: {
-        name: 'PEPS (Syndicat des Professionnels de l\'Emploi)',
+        name: "PEPS (Syndicat des Professionnels de l'Emploi)",
         description: 'Syndicat national des entreprises de portage salarial en France',
       },
     });
@@ -265,7 +268,8 @@ async function main(): Promise<void> {
     const sneps = await prisma.portage.create({
       data: {
         name: 'SNEPS (Syndicat National des Entreprises de Portage Salarial)',
-        description: 'Organisation professionnelle représentant les entreprises de portage salarial',
+        description:
+          'Organisation professionnelle représentant les entreprises de portage salarial',
       },
     });
 
@@ -412,7 +416,8 @@ async function main(): Promise<void> {
       data: {
         user_id: adminUser.id,
         label: 'Taux de Gestion',
-        description: "Pourcentage prélevé par la société de portage sur le chiffre d'affaires du consultant",
+        description:
+          "Pourcentage prélevé par la société de portage sur le chiffre d'affaires du consultant",
         data_type: 'NUMBER',
         requires_data: true,
         data_label: 'Taux de gestion (%)',
@@ -502,7 +507,7 @@ async function main(): Promise<void> {
       data: {
         user_id: adminUser.id,
         label: 'Avance sur Salaire',
-        description: 'Possibilité d\'obtenir une avance sur le salaire en cours de mission',
+        description: "Possibilité d'obtenir une avance sur le salaire en cours de mission",
         data_type: 'RADIO',
         requires_data: true,
         data_label: 'Avance sur salaire disponible',
@@ -544,7 +549,8 @@ async function main(): Promise<void> {
       data: {
         company_id: staPortage.id,
         label: 'URSSAF',
-        description: 'Union de Recouvrement des cotisations de Sécurité Sociale et d\'Allocations Familiales',
+        description:
+          "Union de Recouvrement des cotisations de Sécurité Sociale et d'Allocations Familiales",
       },
     });
 
@@ -552,7 +558,7 @@ async function main(): Promise<void> {
       data: {
         company_id: staPortage.id,
         label: 'Pôle Emploi',
-        description: 'Service public de l\'emploi - Assurance chômage',
+        description: "Service public de l'emploi - Assurance chômage",
       },
     });
 
@@ -569,7 +575,8 @@ async function main(): Promise<void> {
       data: {
         company_id: itgPortage.id,
         label: 'URSSAF',
-        description: 'Union de Recouvrement des cotisations de Sécurité Sociale et d\'Allocations Familiales',
+        description:
+          "Union de Recouvrement des cotisations de Sécurité Sociale et d'Allocations Familiales",
       },
     });
 
@@ -577,7 +584,7 @@ async function main(): Promise<void> {
       data: {
         company_id: itgPortage.id,
         label: 'Pôle Emploi',
-        description: 'Service public de l\'emploi - Assurance chômage',
+        description: "Service public de l'emploi - Assurance chômage",
       },
     });
 
@@ -603,9 +610,9 @@ async function main(): Promise<void> {
         {
           organisme_id: poleEmploiSta.id,
           label: 'Assurance Chômage',
-          description: 'Cotisations d\'assurance chômage',
+          description: "Cotisations d'assurance chômage",
           type: 'DEUX',
-          pourcentage_salarial: 2.40,
+          pourcentage_salarial: 2.4,
           pourcentage_patronal: 4.05,
         },
         {
@@ -628,9 +635,9 @@ async function main(): Promise<void> {
         {
           organisme_id: poleEmploiItg.id,
           label: 'Assurance Chômage',
-          description: 'Cotisations d\'assurance chômage',
+          description: "Cotisations d'assurance chômage",
           type: 'DEUX',
-          pourcentage_salarial: 2.40,
+          pourcentage_salarial: 2.4,
           pourcentage_patronal: 4.05,
         },
       ],
@@ -675,7 +682,7 @@ async function main(): Promise<void> {
         freelance_id: freelance3.id,
         mission_status: 'OPEN',
         client_name: 'Startup Innovante',
-        client_address: '10 Avenue de l\'Innovation, 75015 Paris',
+        client_address: "10 Avenue de l'Innovation, 75015 Paris",
         client_sector: 'Design et UX',
         priority: 'HIGH',
         tjm: 450.0,
@@ -792,7 +799,7 @@ async function main(): Promise<void> {
           service_option_id: platformService1.id,
           is_required: true,
           response_data: {
-            text: 'Première mission en portage, besoin d\'accompagnement',
+            text: "Première mission en portage, besoin d'accompagnement",
           },
         },
         {
@@ -800,7 +807,12 @@ async function main(): Promise<void> {
           service_option_id: platformService2.id,
           is_required: true,
           response_data: {
-            selected: ['Assurance RC Pro', 'Formation continue', 'Gestion administrative', 'Mutuelle collective'],
+            selected: [
+              'Assurance RC Pro',
+              'Formation continue',
+              'Gestion administrative',
+              'Mutuelle collective',
+            ],
           },
         },
         {
@@ -842,7 +854,7 @@ async function main(): Promise<void> {
               service_description: 'Pourcentage prélevé par la société de portage',
               is_available: true,
               management_fee: 8.5,
-              comment: 'Taux compétitif avec expertise de 15 ans dans le secteur'
+              comment: 'Taux compétitif avec expertise de 15 ans dans le secteur',
             },
             {
               service_id: platformService2.id,
@@ -850,7 +862,8 @@ async function main(): Promise<void> {
               service_description: 'Services additionnels proposés',
               is_available: true,
               management_fee: 0,
-              comment: 'Assurance RC Pro, Formation continue, Gestion administrative, Mutuelle collective'
+              comment:
+                'Assurance RC Pro, Formation continue, Gestion administrative, Mutuelle collective',
             },
             {
               service_id: platformService3.id,
@@ -858,37 +871,37 @@ async function main(): Promise<void> {
               service_description: 'Délai de versement du salaire après facturation',
               is_available: true,
               management_fee: 0,
-              comment: '30 jours'
+              comment: '30 jours',
             },
             {
               service_id: platformService4.id,
               service_name: 'Frais de Dossier',
-              service_description: 'Frais d\'ouverture et de gestion du dossier',
+              service_description: "Frais d'ouverture et de gestion du dossier",
               is_available: true,
               management_fee: 150,
-              comment: 'Frais d\'ouverture unique'
-            }
+              comment: "Frais d'ouverture unique",
+            },
           ],
           selected_organismes: [
             {
               organisme_id: urssafSta.id,
               label: 'URSSAF',
-              total_patronal: 1850.50,
-              total_salarial: 1200.75
+              total_patronal: 1850.5,
+              total_salarial: 1200.75,
             },
             {
               organisme_id: poleEmploiSta.id,
               label: 'Pôle Emploi',
-              total_patronal: 420.00,
-              total_salarial: 285.50
+              total_patronal: 420.0,
+              total_salarial: 285.5,
             },
             {
               organisme_id: retraiteSta.id,
               label: 'Caisse de Retraite',
               total_patronal: 650.25,
-              total_salarial: 485.75
-            }
-          ]
+              total_salarial: 485.75,
+            },
+          ],
         },
       },
     });
@@ -905,7 +918,7 @@ async function main(): Promise<void> {
               service_description: 'Pourcentage prélevé par la société de portage',
               is_available: true,
               management_fee: 7.8,
-              comment: 'Taux spécialement compétitif pour les métiers IT'
+              comment: 'Taux spécialement compétitif pour les métiers IT',
             },
             {
               service_id: platformService2.id,
@@ -913,7 +926,7 @@ async function main(): Promise<void> {
               service_description: 'Services additionnels proposés',
               is_available: true,
               management_fee: 0,
-              comment: 'Assurance RC Pro, Assistance juridique, Formation technique'
+              comment: 'Assurance RC Pro, Assistance juridique, Formation technique',
             },
             {
               service_id: platformService3.id,
@@ -921,31 +934,31 @@ async function main(): Promise<void> {
               service_description: 'Délai de versement du salaire après facturation',
               is_available: true,
               management_fee: 0,
-              comment: '15 jours - Paiement rapide'
+              comment: '15 jours - Paiement rapide',
             },
             {
               service_id: platformService4.id,
               service_name: 'Frais de Dossier',
-              service_description: 'Frais d\'ouverture et de gestion du dossier',
+              service_description: "Frais d'ouverture et de gestion du dossier",
               is_available: false,
               management_fee: 0,
-              comment: 'Aucun frais de dossier'
-            }
+              comment: 'Aucun frais de dossier',
+            },
           ],
           selected_organismes: [
             {
               organisme_id: urssafItg.id,
               label: 'URSSAF',
-              total_patronal: 1820.30,
-              total_salarial: 1180.25
+              total_patronal: 1820.3,
+              total_salarial: 1180.25,
             },
             {
               organisme_id: poleEmploiItg.id,
               label: 'Pôle Emploi',
-              total_patronal: 410.50,
-              total_salarial: 275.80
-            }
-          ]
+              total_patronal: 410.5,
+              total_salarial: 275.8,
+            },
+          ],
         },
       },
     });
@@ -962,7 +975,7 @@ async function main(): Promise<void> {
               service_description: 'Pourcentage prélevé par la société de portage',
               is_available: true,
               management_fee: 6.9,
-              comment: 'Le meilleur taux du marché'
+              comment: 'Le meilleur taux du marché',
             },
             {
               service_id: platformService2.id,
@@ -970,7 +983,7 @@ async function main(): Promise<void> {
               service_description: 'Services additionnels proposés',
               is_available: true,
               management_fee: 0,
-              comment: 'Assurance RC Pro, Plateforme digitale, Support 24/7'
+              comment: 'Assurance RC Pro, Plateforme digitale, Support 24/7',
             },
             {
               service_id: platformService3.id,
@@ -978,7 +991,7 @@ async function main(): Promise<void> {
               service_description: 'Délai de versement du salaire après facturation',
               is_available: true,
               management_fee: 0,
-              comment: '15 jours via plateforme digitale'
+              comment: '15 jours via plateforme digitale',
             },
             {
               service_id: platformService6.id,
@@ -986,17 +999,17 @@ async function main(): Promise<void> {
               service_description: 'Description détaillée des services proposés',
               is_available: true,
               management_fee: 0,
-              comment: 'Portage 100% digital avec interface moderne et intuitive'
-            }
+              comment: 'Portage 100% digital avec interface moderne et intuitive',
+            },
           ],
           selected_organismes: [
             {
               organisme_id: urssafSta.id,
               label: 'URSSAF',
-              total_patronal: 1780.00,
-              total_salarial: 1150.00
-            }
-          ]
+              total_patronal: 1780.0,
+              total_salarial: 1150.0,
+            },
+          ],
         },
       },
     });
@@ -1013,7 +1026,7 @@ async function main(): Promise<void> {
               service_description: 'Pourcentage prélevé par la société de portage',
               is_available: true,
               management_fee: 8.0,
-              comment: 'Taux préférentiel pour missions longue durée'
+              comment: 'Taux préférentiel pour missions longue durée',
             },
             {
               service_id: platformService2.id,
@@ -1021,7 +1034,8 @@ async function main(): Promise<void> {
               service_description: 'Services additionnels proposés',
               is_available: true,
               management_fee: 0,
-              comment: 'Assurance RC Pro, Assistance juridique, Accompagnement commercial, Formation continue'
+              comment:
+                'Assurance RC Pro, Assistance juridique, Accompagnement commercial, Formation continue',
             },
             {
               service_id: platformService3.id,
@@ -1029,15 +1043,15 @@ async function main(): Promise<void> {
               service_description: 'Délai de versement du salaire après facturation',
               is_available: true,
               management_fee: 0,
-              comment: '30 jours'
+              comment: '30 jours',
             },
             {
               service_id: platformService4.id,
               service_name: 'Frais de Dossier',
-              service_description: 'Frais d\'ouverture et de gestion du dossier',
+              service_description: "Frais d'ouverture et de gestion du dossier",
               is_available: true,
               management_fee: 100,
-              comment: 'Frais réduits pour mission longue'
+              comment: 'Frais réduits pour mission longue',
             },
             {
               service_id: platformService5.id,
@@ -1045,29 +1059,29 @@ async function main(): Promise<void> {
               service_description: 'Type de contrat de portage proposé',
               is_available: true,
               management_fee: 0,
-              comment: 'CDI disponible pour missions longues'
-            }
+              comment: 'CDI disponible pour missions longues',
+            },
           ],
           selected_organismes: [
             {
               organisme_id: urssafSta.id,
               label: 'URSSAF',
-              total_patronal: 2850.50,
-              total_salarial: 1850.25
+              total_patronal: 2850.5,
+              total_salarial: 1850.25,
             },
             {
               organisme_id: poleEmploiSta.id,
               label: 'Pôle Emploi',
-              total_patronal: 620.00,
-              total_salarial: 420.50
+              total_patronal: 620.0,
+              total_salarial: 420.5,
             },
             {
               organisme_id: retraiteSta.id,
               label: 'Caisse de Retraite',
               total_patronal: 980.75,
-              total_salarial: 735.25
-            }
-          ]
+              total_salarial: 735.25,
+            },
+          ],
         },
       },
     });
@@ -1084,7 +1098,7 @@ async function main(): Promise<void> {
               service_description: 'Pourcentage prélevé par la société de portage',
               is_available: true,
               management_fee: 7.5,
-              comment: 'Taux spécialisé pour designers UX/UI'
+              comment: 'Taux spécialisé pour designers UX/UI',
             },
             {
               service_id: platformService2.id,
@@ -1092,7 +1106,8 @@ async function main(): Promise<void> {
               service_description: 'Services additionnels proposés',
               is_available: true,
               management_fee: 0,
-              comment: 'Assurance RC Pro, Formation design, Outils Adobe inclus, Mutuelle collective'
+              comment:
+                'Assurance RC Pro, Formation design, Outils Adobe inclus, Mutuelle collective',
             },
             {
               service_id: platformService3.id,
@@ -1100,15 +1115,15 @@ async function main(): Promise<void> {
               service_description: 'Délai de versement du salaire après facturation',
               is_available: true,
               management_fee: 0,
-              comment: '15 jours'
+              comment: '15 jours',
             },
             {
               service_id: platformService4.id,
               service_name: 'Frais de Dossier',
-              service_description: 'Frais d\'ouverture et de gestion du dossier',
+              service_description: "Frais d'ouverture et de gestion du dossier",
               is_available: true,
               management_fee: 50,
-              comment: 'Frais réduits pour la communauté créative'
+              comment: 'Frais réduits pour la communauté créative',
             },
             {
               service_id: platformService6.id,
@@ -1116,23 +1131,23 @@ async function main(): Promise<void> {
               service_description: 'Description détaillée des services proposés',
               is_available: true,
               management_fee: 0,
-              comment: 'Spécialisation design avec accès aux outils Adobe et communauté créative'
-            }
+              comment: 'Spécialisation design avec accès aux outils Adobe et communauté créative',
+            },
           ],
           selected_organismes: [
             {
               organisme_id: urssafItg.id,
               label: 'URSSAF',
               total_patronal: 1580.75,
-              total_salarial: 1050.25
+              total_salarial: 1050.25,
             },
             {
               organisme_id: poleEmploiItg.id,
               label: 'Pôle Emploi',
-              total_patronal: 350.50,
-              total_salarial: 240.80
-            }
-          ]
+              total_patronal: 350.5,
+              total_salarial: 240.8,
+            },
+          ],
         },
       },
     });
@@ -1149,7 +1164,7 @@ async function main(): Promise<void> {
               service_description: 'Pourcentage prélevé par la société de portage',
               is_available: true,
               management_fee: 6.9,
-              comment: 'Taux spécialisé marketing digital'
+              comment: 'Taux spécialisé marketing digital',
             },
             {
               service_id: platformService2.id,
@@ -1157,7 +1172,7 @@ async function main(): Promise<void> {
               service_description: 'Services additionnels proposés',
               is_available: true,
               management_fee: 0,
-              comment: 'Formation marketing, Outils Google Ads, Accompagnement commercial'
+              comment: 'Formation marketing, Outils Google Ads, Accompagnement commercial',
             },
             {
               service_id: platformService3.id,
@@ -1165,7 +1180,7 @@ async function main(): Promise<void> {
               service_description: 'Délai de versement du salaire après facturation',
               is_available: true,
               management_fee: 0,
-              comment: '15 jours via plateforme digitale'
+              comment: '15 jours via plateforme digitale',
             },
             {
               service_id: platformService6.id,
@@ -1173,31 +1188,32 @@ async function main(): Promise<void> {
               service_description: 'Description détaillée des services proposés',
               is_available: true,
               management_fee: 0,
-              comment: 'Spécialisation marketing digital avec accès aux outils premium et réseau d\'experts'
+              comment:
+                "Spécialisation marketing digital avec accès aux outils premium et réseau d'experts",
             },
             {
               service_id: platformService7.id,
               service_name: 'Avance sur Salaire',
-              service_description: 'Possibilité d\'obtenir une avance sur le salaire',
+              service_description: "Possibilité d'obtenir une avance sur le salaire",
               is_available: true,
               management_fee: 0,
-              comment: 'Oui, selon conditions'
-            }
+              comment: 'Oui, selon conditions',
+            },
           ],
           selected_organismes: [
             {
               organisme_id: urssafSta.id,
               label: 'URSSAF',
-              total_patronal: 1420.50,
-              total_salarial: 920.75
+              total_patronal: 1420.5,
+              total_salarial: 920.75,
             },
             {
               organisme_id: poleEmploiSta.id,
               label: 'Pôle Emploi',
-              total_patronal: 290.80,
-              total_salarial: 195.25
-            }
-          ]
+              total_patronal: 290.8,
+              total_salarial: 195.25,
+            },
+          ],
         },
       },
     });
@@ -1215,7 +1231,7 @@ async function main(): Promise<void> {
               service_description: 'Pourcentage prélevé par la société de portage',
               is_available: true,
               management_fee: 7.2,
-              comment: 'Taux spécialisé pour experts Data Science'
+              comment: 'Taux spécialisé pour experts Data Science',
             },
             {
               service_id: platformService2.id,
@@ -1223,7 +1239,8 @@ async function main(): Promise<void> {
               service_description: 'Services additionnels proposés',
               is_available: true,
               management_fee: 0,
-              comment: 'Assurance RC Pro, Formation IA/ML, Accès outils analytics, Support technique'
+              comment:
+                'Assurance RC Pro, Formation IA/ML, Accès outils analytics, Support technique',
             },
             {
               service_id: platformService3.id,
@@ -1231,7 +1248,7 @@ async function main(): Promise<void> {
               service_description: 'Délai de versement du salaire après facturation',
               is_available: true,
               management_fee: 0,
-              comment: '15 jours'
+              comment: '15 jours',
             },
             {
               service_id: platformService6.id,
@@ -1239,23 +1256,24 @@ async function main(): Promise<void> {
               service_description: 'Description détaillée des services proposés',
               is_available: true,
               management_fee: 0,
-              comment: 'Expertise Data Science avec accès aux derniers outils et formations spécialisées'
-            }
+              comment:
+                'Expertise Data Science avec accès aux derniers outils et formations spécialisées',
+            },
           ],
           selected_organismes: [
             {
               organisme_id: urssafItg.id,
               label: 'URSSAF',
               total_patronal: 3200.75,
-              total_salarial: 2100.50
+              total_salarial: 2100.5,
             },
             {
               organisme_id: poleEmploiItg.id,
               label: 'Pôle Emploi',
               total_patronal: 850.25,
-              total_salarial: 580.75
-            }
-          ]
+              total_salarial: 580.75,
+            },
+          ],
         },
       },
     });
@@ -1267,28 +1285,28 @@ async function main(): Promise<void> {
         { company_response_id: response1Sta.id, organisme_id: urssafSta.id },
         { company_response_id: response1Sta.id, organisme_id: poleEmploiSta.id },
         { company_response_id: response1Sta.id, organisme_id: retraiteSta.id },
-        
+
         // Response 1 ITG organismes
         { company_response_id: response1Itg.id, organisme_id: urssafItg.id },
         { company_response_id: response1Itg.id, organisme_id: poleEmploiItg.id },
-        
+
         // Response 1 FreelancePlus organismes
         { company_response_id: response1Freelance.id, organisme_id: urssafSta.id },
-        
+
         // Response 2 STA organismes
         { company_response_id: response2Sta.id, organisme_id: urssafSta.id },
         { company_response_id: response2Sta.id, organisme_id: poleEmploiSta.id },
         { company_response_id: response2Sta.id, organisme_id: retraiteSta.id },
-        
+
         // Response 3 ITG organismes
         { company_response_id: response3Itg.id, organisme_id: urssafItg.id },
         { company_response_id: response3Itg.id, organisme_id: poleEmploiItg.id },
-        
+
         // Response 4 ITG organismes (Data Science mission)
         { company_response_id: response4Itg.id, organisme_id: urssafItg.id },
         { company_response_id: response4Itg.id, organisme_id: poleEmploiItg.id },
-        
-        // Response 5 FreelancePlus organismes  
+
+        // Response 5 FreelancePlus organismes
         { company_response_id: response5Freelance.id, organisme_id: urssafSta.id },
         { company_response_id: response5Freelance.id, organisme_id: poleEmploiSta.id },
       ],
@@ -1300,7 +1318,13 @@ async function main(): Promise<void> {
           admin: adminUser.id,
           companyAdmins: [staAdminUser.id, itgAdminUser.id, freelanceAdminUser.id],
           managers: [managerUser1.id, managerUser2.id],
-          freelancers: [freelanceUser1.id, freelanceUser2.id, freelanceUser3.id, freelanceUser4.id, freelanceUser5.id],
+          freelancers: [
+            freelanceUser1.id,
+            freelanceUser2.id,
+            freelanceUser3.id,
+            freelanceUser4.id,
+            freelanceUser5.id,
+          ],
         },
         companies: {
           staPortage: staPortage.id,
@@ -1334,7 +1358,6 @@ async function main(): Promise<void> {
         'Les réponses incluent des détails financiers',
       ],
     });
-
   } catch (e) {
     logger.error('Erreur lors du seeding de la base de données', e as Error);
     process.exit(1);

@@ -74,13 +74,13 @@ export const FreelancePersonalInfoStep = ({
             }
             options={[
               { value: 0, label: 'Sélectionnez votre métier' },
-              ...metiers.map(metier => ({ value: metier.id, label: metier.name }))
+              ...metiers.map(metier => ({ value: metier.id, label: metier.name })),
             ]}
             placeholder=""
             required
           />
           <StyledSelect
-          label="Sexe"
+            label="Sexe"
             id="sex"
             value={formData.sex || ''}
             onChange={e =>
@@ -91,7 +91,7 @@ export const FreelancePersonalInfoStep = ({
             }
             options={[
               { value: 'MALE', label: 'Homme' },
-              { value: 'FEMALE', label: 'Femme' }
+              { value: 'FEMALE', label: 'Femme' },
             ]}
             placeholder="Sexe *"
             required

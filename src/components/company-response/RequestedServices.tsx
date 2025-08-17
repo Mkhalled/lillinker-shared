@@ -1,10 +1,10 @@
-import type React from "react"
+import type React from 'react';
 
-import OptionInfoTooltip from "@/components/details/OptionInfoTooltip"
-import type { RequestedServicesProps } from "@/types/company-response"
+import OptionInfoTooltip from '@/components/details/OptionInfoTooltip';
+import type { RequestedServicesProps } from '@/types/company-response';
 
 const RequestedServices: React.FC<RequestedServicesProps> = ({ options }) => {
-  if (!options || options.length === 0) return null
+  if (!options || options.length === 0) return null;
 
   return (
     <div className="space-y-4">
@@ -29,7 +29,7 @@ const RequestedServices: React.FC<RequestedServicesProps> = ({ options }) => {
 
       <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/30 rounded-lg p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {options.map((option) => (
+          {options.map(option => (
             <div
               key={option.id}
               className="bg-white dark:bg-gray-800 border border-purple-100 dark:border-purple-700/50 rounded-lg p-4 hover:shadow-sm transition-shadow"
@@ -41,7 +41,9 @@ const RequestedServices: React.FC<RequestedServicesProps> = ({ options }) => {
                     {option.platformService?.label}
                   </span>
                   {option.is_required && (
-                    <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full font-medium">Requis</span>
+                    <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full font-medium">
+                      Requis
+                    </span>
                   )}
                 </div>
                 <OptionInfoTooltip option={option} />
@@ -51,7 +53,7 @@ const RequestedServices: React.FC<RequestedServicesProps> = ({ options }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RequestedServices
+export default RequestedServices;

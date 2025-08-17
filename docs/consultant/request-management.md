@@ -57,14 +57,11 @@ The `MesDemandes` component provides a comprehensive view of all requests with t
   - Priority (HIGH, MEDIUM, LOW)
   - Status (OPEN, PENDING, CLOSED)
   - Response count
-  
 - **Action buttons** for each request:
   - View details
   - Archive request
   - View responses
-  
 - **New Request button** prominently displayed in the header
-  
 - **Pagination system** with:
   - First/last page shortcuts
   - Page number navigation
@@ -100,6 +97,7 @@ The reuse of onboarding components enables a familiar interface for freelancers 
 ### Request Listing Flow
 
 1. **Data Fetching**:
+
    ```typescript
    // In page.tsx
    const fetchRequests = useCallback(async (page: number) => {
@@ -120,6 +118,7 @@ The reuse of onboarding components enables a familiar interface for freelancers 
    ```
 
 2. **Data Display**:
+
    ```tsx
    // MesDemandes component receives and displays the data
    <MesDemandes
@@ -145,6 +144,7 @@ The reuse of onboarding components enables a familiar interface for freelancers 
 ### Request Detail Flow
 
 1. **Selection in List**:
+
    ```tsx
    // When user clicks on view details in MesDemandes.tsx
    <button
@@ -172,6 +172,7 @@ The reuse of onboarding components enables a familiar interface for freelancers 
 ### New Request Flow
 
 1. **Initiating New Request**:
+
    ```tsx
    // Button in MesDemandes.tsx
    <button
@@ -184,14 +185,11 @@ The reuse of onboarding components enables a familiar interface for freelancers 
    ```
 
 2. **Form Display Logic**:
+
    ```tsx
    // Conditional rendering in MesDemandes.tsx
    if (showNewRequest) {
-     return (
-       <NewRequest
-         onClose={() => setShowNewRequest(false)}
-       />
-     );
+     return <NewRequest onClose={() => setShowNewRequest(false)} />;
    }
    ```
 
@@ -211,17 +209,17 @@ The request data structure follows this pattern:
 ```typescript
 interface demande {
   id: number;
-  tjm: number;                          // Daily rate
-  created_at: string;                   // Creation timestamp
-  priority: 'HIGH' | 'MEDIUM' | 'LOW';  // Request priority
+  tjm: number; // Daily rate
+  created_at: string; // Creation timestamp
+  priority: 'HIGH' | 'MEDIUM' | 'LOW'; // Request priority
   mission_status: 'OPEN' | 'PENDING' | 'CLOSED'; // Current status
-  responses: any[];                     // Company responses
-  want_salaried?: boolean;              // Preference for salaried employment
-  salary?: number;                      // Desired salary if salaried
-  start_date?: string;                  // Preferred start date
-  days?: number;                        // Mission duration in days
-  wants_portage?: boolean;              // Interest in portage options
-  client_name?: string;                 // Optional client information
+  responses: any[]; // Company responses
+  want_salaried?: boolean; // Preference for salaried employment
+  salary?: number; // Desired salary if salaried
+  start_date?: string; // Preferred start date
+  days?: number; // Mission duration in days
+  wants_portage?: boolean; // Interest in portage options
+  client_name?: string; // Optional client information
   client_address?: string;
   client_sector?: string;
 }
@@ -234,6 +232,7 @@ interface demande {
 The interface uses a color system to indicate different statuses and priorities:
 
 - **Priority Colors**:
+
   - HIGH: Red (danger)
   - MEDIUM: Yellow/Orange (warning)
   - LOW: Green (success)
@@ -252,6 +251,7 @@ The interface uses a color system to indicate different statuses and priorities:
 ### Responsive Design
 
 The table includes responsive considerations:
+
 - Simplified mobile pagination controls
 - Overflow handling for table content
 - Adaptive display for different screen sizes

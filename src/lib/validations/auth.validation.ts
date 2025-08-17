@@ -86,7 +86,11 @@ export const FreelanceOnboardingSchema = z.object({
   // Salary preferences
   want_salaried: z.boolean().default(false),
   salary: z.number().optional(),
-  start_date: z.string().transform((str) => new Date(str)).or(z.date()).optional(),
+  start_date: z
+    .string()
+    .transform(str => new Date(str))
+    .or(z.date())
+    .optional(),
 
   // Portage preferences
   wants_portage: z.boolean().default(false),

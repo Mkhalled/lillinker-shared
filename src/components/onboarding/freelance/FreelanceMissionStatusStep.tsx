@@ -6,7 +6,11 @@ import { StyledRadio } from '../../form/StyledRadio';
 
 interface FreelanceMissionStatusStepProps {
   formData: FreelanceFormData | FreelanceRequestData;
-  setFormData: (updater: (prev: FreelanceFormData | FreelanceRequestData) => FreelanceFormData | FreelanceRequestData) => void;
+  setFormData: (
+    updater: (
+      prev: FreelanceFormData | FreelanceRequestData
+    ) => FreelanceFormData | FreelanceRequestData
+  ) => void;
   metiers: Metier[];
 }
 
@@ -25,7 +29,10 @@ export const FreelanceMissionStatusStep = ({
               value="no"
               checked={formData.hasMission === 'no'}
               onChange={e =>
-                setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({ ...prev, hasMission: e.target.value }))
+                setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({
+                  ...prev,
+                  hasMission: e.target.value,
+                }))
               }
               label="Non, je suis en recherche"
             />
@@ -34,7 +41,10 @@ export const FreelanceMissionStatusStep = ({
               value="searching"
               checked={formData.hasMission === 'searching'}
               onChange={e =>
-                setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({ ...prev, hasMission: e.target.value }))
+                setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({
+                  ...prev,
+                  hasMission: e.target.value,
+                }))
               }
               label="En cours de recherche"
             />
@@ -43,7 +53,10 @@ export const FreelanceMissionStatusStep = ({
               value="yes"
               checked={formData.hasMission === 'yes'}
               onChange={e =>
-                setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({ ...prev, hasMission: e.target.value }))
+                setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({
+                  ...prev,
+                  hasMission: e.target.value,
+                }))
               }
               label="Oui, j'ai une mission en cours"
             />

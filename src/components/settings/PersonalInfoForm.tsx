@@ -1,55 +1,55 @@
 import { ProfileData as company } from '@/types/company';
 import { ProfileData as freelance } from '@/types/freelance';
 
-const PersonalInfoForm = ({profile}: {profile: company | freelance }) =>{
-    const user = profile.user;
+const PersonalInfoForm = ({ profile }: { profile: company | freelance }) => {
+  const user = profile.user;
   return (
-   <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="p-7">
-          <form action="#">
-            {/* Infos personnelles */}
-            <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-              <div className="w-full sm:w-1/2">
-                <label
-                  className="mb-3 block text-sm font-medium text-black dark:text-white"
-                  htmlFor="prenom"
-                >
-                  Prénom
-                </label>
-                <div className="relative">
-                  <input
-                    className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
-                    type="text"
-                    name="prenom"
-                    id="prenom"
-                    placeholder="Prénom"
-                    defaultValue={user?.first_name || ''}
-                    readOnly
-                  />
-                </div>
-              </div>
-              <div className="w-full sm:w-1/2">
-                <label
-                  className="mb-3 block text-sm font-medium text-black dark:text-white"
-                  htmlFor="nom"
-                >
-                  Nom
-                </label>
-                <div className="relative">
-                  <input
-                    className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
-                    type="text"
-                    name="nom"
-                    id="nom"
-                    placeholder="Nom"
-                    defaultValue={user?.last_name || ''}
-                    readOnly
-                  />
-                </div>
+    <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="p-7">
+        <form action="#">
+          {/* Infos personnelles */}
+          <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+            <div className="w-full sm:w-1/2">
+              <label
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+                htmlFor="prenom"
+              >
+                Prénom
+              </label>
+              <div className="relative">
+                <input
+                  className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
+                  type="text"
+                  name="prenom"
+                  id="prenom"
+                  placeholder="Prénom"
+                  defaultValue={user?.first_name || ''}
+                  readOnly
+                />
               </div>
             </div>
-            <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-              <div className="w-full sm:w-1/2">
+            <div className="w-full sm:w-1/2">
+              <label
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+                htmlFor="nom"
+              >
+                Nom
+              </label>
+              <div className="relative">
+                <input
+                  className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
+                  type="text"
+                  name="nom"
+                  id="nom"
+                  placeholder="Nom"
+                  defaultValue={user?.last_name || ''}
+                  readOnly
+                />
+              </div>
+            </div>
+          </div>
+          <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+            <div className="w-full sm:w-1/2">
               <label
                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                 htmlFor="emailAddress"
@@ -58,17 +58,17 @@ const PersonalInfoForm = ({profile}: {profile: company | freelance }) =>{
               </label>
               <div className="relative">
                 <input
-                className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
-                type="email"
-                name="emailAddress"
-                id="emailAddress"
-                placeholder="Adresse e-mail"
-                defaultValue={user?.email || ''}
-                readOnly
+                  className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
+                  type="email"
+                  name="emailAddress"
+                  id="emailAddress"
+                  placeholder="Adresse e-mail"
+                  defaultValue={user?.email || ''}
+                  readOnly
                 />
               </div>
-              </div>
-              <div className="w-full sm:w-1/2">
+            </div>
+            <div className="w-full sm:w-1/2">
               <label
                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                 htmlFor="sex"
@@ -77,46 +77,46 @@ const PersonalInfoForm = ({profile}: {profile: company | freelance }) =>{
               </label>
               <div className="relative">
                 <input
-                className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
-                type="text"
-                name="sex"
-                id="sex"
-                placeholder="Sexe"
-                defaultValue={user?.sex || ''}
-                readOnly
+                  className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
+                  type="text"
+                  name="sex"
+                  id="sex"
+                  placeholder="Sexe"
+                  defaultValue={user?.sex || ''}
+                  readOnly
                 />
               </div>
-              </div>
             </div>
-            <div className="mb-5.5">
-              <label
-                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                htmlFor="phoneNumber"
-              >
-                Numéro de téléphone
-              </label>
-              <input
-                className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
-                type="text"
-                name="phoneNumber"
-                id="phoneNumber"
-                placeholder="Numéro de téléphone"
-                defaultValue={user?.phone_number || ''}
-                readOnly
-              />
-            </div>
-            <div className="flex justify-end gap-4.5">
-              <button
-                className="flex justify-center rounded bg-[var(--primary-color)] px-6 py-2 font-medium text-gray hover:bg-opacity-90"
-                type="submit"
-              >
-                Enregistrer
-              </button>
-            </div>
-          </form>
-        </div>
+          </div>
+          <div className="mb-5.5">
+            <label
+              className="mb-3 block text-sm font-medium text-black dark:text-white"
+              htmlFor="phoneNumber"
+            >
+              Numéro de téléphone
+            </label>
+            <input
+              className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
+              type="text"
+              name="phoneNumber"
+              id="phoneNumber"
+              placeholder="Numéro de téléphone"
+              defaultValue={user?.phone_number || ''}
+              readOnly
+            />
+          </div>
+          <div className="flex justify-end gap-4.5">
+            <button
+              className="flex justify-center rounded bg-[var(--primary-color)] px-6 py-2 font-medium text-gray hover:bg-opacity-90"
+              type="submit"
+            >
+              Enregistrer
+            </button>
+          </div>
+        </form>
       </div>
+    </div>
   );
-}
+};
 
 export default PersonalInfoForm;

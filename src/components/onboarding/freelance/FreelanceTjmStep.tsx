@@ -6,7 +6,11 @@ import { StyledCheckbox } from '../../form/StyledCheckbox';
 
 interface FreelanceTjmStepProps {
   formData: FreelanceFormData | FreelanceRequestData;
-  setFormData: (updater: (prev: FreelanceFormData | FreelanceRequestData) => FreelanceFormData | FreelanceRequestData) => void;
+  setFormData: (
+    updater: (
+      prev: FreelanceFormData | FreelanceRequestData
+    ) => FreelanceFormData | FreelanceRequestData
+  ) => void;
 }
 
 export const FreelanceTjmStep = ({ formData, setFormData }: FreelanceTjmStepProps) => {
@@ -32,7 +36,10 @@ export const FreelanceTjmStep = ({ formData, setFormData }: FreelanceTjmStepProp
             label="TJM souhaité (€)"
             value={formData.tjm}
             onChange={e =>
-              setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({ ...prev, tjm: e.target.value }))
+              setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({
+                ...prev,
+                tjm: e.target.value,
+              }))
             }
             placeholder="500"
             min="0"
@@ -45,7 +52,10 @@ export const FreelanceTjmStep = ({ formData, setFormData }: FreelanceTjmStepProp
             label="Nombre de jours par moi"
             value={formData.days}
             onChange={e =>
-              setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({ ...prev, days: e.target.value }))
+              setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({
+                ...prev,
+                days: e.target.value,
+              }))
             }
             placeholder="5"
             min="1"
@@ -54,7 +64,7 @@ export const FreelanceTjmStep = ({ formData, setFormData }: FreelanceTjmStepProp
             required
           />
         </div>
-        
+
         {/* Want Salaried Section */}
         <div className="space-y-4">
           <StyledCheckbox
@@ -70,7 +80,7 @@ export const FreelanceTjmStep = ({ formData, setFormData }: FreelanceTjmStepProp
             }
             label="Je souhaite également un poste salarié"
           />
-          
+
           {formData.wantSalaried && (
             <div className="space-y-2">
               <InputField
@@ -91,24 +101,28 @@ export const FreelanceTjmStep = ({ formData, setFormData }: FreelanceTjmStepProp
               />
               {isSalaryTooHigh && (
                 <p className="text-sm text-red-600">
-                  Le salaire ne peut pas dépasser 50% de votre revenus freelance ({maxSalary.toLocaleString('fr-FR')}€/mois)
+                  Le salaire ne peut pas dépasser 50% de votre revenus freelance (
+                  {maxSalary.toLocaleString('fr-FR')}€/mois)
                 </p>
               )}
               {maxSalary > 0 && !isSalaryTooHigh && (
                 <p className="text-sm text-gray-500">
-                  Maximum recommandé : {maxSalary.toLocaleString('fr-FR')}€/mois (50% de vos revenus freelance)
+                  Maximum recommandé : {maxSalary.toLocaleString('fr-FR')}€/mois (50% de vos revenus
+                  freelance)
                 </p>
               )}
             </div>
           )}
-          
+
           {/* Start Date Section */}
           <div className="space-y-2">
             <InputField
               id="startDate"
               type="date"
               label="Date de début souhaitée (optionnel)"
-              value={formData.startDate ? new Date(formData.startDate).toISOString().split('T')[0] : ''}
+              value={
+                formData.startDate ? new Date(formData.startDate).toISOString().split('T')[0] : ''
+              }
               onChange={e =>
                 setFormData((prev: FreelanceFormData | FreelanceRequestData) => ({
                   ...prev,
@@ -119,7 +133,8 @@ export const FreelanceTjmStep = ({ formData, setFormData }: FreelanceTjmStepProp
               placeholder=""
             />
             <p className="text-sm text-gray-500">
-              Indiquez quand vous souhaitez commencer votre prochaine mission (à partir d&apos;aujourd&apos;hui)
+              Indiquez quand vous souhaitez commencer votre prochaine mission (à partir
+              d&apos;aujourd&apos;hui)
             </p>
           </div>
         </div>

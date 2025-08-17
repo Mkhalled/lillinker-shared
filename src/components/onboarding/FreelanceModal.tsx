@@ -3,7 +3,11 @@
 import { useEffect } from 'react';
 
 import { useModalData } from '../../hooks/useModalData';
-import type { FreelanceFormData, FreelanceRequest, FreelanceRequestData } from '../../types/freelance';
+import type {
+  FreelanceFormData,
+  FreelanceRequest,
+  FreelanceRequestData,
+} from '../../types/freelance';
 import { BaseModalProps } from '../../types/user';
 
 import {
@@ -33,13 +37,19 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const { currentStep, handleNext, handlePrevious, goToNextStep, clearStepProgress } =
     useFreelanceNavigation(8, clearFormData);
   const { isStepValid } = useFreelanceValidation(formData, currentStep, platformServices);
-  
+
   // Create wrapper functions to match the expected interfaces
-  const setFormDataWrapper = (updater: (prev: FreelanceFormData | FreelanceRequest) => FreelanceFormData | FreelanceRequest) => {
+  const setFormDataWrapper = (
+    updater: (prev: FreelanceFormData | FreelanceRequest) => FreelanceFormData | FreelanceRequest
+  ) => {
     setFormData(prev => updater(prev) as FreelanceFormData);
   };
 
-  const setFormDataSummaryWrapper = (updater: (prev: FreelanceFormData | FreelanceRequestData) => FreelanceFormData | FreelanceRequestData) => {
+  const setFormDataSummaryWrapper = (
+    updater: (
+      prev: FreelanceFormData | FreelanceRequestData
+    ) => FreelanceFormData | FreelanceRequestData
+  ) => {
     setFormData(prev => updater(prev) as FreelanceFormData);
   };
 
@@ -114,7 +124,9 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
         );
 
       case 6:
-        return <FreelancePriorityStep formData={formData} setFormData={setFormDataSummaryWrapper} />;
+        return (
+          <FreelancePriorityStep formData={formData} setFormData={setFormDataSummaryWrapper} />
+        );
 
       case 7:
         return (

@@ -26,39 +26,38 @@ const Societies = () => {
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [selectedDate, setSelectedDate] = useState<string>('');
 
-  const fetchRequests = useCallback(async (
-    page: number, 
-    sort: 'newest' | 'oldest' = 'newest', 
-    date: string = ''
-  ) => {
-    setLoading(true);
-    try {
-      // Build query parameters
-      const params = new URLSearchParams({
-        page: page.toString(),
-        pageSize: '4',
-        sortOrder: sort,
-      });
+  const fetchRequests = useCallback(
+    async (page: number, sort: 'newest' | 'oldest' = 'newest', date: string = '') => {
+      setLoading(true);
+      try {
+        // Build query parameters
+        const params = new URLSearchParams({
+          page: page.toString(),
+          pageSize: '4',
+          sortOrder: sort,
+        });
 
-      // Add date filter if provided
-      if (date) {
-        params.append('date', date);
+        // Add date filter if provided
+        if (date) {
+          params.append('date', date);
+        }
+
+        const res = await fetch(`/api/company/admin/requests?${params.toString()}`);
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch requests');
+        }
+
+        const data = await res.json();
+        setResponses(data.requests);
+      } catch (error) {
+        console.error('Error fetching requests:', error);
+      } finally {
+        setLoading(false);
       }
-
-      const res = await fetch(`/api/company/admin/requests?${params.toString()}`);
-
-      if (!res.ok) {
-        throw new Error('Failed to fetch requests');
-      }
-
-      const data = await res.json();
-      setResponses(data.requests);
-    } catch (error) {
-      console.error('Error fetching requests:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    []
+  );
 
   // Initial fetch
   useEffect(() => {

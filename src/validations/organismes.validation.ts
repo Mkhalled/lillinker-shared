@@ -10,36 +10,41 @@ interface Cotisation {
   pourcentage_patronal: number | null;
 }
 // Cotisation validation schema
-const cotisationSchema = z.object({
-  id: z.number(),
-  label: z.string().min(1, 'Le libellé de la cotisation est obligatoire'),
-  description: z.string().optional(),
-  type: z.nativeEnum(CotisationType, { required_error: 'Le type de cotisation est obligatoire' }),
-  pourcentage_salarial: z.number().nullable(),
-  pourcentage_patronal: z.number().nullable(),
-}).refine((data) => {
-  // Validate required percentage fields based on type
-  if (data.type === CotisationType.PATRONAL || data.type === CotisationType.DEUX) {
-    if (data.pourcentage_patronal === null || data.pourcentage_patronal === undefined) {
-      return false;
+const cotisationSchema = z
+  .object({
+    id: z.number(),
+    label: z.string().min(1, 'Le libellé de la cotisation est obligatoire'),
+    description: z.string().optional(),
+    type: z.nativeEnum(CotisationType, { required_error: 'Le type de cotisation est obligatoire' }),
+    pourcentage_salarial: z.number().nullable(),
+    pourcentage_patronal: z.number().nullable(),
+  })
+  .refine(
+    data => {
+      // Validate required percentage fields based on type
+      if (data.type === CotisationType.PATRONAL || data.type === CotisationType.DEUX) {
+        if (data.pourcentage_patronal === null || data.pourcentage_patronal === undefined) {
+          return false;
+        }
+      }
+
+      if (data.type === CotisationType.SALARIAL || data.type === CotisationType.DEUX) {
+        if (data.pourcentage_salarial === null || data.pourcentage_salarial === undefined) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+    {
+      message: 'Les taux requis selon le type de cotisation doivent être renseignés',
     }
-  }
-  
-  if (data.type === CotisationType.SALARIAL || data.type === CotisationType.DEUX) {
-    if (data.pourcentage_salarial === null || data.pourcentage_salarial === undefined) {
-      return false;
-    }
-  }
-  
-  return true;
-}, {
-  message: 'Les taux requis selon le type de cotisation doivent être renseignés',
-});
+  );
 
 // Organisme validation schema
 const organismeSchema = z.object({
   id: z.number(),
-  label: z.string().min(1, 'Le nom de l\'organisme est obligatoire'),
+  label: z.string().min(1, "Le nom de l'organisme est obligatoire"),
   description: z.string().optional(),
   cotisations: z.array(cotisationSchema).min(1, 'Au moins une cotisation est requise'),
 });
@@ -62,26 +67,32 @@ export function isOrganismeValid(organisme: {
   if (!organisme.label.trim() || organisme.cotisations.length === 0) {
     return false;
   }
-  
+
   return organisme.cotisations.every(cotisation => {
     // Check basic required fields
     if (!cotisation.label.trim() || !cotisation.type) {
       return false;
     }
-    
+
     // Check required percentage fields based on type
     if (cotisation.type === CotisationType.PATRONAL || cotisation.type === CotisationType.DEUX) {
-      if (cotisation.pourcentage_patronal === null || cotisation.pourcentage_patronal === undefined) {
+      if (
+        cotisation.pourcentage_patronal === null ||
+        cotisation.pourcentage_patronal === undefined
+      ) {
         return false;
       }
     }
-    
+
     if (cotisation.type === CotisationType.SALARIAL || cotisation.type === CotisationType.DEUX) {
-      if (cotisation.pourcentage_salarial === null || cotisation.pourcentage_salarial === undefined) {
+      if (
+        cotisation.pourcentage_salarial === null ||
+        cotisation.pourcentage_salarial === undefined
+      ) {
         return false;
       }
     }
-    
+
     return true;
   });
 }
@@ -101,20 +112,20 @@ export function isCotisationValid(cotisation: {
   if (!cotisation.label.trim() || !cotisation.type) {
     return false;
   }
-  
+
   // Check required percentage fields based on type
   if (cotisation.type === CotisationType.PATRONAL || cotisation.type === CotisationType.DEUX) {
     if (cotisation.pourcentage_patronal === null || cotisation.pourcentage_patronal === undefined) {
       return false;
     }
   }
-  
+
   if (cotisation.type === CotisationType.SALARIAL || cotisation.type === CotisationType.DEUX) {
     if (cotisation.pourcentage_salarial === null || cotisation.pourcentage_salarial === undefined) {
       return false;
     }
   }
-  
+
   return true;
 }
 
@@ -137,30 +148,32 @@ export function hasIncompleteCotisations(organisme: {
 /**
  * Checks if there are any incomplete organismes
  */
-export function hasIncompleteOrganismes(organismes: Array<{
-  id: number;
-  label: string;
-  description: string;
-  cotisations: Array<{
+export function hasIncompleteOrganismes(
+  organismes: Array<{
     id: number;
     label: string;
     description: string;
-    type: CotisationType;
-    pourcentage_salarial: number | null;
-    pourcentage_patronal: number | null;
-  }>;
-}>): boolean {
+    cotisations: Array<{
+      id: number;
+      label: string;
+      description: string;
+      type: CotisationType;
+      pourcentage_salarial: number | null;
+      pourcentage_patronal: number | null;
+    }>;
+  }>
+): boolean {
   return organismes.some(organisme => {
     // Check if organisme name is missing
     if (!organisme.label.trim()) {
       return true;
     }
-    
+
     // If organisme has no cotisations, it's incomplete
     if (organisme.cotisations.length === 0) {
       return true;
     }
-    
+
     // Check if there are incomplete cotisations
     return hasIncompleteCotisations(organisme);
   });

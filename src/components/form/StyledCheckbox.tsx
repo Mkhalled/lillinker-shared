@@ -45,11 +45,9 @@ export const StyledCheckbox = ({
       />
       <div
         className={`${sizeClasses[size]} rounded-md border-2 transition-all duration-200 flex items-center justify-center ${
-          disabled 
-            ? 'cursor-not-allowed opacity-50' 
-            : 'cursor-pointer'
+          disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
         } ${
-          checked 
+          checked
             ? disabled
               ? 'border-gray-400 bg-gray-400'
               : 'border-indigo-600 bg-indigo-600'
@@ -86,9 +84,15 @@ export const StyledCheckbox = ({
 
   if (label) {
     return (
-      <label className={`flex items-center space-x-3 group ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+      <label
+        className={`flex items-center space-x-3 group ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+      >
         {component}
-        <span className={`text-sm font-medium select-none ${disabled ? 'text-gray-400' : 'text-gray-700'}`}>{label}</span>
+        <span
+          className={`text-sm font-medium select-none ${disabled ? 'text-gray-400' : 'text-gray-700'}`}
+        >
+          {label}
+        </span>
       </label>
     );
   }

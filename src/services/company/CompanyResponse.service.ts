@@ -3,13 +3,16 @@ import { logger } from '@/lib/logger';
 import { CompanyResponseRequest, CompanyResponseData } from '@/types/company-response';
 
 export class CompanyResponseService {
-  static async getResponseData(requestId: number, companyId: number): Promise<CompanyResponseData | null> {
+  static async getResponseData(
+    requestId: number,
+    companyId: number
+  ): Promise<CompanyResponseData | null> {
     try {
       logger.info('Fetching company response data', {
         service: 'CompanyResponseService',
         operation: 'getResponseData',
         requestId,
-        companyId
+        companyId,
       });
 
       // Get freelance request details
@@ -19,7 +22,7 @@ export class CompanyResponseService {
           service: 'CompanyResponseService',
           operation: 'getResponseData',
           requestId,
-          companyId
+          companyId,
         });
         throw new Error('Freelance request not found');
       }
@@ -33,7 +36,7 @@ export class CompanyResponseService {
         requestId,
         companyId,
         companyServicesCount: companyServices.length,
-        requestOptionsCount: freelanceRequest.options.length
+        requestOptionsCount: freelanceRequest.options.length,
       });
 
       return {
@@ -46,8 +49,11 @@ export class CompanyResponseService {
               ...option.platformService,
               data_type: option.platformService.data_type as string,
               description: option.platformService.description as string | null | undefined,
-            }
-          }))
+              choices: Array.isArray(option.platformService.choices)
+                ? (option.platformService.choices as string[])
+                : undefined,
+            },
+          })),
         },
         company_services: companyServices,
         organismes: [], // Will be fetched separately in the frontend
@@ -58,7 +64,7 @@ export class CompanyResponseService {
         operation: 'getResponseData',
         requestId,
         companyId,
-        error: error instanceof Error ? error.message : error
+        error: error instanceof Error ? error.message : error,
       });
       throw error;
     }
@@ -73,12 +79,12 @@ export class CompanyResponseService {
         companyId,
         servicesCount: data.services.length,
         availableServicesCount: data.services.filter(s => s.is_available).length,
-        selectedOrganismesCount: data.selected_organismes.length
+        selectedOrganismesCount: data.selected_organismes.length,
       });
 
       // Check if response already exists
       const existingResponse = await CompanyResponseDAO.checkExistingResponse(
-        data.request_id, 
+        data.request_id,
         companyId
       );
 
@@ -88,20 +94,20 @@ export class CompanyResponseService {
           operation: 'createResponse',
           requestId: data.request_id,
           companyId,
-          existingResponseId: existingResponse.id
+          existingResponseId: existingResponse.id,
         });
         throw new Error('Response already exists for this request');
       }
 
       // Create the response
       const response = await CompanyResponseDAO.createCompanyResponse(data, companyId);
-      
+
       logger.info('Company response created successfully', {
         service: 'CompanyResponseService',
         operation: 'createResponse',
         requestId: data.request_id,
         companyId,
-        responseId: response.id
+        responseId: response.id,
       });
 
       return response;
@@ -111,7 +117,7 @@ export class CompanyResponseService {
         operation: 'createResponse',
         requestId: data.request_id,
         companyId,
-        error: error instanceof Error ? error.message : error
+        error: error instanceof Error ? error.message : error,
       });
       throw error;
     }
@@ -135,17 +141,17 @@ export class CompanyResponseService {
         companyId,
         servicesCount: data.services.length,
         availableServicesCount: data.services.filter(s => s.is_available).length,
-        selectedOrganismesCount: data.selected_organismes.length
+        selectedOrganismesCount: data.selected_organismes.length,
       });
 
       const response = await CompanyResponseDAO.updateCompanyResponse(data, companyId);
-      
+
       logger.info('Company response updated successfully', {
         service: 'CompanyResponseService',
         operation: 'updateResponse',
         requestId,
         companyId,
-        responseId: response.id
+        responseId: response.id,
       });
 
       return response;
@@ -155,7 +161,7 @@ export class CompanyResponseService {
         operation: 'updateResponse',
         requestId,
         companyId,
-        error: error instanceof Error ? error.message : error
+        error: error instanceof Error ? error.message : error,
       });
       throw error;
     }
@@ -167,17 +173,17 @@ export class CompanyResponseService {
         service: 'CompanyResponseService',
         operation: 'deleteResponse',
         requestId,
-        companyId
+        companyId,
       });
 
       const response = await CompanyResponseDAO.deleteCompanyResponse(requestId, companyId);
-      
+
       logger.info('Company response deleted successfully', {
         service: 'CompanyResponseService',
         operation: 'deleteResponse',
         requestId,
         companyId,
-        deletedCount: response.count
+        deletedCount: response.count,
       });
 
       return response;
@@ -187,11 +193,9 @@ export class CompanyResponseService {
         operation: 'deleteResponse',
         requestId,
         companyId,
-        error: error instanceof Error ? error.message : error
+        error: error instanceof Error ? error.message : error,
       });
       throw error;
     }
   }
-
-
 }

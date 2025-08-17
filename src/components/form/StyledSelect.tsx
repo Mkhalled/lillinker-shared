@@ -47,7 +47,9 @@ export const StyledSelect = ({
     appearance-none
     cursor-pointer
     ${className}
-  `.trim().replace(/\s+/g, ' ');
+  `
+    .trim()
+    .replace(/\s+/g, ' ');
 
   const component = (
     <div className="relative mt-2">
@@ -70,7 +72,7 @@ export const StyledSelect = ({
               {placeholder}
             </option>
           )}
-          {options.map((option) => (
+          {options.map(option => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -92,9 +94,7 @@ export const StyledSelect = ({
           </svg>
         </div>
       </div>
-      {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
     </div>
   );
 

@@ -2,7 +2,11 @@ import { Prisma } from '@prisma/client';
 
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
-import { CompanyResponseRequest, CompanyResponseContent, ServiceResponseData } from '@/types/company-response';
+import {
+  CompanyResponseRequest,
+  CompanyResponseContent,
+  ServiceResponseData,
+} from '@/types/company-response';
 
 export class CompanyResponseDAO {
   static async getFreelanceRequestDetails(requestId: number) {
@@ -28,6 +32,9 @@ export class CompanyResponseDAO {
                 description: true,
                 data_type: true,
                 requires_data: true,
+                data_label: true,
+                data_description: true,
+                choices: true,
               },
             },
           },
@@ -38,7 +45,7 @@ export class CompanyResponseDAO {
 
   static async getCompanyServices(companyId: number) {
     return await prisma.companyService.findMany({
-      where: { 
+      where: {
         company_id: companyId,
         is_active: true,
       },
@@ -64,7 +71,6 @@ export class CompanyResponseDAO {
     });
   }
 
-
   static async createCompanyResponse(data: CompanyResponseRequest, companyId: number) {
     logger.info('Creating company response in database', {
       dao: 'CompanyResponseDAO',
@@ -73,10 +79,10 @@ export class CompanyResponseDAO {
       companyId,
       servicesCount: data.services.length,
       availableServicesCount: data.services.filter(s => s.is_available).length,
-      selectedOrganismesCount: data.selected_organismes.length
+      selectedOrganismesCount: data.selected_organismes.length,
     });
 
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async tx => {
       // Transform ServiceResponse[] to ServiceResponseData[]
       const serviceResponses: ServiceResponseData[] = data.services
         .filter(service => service.is_available)
@@ -86,7 +92,7 @@ export class CompanyResponseDAO {
           service_description: service.service_description,
           is_available: service.is_available,
           management_fee: service.management_fee,
-          comment: service.comment || ''
+          comment: service.comment || '',
         }));
 
       // Create the response data structure
@@ -126,7 +132,7 @@ export class CompanyResponseDAO {
         companyId,
         responseId: response.id,
         servicesCount: serviceResponses.length,
-        organismesLinked: data.selected_organismes.length
+        organismesLinked: data.selected_organismes.length,
       });
 
       return response;
@@ -161,10 +167,10 @@ export class CompanyResponseDAO {
       companyId,
       servicesCount: data.services.length,
       availableServicesCount: data.services.filter(s => s.is_available).length,
-      selectedOrganismesCount: data.selected_organismes.length
+      selectedOrganismesCount: data.selected_organismes.length,
     });
 
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async tx => {
       // Find existing response
       const existingResponse = await tx.companyResponse.findFirst({
         where: {
@@ -192,7 +198,7 @@ export class CompanyResponseDAO {
           service_description: service.service_description,
           is_available: service.is_available,
           management_fee: service.management_fee,
-          comment: service.comment || ''
+          comment: service.comment || '',
         }));
 
       // Create the response data structure
@@ -232,7 +238,7 @@ export class CompanyResponseDAO {
         companyId,
         responseId: response.id,
         servicesCount: serviceResponses.length,
-        organismesLinked: data.selected_organismes.length
+        organismesLinked: data.selected_organismes.length,
       });
 
       return response;
@@ -244,10 +250,10 @@ export class CompanyResponseDAO {
       dao: 'CompanyResponseDAO',
       operation: 'deleteCompanyResponse',
       requestId,
-      companyId
+      companyId,
     });
 
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async tx => {
       // Get the response for this request
       const response = await tx.companyResponse.findFirst({
         where: {
@@ -262,7 +268,7 @@ export class CompanyResponseDAO {
           dao: 'CompanyResponseDAO',
           operation: 'deleteCompanyResponse',
           requestId,
-          companyId
+          companyId,
         });
         return { count: 0 };
       }
@@ -282,7 +288,7 @@ export class CompanyResponseDAO {
         operation: 'deleteCompanyResponse',
         requestId,
         companyId,
-        responseId: deletedResponse.id
+        responseId: deletedResponse.id,
       });
 
       return { count: 1 };

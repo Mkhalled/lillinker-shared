@@ -66,20 +66,14 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
   }
 
   if (showNewRequest) {
-    return (
-      <NewRequest
-        onClose={() => setShowNewRequest(false)}
-      />
-    );
+    return <NewRequest onClose={() => setShowNewRequest(false)} />;
   }
 
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       {/* Header with New Request Button */}
       <div className="flex justify-between items-center px-5 pt-6 pb-2 sm:px-7.5">
-        <h4 className="text-xl font-semibold text-black dark:text-white">
-          Mes demandes
-        </h4>
+        <h4 className="text-xl font-semibold text-black dark:text-white">Mes demandes</h4>
         <button
           onClick={() => setShowNewRequest(true)}
           className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-6 xl:px-8"
@@ -91,17 +85,12 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Nouvelle demande
         </button>
       </div>
-      
+
       {/* Table Container */}
       <div className="px-5 pb-2.5 pt-2 sm:px-7.5 xl:pb-1">
         <div className="max-w-full overflow-x-auto">

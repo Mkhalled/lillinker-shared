@@ -15,7 +15,7 @@ interface RouteParams {
 export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -39,22 +39,18 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({
       success: true,
-      data: organisme
+      data: organisme,
     });
-
   } catch (error) {
     console.error('Error fetching organisme:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -100,22 +96,18 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({
       success: true,
-      data: organisme
+      data: organisme,
     });
-
   } catch (error) {
     console.error('Error updating organisme:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -139,14 +131,10 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({
       success: true,
-      message: 'Organisme deleted successfully'
+      message: 'Organisme deleted successfully',
     });
-
   } catch (error) {
     console.error('Error deleting organisme:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

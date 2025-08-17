@@ -15,7 +15,7 @@ interface RouteParams {
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -40,24 +40,20 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     // Basic validation
     if (!body.label || !body.type) {
-      return NextResponse.json(
-        { error: 'Label and type are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Label and type are required' }, { status: 400 });
     }
 
     const cotisation = await CompanyService.createCotisation(organismeId, company.id, body);
 
-    return NextResponse.json({
-      success: true,
-      data: cotisation
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        data: cotisation,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Error creating cotisation:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -2,7 +2,11 @@ import { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import { CompanyPayload } from '@/types/company';
-import { CotisationPayload, CreateOrganismeRequest, UpdateOrganismeRequest } from '@/types/organisme';
+import {
+  CotisationPayload,
+  CreateOrganismeRequest,
+  UpdateOrganismeRequest,
+} from '@/types/organisme';
 
 export class CompanyDAO {
   static async create(data: CompanyPayload) {
@@ -62,40 +66,45 @@ export class CompanyDAO {
       })),
     });
   }
-  static async getAllFreelanceRequests(page: number = 1, pageSize: number = 5, sort: string = "newest", date: string = '') {
+  static async getAllFreelanceRequests(
+    page: number = 1,
+    pageSize: number = 5,
+    sort: string = 'newest',
+    date: string = ''
+  ) {
     const skip = (page - 1) * pageSize;
     const whereClause = date
       ? {
-        created_at: {
-        gte: new Date(date + 'T00:00:00.000Z'),
-        lt: new Date(date + 'T23:59:59.999Z'),
-        },
-      }
+          created_at: {
+            gte: new Date(date + 'T00:00:00.000Z'),
+            lt: new Date(date + 'T23:59:59.999Z'),
+          },
+        }
       : {};
 
     const [data, total] = await Promise.all([
       prisma.freelanceRequest.findMany({
-      skip,
-      take: pageSize,
-      orderBy: { created_at: sort === 'newest' ? 'desc' : 'asc' },
-      where: whereClause,
-      include: {
-        freelance: true,
-        options: {
+        skip,
+        take: pageSize,
+        orderBy: { created_at: sort === 'newest' ? 'desc' : 'asc' },
+        where: whereClause,
         include: {
-          platformService: true,
+          freelance: true,
+          options: {
+            include: {
+              platformService: true,
+            },
+          },
+          responses: true,
+          portages: {
+            include: {
+              portage: true,
+            },
+          },
         },
-        },
-        responses: true,
-        portages: {
-        include: {
-          portage: true,
-        },
-        },
-      },
       }),
       prisma.freelanceRequest.count({
-      where: whereClause,
+        where: whereClause,
       }),
     ]);
     return {
@@ -126,26 +135,26 @@ export class CompanyDAO {
             type: cotisation.type,
             pourcentage_salarial: cotisation.pourcentage_salarial,
             pourcentage_patronal: cotisation.pourcentage_patronal,
-          }))
-        }
+          })),
+        },
       },
       include: {
-        cotisations: true
-      }
+        cotisations: true,
+      },
     });
   }
 
   static async getCompanyOrganismes(companyId: number) {
     return prisma.organisme.findMany({
       where: {
-        company_id: companyId
+        company_id: companyId,
       },
       include: {
-        cotisations: true
+        cotisations: true,
       },
       orderBy: {
-        id: 'asc'
-      }
+        id: 'asc',
+      },
     });
   }
 
@@ -153,11 +162,11 @@ export class CompanyDAO {
     return prisma.organisme.findFirst({
       where: {
         id: id,
-        company_id: companyId
+        company_id: companyId,
       },
       include: {
-        cotisations: true
-      }
+        cotisations: true,
+      },
     });
   }
 
@@ -171,15 +180,15 @@ export class CompanyDAO {
     if (data.cotisations) {
       await prisma.cotisation.deleteMany({
         where: {
-          organisme_id: id
-        }
+          organisme_id: id,
+        },
       });
     }
 
     return prisma.organisme.update({
       where: {
         id: id,
-        company_id: companyId
+        company_id: companyId,
       },
       data: {
         ...(data.label && { label: data.label }),
@@ -192,13 +201,13 @@ export class CompanyDAO {
               type: cotisation.type,
               pourcentage_salarial: cotisation.pourcentage_salarial,
               pourcentage_patronal: cotisation.pourcentage_patronal,
-            }))
-          }
-        })
+            })),
+          },
+        }),
       },
       include: {
-        cotisations: true
-      }
+        cotisations: true,
+      },
     });
   }
 
@@ -206,15 +215,15 @@ export class CompanyDAO {
     // Delete cotisations first (cascade delete)
     await prisma.cotisation.deleteMany({
       where: {
-        organisme_id: id
-      }
+        organisme_id: id,
+      },
     });
 
     return prisma.organisme.delete({
       where: {
         id: id,
-        company_id: companyId
-      }
+        company_id: companyId,
+      },
     });
   }
 
@@ -228,41 +237,45 @@ export class CompanyDAO {
         type: data.type,
         pourcentage_salarial: data.pourcentage_salarial,
         pourcentage_patronal: data.pourcentage_patronal,
-      }
+      },
     });
   }
 
   static async updateCotisation(id: number, data: Partial<CotisationPayload>) {
     return prisma.cotisation.update({
       where: {
-        id: id
+        id: id,
       },
       data: {
         ...(data.label && { label: data.label }),
         ...(data.description !== undefined && { description: data.description }),
         ...(data.type && { type: data.type }),
-        ...(data.pourcentage_salarial !== undefined && { pourcentage_salarial: data.pourcentage_salarial }),
-        ...(data.pourcentage_patronal !== undefined && { pourcentage_patronal: data.pourcentage_patronal }),
-      }
+        ...(data.pourcentage_salarial !== undefined && {
+          pourcentage_salarial: data.pourcentage_salarial,
+        }),
+        ...(data.pourcentage_patronal !== undefined && {
+          pourcentage_patronal: data.pourcentage_patronal,
+        }),
+      },
     });
   }
 
   static async deleteCotisation(id: number) {
     return prisma.cotisation.delete({
       where: {
-        id: id
-      }
+        id: id,
+      },
     });
   }
 
   static async getCotisationsByOrganisme(organismeId: number) {
     return prisma.cotisation.findMany({
       where: {
-        organisme_id: organismeId
+        organisme_id: organismeId,
       },
       orderBy: {
-        id: 'asc'
-      }
+        id: 'asc',
+      },
     });
   }
 }

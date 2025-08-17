@@ -59,7 +59,11 @@ export const CompanySummaryStep = ({
           {formData.adminSex && (
             <div>
               <span className="font-medium">Sexe:</span>{' '}
-              {formData.adminSex === 'MALE' ? 'Homme' : formData.adminSex === 'FEMALE' ? 'Femme' : formData.adminSex}
+              {formData.adminSex === 'MALE'
+                ? 'Homme'
+                : formData.adminSex === 'FEMALE'
+                  ? 'Femme'
+                  : formData.adminSex}
             </div>
           )}
         </div>

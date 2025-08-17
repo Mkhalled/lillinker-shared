@@ -6,7 +6,6 @@ import Credentials from 'next-auth/providers/credentials';
 import { logger } from './logger';
 import { prisma } from './prisma';
 
-
 // Extend the built-in session types
 declare module 'next-auth' {
   interface Session {
@@ -190,7 +189,6 @@ export const authOptions: NextAuthOptions = {
           email: session.user.email,
           role: session.user.role,
           sex: session.user.sex,
-
         });
       }
       return session;

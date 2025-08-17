@@ -17,7 +17,12 @@ const PlusIcon = ({ className }: { className?: string }) => (
 
 const TrashIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+    />
   </svg>
 );
 
@@ -50,11 +55,11 @@ interface CategoryContentProps {
 }
 
 // Component to render cotisation content
-const CotisationContent = ({ 
-  category, 
-  cotisation, 
-  updateSubCategory, 
-  removeSubCategory 
+const CotisationContent = ({
+  category,
+  cotisation,
+  updateSubCategory,
+  removeSubCategory,
 }: {
   category: Category;
   cotisation: SubCategory;
@@ -70,16 +75,20 @@ const CotisationContent = ({
             label="Libellé"
             type="text"
             value={cotisation.label}
-            onChange={(e) => updateSubCategory(category.id, cotisation.id, { label: e.target.value })}
+            onChange={e => updateSubCategory(category.id, cotisation.id, { label: e.target.value })}
             placeholder="Libellé de la cotisation"
             error={!cotisation.label.trim()}
-            hint={!cotisation.label.trim() ? "Le libellé est obligatoire" : ""}
+            hint={!cotisation.label.trim() ? 'Le libellé est obligatoire' : ''}
             required
           />
           <StyledSelect
             label="Type"
             value={cotisation.type}
-            onChange={(e) => updateSubCategory(category.id, cotisation.id, { type: e.target.value as CotisationType })}
+            onChange={e =>
+              updateSubCategory(category.id, cotisation.id, {
+                type: e.target.value as CotisationType,
+              })
+            }
             options={[
               { value: CotisationType.PATRONAL, label: 'Patronale uniquement' },
               { value: CotisationType.SALARIAL, label: 'Salariale uniquement' },
@@ -88,12 +97,14 @@ const CotisationContent = ({
             required
           />
         </div>
-        
+
         {/* Second row: Description (full width) */}
         <TextAreaField
           label="Description"
           value={cotisation.description}
-          onChange={(e) => updateSubCategory(category.id, cotisation.id, { description: e.target.value })}
+          onChange={e =>
+            updateSubCategory(category.id, cotisation.id, { description: e.target.value })
+          }
           placeholder="Description de la cotisation"
           rows={2}
         />
@@ -101,45 +112,59 @@ const CotisationContent = ({
 
       {/* Percentage Configuration */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {(cotisation.type === CotisationType.PATRONAL || cotisation.type === CotisationType.DEUX) && (
+        {(cotisation.type === CotisationType.PATRONAL ||
+          cotisation.type === CotisationType.DEUX) && (
           <InputField
             label="Taux patronal (%)"
             type="number"
             value={cotisation.pourcentage_patronal || ''}
-            onChange={(e) => updateSubCategory(category.id, cotisation.id, { 
-              pourcentage_patronal: e.target.value ? parseFloat(e.target.value) : null 
-            })}
+            onChange={e =>
+              updateSubCategory(category.id, cotisation.id, {
+                pourcentage_patronal: e.target.value ? parseFloat(e.target.value) : null,
+              })
+            }
             placeholder="0.00"
             min="0"
             max="100"
             step="0.01"
-            error={cotisation.pourcentage_patronal === null || cotisation.pourcentage_patronal === undefined}
+            error={
+              cotisation.pourcentage_patronal === null ||
+              cotisation.pourcentage_patronal === undefined
+            }
             hint={
-              (cotisation.pourcentage_patronal === null || cotisation.pourcentage_patronal === undefined) 
-                ? "Le taux patronal est obligatoire" 
-                : ""
+              cotisation.pourcentage_patronal === null ||
+              cotisation.pourcentage_patronal === undefined
+                ? 'Le taux patronal est obligatoire'
+                : ''
             }
             required
           />
         )}
 
-        {(cotisation.type === CotisationType.SALARIAL || cotisation.type === CotisationType.DEUX) && (
+        {(cotisation.type === CotisationType.SALARIAL ||
+          cotisation.type === CotisationType.DEUX) && (
           <InputField
             label="Taux salarial (%)"
             type="number"
             value={cotisation.pourcentage_salarial || ''}
-            onChange={(e) => updateSubCategory(category.id, cotisation.id, { 
-              pourcentage_salarial: e.target.value ? parseFloat(e.target.value) : null 
-            })}
+            onChange={e =>
+              updateSubCategory(category.id, cotisation.id, {
+                pourcentage_salarial: e.target.value ? parseFloat(e.target.value) : null,
+              })
+            }
             placeholder="0.00"
             min="0"
             max="100"
             step="0.01"
-            error={cotisation.pourcentage_salarial === null || cotisation.pourcentage_salarial === undefined}
+            error={
+              cotisation.pourcentage_salarial === null ||
+              cotisation.pourcentage_salarial === undefined
+            }
             hint={
-              (cotisation.pourcentage_salarial === null || cotisation.pourcentage_salarial === undefined) 
-                ? "Le taux salarial est obligatoire" 
-                : ""
+              cotisation.pourcentage_salarial === null ||
+              cotisation.pourcentage_salarial === undefined
+                ? 'Le taux salarial est obligatoire'
+                : ''
             }
             required
           />
@@ -150,7 +175,11 @@ const CotisationContent = ({
       onClick={() => {
         // Only show confirmation for saved cotisations (positive IDs)
         if (cotisation.id > 0) {
-          if (window.confirm(`Êtes-vous sûr de vouloir supprimer la cotisation "${cotisation.label}" ? Cette action est irréversible.`)) {
+          if (
+            window.confirm(
+              `Êtes-vous sûr de vouloir supprimer la cotisation "${cotisation.label}" ? Cette action est irréversible.`
+            )
+          ) {
             removeSubCategory(category.id, cotisation.id);
           }
         } else {
@@ -166,15 +195,15 @@ const CotisationContent = ({
 );
 
 // Main CategoryContent component
-const CategoryContent: React.FC<CategoryContentProps> = ({ 
-  category, 
-  updateCategoryName, 
-  updateCategoryDescription, 
-  removeCategory, 
-  getCotisationValidationMessage, 
-  addSubCategory, 
-  updateSubCategory, 
-  removeSubCategory 
+const CategoryContent: React.FC<CategoryContentProps> = ({
+  category,
+  updateCategoryName,
+  updateCategoryDescription,
+  removeCategory,
+  getCotisationValidationMessage,
+  addSubCategory,
+  updateSubCategory,
+  removeSubCategory,
 }) => (
   <>
     {/* Category Header */}
@@ -186,16 +215,16 @@ const CategoryContent: React.FC<CategoryContentProps> = ({
               label="Nom de l'organisme"
               type="text"
               value={category.label}
-              onChange={(e) => updateCategoryName(category.id, e.target.value)}
+              onChange={e => updateCategoryName(category.id, e.target.value)}
               placeholder="Saisir le nom de l'organisme"
               error={!category.label.trim()}
-              hint={!category.label.trim() ? "Le nom de l'organisme est obligatoire" : ""}
+              hint={!category.label.trim() ? "Le nom de l'organisme est obligatoire" : ''}
               required
             />
             <TextAreaField
               label="Description"
               value={category.description}
-              onChange={(e) => updateCategoryDescription(category.id, e.target.value)}
+              onChange={e => updateCategoryDescription(category.id, e.target.value)}
               placeholder="Saisir la description"
               rows={2}
             />
@@ -211,7 +240,11 @@ const CategoryContent: React.FC<CategoryContentProps> = ({
           onClick={() => {
             // Only show confirmation for saved organismes (positive IDs)
             if (category.id > 0) {
-              if (window.confirm(`Êtes-vous sûr de vouloir supprimer l'organisme "${category.label}" et toutes ses cotisations ? Cette action est irréversible.`)) {
+              if (
+                window.confirm(
+                  `Êtes-vous sûr de vouloir supprimer l'organisme "${category.label}" et toutes ses cotisations ? Cette action est irréversible.`
+                )
+              ) {
                 removeCategory(category.id);
               }
             } else {
@@ -239,30 +272,30 @@ const CategoryContent: React.FC<CategoryContentProps> = ({
               : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-offset-2'
           }`}
           title={
-            !category.label.trim() 
-              ? "Veuillez d'abord saisir le nom de l'organisme" 
+            !category.label.trim()
+              ? "Veuillez d'abord saisir le nom de l'organisme"
               : hasIncompleteCotisations(category)
-              ? "Veuillez d'abord compléter toutes les cotisations existantes"
-              : ""
+                ? "Veuillez d'abord compléter toutes les cotisations existantes"
+                : ''
           }
         >
           <PlusIcon className="h-4 w-4 mr-2" />
           Ajouter une cotisation
         </button>
       </div>
-      
+
       {category.cotisations.length === 0 ? (
         <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-md">
           Aucune cotisation ajoutée pour le moment
         </div>
       ) : (
         <div className="space-y-4">
-          {category.cotisations.map((cotisation) => (
+          {category.cotisations.map(cotisation => (
             <div key={cotisation.id}>
               {/* Only wrap in CollapsibleRow if cotisation is complete (has positive ID, meaning it's saved) */}
               {cotisation.id > 0 && cotisation.label.trim() ? (
                 <CollapsibleRow title={cotisation.label}>
-                  <CotisationContent 
+                  <CotisationContent
                     category={category}
                     cotisation={cotisation}
                     updateSubCategory={updateSubCategory}
@@ -272,7 +305,7 @@ const CategoryContent: React.FC<CategoryContentProps> = ({
               ) : (
                 /* New/unsaved cotisations (negative IDs) should not be collapsed */
                 <div className="border border-gray-200 rounded-md p-4 bg-gray-50">
-                  <CotisationContent 
+                  <CotisationContent
                     category={category}
                     cotisation={cotisation}
                     updateSubCategory={updateSubCategory}

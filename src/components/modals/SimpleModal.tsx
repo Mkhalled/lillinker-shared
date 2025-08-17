@@ -1,16 +1,16 @@
-"use client"
+'use client';
 
-import { X, CheckCircle, AlertCircle, Info } from 'lucide-react'
-import React from 'react'
+import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
+import React from 'react';
 
 interface SimpleModalProps {
-  isOpen: boolean
-  onClose: () => void
-  type?: 'success' | 'error' | 'info'
-  title: string
-  message: string
-  confirmText?: string
-  onConfirm?: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  type?: 'success' | 'error' | 'info';
+  title: string;
+  message: string;
+  confirmText?: string;
+  onConfirm?: () => void;
 }
 
 const SimpleModal: React.FC<SimpleModalProps> = ({
@@ -20,28 +20,28 @@ const SimpleModal: React.FC<SimpleModalProps> = ({
   title,
   message,
   confirmText = 'OK',
-  onConfirm
+  onConfirm,
 }) => {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   const handleConfirm = () => {
     if (onConfirm) {
-      onConfirm()
+      onConfirm();
     } else {
-      onClose()
+      onClose();
     }
-  }
+  };
 
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return <CheckCircle className="w-8 h-8 text-green-600" />
+        return <CheckCircle className="w-8 h-8 text-green-600" />;
       case 'error':
-        return <AlertCircle className="w-8 h-8 text-red-600" />
+        return <AlertCircle className="w-8 h-8 text-red-600" />;
       default:
-        return <Info className="w-8 h-8 text-blue-600" />
+        return <Info className="w-8 h-8 text-blue-600" />;
     }
-  }
+  };
 
   const getColors = () => {
     switch (type) {
@@ -49,30 +49,30 @@ const SimpleModal: React.FC<SimpleModalProps> = ({
         return {
           bg: 'bg-green-50 dark:bg-green-900/20',
           border: 'border-green-200 dark:border-green-800',
-          button: 'bg-green-600 hover:bg-green-700'
-        }
+          button: 'bg-green-600 hover:bg-green-700',
+        };
       case 'error':
         return {
           bg: 'bg-red-50 dark:bg-red-900/20',
           border: 'border-red-200 dark:border-red-800',
-          button: 'bg-red-600 hover:bg-red-700'
-        }
+          button: 'bg-red-600 hover:bg-red-700',
+        };
       default:
         return {
           bg: 'bg-blue-50 dark:bg-blue-900/20',
           border: 'border-blue-200 dark:border-blue-800',
-          button: 'bg-blue-600 hover:bg-blue-700'
-        }
+          button: 'bg-blue-600 hover:bg-blue-700',
+        };
     }
-  }
+  };
 
-  const colors = getColors()
+  const colors = getColors();
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={onClose} />
-      
+
       {/* Modal */}
       <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
         <div className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
@@ -90,7 +90,9 @@ const SimpleModal: React.FC<SimpleModalProps> = ({
 
           <div className="sm:flex sm:items-start">
             {/* Icon */}
-            <div className={`mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full ${colors.bg} ${colors.border} border sm:mx-0 sm:h-10 sm:w-10`}>
+            <div
+              className={`mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full ${colors.bg} ${colors.border} border sm:mx-0 sm:h-10 sm:w-10`}
+            >
               {getIcon()}
             </div>
 
@@ -100,9 +102,7 @@ const SimpleModal: React.FC<SimpleModalProps> = ({
                 {title}
               </h3>
               <div className="mt-2">
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {message}
-                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{message}</p>
               </div>
             </div>
           </div>
@@ -129,7 +129,7 @@ const SimpleModal: React.FC<SimpleModalProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SimpleModal
+export default SimpleModal;

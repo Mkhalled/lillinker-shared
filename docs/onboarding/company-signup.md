@@ -263,7 +263,6 @@ CompanyService.linkPortages(companyId, portageIds);
 
 // PlatformServiceService for new services:
 PlatformServiceService.createService(userId, newServiceData);
-
 ```
 
 ### Database Transaction Pattern
@@ -320,7 +319,6 @@ await prisma.$transaction(async () => {
 
   return { company, createdServices };
 });
-
 ```
 
 ## Phase 3: Email Verification
@@ -490,7 +488,7 @@ Company {
   consultant_count: Int
   management_fees: Float
   is_portage: Boolean (Default: false)
-  
+
   // Relations
   admin: User
   managers: CompanyManager[]

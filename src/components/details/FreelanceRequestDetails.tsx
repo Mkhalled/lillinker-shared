@@ -149,7 +149,6 @@ export const FreelanceRequestDetails = ({
                 </p>
               </div>
 
-             
               {/* Priority */}
               <div>
                 <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
@@ -206,22 +205,22 @@ export const FreelanceRequestDetails = ({
               )}
             </div>
           </div>
-                           {/* Start Date */}
-              {demandeItem.start_date && (
-                <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border border-gray-100 dark:border-gray-600 lg:col-span-3">
-                  <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                    Date de début souhaitée
-                  </span>
-                  <p className="text-gray-900 dark:text-gray-100 font-medium text-sm">
-                    {new Date(demandeItem.start_date).toLocaleDateString('fr-FR', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
-                  </p>
-                </div>
-              )}
-  
+          {/* Start Date */}
+          {demandeItem.start_date && (
+            <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border border-gray-100 dark:border-gray-600 lg:col-span-3">
+              <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                Date de début souhaitée
+              </span>
+              <p className="text-gray-900 dark:text-gray-100 font-medium text-sm">
+                {new Date(demandeItem.start_date).toLocaleDateString('fr-FR', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </p>
+            </div>
+          )}
+
           {/* Salary Preferences */}
           {demandeItem.want_salaried && (
             <div className="space-y-3">

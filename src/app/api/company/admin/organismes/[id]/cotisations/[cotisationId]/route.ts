@@ -16,7 +16,7 @@ interface RouteParams {
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -42,22 +42,18 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({
       success: true,
-      data: cotisation
+      data: cotisation,
     });
-
   } catch (error) {
     console.error('Error updating cotisation:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -81,14 +77,10 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({
       success: true,
-      message: 'Cotisation deleted successfully'
+      message: 'Cotisation deleted successfully',
     });
-
   } catch (error) {
     console.error('Error deleting cotisation:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

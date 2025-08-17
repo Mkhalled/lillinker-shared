@@ -25,11 +25,11 @@ const Settings = () => {
   return (
     <div className="mx-auto max-w-270">
       <Breadcrumb pageName="Paramètres" />
-        <div className="space-y-6">
-          <CollapsibleRow title="Informations de consultant" defaultOpen={true}>
-            <PersonalInfoForm profile={profile} />
-          </CollapsibleRow>
-        </div>
+      <div className="space-y-6">
+        <CollapsibleRow title="Informations de consultant" defaultOpen={true}>
+          <PersonalInfoForm profile={profile} />
+        </CollapsibleRow>
+      </div>
     </div>
   );
 };

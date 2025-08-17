@@ -284,7 +284,6 @@ FreelanceService.linkPortages(freelanceId, portageIds);
 
 // PlatformServiceService for new services:
 PlatformServiceService.createService(userId, newServiceData);
-
 ```
 
 ### Database Transaction Pattern
@@ -327,7 +326,6 @@ await prisma.$transaction(async () => {
 
   return { freelance, createdServices };
 });
-
 ```
 
 ## Phase 3: Email Verification
@@ -492,7 +490,7 @@ Freelance {
   id: Int (Primary Key)
   freelance_id: Int (Unique)
   metier_id: Int
-  
+
   // Relations
   metier: Metier
   user: User
@@ -518,7 +516,7 @@ FreelanceRequest {
   days: Float
   wants_portage: Boolean (Default: false)
   created_at: DateTime (Default: now())
-  
+
   // Relations
   freelance: Freelance
   options: FreelanceRequestOption[]
@@ -536,7 +534,7 @@ FreelanceRequestOption {
   service_option_id: Int
   is_required: Boolean (Default: false)
   response_data: Json?
-  
+
   // Relations
   request: FreelanceRequest
   platformService: PlatformService
@@ -550,7 +548,7 @@ FreelanceRequestPortage {
   id: Int (Primary Key)
   freelance_request_id: Int
   portage_id: Int
-  
+
   // Relations
   request: FreelanceRequest
   portage: Portage

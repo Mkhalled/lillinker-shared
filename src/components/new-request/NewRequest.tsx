@@ -114,7 +114,7 @@ const NewRequest = ({ onClose }: NewRequestProps) => {
             steps={[
               'Votre demande sera visible par les entreprises',
               'Les entreprises intéressées vous contacteront',
-              'Acceptez une proposition pour poursuivre avec l\'entreprise de votre choix',
+              "Acceptez une proposition pour poursuivre avec l'entreprise de votre choix",
             ]}
           />
         );

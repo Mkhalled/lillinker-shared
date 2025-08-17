@@ -31,7 +31,7 @@ const CollapsibleRow = ({ title, children, defaultOpen = false }: CollapsibleRow
         <h3 className="text-lg font-medium text-gray-900">{title}</h3>
         {isOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
       </button>
-      
+
       {isOpen && (
         <div className="px-6 py-6 bg-white dark:bg-boxdark-2 border-t border-gray-200">
           {children}
@@ -39,6 +39,6 @@ const CollapsibleRow = ({ title, children, defaultOpen = false }: CollapsibleRow
       )}
     </div>
   );
-}
+};
 
 export default CollapsibleRow;

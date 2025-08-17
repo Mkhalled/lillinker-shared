@@ -24,11 +24,11 @@ export const CompanyAdminStep = ({
   // Check overall form validity
   useEffect(() => {
     const isFormValid = Boolean(
-      formData.adminFirstName && 
-      formData.adminLastName && 
-      formData.adminPhone && 
-      formData.adminSex &&
-      isEmailValid
+      formData.adminFirstName &&
+        formData.adminLastName &&
+        formData.adminPhone &&
+        formData.adminSex &&
+        isEmailValid
     );
     onValidityChange?.(isFormValid);
   }, [
@@ -86,7 +86,7 @@ export const CompanyAdminStep = ({
           onChange={e => onFormDataChange({ adminSex: e.target.value as 'MALE' | 'FEMALE' | '' })}
           options={[
             { value: 'MALE', label: 'Homme' },
-            { value: 'FEMALE', label: 'Femme' }
+            { value: 'FEMALE', label: 'Femme' },
           ]}
           placeholder="Sélectionner..."
           required

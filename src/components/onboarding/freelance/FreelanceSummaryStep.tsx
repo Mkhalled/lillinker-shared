@@ -7,7 +7,11 @@ import ServiceInfoTooltip from '../../ServiceInfoTooltip';
 
 interface FreelanceSummaryStepProps {
   formData: FreelanceFormData | FreelanceRequestData;
-  setFormData: (updater: (prev: FreelanceFormData | FreelanceRequestData) => FreelanceFormData | FreelanceRequestData) => void;
+  setFormData: (
+    updater: (
+      prev: FreelanceFormData | FreelanceRequestData
+    ) => FreelanceFormData | FreelanceRequestData
+  ) => void;
   metiers: Metier[];
   platformServices: PlatformService[];
   portages: Portage[];
@@ -20,14 +24,23 @@ export const FreelanceSummaryStep = ({
   portages,
 }: FreelanceSummaryStepProps) => {
   // Type guard to check if formData has personal info
-  const hasPersonalInfo = (data: FreelanceFormData | FreelanceRequestData): data is FreelanceFormData => {
-    return 'firstName' in data && 'lastName' in data && 'email' in data && 'phone' in data &&
-           !!(data as FreelanceFormData).firstName && !!(data as FreelanceFormData).lastName;
+  const hasPersonalInfo = (
+    data: FreelanceFormData | FreelanceRequestData
+  ): data is FreelanceFormData => {
+    return (
+      'firstName' in data &&
+      'lastName' in data &&
+      'email' in data &&
+      'phone' in data &&
+      !!(data as FreelanceFormData).firstName &&
+      !!(data as FreelanceFormData).lastName
+    );
   };
 
-  const selectedMetier = hasPersonalInfo(formData) && (formData as FreelanceFormData).metierId 
-    ? metiers.find(m => m.id === (formData as FreelanceFormData).metierId)
-    : undefined;
+  const selectedMetier =
+    hasPersonalInfo(formData) && (formData as FreelanceFormData).metierId
+      ? metiers.find(m => m.id === (formData as FreelanceFormData).metierId)
+      : undefined;
   const selectedServices = platformServices.filter(service =>
     formData.selectedServices.some(selected => selected.serviceId === service.id)
   );
@@ -52,39 +65,43 @@ export const FreelanceSummaryStep = ({
     <div className="space-y-4 sm:space-y-6">
       <div className="space-y-4">
         {/* Personal Information */}
-       {hasPersonalInfo(formData) && (
-         <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
-          <h5 className="font-medium text-gray-800 mb-3">Informations personnelles</h5>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 text-sm">
-            <div>
-              <span className="text-gray-600">Nom:</span>
-              <span className="ml-2 font-medium">
-                {formData.firstName} {formData.lastName}
-              </span>
-            </div>
-            <div>
-              <span className="text-gray-600">Email:</span>
-              <span className="ml-2 font-medium">{formData.email}</span>
-            </div>
-            <div>
-              <span className="text-gray-600">Téléphone:</span>
-              <span className="ml-2 font-medium">{formData.phone}</span>
-            </div>
-            <div>
-              <span className="text-gray-600">Métier:</span>
-              <span className="ml-2 font-medium">{selectedMetier?.name || 'Non spécifié'}</span>
-            </div>
-            {formData.sex && (
+        {hasPersonalInfo(formData) && (
+          <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+            <h5 className="font-medium text-gray-800 mb-3">Informations personnelles</h5>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 text-sm">
               <div>
-                <span className="text-gray-600">Sexe:</span>
+                <span className="text-gray-600">Nom:</span>
                 <span className="ml-2 font-medium">
-                  {formData.sex === 'MALE' ? 'Homme' : formData.sex === 'FEMALE' ? 'Femme' : formData.sex}
+                  {formData.firstName} {formData.lastName}
                 </span>
               </div>
-            )}
+              <div>
+                <span className="text-gray-600">Email:</span>
+                <span className="ml-2 font-medium">{formData.email}</span>
+              </div>
+              <div>
+                <span className="text-gray-600">Téléphone:</span>
+                <span className="ml-2 font-medium">{formData.phone}</span>
+              </div>
+              <div>
+                <span className="text-gray-600">Métier:</span>
+                <span className="ml-2 font-medium">{selectedMetier?.name || 'Non spécifié'}</span>
+              </div>
+              {formData.sex && (
+                <div>
+                  <span className="text-gray-600">Sexe:</span>
+                  <span className="ml-2 font-medium">
+                    {formData.sex === 'MALE'
+                      ? 'Homme'
+                      : formData.sex === 'FEMALE'
+                        ? 'Femme'
+                        : formData.sex}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-       )}
+        )}
 
         {/* Mission Information */}
         <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
@@ -143,7 +160,9 @@ export const FreelanceSummaryStep = ({
               {formData.salary && (
                 <div>
                   <span className="text-gray-600">Salaire souhaité:</span>
-                  <span className="ml-2 font-medium">{formData.salary.toLocaleString('fr-FR')}€/mois</span>
+                  <span className="ml-2 font-medium">
+                    {formData.salary.toLocaleString('fr-FR')}€/mois
+                  </span>
                 </div>
               )}
             </div>

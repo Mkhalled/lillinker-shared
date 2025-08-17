@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     // Get session instead of userId from body
     const session = await getServerSession(authOptions);
-    
+
     if (!session || !session.user || session.user.role !== 'FREELANCE') {
       logger.warn('Unauthorized nouvelle demande attempt', logContext);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     const result = await prisma.$transaction(async () => {
       // Step 1: Find existing freelance profile
       const freelance = await FreelanceDao.findByFreelanceId(Number(session.user.id));
-      
+
       if (!freelance) {
         logger.error('Freelance profile not found', {
           ...enhancedLogContext,
@@ -102,10 +102,7 @@ export async function POST(request: NextRequest) {
 
       // Step 4: Link portage preferences if provided
       if (body.selected_portages && body.selected_portages.length > 0) {
-        await FreelanceService.linkPortagePreferences(
-          freelanceRequest.id,
-          body.selected_portages
-        );
+        await FreelanceService.linkPortagePreferences(freelanceRequest.id, body.selected_portages);
       }
 
       return {

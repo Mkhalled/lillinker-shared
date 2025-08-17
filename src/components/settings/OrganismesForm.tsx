@@ -2,10 +2,10 @@ import { CotisationType } from '@prisma/client';
 import { useState, useEffect } from 'react';
 
 import { OrganismeWithCotisations, CreateOrganismeRequest } from '@/types/organisme';
-import { 
-  isOrganismeValid, 
-  hasIncompleteOrganismes, 
-  getCotisationValidationMessage 
+import {
+  isOrganismeValid,
+  hasIncompleteOrganismes,
+  getCotisationValidationMessage,
 } from '@/validations/organismes.validation';
 
 import CategoryContent from './CategoryContent';
@@ -39,7 +39,10 @@ const OrganismesForm = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [saveMessage, setSaveMessage] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
   const [nextCategoryId, setNextCategoryId] = useState(-1);
   const [nextCotisationId, setNextCotisationId] = useState(-1);
 
@@ -53,7 +56,7 @@ const OrganismesForm = () => {
       setLoading(true);
       const response = await fetch('/api/company/admin/organismes');
       const result = await response.json();
-      
+
       if (result.success) {
         // Transform backend data to form data
         const transformedData = result.data.map((organisme: OrganismeWithCotisations) => ({
@@ -67,7 +70,7 @@ const OrganismesForm = () => {
             type: cotisation.type,
             pourcentage_salarial: cotisation.pourcentage_salarial,
             pourcentage_patronal: cotisation.pourcentage_patronal,
-          }))
+          })),
         }));
         setCategories(transformedData);
       } else {
@@ -84,7 +87,10 @@ const OrganismesForm = () => {
     try {
       // Frontend validation: ensure at least one cotisation exists
       if (organisme.cotisations.length === 0) {
-        return { success: false, error: 'Au moins une cotisation est requise pour créer un organisme.' };
+        return {
+          success: false,
+          error: 'Au moins une cotisation est requise pour créer un organisme.',
+        };
       }
 
       // Validate that all cotisations have required fields
@@ -93,19 +99,40 @@ const OrganismesForm = () => {
           return { success: false, error: 'Toutes les cotisations doivent avoir un libellé.' };
         }
         if (!cotisation.type) {
-          return { success: false, error: 'Toutes les cotisations doivent avoir un type sélectionné.' };
+          return {
+            success: false,
+            error: 'Toutes les cotisations doivent avoir un type sélectionné.',
+          };
         }
-        
+
         // Validate required percentage fields based on type
-        if (cotisation.type === CotisationType.PATRONAL || cotisation.type === CotisationType.DEUX) {
-          if (cotisation.pourcentage_patronal === null || cotisation.pourcentage_patronal === undefined) {
-            return { success: false, error: `La cotisation "${cotisation.label}" nécessite un taux patronal.` };
+        if (
+          cotisation.type === CotisationType.PATRONAL ||
+          cotisation.type === CotisationType.DEUX
+        ) {
+          if (
+            cotisation.pourcentage_patronal === null ||
+            cotisation.pourcentage_patronal === undefined
+          ) {
+            return {
+              success: false,
+              error: `La cotisation "${cotisation.label}" nécessite un taux patronal.`,
+            };
           }
         }
-        
-        if (cotisation.type === CotisationType.SALARIAL || cotisation.type === CotisationType.DEUX) {
-          if (cotisation.pourcentage_salarial === null || cotisation.pourcentage_salarial === undefined) {
-            return { success: false, error: `La cotisation "${cotisation.label}" nécessite un taux salarial.` };
+
+        if (
+          cotisation.type === CotisationType.SALARIAL ||
+          cotisation.type === CotisationType.DEUX
+        ) {
+          if (
+            cotisation.pourcentage_salarial === null ||
+            cotisation.pourcentage_salarial === undefined
+          ) {
+            return {
+              success: false,
+              error: `La cotisation "${cotisation.label}" nécessite un taux salarial.`,
+            };
           }
         }
       }
@@ -120,7 +147,7 @@ const OrganismesForm = () => {
           pourcentage_salarial: cotisation.pourcentage_salarial ?? undefined,
           pourcentage_patronal: cotisation.pourcentage_patronal ?? undefined,
           // Don't send the temporary frontend ID - let the database auto-increment
-        }))
+        })),
       };
 
       let response;
@@ -150,7 +177,7 @@ const OrganismesForm = () => {
       }
     } catch (error) {
       console.error('Error saving organisme:', error);
-      return { success: false, error: 'Une erreur est survenue lors de l\'enregistrement.' };
+      return { success: false, error: "Une erreur est survenue lors de l'enregistrement." };
     }
   };
 
@@ -179,22 +206,18 @@ const OrganismesForm = () => {
       id: nextCategoryId, // Use auto-incrementing negative ID
       label: '',
       description: '',
-      cotisations: []
+      cotisations: [],
     };
     setCategories([...categories, newCategory]);
     setNextCategoryId(nextCategoryId - 1); // Decrement for next category
   };
 
   const updateCategoryName = (categoryId: number, label: string) => {
-    setCategories(categories.map(cat => 
-      cat.id === categoryId ? { ...cat, label } : cat
-    ));
+    setCategories(categories.map(cat => (cat.id === categoryId ? { ...cat, label } : cat)));
   };
 
   const updateCategoryDescription = (categoryId: number, description: string) => {
-    setCategories(categories.map(cat => 
-      cat.id === categoryId ? { ...cat, description } : cat
-    ));
+    setCategories(categories.map(cat => (cat.id === categoryId ? { ...cat, description } : cat)));
   };
 
   const addSubCategory = (categoryId: number) => {
@@ -207,25 +230,31 @@ const OrganismesForm = () => {
       pourcentage_patronal: null,
     };
 
-    setCategories(categories.map(cat => 
-      cat.id === categoryId 
-        ? { ...cat, cotisations: [...cat.cotisations, newSubCategory] }
-        : cat
-    ));
+    setCategories(
+      categories.map(cat =>
+        cat.id === categoryId ? { ...cat, cotisations: [...cat.cotisations, newSubCategory] } : cat
+      )
+    );
     setNextCotisationId(nextCotisationId - 1); // Decrement for next cotisation
   };
 
-  const updateSubCategory = (categoryId: number, subCategoryId: number, updates: Partial<SubCategory>) => {
-    setCategories(categories.map(cat => 
-      cat.id === categoryId 
-        ? {
-            ...cat,
-            cotisations: cat.cotisations.map(sub => 
-              sub.id === subCategoryId ? { ...sub, ...updates } : sub
-            )
-          }
-        : cat
-    ));
+  const updateSubCategory = (
+    categoryId: number,
+    subCategoryId: number,
+    updates: Partial<SubCategory>
+  ) => {
+    setCategories(
+      categories.map(cat =>
+        cat.id === categoryId
+          ? {
+              ...cat,
+              cotisations: cat.cotisations.map(sub =>
+                sub.id === subCategoryId ? { ...sub, ...updates } : sub
+              ),
+            }
+          : cat
+      )
+    );
   };
 
   const removeCategory = async (categoryId: number) => {
@@ -234,7 +263,7 @@ const OrganismesForm = () => {
       const success = await deleteOrganisme(categoryId);
       if (!success) {
         // Could add inline error handling here instead of alert
-        console.error('Échec de la suppression de l\'organisme');
+        console.error("Échec de la suppression de l'organisme");
         return;
       }
     } else {
@@ -244,14 +273,16 @@ const OrganismesForm = () => {
   };
 
   const removeSubCategory = (categoryId: number, subCategoryId: number) => {
-    setCategories(categories.map(cat => 
-      cat.id === categoryId 
-        ? {
-            ...cat,
-            cotisations: cat.cotisations.filter(sub => sub.id !== subCategoryId)
-          }
-        : cat
-    ));
+    setCategories(
+      categories.map(cat =>
+        cat.id === categoryId
+          ? {
+              ...cat,
+              cotisations: cat.cotisations.filter(sub => sub.id !== subCategoryId),
+            }
+          : cat
+      )
+    );
   };
 
   const handleSave = async () => {
@@ -262,7 +293,8 @@ const OrganismesForm = () => {
       const errors: string[] = [];
 
       for (const category of categories) {
-        if (category.label.trim()) { // Only save categories with names
+        if (category.label.trim()) {
+          // Only save categories with names
           // Validate before saving
           if (category.cotisations.length === 0) {
             errors.push(`L'organisme "${category.label}" doit avoir au moins une cotisation.`);
@@ -276,32 +308,36 @@ const OrganismesForm = () => {
             if (!cot.label.trim() || !cot.type) {
               return true;
             }
-            
+
             // Check required percentage fields based on type
             if (cot.type === CotisationType.PATRONAL || cot.type === CotisationType.DEUX) {
               if (cot.pourcentage_patronal === null || cot.pourcentage_patronal === undefined) {
                 return true;
               }
             }
-            
+
             if (cot.type === CotisationType.SALARIAL || cot.type === CotisationType.DEUX) {
               if (cot.pourcentage_salarial === null || cot.pourcentage_salarial === undefined) {
                 return true;
               }
             }
-            
+
             return false;
           });
-          
+
           if (invalidCotisations.length > 0) {
-            errors.push(`L'organisme "${category.label}" a des cotisations avec des champs obligatoires manquants (libellé, type ou taux requis).`);
+            errors.push(
+              `L'organisme "${category.label}" a des cotisations avec des champs obligatoires manquants (libellé, type ou taux requis).`
+            );
             allSuccess = false;
             continue;
           }
 
           const result = await saveOrganisme(category);
           if (!result.success) {
-            errors.push(`Échec de l'enregistrement de l'organisme "${category.label}": ${result.error}`);
+            errors.push(
+              `Échec de l'enregistrement de l'organisme "${category.label}": ${result.error}`
+            );
             allSuccess = false;
           }
         }
@@ -311,14 +347,18 @@ const OrganismesForm = () => {
         setSaveMessage({ type: 'success', message: 'Organismes enregistrés avec succès!' });
         await fetchOrganismes(); // Refresh the list
       } else {
-        const errorMessage = errors.length > 0 
-          ? errors.join('\n') 
-          : 'Certains organismes n\'ont pas pu être enregistrés. Veuillez vérifier et réessayer.';
+        const errorMessage =
+          errors.length > 0
+            ? errors.join('\n')
+            : "Certains organismes n'ont pas pu être enregistrés. Veuillez vérifier et réessayer.";
         setSaveMessage({ type: 'error', message: errorMessage });
       }
     } catch (error) {
       console.error('Error saving organismes:', error);
-      setSaveMessage({ type: 'error', message: 'Une erreur est survenue lors de l\'enregistrement. Veuillez réessayer.' });
+      setSaveMessage({
+        type: 'error',
+        message: "Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.",
+      });
     } finally {
       setSaving(false);
     }
@@ -352,7 +392,11 @@ const OrganismesForm = () => {
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] focus:ring-[var(--primary-color)]'
             }`}
-            title={hasIncompleteOrgs ? "Veuillez d'abord compléter tous les organismes existants (nom + au moins une cotisation complète)" : ""}
+            title={
+              hasIncompleteOrgs
+                ? "Veuillez d'abord compléter tous les organismes existants (nom + au moins une cotisation complète)"
+                : ''
+            }
           >
             <PlusIcon className="h-4 w-4 mr-2" />
             Ajouter un organisme
@@ -362,14 +406,17 @@ const OrganismesForm = () => {
 
       {/* Categories List */}
       <div className="space-y-6">
-        {categories.map((category) => (
-          <div key={category.id} className={`border rounded-lg bg-white ${
-            isOrganismeValid(category) ? 'border-gray-200' : 'border-red-300'
-          }`}>
+        {categories.map(category => (
+          <div
+            key={category.id}
+            className={`border rounded-lg bg-white ${
+              isOrganismeValid(category) ? 'border-gray-200' : 'border-red-300'
+            }`}
+          >
             {/* Only wrap in CollapsibleRow if category is saved (positive ID) AND has a label */}
             {category.id > 0 && category.label.trim() ? (
               <CollapsibleRow title={category.label}>
-                <CategoryContent 
+                <CategoryContent
                   category={category}
                   updateCategoryName={updateCategoryName}
                   updateCategoryDescription={updateCategoryDescription}
@@ -382,7 +429,7 @@ const OrganismesForm = () => {
               </CollapsibleRow>
             ) : (
               /* New/unsaved categories (negative IDs) should not be collapsed */
-              <CategoryContent 
+              <CategoryContent
                 category={category}
                 updateCategoryName={updateCategoryName}
                 updateCategoryDescription={updateCategoryDescription}
@@ -401,15 +448,17 @@ const OrganismesForm = () => {
       <div className="mt-8">
         {/* Save Message */}
         {saveMessage && (
-          <div className={`mb-4 p-4 rounded-md ${
-            saveMessage.type === 'success' 
-              ? 'bg-green-50 border border-green-200 text-green-800' 
-              : 'bg-red-50 border border-red-200 text-red-800'
-          }`}>
+          <div
+            className={`mb-4 p-4 rounded-md ${
+              saveMessage.type === 'success'
+                ? 'bg-green-50 border border-green-200 text-green-800'
+                : 'bg-red-50 border border-red-200 text-red-800'
+            }`}
+          >
             <div className="whitespace-pre-line">{saveMessage.message}</div>
           </div>
         )}
-        
+
         <div className="flex justify-end">
           <button
             onClick={handleSave}
@@ -422,6 +471,6 @@ const OrganismesForm = () => {
       </div>
     </div>
   );
-}
+};
 
 export default OrganismesForm;
