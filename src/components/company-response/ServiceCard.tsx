@@ -48,6 +48,79 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 }) => {
   const isPending = service.service.status === 'PENDING';
 
+  // For bonus services, show simplified layout
+  if (!isRequested) {
+    return (
+      <tr className={`border-b border-slate-200 dark:border-slate-700 ${
+        isPending 
+          ? 'bg-slate-100 dark:bg-slate-800/50 opacity-75' 
+          : response.is_available 
+            ? 'bg-emerald-50 dark:bg-emerald-900/10' 
+            : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+      } transition-all duration-200`}>
+        {/* Service Info */}
+        <td className="py-6 px-6">
+          <div className="flex items-center space-x-4">
+            <StyledCheckbox
+              checked={response.is_available || false}
+              onChange={(e) => onToggle(service.service.id, e.target.checked)}
+              disabled={isPending}
+              size="md"
+            />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center space-x-2 mb-1">
+                <h4 className={`font-semibold text-base ${
+                  isPending 
+                    ? 'text-slate-400 dark:text-slate-500' 
+                    : 'text-slate-900 dark:text-white'
+                }`}>
+                  {service.service.label}
+                </h4>
+                {isPending && (
+                  <span className="inline-flex items-center bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs px-2 py-1 rounded-full font-semibold">
+                    En attente
+                  </span>
+                )}
+                {response.is_available && !isPending && (
+                  <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                )}
+                <span className="inline-flex items-center bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs px-2 py-1 rounded-full font-semibold">
+                  Bonus
+                </span>
+              </div>
+              {service.service.description && (
+                <p className={`text-sm leading-relaxed ${
+                  isPending 
+                    ? 'text-slate-400 dark:text-slate-500' 
+                    : 'text-slate-600 dark:text-slate-400'
+                }`}>
+                  {service.service.description}
+                </p>
+              )}
+            </div>
+          </div>
+        </td>
+
+        {/* Comment only for bonus services */}
+        <td className="py-6 px-6">
+          {response.is_available && !isPending ? (
+            <div className="min-w-[200px]">
+              <TextAreaField
+                rows={2}
+                value={response.comment || ""}
+                onChange={(e) => onCommentChange(service.service.id, e.target.value)}
+                placeholder="Décrivez ce service bonus..."
+              />
+            </div>
+          ) : (
+            <span className="text-slate-400 dark:text-slate-500 text-sm">-</span>
+          )}
+        </td>
+      </tr>
+    )
+  }
+
+  // For requested services, show full layout
   return (
     <tr className={`border-b border-slate-200 dark:border-slate-700 ${
       isPending 
@@ -82,9 +155,13 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               {response.is_available && !isPending && (
                 <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               )}
-              {isRequested && (
+              {isRequested ? (
                 <span className="inline-flex items-center bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 text-xs px-2 py-1 rounded-full font-semibold">
                   Demandé
+                </span>
+              ) : (
+                <span className="inline-flex items-center bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs px-2 py-1 rounded-full font-semibold">
+                  Bonus
                 </span>
               )}
               {requestedOption?.is_required && (

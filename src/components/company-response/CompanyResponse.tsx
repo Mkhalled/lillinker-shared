@@ -416,9 +416,14 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
             response_data: option.response_data as Record<string, string | number | boolean | null>
           })) || []} />
 
-          {/* Available Services */}
-          <CollapsibleRow title="Vos Services Disponibles" defaultOpen={true}>
+          {/* Requested Services - Services the freelancer specifically asked for */}
+          <CollapsibleRow title="Services Demandés par le Freelancer" defaultOpen={true}>
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-lg">
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 border-b border-emerald-200 dark:border-emerald-700 px-6 py-3">
+                <p className="text-sm text-emerald-800 dark:text-emerald-200 font-medium">
+                  Ces services ont été spécifiquement demandés. Cochez ceux que vous pouvez fournir et définissez vos tarifs.
+                </p>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-700">
@@ -439,10 +444,12 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
                     </tr>
                   </thead>
                   <tbody>
-                    {company_services.map((service) => {
-                      const isRequested = freelance_request.options?.some(
+                    {company_services.filter(service => {
+                      return freelance_request.options?.some(
                         (option) => option.platformService.id === service.service.id,
                       ) || false
+                    }).map((service) => {
+                      const isRequested = true // All services in this section are requested
                       const requestedOption = freelance_request.options?.find(
                         (option) => option.platformService.id === service.service.id,
                       )
@@ -473,6 +480,75 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
                         />
                       )
                     })}
+                    {company_services.filter(service => {
+                      return freelance_request.options?.some(
+                        (option) => option.platformService.id === service.service.id,
+                      ) || false
+                    }).length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="py-8 px-6 text-center text-slate-500 dark:text-slate-400">
+                          Aucun service spécifiquement demandé
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </CollapsibleRow>
+
+          {/* Additional Services - Services the company can offer as bonus */}
+          <CollapsibleRow title="Services Supplémentaires (Bonus)" defaultOpen={false}>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-lg">
+              <div className="bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-200 dark:border-indigo-700 px-6 py-3">
+                <p className="text-sm text-indigo-800 dark:text-indigo-200 font-medium">
+                  Proposez des services supplémentaires pour enrichir votre offre et vous démarquer.
+                </p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                      <th className="py-3 px-4 text-left text-sm font-medium text-gray-600 dark:text-gray-300">
+                        Service
+                      </th>
+                      <th className="py-3 px-4 text-left text-sm font-medium text-gray-600 dark:text-gray-300">
+                        Commentaire / Conditions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {company_services.filter(service => {
+                      return !freelance_request.options?.some(
+                        (option) => option.platformService.id === service.service.id,
+                      )
+                    }).map((service) => {
+                      const isRequested = false // These services are not requested, they're bonus
+                      
+                      return (
+                        <ServiceCard
+                          key={service.service.id}
+                          service={service}
+                          response={responses[service.service.id]}
+                          isRequested={isRequested}
+                          requestedOption={undefined}
+                          onToggle={handleServiceToggle}
+                          onFeeChange={handleFeeChange}
+                          onCommentChange={handleCommentChange}
+                        />
+                      )
+                    })}
+                    {company_services.filter(service => {
+                      return !freelance_request.options?.some(
+                        (option) => option.platformService.id === service.service.id,
+                      )
+                    }).length === 0 && (
+                      <tr>
+                        <td colSpan={2} className="py-8 px-6 text-center text-slate-500 dark:text-slate-400">
+                          Aucun service supplémentaire disponible
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
