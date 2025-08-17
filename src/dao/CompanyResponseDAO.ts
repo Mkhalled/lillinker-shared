@@ -48,6 +48,7 @@ export class CompanyResponseDAO {
             id: true,
             label: true,
             description: true,
+            status: true,
           },
         },
       },

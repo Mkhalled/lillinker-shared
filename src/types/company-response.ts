@@ -65,6 +65,7 @@ export interface CompanyService {
     id: number;
     label: string;
     description?: string | null;
+    status: string;
   };
   is_active: boolean;
 }

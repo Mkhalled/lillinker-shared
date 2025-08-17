@@ -13,6 +13,7 @@ interface ServiceCardProps {
       id: number;
       label: string;
       description?: string | null;
+      status: string;
     };
   }
   response: ServiceResponse
@@ -45,22 +46,40 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   onFeeChange,
   onCommentChange,
 }) => {
+  const isPending = service.service.status === 'PENDING';
+
   return (
-    <tr className={`border-b border-slate-200 dark:border-slate-700 ${response.is_available ? 'bg-emerald-50 dark:bg-emerald-900/10' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'} transition-all duration-200`}>
+    <tr className={`border-b border-slate-200 dark:border-slate-700 ${
+      isPending 
+        ? 'bg-slate-100 dark:bg-slate-800/50 opacity-75' 
+        : response.is_available 
+          ? 'bg-emerald-50 dark:bg-emerald-900/10' 
+          : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+    } transition-all duration-200`}>
       {/* Checkbox + Service Label */}
       <td className="py-6 px-6">
         <div className="flex items-center space-x-4">
           <StyledCheckbox
             checked={response.is_available || false}
             onChange={(e) => onToggle(service.service.id, e.target.checked)}
+            disabled={isPending}
             size="md"
           />
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2 mb-1">
-              <h4 className="font-semibold text-slate-900 dark:text-white text-base">
+              <h4 className={`font-semibold text-base ${
+                isPending 
+                  ? 'text-slate-400 dark:text-slate-500' 
+                  : 'text-slate-900 dark:text-white'
+              }`}>
                 {service.service.label}
               </h4>
-              {response.is_available && (
+              {isPending && (
+                <span className="inline-flex items-center bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs px-2 py-1 rounded-full font-semibold">
+                  En attente
+                </span>
+              )}
+              {response.is_available && !isPending && (
                 <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               )}
               {isRequested && (
@@ -75,7 +94,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               )}
             </div>
             {service.service.description && (
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p className={`text-sm leading-relaxed ${
+                isPending 
+                  ? 'text-slate-400 dark:text-slate-500' 
+                  : 'text-slate-600 dark:text-slate-400'
+              }`}>
                 {service.service.description}
               </p>
             )}
@@ -129,7 +152,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
       {/* Frais de gestion */}
       <td className="py-6 px-6">
-        {response.is_available ? (
+        {response.is_available && !isPending ? (
           <div className="w-32">
             <InputField
               type="number"
@@ -149,7 +172,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
       {/* Commentaire / Conditions */}
       <td className="py-6 px-6">
-        {response.is_available ? (
+        {response.is_available && !isPending ? (
           <div className="min-w-[200px]">
             <TextAreaField
               rows={2}

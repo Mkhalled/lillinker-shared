@@ -17,6 +17,7 @@ export const StyledCheckbox = ({
   size = 'md',
   className = '',
   id,
+  disabled = false,
   ...props
 }: StyledCheckboxProps) => {
   const sizeClasses = {
@@ -37,15 +38,27 @@ export const StyledCheckbox = ({
         type="checkbox"
         checked={checked}
         onChange={onChange}
+        disabled={disabled}
         className="sr-only"
         id={id}
         {...props}
       />
       <div
-        className={`${sizeClasses[size]} rounded-md border-2 transition-all duration-200 flex items-center justify-center cursor-pointer ${
-          checked ? 'border-indigo-600 bg-indigo-600' : 'border-gray-300 bg-white hover:border-indigo-400'
+        className={`${sizeClasses[size]} rounded-md border-2 transition-all duration-200 flex items-center justify-center ${
+          disabled 
+            ? 'cursor-not-allowed opacity-50' 
+            : 'cursor-pointer'
+        } ${
+          checked 
+            ? disabled
+              ? 'border-gray-400 bg-gray-400'
+              : 'border-indigo-600 bg-indigo-600'
+            : disabled
+              ? 'border-gray-200 bg-gray-100'
+              : 'border-gray-300 bg-white hover:border-indigo-400'
         }`}
         onClick={() => {
+          if (disabled) return;
           // Create a synthetic event to trigger onChange
           const syntheticEvent = {
             target: { checked: !checked },
@@ -73,9 +86,9 @@ export const StyledCheckbox = ({
 
   if (label) {
     return (
-      <label className="flex items-center space-x-3 cursor-pointer group">
+      <label className={`flex items-center space-x-3 group ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
         {component}
-        <span className="text-sm font-medium text-gray-700 select-none">{label}</span>
+        <span className={`text-sm font-medium select-none ${disabled ? 'text-gray-400' : 'text-gray-700'}`}>{label}</span>
       </label>
     );
   }
