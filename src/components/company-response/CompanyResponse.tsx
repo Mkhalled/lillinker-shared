@@ -1,6 +1,6 @@
 'use client';
 import type React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import SimpleModal from '@/components/modals/SimpleModal';
 import type {
@@ -35,7 +35,9 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
     type: 'info',
     title: '',
     message: '',
+    onConfirm: undefined,
   });
+  const [modalLoading, setModalLoading] = useState(false);
 
   const showModal = (
     type: 'success' | 'error' | 'info',
@@ -46,118 +48,148 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
     setModal({ isOpen: true, type, title, message, onConfirm });
   };
 
+  // Handler for add-service modal from child
+  const handleShowAddServiceModal = (label: string, onConfirm: () => Promise<void>) => {
+    setModal({
+      isOpen: true,
+      type: 'info',
+      title: 'Ajouter un service',
+      message: `Êtes-vous sûr de vouloir ajouter "${label}" à votre offre de services ?`,
+      onConfirm: async () => {
+        setModalLoading(true);
+        try {
+          await onConfirm();
+          setModal({
+            isOpen: true,
+            type: 'success',
+            title: 'Service ajouté',
+            message: `Le service "${label}" a été ajouté à votre offre.`,
+          });
+          // Refresh data after add
+          fetchResponseData();
+        } catch (e: unknown) {
+          setModal({
+            isOpen: true,
+            type: 'error',
+            title: 'Erreur',
+            message: (e as Error)?.message || "Erreur lors de l'ajout du service.",
+          });
+        } finally {
+          setModalLoading(false);
+        }
+      },
+    });
+  };
+
   const closeModal = () => {
     setModal({ isOpen: false, type: 'info', title: '', message: '' });
   };
   // fetch data
-  const fetchResponseData = async () => {
-      try {
-        setLoading(true);
+  const fetchResponseData = useCallback(async () => {
+    try {
+      setLoading(true);
 
-        // Fetch response data
-        const response = await fetch(`/api/company/response/${requestId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch response data');
+      // Fetch response data
+      const response = await fetch(`/api/company/response/${requestId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch response data');
+      }
+      const data = await response.json();
+
+      // Fetch company organismes separately
+      const organismesResponse = await fetch('/api/company/admin/organismes');
+      if (!organismesResponse.ok) {
+        throw new Error('Failed to fetch organismes');
+      }
+      const organismesData = await organismesResponse.json();
+
+      // Combine the data
+      const combinedData = {
+        ...data,
+        organismes: organismesData.success ? organismesData.data : [],
+      };
+
+      setResponseData(combinedData);
+
+      // Check if existing response exists
+      if (data.existing_response) {
+        setIsUpdating(true);
+
+        // Pre-populate form with existing response data
+        const existingResponses: Record<number, ServiceResponse> = {};
+        const existingSelectedOrganismes: number[] = [];
+
+        const existingResp = data.existing_response;
+        const responseData = existingResp.response_data;
+
+        // Process services from response_data
+        if (responseData?.services && Array.isArray(responseData.services)) {
+          responseData.services.forEach((service: ServiceResponseData) => {
+            existingResponses[service.service_id] = {
+              service_id: service.service_id,
+              service_name: service.service_name,
+              service_description: service.service_description || '',
+              is_available: service.is_available,
+              management_fee: service.management_fee || 0,
+              comment: service.comment || '',
+            };
+          });
         }
-        const data = await response.json();
 
-        // Fetch company organismes separately
-        const organismesResponse = await fetch('/api/company/admin/organismes');
-        if (!organismesResponse.ok) {
-          throw new Error('Failed to fetch organismes');
-        }
-        const organismesData = await organismesResponse.json();
-
-        // Combine the data
-        const combinedData = {
-          ...data,
-          organismes: organismesData.success ? organismesData.data : [],
-        };
-
-        setResponseData(combinedData);
-
-        // Check if existing response exists
-        if (data.existing_response) {
-          setIsUpdating(true);
-
-          // Pre-populate form with existing response data
-          const existingResponses: Record<number, ServiceResponse> = {};
-          const existingSelectedOrganismes: number[] = [];
-
-          const existingResp = data.existing_response;
-          const responseData = existingResp.response_data;
-
-          // Process services from response_data
-          if (responseData?.services && Array.isArray(responseData.services)) {
-            responseData.services.forEach((service: ServiceResponseData) => {
-              existingResponses[service.service_id] = {
-                service_id: service.service_id,
-                service_name: service.service_name,
-                service_description: service.service_description || '',
-                is_available: service.is_available,
-                management_fee: service.management_fee || 0,
-                comment: service.comment || '',
-              };
-            });
-          }
-
-          // Process selected organismes from response_data
-          if (
-            responseData?.selected_organismes &&
-            Array.isArray(responseData.selected_organismes)
-          ) {
-            responseData.selected_organismes.forEach((organisme: SelectedOrganisme) => {
-              if (!existingSelectedOrganismes.includes(organisme.organisme_id)) {
-                existingSelectedOrganismes.push(organisme.organisme_id);
-              }
-            });
-          }
-
-          // Fill in services that weren't in the existing response
-          data.company_services.forEach(
-            (service: { service: { id: number; label: string; description?: string | null } }) => {
-              if (!existingResponses[service.service.id]) {
-                existingResponses[service.service.id] = {
-                  service_id: service.service.id,
-                  service_name: service.service.label,
-                  service_description: service.service.description || '',
-                  is_available: false,
-                  management_fee: 0,
-                  comment: '',
-                };
-              }
+        // Process selected organismes from response_data
+        if (responseData?.selected_organismes && Array.isArray(responseData.selected_organismes)) {
+          responseData.selected_organismes.forEach((organisme: SelectedOrganisme) => {
+            if (!existingSelectedOrganismes.includes(organisme.organisme_id)) {
+              existingSelectedOrganismes.push(organisme.organisme_id);
             }
-          );
+          });
+        }
 
-          setResponses(existingResponses);
-          setSelectedOrganismes(existingSelectedOrganismes);
-        } else {
-          // Initialize responses state - start with all services unchecked
-          const initialResponses: Record<number, ServiceResponse> = {};
-          data.company_services.forEach(
-            (service: { service: { id: number; label: string; description?: string | null } }) => {
-              initialResponses[service.service.id] = {
+        // Fill in services that weren't in the existing response
+        data.company_services.forEach(
+          (service: { service: { id: number; label: string; description?: string | null } }) => {
+            if (!existingResponses[service.service.id]) {
+              existingResponses[service.service.id] = {
                 service_id: service.service.id,
                 service_name: service.service.label,
                 service_description: service.service.description || '',
-                is_available: false, // Start unchecked - company decides what to offer
-                management_fee: 0, // Default fee
+                is_available: false,
+                management_fee: 0,
                 comment: '',
               };
             }
-          );
-          setResponses(initialResponses);
-          setIsUpdating(false);
-        }
-      } catch (error) {
-        console.error('Error fetching response data:', error);
-      } finally {
-        setLoading(false);
+          }
+        );
+
+        setResponses(existingResponses);
+        setSelectedOrganismes(existingSelectedOrganismes);
+      } else {
+        // Initialize responses state - start with all services unchecked
+        const initialResponses: Record<number, ServiceResponse> = {};
+        data.company_services.forEach(
+          (service: { service: { id: number; label: string; description?: string | null } }) => {
+            initialResponses[service.service.id] = {
+              service_id: service.service.id,
+              service_name: service.service.label,
+              service_description: service.service.description || '',
+              is_available: false, // Start unchecked - company decides what to offer
+              management_fee: 0, // Default fee
+              comment: '',
+            };
+          }
+        );
+        setResponses(initialResponses);
+        setIsUpdating(false);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching response data:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [requestId]);
   useEffect(() => {
     fetchResponseData();
-  }, [requestId]);
+  }, [fetchResponseData]);
 
   const handleServiceToggle = (serviceId: number, isAvailable: boolean) => {
     setResponses(prev => ({
@@ -424,7 +456,6 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
 
           {/* Requested Services */}
           <RequestedServices
-          onAdd={fetchResponseData}
             company_services={company_services}
             options={
               freelance_request.options?.map(option => ({
@@ -435,6 +466,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
                 >,
               })) || []
             }
+            onShowAddServiceModal={handleShowAddServiceModal}
           />
 
           {/* Requested Services Section */}
@@ -485,7 +517,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         title={modal.title}
         message={modal.message}
         onConfirm={modal.onConfirm}
-        confirmText={modal.onConfirm ? 'Confirmer' : 'OK'}
+        confirmText={modal.onConfirm ? (modalLoading ? 'Ajout en cours...' : 'Confirmer') : 'OK'}
       />
     </div>
   );

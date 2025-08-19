@@ -1,53 +1,13 @@
 import type React from 'react';
-import { useState } from 'react';
+
 import type { RequestedServicesProps } from '@/types/company-response';
-import SimpleModal from '../modals/SimpleModal';
 
-const RequestedServices: React.FC<RequestedServicesProps> = ({ options, company_services, onAdd }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
+const RequestedServices: React.FC<
+  RequestedServicesProps & {
+    onShowAddServiceModal: (label: string, onConfirm: () => Promise<void>) => void;
+  }
+> = ({ options, company_services, onShowAddServiceModal }) => {
   if (!options || options.length === 0) return null;
-
-  const handleAddService = (option: any) => {
-    setSelectedService(option);
-    setIsModalOpen(true);
-  };
-
-  const handleConfirmAddService = async () => {
-    if (!selectedService) return;
-
-    setIsLoading(true);
-    try {
-      const response = await fetch('/api/company/admin/add-service', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          serviceId: selectedService.platformService.id
-        }),
-      });
-      await response.json();
-      if (response.ok) {
-        setIsModalOpen(false);
-        setSelectedService(null);
-      } else {
-        console.error('Error adding service:');
-      }
-    } catch (error) {
-      console.error('Network error:');
-    } finally {
-      setIsLoading(false);
-    }
-    onAdd();
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedService(null);
-  };
 
   return (
     <>
@@ -86,7 +46,15 @@ const RequestedServices: React.FC<RequestedServicesProps> = ({ options, company_
                   {!exists && (
                     <button
                       type="button"
-                      onClick={() => handleAddService(option)}
+                      onClick={() => {
+                        onShowAddServiceModal(option.platformService?.label, async () => {
+                          await fetch('/api/company/admin/add-service', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ serviceId: option.platformService.id }),
+                          });
+                        });
+                      }}
                       className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-800/60 border border-emerald-200 dark:border-emerald-700 transition-colors"
                       title="Ajouter ce service à votre offre"
                     >
@@ -121,17 +89,6 @@ const RequestedServices: React.FC<RequestedServicesProps> = ({ options, company_
           </div>
         </div>
       </div>
-
-      {/* Confirmation Modal */}
-      <SimpleModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        type="info"
-        title="Ajouter un service"
-        message={`Êtes-vous sûr de vouloir ajouter "${selectedService?.platformService?.label}" à votre offre de services ?`}
-        confirmText={isLoading ? "Ajout en cours..." : "Ajouter"}
-        onConfirm={handleConfirmAddService}
-      />
     </>
   );
 };
