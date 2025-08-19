@@ -1,9 +1,7 @@
 import type React from 'react';
-
-import OptionInfoTooltip from '@/components/details/OptionInfoTooltip';
 import type { RequestedServicesProps } from '@/types/company-response';
 
-const RequestedServices: React.FC<RequestedServicesProps> = ({ options }) => {
+const RequestedServices: React.FC<RequestedServicesProps> = ({ options, company_services }) => {
   if (!options || options.length === 0) return null;
 
   return (
@@ -29,27 +27,50 @@ const RequestedServices: React.FC<RequestedServicesProps> = ({ options }) => {
 
       <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/30 rounded-lg p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {options.map(option => (
-            <div
-              key={option.id}
-              className="bg-white dark:bg-gray-800 border border-purple-100 dark:border-purple-700/50 rounded-lg p-4 hover:shadow-sm transition-shadow"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full flex-shrink-0"></div>
-                  <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">
-                    {option.platformService?.label}
-                  </span>
-                  {option.is_required && (
-                    <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full font-medium">
-                      Requis
+          {options.map(option => {
+            const exists = company_services.some(
+              cs => cs.service.id === option.platformService.id
+            );
+            return (
+              <div
+                key={option.id}
+                className="bg-white dark:bg-gray-800 border border-purple-100 dark:border-purple-700/50 rounded-lg p-4 hover:shadow-sm transition-shadow relative"
+              >
+                {/* + Icon if not in company_services */}
+                {!exists && (
+                  <button
+                    type="button"
+                    className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-800/60 border border-emerald-200 dark:border-emerald-700 transition-colors"
+                    title="Ajouter ce service à votre offre"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="w-4 h-4 text-emerald-600 dark:text-emerald-300"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+                )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full flex-shrink-0"></div>
+                    <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                      {option.platformService?.label}
                     </span>
-                  )}
+                    {option.is_required && (
+                      <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full font-medium">
+                        Requis
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <OptionInfoTooltip option={option} />
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

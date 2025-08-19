@@ -106,4 +106,5 @@ export interface RequestOverviewProps {
 
 export interface RequestedServicesProps {
   options: OptionInfo[];
+  company_services: CompanyService[];
 }

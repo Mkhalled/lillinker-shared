@@ -425,6 +425,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
 
           {/* Requested Services */}
           <RequestedServices
+            company_services={company_services}
             options={
               freelance_request.options?.map(option => ({
                 ...option,
