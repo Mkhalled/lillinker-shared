@@ -49,9 +49,8 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
   const closeModal = () => {
     setModal({ isOpen: false, type: 'info', title: '', message: '' });
   };
-
-  useEffect(() => {
-    const fetchResponseData = async () => {
+  // fetch data
+  const fetchResponseData = async () => {
       try {
         setLoading(true);
 
@@ -156,7 +155,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         setLoading(false);
       }
     };
-
+  useEffect(() => {
     fetchResponseData();
   }, [requestId]);
 
@@ -425,6 +424,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
 
           {/* Requested Services */}
           <RequestedServices
+          onAdd={fetchResponseData}
             company_services={company_services}
             options={
               freelance_request.options?.map(option => ({
