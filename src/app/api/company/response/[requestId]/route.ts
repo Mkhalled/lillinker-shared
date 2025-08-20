@@ -198,6 +198,7 @@ export async function POST(request: NextRequest, { params }: { params: { request
       request_id: requestId,
       services: body.services,
       selected_organismes: body.selected_organismes || [],
+      frais_de_gestion: body.frais_de_gestion,
     };
 
     const response = await CompanyResponseService.createResponse(responseData, companyData.id);
@@ -323,6 +324,7 @@ export async function PUT(request: NextRequest, { params }: { params: { requestI
       request_id: requestId,
       services: body.services,
       selected_organismes: body.selected_organismes || [],
+      frais_de_gestion: body.frais_de_gestion,
     };
 
     const response = await CompanyResponseService.updateResponse(

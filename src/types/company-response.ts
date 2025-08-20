@@ -15,7 +15,7 @@ export interface CompanyResponse {
 export interface CompanyResponseContent {
   services: ServiceResponseData[];
   selected_organismes: SelectedOrganisme[];
-  additional_info?: Record<string, unknown>;
+  frais_de_gestion: fraisGestion;
 }
 
 export interface ServiceResponseData {
@@ -52,11 +52,16 @@ export interface ServiceResponse {
   comment: string;
   requirements?: Record<string, unknown>;
 }
-
+export interface fraisGestion{
+  manual:boolean;
+  value: number;
+}
 export interface CompanyResponseRequest {
   request_id: number;
   services: ServiceResponse[]; // Will be transformed to ServiceResponseData
   selected_organismes: SelectedOrganisme[];
+  frais_de_gestion: fraisGestion;
+
 }
 
 export interface CompanyService {

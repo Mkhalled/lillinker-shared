@@ -99,6 +99,7 @@ export class CompanyResponseDAO {
       const responseData: CompanyResponseContent = {
         services: serviceResponses,
         selected_organismes: data.selected_organismes,
+        frais_de_gestion: data.frais_de_gestion,
       };
 
       // Create single response record
@@ -205,6 +206,7 @@ export class CompanyResponseDAO {
       const responseData: CompanyResponseContent = {
         services: serviceResponses,
         selected_organismes: data.selected_organismes,
+        frais_de_gestion: data.frais_de_gestion,
       };
 
       // Update the response

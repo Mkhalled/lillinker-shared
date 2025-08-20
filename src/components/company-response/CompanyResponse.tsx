@@ -15,6 +15,8 @@ import type {
 import Loader from '../common/Loader';
 
 import ActionButtons from './ActionButtons';
+import { StyledCheckbox } from '@/components/form/StyledCheckbox';
+import InputField from '@/components/form/input/InputField';
 import BonusServicesSection from './BonusServicesSection';
 import ExistingResponseAlert from './ExistingResponseAlert';
 import OrganismesSection from './OrganismesSection';
@@ -38,6 +40,10 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
     onConfirm: undefined,
   });
   const [modalLoading, setModalLoading] = useState(false);
+
+  // State for manual management fee
+  const [manualFee, setManualFee] = useState(false);
+  const [manualFeeValue, setManualFeeValue] = useState('');
 
   const showModal = (
     type: 'success' | 'error' | 'info',
@@ -122,6 +128,23 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         const existingResp = data.existing_response;
         const responseData = existingResp.response_data;
 
+        // Pre-populate manual management fee if present
+        if (existingResp.frais_de_gestion) {
+          setManualFee(!!existingResp.frais_de_gestion.manual);
+          setManualFeeValue(
+            existingResp.frais_de_gestion.value !== undefined && existingResp.frais_de_gestion.value !== null
+              ? String(existingResp.frais_de_gestion.value)
+              : ''
+          );
+        } else if (responseData?.frais_de_gestion) {
+          setManualFee(!!responseData.frais_de_gestion.manual);
+          setManualFeeValue(
+            responseData.frais_de_gestion.value !== undefined && responseData.frais_de_gestion.value !== null
+              ? String(responseData.frais_de_gestion.value)
+              : ''
+          );
+        }
+
         // Process services from response_data
         if (responseData?.services && Array.isArray(responseData.services)) {
           responseData.services.forEach((service: ServiceResponseData) => {
@@ -160,7 +183,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
             }
           }
         );
-
+        
         setResponses(existingResponses);
         setSelectedOrganismes(existingSelectedOrganismes);
       } else {
@@ -271,9 +294,14 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
             };
           }) || [];
 
+
       const submitData = {
         services: Object.values(responses),
         selected_organismes: selectedOrganismeDetails,
+        frais_de_gestion: {
+          manual: manualFee,
+          value: manualFeeValue,
+        },
       };
 
       // Use PUT for updates, POST for new responses
@@ -496,6 +524,25 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
             onOrganismeChange={handleOrganismeChange}
             calculateOrganismeTotals={calculateOrganismeTotals}
           />
+
+          {/* Manual Management Fee Section */}
+          <div className="flex items-center gap-4 mb-4">
+            <StyledCheckbox
+              checked={manualFee}
+              onChange={e => setManualFee(e.target.checked)}
+              label="Frais de gestion manuel"
+            />
+            <InputField
+              type="number"
+              min={0}
+              step={0.1}
+              value={manualFeeValue}
+              onChange={e => setManualFeeValue(e.target.value)}
+              placeholder="Montant (€)"
+              disabled={!manualFee}
+              className="w-32"
+            />
+          </div>
 
           {/* Action Buttons */}
           <ActionButtons
