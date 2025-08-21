@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
-import TableSkeleton from '@/components/common/skeleton/index';
+import TableSkeleton from '@/components/common/skeleton/Demandes';
 import MesDemandes from '@/components/tables/MesDemandes';
 import { demande } from '@/types/demande';
 

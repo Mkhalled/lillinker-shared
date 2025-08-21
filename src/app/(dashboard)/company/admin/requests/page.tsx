@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
-import TableSkeleton from '@/components/common/skeleton/index';
+import CompanySkeleton from '@/components/common/skeleton/CompanyRequests';
 import CompanyDemandes from '@/components/tables/CompanyDemandes';
 import { demande } from '@/types/demande';
 
@@ -83,7 +83,7 @@ const Societies = () => {
   };
 
   if (loading && responses.data.length === 0) {
-    return <TableSkeleton />;
+    return <CompanySkeleton />;
   }
 
   return (

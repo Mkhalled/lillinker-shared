@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { ExistingCompanyResponse } from '@/types/company-response';
 import { FreelanceRequest } from '@/types/freelance';
 
+import ReponseSkeleton from '../common/skeleton/Reponses';
+
 type MesReponsesProps = {
   requestId: number;
 };
@@ -12,6 +14,7 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
   const [requestData, setRequestData] = useState<FreelanceRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const pageSize = 5; // 5 responses per page
 
   useEffect(() => {
@@ -20,7 +23,6 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
         const response = await fetch(`/api/freelance/responses?id=${requestId}`);
         if (response.ok) {
           const data = await response.json();
-          console.log(data)
           setRequestData(data);
         }
       } catch (error) {
@@ -34,36 +36,24 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
       fetchRequestData();
     }
   }, [requestId]);
+
   const calculateMetrics = (response: ExistingCompanyResponse, tjm: number, days: number) => {
-    // Chiffre d'affaires par mois
     const chiffreAffaires = tjm * days;
-    
-    // Frais de gestion (percentage from response_data)
     const fraisGestionPercent = response.response_data.frais_de_gestion.value || 0;
     const fraisGestionAmount = (chiffreAffaires * fraisGestionPercent) / 100;
-    
-    // Total charges patronales (sum from selected_organismes)
     const totalPatronalPercent = response.response_data.selected_organismes?.reduce(
       (sum, org) => sum + org.total_patronal, 0
     ) || 0;
     const totalPatronalAmount = (chiffreAffaires * totalPatronalPercent) / 100;
-
-    // Total charges salariales (sum from selected_organismes)
     const totalSalarialPercent = response.response_data.selected_organismes?.reduce(
       (sum, org) => sum + org.total_salarial, 0
     ) || 0;
     const totalSalarialAmount = (chiffreAffaires * totalSalarialPercent) / 100;
-
-    // Total charges professionnelles (sum of all services management_fee)
     const totalChargesProPercent = response.response_data.services?.reduce(
       (sum, service) => sum + service.management_fee, 0
     ) || 0;
     const totalChargesProAmount = (chiffreAffaires * totalChargesProPercent) / 100;
-    
-    // Rest après déductions: CA - frais gestion - frais pro - (patronal + salarial)
     const restChiffreAffaires = chiffreAffaires - fraisGestionAmount - totalChargesProAmount - (totalPatronalAmount + totalSalarialAmount);
-
-    // Percentage reçu par l'utilisateur: rest / CA
     const percentageRecu = chiffreAffaires > 0 ? (restChiffreAffaires / chiffreAffaires) * 100 : 0;
 
     return {
@@ -81,13 +71,23 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
     };
   };
 
-// Pagination calculations
-  const totalResponses = requestData?.responses?.length || 0;
+  // Sorting and Pagination
+  const sortedResponses = requestData?.responses
+    ? [...requestData.responses].sort((a, b) => {
+        const metricsA = calculateMetrics(a, parseFloat(requestData!.tjm), parseInt(requestData!.days));
+        const metricsB = calculateMetrics(b, parseFloat(requestData!.tjm), parseInt(requestData!.days));
+        return sortOrder === 'desc'
+          ? metricsB.restChiffreAffaires - metricsA.restChiffreAffaires
+          : metricsA.restChiffreAffaires - metricsB.restChiffreAffaires;
+      })
+    : [];
+
+  const totalResponses = sortedResponses.length;
   const totalPages = Math.ceil(totalResponses / pageSize);
-  const paginatedResponses = requestData?.responses?.slice(
+  const paginatedResponses = sortedResponses.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
-  ) || [];
+  );
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -95,43 +95,32 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
     }
   };
 
+  const handleSort = () => {
+    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
+
   const generatePageNumbers = () => {
     const pages = [];
-    // Always show first page
     if (totalPages > 0) pages.push(1);
-
-    // Show pages around current page
     const start = Math.max(2, currentPage - 2);
     const end = Math.min(totalPages - 1, currentPage + 2);
-
-    // Add ellipsis if there's a gap
     if (start > 2) pages.push('...');
-
-    // Add middle pages
     for (let i = start; i <= end; i++) {
       if (i !== 1 && i !== totalPages) pages.push(i);
     }
-
-    // Add ellipsis if there's a gap
     if (end < totalPages - 1) pages.push('...');
-
-    // Always show last page
     if (totalPages > 1) pages.push(totalPages);
-
     return pages;
   };
-// 
+
   if (loading) {
     return (
-      <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="flex justify-center items-center py-8">
-          <div className="text-gray-500 dark:text-gray-400">Chargement...</div>
-        </div>
-      </div>
+     <ReponseSkeleton/>
     );
   }
 
- return (
+  return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       {/* Header with New Request Button */}
       <div className="flex justify-between items-center px-5 pt-6 pb-2 sm:px-7.5">
@@ -177,7 +166,21 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                   Charges Pro.
                 </th>
                 <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
-                  Reste CA
+                  <button
+                    onClick={handleSort}
+                    className="flex items-center gap-1"
+                  >
+                    Reste CA
+                    <svg
+                      className={`w-4 h-4 transform ${sortOrder === 'asc' ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                  </button>
                 </th>
                 <th className="min-w-[100px] px-4 py-4 font-medium text-black dark:text-white">
                   % Reçu
@@ -193,22 +196,22 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                   return (
                     <tr key={response.id}>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                    {response.company?.name.slice(0, 3).toUpperCase()}
+                        {response.company?.name.slice(0, 3).toUpperCase()}
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                         {metrics.chiffreAffaires.toFixed(2)} €
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.fraisGestionAmount}
+                        {metrics.fraisGestionAmount.toFixed(2)} €
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.totalPatronalAmount}
+                        {metrics.totalPatronalAmount.toFixed(2)} €
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.totalSalarialAmount}
+                        {metrics.totalSalarialAmount.toFixed(2)} €
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.totalChargesProAmount}
+                        {metrics.totalChargesProAmount.toFixed(2)} €
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                         <span className={`font-medium ${metrics.restChiffreAffaires > 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -261,7 +264,6 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
       {totalPages > 1 && (
         <div className="border-t border-stroke bg-gray-50 px-4 py-3 sm:px-6 dark:border-strokedark dark:bg-gray-800/50">
           <div className="flex items-center justify-between">
-            {/* Results Info */}
             <div className="flex-1 flex justify-between sm:hidden">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
@@ -290,7 +292,7 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                   <span className="font-medium">
                     {Math.min(currentPage * pageSize, totalResponses)}
                   </span>{' '}
-                  sur <span className="font-medium">{totalResponses}</span> résultats
+                  sur <span className="font-matter">{totalResponses}</span> résultats
                 </p>
               </div>
               <div>
@@ -298,7 +300,6 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                   className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
                   aria-label="Pagination"
                 >
-                  {/* Previous Button */}
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
@@ -319,7 +320,6 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                     </svg>
                   </button>
 
-                  {/* Page Numbers */}
                   {generatePageNumbers().map((page, index) => (
                     <span key={index}>
                       {page === '...' ? (
@@ -341,7 +341,6 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                     </span>
                   ))}
 
-                  {/* Next Button */}
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
