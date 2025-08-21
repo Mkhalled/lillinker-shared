@@ -1,9 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-import { FreelanceRequestDetails } from '../details/FreelanceRequestDetails';
-import NewRequest from '../new-request/NewRequest';
-
 type CompanyResponse = {
   id: number;
   request_id: number;
@@ -59,9 +56,9 @@ type MesReponsesProps = {
 
 const MesReponses = ({ requestId }: MesReponsesProps) => {
   const [requestData, setRequestData] = useState<FreelanceRequest | null>(null);
-  const [selectedDemande, setSelectedDemande] = useState<any | null>(null);
-  const [showNewRequest, setShowNewRequest] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5; // 5 responses per page
 
   useEffect(() => {
     const fetchRequestData = async () => {
@@ -126,19 +123,46 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
     };
   };
 
-  if (selectedDemande) {
-    return (
-      <FreelanceRequestDetails
-        demandeItem={selectedDemande}
-        onClose={() => setSelectedDemande(null)}
-      />
-    );
-  }
+// Pagination calculations
+  const totalResponses = requestData?.responses?.length || 0;
+  const totalPages = Math.ceil(totalResponses / pageSize);
+  const paginatedResponses = requestData?.responses?.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  ) || [];
 
-  if (showNewRequest) {
-    return <NewRequest onClose={() => setShowNewRequest(false)} />;
-  }
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
+  const generatePageNumbers = () => {
+    const pages = [];
+    // Always show first page
+    if (totalPages > 0) pages.push(1);
+
+    // Show pages around current page
+    const start = Math.max(2, currentPage - 2);
+    const end = Math.min(totalPages - 1, currentPage + 2);
+
+    // Add ellipsis if there's a gap
+    if (start > 2) pages.push('...');
+
+    // Add middle pages
+    for (let i = start; i <= end; i++) {
+      if (i !== 1 && i !== totalPages) pages.push(i);
+    }
+
+    // Add ellipsis if there's a gap
+    if (end < totalPages - 1) pages.push('...');
+
+    // Always show last page
+    if (totalPages > 1) pages.push(totalPages);
+
+    return pages;
+  };
+// 
   if (loading) {
     return (
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -149,13 +173,12 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
     );
   }
 
-  return (
+ return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       {/* Header with New Request Button */}
       <div className="flex justify-between items-center px-5 pt-6 pb-2 sm:px-7.5">
         <h4 className="text-xl font-semibold text-black dark:text-white">Mes Réponses</h4>
         <button
-          onClick={() => setShowNewRequest(true)}
           className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-6 xl:px-8"
         >
           <svg
@@ -181,7 +204,7 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                   Pseudonyme
                 </th>
                 <th className="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white">
-                  Chiffre d'Affaires
+                  Chiffre d&apos;Affaires
                 </th>
                 <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
                   Frais de Gestion
@@ -205,9 +228,9 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
               </tr>
             </thead>
             <tbody>
-              {requestData?.responses && requestData.responses.length > 0 ? (
-                requestData.responses.map(response => {
-                  const metrics = calculateMetrics(response, requestData.tjm, requestData.days);
+              {paginatedResponses.length > 0 ? (
+                paginatedResponses.map(response => {
+                  const metrics = calculateMetrics(response, requestData!.tjm, requestData!.days);
                   
                   return (
                     <tr key={response.id}>
@@ -241,29 +264,6 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                         <div className="flex items-center space-x-3.5">
-                          <button
-                            className="group"
-                            title="Voir les détails"
-                            onClick={() => setSelectedDemande(response)}
-                          >
-                            <svg
-                              className="fill-current group-hover:text-blue-500"
-                              width="18"
-                              height="18"
-                              viewBox="0 0 18 18"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M8.99981 14.8219C3.43106 14.8219 0.674805 9.50624 0.562305 9.28124C0.47793 9.11249 0.47793 8.88749 0.562305 8.71874C0.674805 8.49374 3.43106 3.20624 8.99981 3.20624C14.5686 3.20624 17.3248 8.49374 17.4373 8.71874C17.5217 8.88749 17.5217 9.11249 17.4373 9.28124C17.3248 9.50624 14.5686 14.8219 8.99981 14.8219ZM1.85605 8.99999C2.4748 10.0406 4.89356 13.5562 8.99981 13.5562C13.1061 13.5562 15.5248 10.0406 16.1436 8.99999C15.5248 7.95936 13.1061 4.44374 8.99981 4.44374C4.89356 4.44374 2.4748 7.95936 1.85605 8.99999Z"
-                                fill=""
-                              />
-                              <path
-                                d="M9 11.3906C7.67812 11.3906 6.60938 10.3219 6.60938 9C6.60938 7.67813 7.67812 6.60938 9 6.60938C10.3219 6.60938 11.3906 7.67813 11.3906 9C11.3906 10.3219 10.3219 11.3906 9 11.3906ZM9 7.875C8.38125 7.875 7.875 8.38125 7.875 9C7.875 9.61875 8.38125 10.125 9 10.125C9.61875 10.125 10.125 9.61875 10.125 9C10.125 8.38125 9.61875 7.875 9 7.875Z"
-                                fill=""
-                              />
-                            </svg>
-                          </button>
                           <button className="group" title="Télécharger PDF">
                             <svg
                               className="fill-current group-hover:text-green-500"
@@ -299,7 +299,116 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
           </table>
         </div>
       </div>
-      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="border-t border-stroke bg-gray-50 px-4 py-3 sm:px-6 dark:border-strokedark dark:bg-gray-800/50">
+          <div className="flex items-center justify-between">
+            {/* Results Info */}
+            <div className="flex-1 flex justify-between sm:hidden">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-strokedark dark:bg-boxdark dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                Précédent
+              </button>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-strokedark dark:bg-boxdark dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                Suivant
+              </button>
+            </div>
+
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  Affichage{' '}
+                  <span className="font-medium">
+                    {(currentPage - 1) * pageSize + 1}
+                  </span>{' '}
+                  à{' '}
+                  <span className="font-medium">
+                    {Math.min(currentPage * pageSize, totalResponses)}
+                  </span>{' '}
+                  sur <span className="font-medium">{totalResponses}</span> résultats
+                </p>
+              </div>
+              <div>
+                <nav
+                  className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                  aria-label="Pagination"
+                >
+                  {/* Previous Button */}
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-strokedark dark:bg-boxdark dark:text-gray-400 dark:hover:bg-gray-700"
+                  >
+                    <span className="sr-only">Précédent</span>
+                    <svg
+                      className="h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+
+                  {/* Page Numbers */}
+                  {generatePageNumbers().map((page, index) => (
+                    <span key={index}>
+                      {page === '...' ? (
+                        <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 dark:border-strokedark dark:bg-boxdark dark:text-gray-300">
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => handlePageChange(page as number)}
+                          className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                            page === currentPage
+                              ? 'z-10 bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/50 dark:border-blue-500 dark:text-blue-400'
+                              : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 dark:border-strokedark dark:bg-boxdark dark:text-gray-400 dark:hover:bg-gray-700'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      )}
+                    </span>
+                  ))}
+
+                  {/* Next Button */}
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-strokedark dark:bg-boxdark dark:text-gray-400 dark:hover:bg-gray-700"
+                  >
+                    <span className="sr-only">Suivant</span>
+                    <svg
+                      className="h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

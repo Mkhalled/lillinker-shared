@@ -2,6 +2,8 @@
 import type React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
+import InputField from '@/components/form/input/InputField';
+import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 import SimpleModal from '@/components/modals/SimpleModal';
 import type {
   CompanyResponseData,
@@ -15,8 +17,6 @@ import type {
 import Loader from '../common/Loader';
 
 import ActionButtons from './ActionButtons';
-import { StyledCheckbox } from '@/components/form/StyledCheckbox';
-import InputField from '@/components/form/input/InputField';
 import BonusServicesSection from './BonusServicesSection';
 import ExistingResponseAlert from './ExistingResponseAlert';
 import OrganismesSection from './OrganismesSection';
