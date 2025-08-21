@@ -146,7 +146,7 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
                       </span>
                     </td>
                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                      {demandeItem.responses.length}
+                      {demandeItem.responses?.length}
                     </td>
                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                       <div className="flex items-center space-x-3.5">
