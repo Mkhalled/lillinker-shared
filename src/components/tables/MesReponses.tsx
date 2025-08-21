@@ -1,54 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-type CompanyResponse = {
-  id: number;
-  request_id: number;
-  company_id: number;
-  response_data: {
-    services: Array<{
-      comment: string;
-      service_id: number;
-      is_available: boolean;
-      service_name: string;
-      management_fee: number;
-      service_description: string;
-    }>;
-    frais_de_gestion: {
-      value: string;
-      manual: boolean;
-    };
-    selected_organismes: Array<{
-      label: string;
-      organisme_id: number;
-      total_patronal: number;
-      total_salarial: number;
-    }>;
-  };
-  created_at: string;
-  updated_at: string;
-  company: {
-    pseudonyme?: string;
-  };
-};
-
-type FreelanceRequest = {
-  id: number;
-  freelance_id: number;
-  mission_status: string;
-  client_name?: string;
-  client_address?: string;
-  client_sector?: string;
-  priority: string;
-  tjm: number;
-  want_salaried: boolean;
-  salary?: number;
-  start_date?: string;
-  days: number;
-  wants_portage: boolean;
-  created_at: string;
-  responses: CompanyResponse[];
-};
+import { ExistingCompanyResponse } from '@/types/company-response';
+import { FreelanceRequest } from '@/types/freelance';
 
 type MesReponsesProps = {
   requestId: number;
@@ -66,6 +20,7 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
         const response = await fetch(`/api/freelance/responses?id=${requestId}`);
         if (response.ok) {
           const data = await response.json();
+          console.log(data)
           setRequestData(data);
         }
       } catch (error) {
@@ -79,13 +34,12 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
       fetchRequestData();
     }
   }, [requestId]);
-
-  const calculateMetrics = (response: CompanyResponse, tjm: number, days: number) => {
+  const calculateMetrics = (response: ExistingCompanyResponse, tjm: number, days: number) => {
     // Chiffre d'affaires par mois
     const chiffreAffaires = tjm * days;
     
     // Frais de gestion (percentage from response_data)
-    const fraisGestionPercent = parseFloat(response.response_data.frais_de_gestion.value) || 0;
+    const fraisGestionPercent = response.response_data.frais_de_gestion.value || 0;
     const fraisGestionAmount = (chiffreAffaires * fraisGestionPercent) / 100;
     
     // Total charges patronales (sum from selected_organismes)
@@ -118,6 +72,10 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
       totalPatronalPercent,
       totalSalarialPercent,
       totalChargesProPercent,
+      fraisGestionAmount,
+      totalPatronalAmount,
+      totalSalarialAmount,
+      totalChargesProAmount,
       restChiffreAffaires,
       percentageRecu
     };
@@ -230,27 +188,27 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
             <tbody>
               {paginatedResponses.length > 0 ? (
                 paginatedResponses.map(response => {
-                  const metrics = calculateMetrics(response, requestData!.tjm, requestData!.days);
+                  const metrics = calculateMetrics(response, parseFloat(requestData!.tjm), parseInt(requestData!.days));
                   
                   return (
                     <tr key={response.id}>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {response.company?.pseudonyme || 'Non défini'}
+                    {response.company?.name.slice(0, 3).toUpperCase()}
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                         {metrics.chiffreAffaires.toFixed(2)} €
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.fraisGestionPercent.toFixed(1)}%
+                        {metrics.fraisGestionAmount}
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.totalPatronalPercent.toFixed(1)}%
+                        {metrics.totalPatronalAmount}
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.totalSalarialPercent.toFixed(1)}%
+                        {metrics.totalSalarialAmount}
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.totalChargesProPercent.toFixed(1)}%
+                        {metrics.totalChargesProAmount}
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                         <span className={`font-medium ${metrics.restChiffreAffaires > 0 ? 'text-green-600' : 'text-red-600'}`}>

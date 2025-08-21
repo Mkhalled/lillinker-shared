@@ -1,5 +1,6 @@
 import type { demande, OptionInfo } from '@/types/demande';
 import type { OrganismeWithCotisations } from '@/types/organisme';
+import { CompanyPayload } from './company';
 
 // === COMPANY RESPONSE SPECIFIC TYPES (not duplicated elsewhere) ===
 export interface CompanyResponse {
@@ -89,6 +90,7 @@ export interface ExistingCompanyResponse {
   created_at: Date;
   updated_at: Date;
   organismes: CompanyResponseOrganisme[];
+  company ?: CompanyPayload
 }
 
 // === COMPONENT PROP INTERFACES ===

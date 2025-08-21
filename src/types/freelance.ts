@@ -1,3 +1,4 @@
+import { ExistingCompanyResponse } from './company-response';
 import { BaseUserInfo, SelectedService, PortagePreference } from './user';
 
 // Common interface for request data (without personal info)
@@ -17,6 +18,7 @@ export interface FreelanceRequestData {
   wantSalaried?: boolean;
   salary?: number;
   startDate?: Date;
+  responses?: ExistingCompanyResponse[];
 }
 
 export interface FreelanceFormData extends BaseUserInfo, FreelanceRequestData {

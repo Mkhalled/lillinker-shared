@@ -17,6 +17,5 @@ export async function GET(req: Request) {
 
   // Get freelance request by request ID
   const result = await FreelanceService.getFreelanceRequestByRequestId(id);
-
   return NextResponse.json(result);
 }
