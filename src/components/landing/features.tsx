@@ -1,4 +1,5 @@
 import { Shield, Zap, Users, Award, Clock, Star } from 'lucide-react';
+import { motion } from "motion/react";
 
 const Features = () => {
   const features = [
@@ -43,7 +44,11 @@ const Features = () => {
   return (
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-6 sm:px-8 lg:px-12">
-        <div className="text-center mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16">
           <p className="text-[var(--primary-color)] font-semibold text-lg mb-4">FEATURES</p>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             We have Amazing <span className="text-[var(--primary-color)]">Service.</span>
@@ -52,9 +57,13 @@ const Features = () => {
             Découvrez nos fonctionnalités exceptionnelles conçues pour optimiser votre expérience et
             maximiser votre efficacité dans la gestion du portage salarial.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+         <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <div
               key={index}
@@ -69,7 +78,7 @@ const Features = () => {
               <p className="text-gray-600 leading-relaxed">{feature.description}</p>
             </div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

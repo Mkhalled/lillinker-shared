@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import Image from 'next/image';
 
 import { Button } from '../ui/button/Button';
@@ -7,7 +8,11 @@ export const About = () => {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-6 sm:px-8 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-8">
+          <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8 }}
+                   className="space-y-8">
             <div className="space-y-6">
               <p className="text-[var(--primary-color)] font-semibold text-lg">À PROPOS DE NOUS</p>
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
@@ -36,9 +41,13 @@ export const About = () => {
             >
               En Savoir Plus
             </Button>
-          </div>
+          </motion.div>
 
-          <div className="relative">
+          <motion.div
+                  initial={{ opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="relative">
             <div className="relative">
               <Image
                 src="/images/landing/2.png"
@@ -49,7 +58,7 @@ export const About = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--primary-color)]/20 to-transparent rounded-2xl"></div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

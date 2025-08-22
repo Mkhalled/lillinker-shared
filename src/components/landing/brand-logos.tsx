@@ -1,3 +1,5 @@
+import { motion } from "motion/react";
+
 export const BrandLogos = () => {
   const brands = [
     { name: 'Brand One', color: 'bg-blue-500' },
@@ -8,7 +10,11 @@ export const BrandLogos = () => {
 
   return (
     <section className="py-16 bg-white">
-      <div className="container mx-auto px-6 sm:px-8 lg:px-12">
+       <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="container mx-auto px-6 sm:px-8 lg:px-12">
         <div className="text-center mb-12">
           <p className="text-gray-600 text-lg">Trusted by leading companies</p>
         </div>
@@ -29,7 +35,7 @@ export const BrandLogos = () => {
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };

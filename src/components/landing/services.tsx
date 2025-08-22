@@ -1,4 +1,5 @@
 import { Compass, Eye, Users } from 'lucide-react';
+import { motion } from 'motion/react';
 import Image from 'next/image';
 
 export const Services = () => {
@@ -6,7 +7,11 @@ export const Services = () => {
     <section className="py-20 bg-gradient-to-br from-[var(--primary-light)] to-blue-50">
       <div className="container mx-auto px-6 sm:px-8 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="relative">
+          <motion.div
+                  initial={{ opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="relative">
             <div className="bg-white rounded-2xl shadow-2xl p-8">
               <Image
                 src="/images/landing/3.png"
@@ -16,9 +21,12 @@ export const Services = () => {
                 className="w-full h-auto rounded-xl"
               />
             </div>
-          </div>
+           </motion.div>
 
-          <div className="space-y-8">
+          <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8 }} className="space-y-8">
             <div className="space-y-6">
               <p className="text-[var(--primary-color)] font-semibold text-lg">SERVICES</p>
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
@@ -86,7 +94,7 @@ export const Services = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

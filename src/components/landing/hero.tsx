@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from "motion/react";
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -42,13 +43,20 @@ const Hero = () => {
 
       default:
         return (
-          <section
+           <div
             id="home"
             className="min-h-screen flex items-center py-16 md:pt-20 bg-gradient-to-br from-blue-50 to-blue-100"
           >
-            <div className="container mx-auto px-6 sm:px-8 lg:px-12">
+            <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }} className="container mx-auto px-6 sm:px-8 lg:px-12">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
-                <div className="space-y-8">
+                <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.9 }}
+                  className="space-y-8">
                   <div className="space-y-4">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                       La Voie <span className="text-[var(--primary-color)] ">Rapide</span>
@@ -79,9 +87,12 @@ const Hero = () => {
                       Repondre a les demandes
                     </Button>
                   </div>
-                </div>
+                </motion.div>
 
-                <div className="relative">
+                 <motion.div
+                  initial={{ opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8 }} className="relative">
                   <div className="relative bg-white rounded-2xl shadow-2xl p-8">
                     <Image
                       src="/images/landing/1.png"
@@ -99,10 +110,10 @@ const Hero = () => {
                       <div className="w-6 h-6 bg-white/20 rounded-full"></div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
-            </div>
-          </section>
+            </motion.div>
+         </div>
         );
     }
   };
