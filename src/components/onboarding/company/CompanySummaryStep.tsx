@@ -1,7 +1,8 @@
 'use client';
 
-import type { Metier, Portage, PlatformService } from '@/hooks/useModalData';
+import type { Metier, Portage } from '@/hooks/useModalData';
 import type { CompanyFormData } from '@/types/company';
+import { PlatformService } from '@/types/platform';
 import type { NewService } from '@/types/user';
 
 interface CompanySummaryStepProps {

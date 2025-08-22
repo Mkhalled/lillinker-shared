@@ -1,6 +1,7 @@
 'use client';
 
-import type { PlatformService } from '../../../hooks/useModalData';
+import { PlatformService } from '@/types/platform';
+
 import type { FreelanceFormData, FreelanceRequestData } from '../../../types/freelance';
 import { SelectedService } from '../../../types/user';
 import InputField from '../../form/input/InputField';

@@ -1,6 +1,8 @@
 'use client';
 
-import type { Metier, PlatformService, Portage } from '../../../hooks/useModalData';
+import { PlatformService } from '@/types/platform';
+
+import type { Metier, Portage } from '../../../hooks/useModalData';
 import type { FreelanceFormData, FreelanceRequestData } from '../../../types/freelance';
 import OptionInfoTooltip from '../../details/OptionInfoTooltip';
 import ServiceInfoTooltip from '../../ServiceInfoTooltip';

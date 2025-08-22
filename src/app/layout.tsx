@@ -20,13 +20,6 @@ export const metadata: Metadata = {
   authors: [{ name: 'LILLINKER' }],
   creator: 'LILLINKER',
   publisher: 'LILLINKER',
-  openGraph: {
-    type: 'website',
-    locale: 'fr_FR',
-    siteName: 'LILLINKER',
-    title: 'LILLINKER - Portage Salarial Innovant',
-    description: 'La plateforme qui révolutionne le portage salarial',
-  },
 };
 
 const RootLayout = ({

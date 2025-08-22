@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 
-import type { PlatformService } from '../../../hooks/useModalData';
+import { PlatformService } from '@/types/platform';
+
 import type { FreelanceFormData } from '../../../types/freelance';
 
 export const useFreelanceValidation = (

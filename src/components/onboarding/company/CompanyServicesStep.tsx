@@ -5,12 +5,11 @@ import { Plus } from 'lucide-react';
 import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 import { Button } from '@/components/ui/button/Button';
 import { CollapsibleSection } from '@/components/ui/CollapsibleSection';
-import type { PlatformService } from '@/hooks/useModalData';
 import type { CompanyFormData } from '@/types/company';
+import { PlatformService } from '@/types/platform';
 import type { NewService } from '@/types/user';
 
 import ServiceInfoTooltip from '../../ServiceInfoTooltip';
-
 interface CompanyServicesStepProps {
   formData: CompanyFormData;
   onFormDataChange: (updates: Partial<CompanyFormData>) => void;
