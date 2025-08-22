@@ -32,12 +32,9 @@ export async function POST(request: NextRequest) {
       role: validatedData.role,
     });
 
-    // Transaction: registration and email verification
-    const user = await prisma.$transaction(async tx => {
-      const { user } = await AuthService.createUser(validatedData, tx);
-      await AuthService.sendVerificationEmail(user.id, tx);
-      return user;
-    });
+    // Registration and email verification without transaction
+    const { user } = await AuthService.createUser(validatedData, prisma);
+    await AuthService.sendVerificationEmail(user.id, prisma);
 
     logger.info('Registration API completed successfully', {
       ...logContext,
