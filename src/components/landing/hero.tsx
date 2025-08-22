@@ -89,6 +89,8 @@ const Hero = () => {
                       width={500}
                       height={400}
                       className="w-full h-auto"
+                      priority
+                      sizes="(max-width: 768px) 100vw, 500px"
                     />
                     <div className="absolute -top-4 -right-4 bg-blue-600 text-white p-3 rounded-full">
                       <div className="w-6 h-6 bg-white/20 rounded-full"></div>
