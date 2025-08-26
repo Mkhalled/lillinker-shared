@@ -121,7 +121,7 @@ export class PlatformServiceService {
   /**
    * Get available LabelSyndicat
    */
-  static async getLabelSyndicat() {
+  static async getLabelSyndicats() {
     const logContext = {
       operation: 'getLabelSyndicat',
     };
@@ -143,15 +143,15 @@ export class PlatformServiceService {
     }
   }
   /**
-   * Get available SecteurActivite
+   * Get available SecteursActivite
    */
-  static async getSecteurActivite() {
+  static async getSecteursActivite() {
     const logContext = {
-      operation: 'getSecteurActivite',
+      operation: 'getSecteursActivite',
     };
 
     try {
-      logger.debug('Fetching available SecteurActivite', logContext);
+      logger.debug('Fetching available SecteursActivite', logContext);
 
       const secteurActivite = await PlatformDAO.getSecteurActivite();
 

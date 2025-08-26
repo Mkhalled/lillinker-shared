@@ -4,7 +4,7 @@ import { PlatformServiceService } from '@/services';
 
 export async function GET() {
   try {
-    const portages = await PlatformServiceService.getPortages();
+    const portages = await PlatformServiceService.getLabelSyndicats();
     return NextResponse.json({
       success: true,
       data: portages,
@@ -13,7 +13,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to fetch portages',
+        error: 'Failed to fetch getLabelSyndicats',
         data: [],
       },
       { status: 500 }

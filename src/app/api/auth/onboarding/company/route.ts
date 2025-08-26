@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
         validatedData.selected_portages &&
         validatedData.selected_portages.length > 0
       ) {
-        await CompanyService.linkPortages(company.id, validatedData.selected_portages);
+        await CompanyService.linkCompanyLabels(company.id, validatedData.selected_portages);
       }
 
       return {

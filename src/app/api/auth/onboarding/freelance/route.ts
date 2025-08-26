@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
       // Step 4: Link portage preferences if provided
       if (validatedData.selected_portages && validatedData.selected_portages.length > 0) {
-        await FreelanceService.linkPortagePreferences(
+        await FreelanceService.linkLabelsSelected(
           freelanceRequest.id,
           validatedData.selected_portages
         );
