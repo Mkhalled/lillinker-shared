@@ -100,7 +100,7 @@ export class FreelanceService {
             // Convert responseData string to appropriate JSON structure based on data_type
             const responseDataJson = this.convertResponseData(
               selectedService.responseData,
-              platformService.data_type
+              platformService.data_type ?? "TEXT"
             );
 
             // Create freelance request option with direct reference to platform service
@@ -150,9 +150,9 @@ export class FreelanceService {
   /**
    * Link portage preferences to freelance request
    */
-  static async linkPortagePreferences(freelanceRequestId: number, portageIds: number[]) {
+  static async linkLabelsSelected(freelanceRequestId: number, portageIds: number[]) {
     const logContext = {
-      operation: 'linkPortagePreferences',
+      operation: 'linkLabelSelected',
       freelanceRequestId,
       portageCount: portageIds.length,
     };
@@ -163,7 +163,7 @@ export class FreelanceService {
         portageIds,
       });
 
-      await FreelanceDao.createFreelanceRequestPortages(freelanceRequestId, portageIds);
+      await FreelanceDao.createFreelanceRequestLabelSelected(freelanceRequestId, portageIds);
 
       logger.info('Portage preferences linked successfully', {
         ...logContext,

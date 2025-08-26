@@ -11,14 +11,14 @@ export class PlatformDAO {
       },
     });
   }
-  static async getPortages() {
+  static async getLabelSyndicat() {
     return prisma.labelSyndicat.findMany({
       orderBy: {
         name: 'asc',
       },
     });
   }
-  static async getMetiers() {
+  static async getSecteurActivite() {
     return prisma.secteurActivite.findMany({
       orderBy: {
         name: 'asc',

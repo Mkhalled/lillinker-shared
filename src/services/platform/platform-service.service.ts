@@ -119,50 +119,50 @@ export class PlatformServiceService {
     }
   }
   /**
-   * Get available portages
+   * Get available LabelSyndicat
    */
-  static async getPortages() {
+  static async getLabelSyndicat() {
     const logContext = {
-      operation: 'getPortages',
+      operation: 'getLabelSyndicat',
     };
 
     try {
-      logger.debug('Fetching available portages', logContext);
+      logger.debug('Fetching available LabelSyndicat', logContext);
 
-      const portages = await PlatformDAO.getPortages();
+      const labelSyndicat = await PlatformDAO.getLabelSyndicat();
 
-      logger.info('Available portages fetched successfully', {
+      logger.info('Available LabelSyndicat fetched successfully', {
         ...logContext,
-        portagesCount: portages.length,
+        labelSyndicatCount: labelSyndicat.length,
       });
 
-      return portages;
+      return labelSyndicat;
     } catch (error) {
-      logger.error('Failed to fetch available portages', error as Error, logContext);
+      logger.error('Failed to fetch available LabelSyndicat', error as Error, logContext);
       throw error;
     }
   }
   /**
-   * Get available metiers
+   * Get available SecteurActivite
    */
-  static async getMetiers() {
+  static async getSecteurActivite() {
     const logContext = {
-      operation: 'getMetiers',
+      operation: 'getSecteurActivite',
     };
 
     try {
-      logger.debug('Fetching available metiers', logContext);
+      logger.debug('Fetching available SecteurActivite', logContext);
 
-      const metiers = await PlatformDAO.getMetiers();
+      const secteurActivite = await PlatformDAO.getSecteurActivite();
 
-      logger.info('Available metiers fetched successfully', {
+      logger.info('Available secteurActivite fetched successfully', {
         ...logContext,
-        metiersCount: metiers.length,
+        secteurActiviteCount: secteurActivite.length,
       });
 
-      return metiers;
+      return secteurActivite;
     } catch (error) {
-      logger.error('Failed to fetch available metiers', error as Error, logContext);
+      logger.error('Failed to fetch available secteurActivite', error as Error, logContext);
       throw error;
     }
   }

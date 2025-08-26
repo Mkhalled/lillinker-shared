@@ -15,7 +15,7 @@ export interface OptionInfo {
   platformService: {
     id?: number;
     label: string;
-    data_label?: string;
+    data_label?: string | null;
     description?: string | null;
     data_type: string;
     requires_data: boolean;
