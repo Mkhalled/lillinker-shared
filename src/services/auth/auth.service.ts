@@ -86,7 +86,7 @@ export class AuthService {
     };
 
     try {
-      logger.info('Starting verification email process within transaction', logContext);
+      logger.info('Starting verification email process', logContext);
 
       // Find the user using the transactional client 'tx'
       // This read is consistent within the transaction

@@ -31,7 +31,7 @@ jest.mock('@/services', () => ({
     createFreelanceProfile: jest.fn(),
     createFreelanceRequest: jest.fn(),
     createRequestOptions: jest.fn(),
-    linkPortagePreferences: jest.fn(),
+    linkLabelsSelected: jest.fn(),
   },
   AuthService: {
     sendVerificationEmail: jest.fn(),
@@ -194,7 +194,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
       mockFreelanceService.createFreelanceProfile.mockResolvedValue(mockFreelanceProfile);
       mockFreelanceService.createFreelanceRequest.mockResolvedValue(mockFreelanceRequest);
       mockFreelanceService.createRequestOptions.mockResolvedValue(mockRequestOptions);
-      mockFreelanceService.linkPortagePreferences.mockResolvedValue(true);
+      mockFreelanceService.linkLabelsSelected.mockResolvedValue(true);
 
       return await callback();
     });
@@ -212,7 +212,7 @@ describe('POST /api/auth/onboarding/freelance', () => {
     const response = await FreelanceOnboardingPOST(request);
     const responseData = await response.json();
 
-    expect(mockFreelanceService.linkPortagePreferences).toHaveBeenCalledWith(
+    expect(mockFreelanceService.linkLabelsSelected).toHaveBeenCalledWith(
       mockFreelanceRequest.id,
       onboardingDataWithPortage.selected_portages
     );

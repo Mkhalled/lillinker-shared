@@ -29,7 +29,7 @@ jest.mock('@/services', () => ({
     createCompany: jest.fn(),
     linkPlatformServices: jest.fn(),
     linkMetiers: jest.fn(),
-    linkPortages: jest.fn(),
+    linkCompanyLabels: jest.fn(),
   },
   AuthService: {
     sendVerificationEmail: jest.fn(),
@@ -97,7 +97,7 @@ describe('Company Onboarding API', () => {
     };
 
     const mockTransactionResult = {
-      company: {
+     company : {
         id: 1,
         name: 'Tech Solutions SARL',
         admin_user_id: 123,
@@ -107,6 +107,12 @@ describe('Company Onboarding API', () => {
         consultant_count: 50,
         management_fees: 8.5,
         is_portage: true,
+        date_creation: null,
+        chiffre_affaires: null,
+        adresse: null,                 
+        site_web: null,                
+        convention_collective: null,   
+        code_naf_ape: null,            
       },
       companyServices: [
         { id: 1, company_id: 1, service_id: 1, is_active: true },
@@ -145,7 +151,7 @@ describe('Company Onboarding API', () => {
         mockTransactionResult.companyServices
       );
       mockCompanyService.linkMetiers.mockResolvedValue(true);
-      mockCompanyService.linkPortages.mockResolvedValue(true);
+      mockCompanyService.linkCompanyLabels.mockResolvedValue(true);
 
       mockAuthService.sendVerificationEmail.mockResolvedValue({
         success: true,

@@ -148,7 +148,7 @@ export class FreelanceService {
   }
 
   /**
-   * Link portage preferences to freelance request
+   * Link selected labels to freelance request
    */
   static async linkLabelsSelected(freelanceRequestId: number, portageIds: number[]) {
     const logContext = {
