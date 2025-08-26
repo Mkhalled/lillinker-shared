@@ -29,8 +29,14 @@ interface CompanyCreateData {
   logo: string;
   siret: string;
   consultant_count: number;
-  management_fees: number;
+  management_fees?: number;
   is_portage?: boolean;
+  date_creation?: Date;
+  chiffre_affaires?: number;
+  adresse?: string;
+  site_web?: string;
+  convention_collective?: string;
+  code_naf_ape?: string;
 }
 
 /**
@@ -80,19 +86,19 @@ async function main(): Promise<void> {
     await prisma.companyResponseOrganisme.deleteMany();
     await prisma.companyResponse.deleteMany();
     await prisma.freelanceRequestOption.deleteMany();
-    await prisma.freelanceRequestPortage.deleteMany();
+    await prisma.requestLabelSelected.deleteMany();
     await prisma.freelanceRequest.deleteMany();
     await prisma.companyService.deleteMany();
     await prisma.platformService.deleteMany();
-    await prisma.companyMetier.deleteMany();
-    await prisma.companyPortage.deleteMany();
+    await prisma.secteurActiviteCompany.deleteMany();
+    await prisma.companyLabel.deleteMany();
     await prisma.companyManager.deleteMany();
     await prisma.freelance.deleteMany();
     await prisma.cotisation.deleteMany();
     await prisma.organisme.deleteMany();
     await prisma.company.deleteMany();
-    await prisma.metier.deleteMany();
-    await prisma.portage.deleteMany();
+    await prisma.secteurActivite.deleteMany();
+    await prisma.labelSyndicat.deleteMany();
     await prisma.session.deleteMany();
     await prisma.account.deleteMany();
     await prisma.user.deleteMany();
@@ -112,51 +118,51 @@ async function main(): Promise<void> {
     // <option value="SPORT">Sport</option>
     // <option value="OTHER">Autre</option>
 
-    // Secteur d'activité
-    const IT = await prisma.metier.create({
-      data: { name: 'IT - Digital' },
+    // Secteur d'activité (renamed from Metier)
+    const IT = await prisma.secteurActivite.create({
+      data: { code: 'IT', name: 'IT - Digital' },
     });
 
-    const ACCOUNTING = await prisma.metier.create({
-      data: { name: 'Gestion - comptabilité' },
+    const ACCOUNTING = await prisma.secteurActivite.create({
+      data: { code: 'ACCOUNTING', name: 'Gestion - comptabilité' },
     });
 
-    const FINANCE = await prisma.metier.create({
-      data: { name: 'Finance, banque et assurances' },
+    const FINANCE = await prisma.secteurActivite.create({
+      data: { code: 'FINANCE', name: 'Finance, banque et assurances' },
     });
 
-    const MARKETING = await prisma.metier.create({
-      data: { name: 'Marketing' },
+    const MARKETING = await prisma.secteurActivite.create({
+      data: { code: 'MARKETING', name: 'Marketing' },
     });
 
-    const HR = await prisma.metier.create({
-      data: { name: 'Ressources humaines' },
+    const HR = await prisma.secteurActivite.create({
+      data: { code: 'HR', name: 'Ressources humaines' },
     });
 
-    const EVENT = await prisma.metier.create({
-      data: { name: 'Événementiel' },
+    const EVENT = await prisma.secteurActivite.create({
+      data: { code: 'EVENT', name: 'Événementiel' },
     });
 
-    const BUILDING = await prisma.metier.create({
-      data: { name: 'BTP' },
+    const BUILDING = await prisma.secteurActivite.create({
+      data: { code: 'BUILDING', name: 'BTP' },
     });
 
-    const REAL_ESTATE = await prisma.metier.create({
-      data: { name: 'Immobilier' },
+    const REAL_ESTATE = await prisma.secteurActivite.create({
+      data: { code: 'REAL_ESTATE', name: 'Immobilier' },
     });
 
-    const AUTOMOTIVE = await prisma.metier.create({
-      data: { name: 'Automobile' },
+    const AUTOMOTIVE = await prisma.secteurActivite.create({
+      data: { code: 'AUTOMOTIVE', name: 'Automobile' },
     });
 
-    const PERSONAL_SERVICES = await prisma.metier.create({
-      data: { name: 'Service à la personne' },
+    const PERSONAL_SERVICES = await prisma.secteurActivite.create({
+      data: { code: 'PERSONAL_SERVICES', name: 'Service à la personne' },
     });
-    const SPORT = await prisma.metier.create({
-      data: { name: 'Sport' },
+    const SPORT = await prisma.secteurActivite.create({
+      data: { code: 'SPORT', name: 'Sport' },
     });
-    const OTHER = await prisma.metier.create({
-      data: { name: 'Autre' },
+    const OTHER = await prisma.secteurActivite.create({
+      data: { code: 'OTHER', name: 'Autre' },
     });
 
     // Create platform admin user (no company affiliation)
@@ -196,250 +202,111 @@ async function main(): Promise<void> {
       sex: 'MALE',
     });
 
-    // const freelanceUser1 = await createUser({
-    //   first_name: 'Marie',
-    //   last_name: 'Dubois',
-    //   email: 'marie.dubois@example.com',
-    //   phone_number: '+33123456793',
-    //   role: 'FREELANCE',
-    //   status: true,
-    //   email_verified: true,
-    //   sex: 'FEMALE',
-    // });
-
-    // const freelanceUser2 = await createUser({
-    //   first_name: 'Pierre',
-    //   last_name: 'Martin',
-    //   email: 'pierre.martin@example.com',
-    //   phone_number: '+33123456794',
-    //   role: 'FREELANCE',
-    //   status: true,
-    //   email_verified: true,
-    //   sex: 'MALE',
-    // });
-
-    // const freelanceUser3 = await createUser({
-    //   first_name: 'Sophie',
-    //   last_name: 'Legrand',
-    //   email: 'sophie.legrand@example.com',
-    //   phone_number: '+33123456795',
-    //   role: 'FREELANCE',
-    //   status: true,
-    //   email_verified: false,
-    //   sex: 'FEMALE',
-    // });
-
-    // const freelanceUser4 = await createUser({
-    //   first_name: 'Thomas',
-    //   last_name: 'Moreau',
-    //   email: 'thomas.moreau@example.com',
-    //   phone_number: '+33123456796',
-    //   role: 'FREELANCE',
-    //   status: true,
-    //   email_verified: true,
-    //   sex: 'MALE',
-    // });
-
-    // const freelanceUser5 = await createUser({
-    //   first_name: 'Julie',
-    //   last_name: 'Bernard',
-    //   email: 'julie.bernard@example.com',
-    //   phone_number: '+33123456797',
-    //   role: 'FREELANCE',
-    //   status: true,
-    //   email_verified: false,
-    //   sex: 'FEMALE',
-    // });
-
-    // Create freelance profiles
+    // Create freelance profiles (updated field name)
     const freelance1 = await prisma.freelance.create({
       data: {
         freelance_id: freelanceUser1.id,
-        metier_id: IT.id,
+        secteur_activite_id: IT.id,
       },
     });
 
-    // const freelance2 = await prisma.freelance.create({
-    //   data: {
-    //     freelance_id: freelanceUser2.id,
-    //     metier_id: metierConsultant.id,
-    //   },
-    // });
-
-    // const freelance3 = await prisma.freelance.create({
-    //   data: {
-    //     freelance_id: freelanceUser3.id,
-    //     metier_id: metierDesigner.id,
-    //   },
-    // });
-
-    // const freelance4 = await prisma.freelance.create({
-    //   data: {
-    //     freelance_id: freelanceUser4.id,
-    //     metier_id: metierDataScientist.id,
-    //   },
-    // });
-
-    // const freelance5 = await prisma.freelance.create({
-    //   data: {
-    //     freelance_id: freelanceUser5.id,
-    //     metier_id: metierMarketing.id,
-    //   },
-    // });
-
-    // Create company admin users for each portage company
-    // const staAdminUser = await createUser({
-    //   first_name: 'Sophie',
-    //   last_name: 'Directeur',
-    //   email: 'directeur@sta-portage.com',
-    //   role: 'COMPANY',
-    //   phone_number: '+33123456790',
-    //   status: true,
-    //   email_verified: true,
-    //   sex: 'FEMALE',
-    // });
-
-    // const itgAdminUser = await createUser({
-    //   first_name: 'Marc',
-    //   last_name: 'Responsable',
-    //   email: 'commercial@itg-portage.com',
-    //   role: 'COMPANY',
-    //   phone_number: '+33123456791',
-    //   status: true,
-    //   email_verified: true,
-    //   sex: 'MALE',
-    // });
-
-    // const freelanceAdminUser = await createUser({
-    //   first_name: 'Claire',
-    //   last_name: 'Laurent',
-    //   email: 'contact@freelance-plus.com',
-    //   role: 'COMPANY',
-    //   phone_number: '+33123456792',
-    //   status: true,
-    //   email_verified: true,
-    //   sex: 'FEMALE',
-    // });
-
-    // Create the main portage companies
+    // Create the main portage companies (with new nullable fields)
     const unitPortage = await createCompany({
       admin_user_id: adminUnitPortageCompany.id,
       name: 'UNIT PORTAGE',
       description:
-        'UNIT PORTAGE est une société de portage salarial à taille humaine, qui a pour mission d’accompagner les travailleurs indépendants dans la réussite de leur activité. Nous sommes fiers de mettre en avant l’accompagnement, la transparence et l’éthique dans toutes les actions de notre entreprise. Notre modèle de portage salarial est basé sur une transparence totale. Nous vous donnons toutes les informations nécessaires pour comprendre les coûts liés à notre prestation et vous garantissons qu’il n’y a aucuns frais cachés sur nos frais de gestion et aucun charges sociales supplémentaire',
+        "UNIT PORTAGE est une société de portage salarial à taille humaine, qui a pour mission d'accompagner les travailleurs indépendants dans la réussite de leur activité. Nous sommes fiers de mettre en avant l'accompagnement, la transparence et l'éthique dans toutes les actions de notre entreprise. Notre modèle de portage salarial est basé sur une transparence totale. Nous vous donnons toutes les informations nécessaires pour comprendre les coûts liés à notre prestation et vous garantissons qu'il n'y a aucuns frais cachés sur nos frais de gestion et aucun charges sociales supplémentaire",
       logo: 'https://lillinker.com/logos/sta-portage.png',
       siret: '900571803',
       consultant_count: 90,
       management_fees: 5,
       is_portage: true,
+      date_creation: new Date('2015-03-15'),
+      chiffre_affaires: 2500000,
+      adresse: '123 Rue de la République, 75011 Paris',
+      site_web: 'https://unit-portage.fr',
+      convention_collective: 'Convention collective du portage salarial',
+      code_naf_ape: '7830Z',
     });
 
-    // Link companies to metiers (many-to-many relationship)
-    await prisma.companyMetier.createMany({
+    // Link companies to secteurs activités (updated table name)
+    await prisma.secteurActiviteCompany.createMany({
       data: [
         // unitPortage
-        { company_id: unitPortage.id, metier_id: IT.id },
-        { company_id: unitPortage.id, metier_id: ACCOUNTING.id },
-        { company_id: unitPortage.id, metier_id: FINANCE.id },
-        { company_id: unitPortage.id, metier_id: MARKETING.id },
-        { company_id: unitPortage.id, metier_id: HR.id },
-        { company_id: unitPortage.id, metier_id: EVENT.id },
-        { company_id: unitPortage.id, metier_id: BUILDING.id },
-        { company_id: unitPortage.id, metier_id: REAL_ESTATE.id },
-        { company_id: unitPortage.id, metier_id: AUTOMOTIVE.id },
-        { company_id: unitPortage.id, metier_id: PERSONAL_SERVICES.id },
-        { company_id: unitPortage.id, metier_id: SPORT.id },
-        { company_id: unitPortage.id, metier_id: OTHER.id },
+        { company_id: unitPortage.id, secteur_activite_id: IT.id },
+        { company_id: unitPortage.id, secteur_activite_id: ACCOUNTING.id },
+        { company_id: unitPortage.id, secteur_activite_id: FINANCE.id },
+        { company_id: unitPortage.id, secteur_activite_id: MARKETING.id },
+        { company_id: unitPortage.id, secteur_activite_id: HR.id },
+        { company_id: unitPortage.id, secteur_activite_id: EVENT.id },
+        { company_id: unitPortage.id, secteur_activite_id: BUILDING.id },
+        { company_id: unitPortage.id, secteur_activite_id: REAL_ESTATE.id },
+        { company_id: unitPortage.id, secteur_activite_id: AUTOMOTIVE.id },
+        { company_id: unitPortage.id, secteur_activite_id: PERSONAL_SERVICES.id },
+        { company_id: unitPortage.id, secteur_activite_id: SPORT.id },
+        { company_id: unitPortage.id, secteur_activite_id: OTHER.id },
       ],
     });
 
-    // Create portage associations (professional associations)
-    const peps = await prisma.portage.create({
+    // Create label syndicats (renamed from portage associations)
+    const peps = await prisma.labelSyndicat.create({
       data: {
         name: "PEPS (Syndicat des Professionnels de l'Emploi)",
         description: 'Syndicat national des entreprises de portage salarial en France',
+        logo: 'https://example.com/logos/peps.png',
       },
     });
 
-    const feps = await prisma.portage.create({
+    const feps = await prisma.labelSyndicat.create({
       data: {
         name: 'FEPS (Fédération des Entreprises de Portage Salarial)',
         description: 'Fédération regroupant les principales entreprises de portage salarial',
+        logo: 'https://example.com/logos/feps.png',
       },
     });
 
-    const sneps = await prisma.portage.create({
+    const sneps = await prisma.labelSyndicat.create({
       data: {
         name: 'SNEPS (Syndicat National des Entreprises de Portage Salarial)',
         description:
           'Organisation professionnelle représentant les entreprises de portage salarial',
+        logo: null,
       },
     });
 
-    // Link portage companies to professional associations
-    await prisma.companyPortage.createMany({
+    // Link portage companies to professional associations (updated table name)
+    await prisma.companyLabel.createMany({
       data: [
-        // STA Portage is member of multiple associations
-        { company_id: unitPortage.id, portage_id: peps.id },
-        { company_id: unitPortage.id, portage_id: feps.id },
-        { company_id: unitPortage.id, portage_id: sneps.id },
+        // UNIT Portage is member of multiple associations
+        { company_id: unitPortage.id, label_syndicat_id: peps.id },
+        { company_id: unitPortage.id, label_syndicat_id: feps.id },
+        { company_id: unitPortage.id, label_syndicat_id: sneps.id },
       ],
     });
 
-    // // Create manager users
-    // const managerUser1 = await createUser({
-    //   first_name: 'Claire',
-    //   last_name: 'Laurent',
-    //   email: 'claire.laurent@sta-portage.com',
-    //   role: 'MANAGER',
-    //   phone_number: '+33123456798',
-    //   status: true,
-    //   email_verified: true,
-    //   sex: 'FEMALE',
-    // });
-
-    // const managerUser2 = await createUser({
-    //   first_name: 'Antoine',
-    //   last_name: 'Dupont',
-    //   email: 'antoine.dupont@itg-portage.com',
-    //   role: 'MANAGER',
-    //   phone_number: '+33123456799',
-    //   status: true,
-    //   email_verified: true,
-    //   sex: 'MALE',
-    // });
-
-    // // Create company manager relationships
-    // await prisma.companyManager.createMany({
-    //   data: [
-    //     { company_id: staPortage.id, user_id: managerUser1.id },
-    //     { company_id: itgPortage.id, user_id: managerUser2.id },
-    //   ],
-    // });
-
-    // Create platform services for portage salarial
+    // Create platform services for portage salarial (updated nullable fields)
     const platformService1 = await prisma.platformService.create({
       data: {
         user_id: adminPlateforme.id,
         label: 'Une avance sur salaire',
-        description: 'paiement mensuel même si le client n’a pas encore réglé la facture',
-        data_type: 'NUMBER',
+        description: 'paiement mensuel même si le client n\'a pas encore réglé la facture',
+        data_type: null,
         requires_data: false,
-        data_label: '',
-        data_description: '',
+        data_label: null,
+        data_description: null,
         status: 'ACTIVE',
       },
     });
     const platformService2 = await prisma.platformService.create({
       data: {
         user_id: adminPlateforme.id,
-        label: 'Une fin de contrat avec repture conventionnel ',
+        label: 'Une fin de contrat avec rupture conventionnelle',
         description:
-          'La rupture conventionnelle est une modalité de fin de contrat amiable entre le salarié porté et la société de portage.Elle permet de mettre fin au CDI de portage salarial (s’il existe) d’un commun accord, tout en donnant droit aux allocations chômage.',
-        data_type: 'NUMBER',
+          'La rupture conventionnelle est une modalité de fin de contrat amiable entre le salarié porté et la société de portage. Elle permet de mettre fin au CDI de portage salarial (s\'il existe) d\'un commun accord, tout en donnant droit aux allocations chômage.',
+        data_type: null,
         requires_data: false,
-        data_label: '',
-        data_description: '',
+        data_label: null,
+        data_description: null,
         status: 'ACTIVE',
       },
     });
@@ -448,11 +315,11 @@ async function main(): Promise<void> {
         user_id: adminPlateforme.id,
         label: 'Un interlocuteur unique dédié',
         description:
-          'Bénéficiez d’un interlocuteur unique dédié qui connaît votre dossier et vous accompagne au quotidien. Vous gagnez en réactivité, en simplicité et en sérénité dans la gestion de vos missions et de votre rémunération.',
-        data_type: 'NUMBER',
+          'Bénéficiez d n\'un interlocuteur unique dédié qui connaît votre dossier et vous accompagne au quotidien. Vous gagnez en réactivité, en simplicité et en sérénité dans la gestion de vos missions et de votre rémunération.',
+        data_type: null,
         requires_data: false,
-        data_label: '',
-        data_description: '',
+        data_label: null,
+        data_description: null,
         status: 'ACTIVE',
       },
     });
@@ -462,10 +329,10 @@ async function main(): Promise<void> {
         label: 'Rétrocession de la TVA sur frais professionnels',
         description:
           'Possibilité de récupérer la TVA payée sur vos dépenses professionnelles (déplacements, matériel, abonnements…), ce qui réduit directement le coût réel de vos frais.',
-        data_type: 'NUMBER',
+        data_type: null,
         requires_data: false,
-        data_label: '',
-        data_description: '',
+        data_label: null,
+        data_description: null,
         status: 'ACTIVE',
       },
     });
@@ -482,97 +349,6 @@ async function main(): Promise<void> {
         status: 'ACTIVE',
       },
     });
-
-    // const platformService2 = await prisma.platformService.create({
-    //   data: {
-    //     user_id: adminPlateforme.id,
-    //     label: 'Services Inclus',
-    //     description: 'Services additionnels proposés par la société de portage',
-    //      data_type: 'SELECT',
-    //     requires_data: false,
-    //     data_label: 'Services proposés',
-    //     data_description: 'Sélectionnez les services inclus dans votre offre',
-    //     choices: [
-    //       'Assurance RC Pro',
-    //       'Formation continue',
-    //       'Assistance juridique',
-    //       'Gestion administrative',
-    //       'Accompagnement commercial',
-    //       'Mutuelle collective',
-    //       'Prévoyance',
-    //       'CSE (Comité Social et Économique)',
-    //    ],
-    //     status: 'ACTIVE',
-    //   },
-    // });
-
-    // const platformService3 = await prisma.platformService.create({
-    //   data: {
-    //     user_id: adminPlateforme.id,
-    //     label: 'Délai de Paiement',
-    //     description: 'Délai de versement du salaire après facturation client',
-    //     data_type: 'SELECT',
-    //     requires_data: true,
-    //     data_label: 'Délai de paiement',
-    //     data_description: 'Délai habituel pour le versement du salaire',
-    //     choices: ['15 jours', '30 jours', '45 jours', '60 jours'],
-    //     status: 'ACTIVE',
-    //   },
-    // });
-
-    // const platformService4 = await prisma.platformService.create({
-    //   data: {
-    //     user_id: adminPlateforme.id,
-    //     label: 'Frais de Dossier',
-    //     description: "Frais d'ouverture et de gestion du dossier consultant",
-    //     data_type: 'NUMBER',
-    //     requires_data: false,
-    //     data_label: 'Frais de dossier (€)',
-    //     data_description: "Montant des frais d'ouverture de dossier",
-    //     status: 'ACTIVE',
-    //   },
-    // });
-
-    // const platformService5 = await prisma.platformService.create({
-    //   data: {
-    //     user_id: adminPlateforme.id,
-    //     label: 'Type de Contrat',
-    //     description: 'Type de contrat de portage proposé',
-    //     data_type: 'RADIO',
-    //     requires_data: true,
-    //     data_label: 'Type de contrat',
-    //     data_description: 'Sélectionnez le type de contrat de portage',
-    //     choices: ['CDI', 'CDD'],
-    //     status: 'ACTIVE',
-    //   },
-    // });
-
-    // const platformService6 = await prisma.platformService.create({
-    //   data: {
-    //     user_id: adminPlateforme.id,
-    //     label: 'Description des Services',
-    //     description: 'Description détaillée des services proposés par la société de portage',
-    //     data_type: 'TEXT',
-    //     requires_data: false,
-    //     data_label: 'Description des services',
-    //     data_description: 'Décrivez en détail les services que vous proposez aux consultants',
-    //     status: 'ACTIVE',
-    //   },
-    // });
-
-    // const platformService7 = await prisma.platformService.create({
-    //   data: {
-    //     user_id: adminPlateforme.id,
-    //     label: 'Avance sur Salaire',
-    //     description: "Possibilité d'obtenir une avance sur le salaire en cours de mission",
-    //     data_type: 'RADIO',
-    //     requires_data: true,
-    //     data_label: 'Avance sur salaire disponible',
-    //     data_description: 'Proposez-vous des avances sur salaire ?',
-    //     choices: ['Oui', 'Non', 'Selon conditions'],
-    //     status: 'ACTIVE',
-    //   },
-    // });
 
     // Create company services
     await prisma.companyService.createMany({
@@ -609,7 +385,7 @@ async function main(): Promise<void> {
       data: {
         company_id: unitPortage.id,
         label: 'France Travail',
-        description: 'Gère l’assurance chômage.',
+        description: 'Gère ln\'assurance chômage.',
       },
     });
 
@@ -632,7 +408,7 @@ async function main(): Promise<void> {
     const rcPro = await prisma.organisme.create({
       data: {
         company_id: unitPortage.id,
-        label: 'Couvrir les risques liés à l’activité du consultant (erreurs, litiges client).',
+        label: 'Couvrir les risques liés à ln\'activité du consultant (erreurs, litiges client).',
         description: 'Autres contributions',
       },
     });
@@ -644,7 +420,7 @@ async function main(): Promise<void> {
           organisme_id: urssafSecSoc.id,
           label: 'Maladie, maternité, invalidité, décès',
           description:
-            'Financement des soins de santé, arrêts maladie, maternité/paternité, indemnités en cas d’invalidité ou décès.',
+            'Financement des soins de santé, arrêts maladie, maternité/paternité, indemnités en cas dn\'invalidité ou décès.',
           type: 'PATRONAL',
           pourcentage_salarial: 7,
         },
@@ -678,7 +454,7 @@ async function main(): Promise<void> {
           organisme_id: urssafSecSoc.id,
           label: 'Accident du travail',
           description:
-            'Financement des indemnités en cas d’accidents professionnels ou maladies professionnelles.',
+            'Financement des indemnités en cas dn\'accidents professionnels ou maladies professionnelles.',
           type: 'PATRONAL',
           pourcentage_patronal: 0.9,
         },
@@ -711,16 +487,16 @@ async function main(): Promise<void> {
           organisme_id: franceTravail.id,
           label:
             'AGS (Association pour la Gestion du régime de garantie des créances des Salariés)',
-          description: 'Couvre les salaires impayés en cas de faillite de l’employeur.',
+          description: 'Couvre les salaires impayés en cas de faillite de ln\'employeur.',
           type: 'PATRONAL',
           pourcentage_patronal: 0.15,
         },
 
         {
           organisme_id: retraiteComplementaire.id,
-          label: 'Tranche 1 (jusqu’à 1 PASS ~3 864 €/mois)',
+          label: 'Tranche 1 (jusqun\'à 1 PASS ~3 864 €/mois)',
           description:
-            'Retraite complémentaire pour les salaires jusqu’à 1 PASS (Plafond Annuel de la Sécurité Sociale)',
+            'Retraite complémentaire pour les salaires jusqun\'à 1 PASS (Plafond Annuel de la Sécurité Sociale)',
           type: 'DEUX',
           pourcentage_salarial: 3.15,
           pourcentage_patronal: 4.72,
@@ -737,9 +513,9 @@ async function main(): Promise<void> {
         },
         {
           organisme_id: retraiteComplementaire.id,
-          label: 'CEG (Contribution d’Équilibre Général)',
+          label: 'CEG (Contribution dn\'Équilibre Général)',
           description:
-            'Cotisation additionnelle pour assurer l’équilibre financier du régime de retraite complémentaire.',
+            'Cotisation additionnelle pour assurer ln\'équilibre financier du régime de retraite complémentaire.',
           type: 'DEUX',
           pourcentage_salarial: 0.86,
           pourcentage_patronal: 1.29,
@@ -755,7 +531,7 @@ async function main(): Promise<void> {
         },
         {
           organisme_id: autresContributions.id,
-          label: 'FNAL (Fonds National d’Aide au Logement)',
+          label: 'FNAL (Fonds National dn\'Aide au Logement)',
           description: 'Financement des aides au logement pour les salariés.',
           type: 'PATRONAL',
           pourcentage_patronal: 0.1,
@@ -769,7 +545,7 @@ async function main(): Promise<void> {
         },
         {
           organisme_id: autresContributions.id,
-          label: 'Taxe d’apprentissage',
+          label: 'Taxe dn\'apprentissage',
           description: 'Financement des formations technologiques et professionnelles.',
           type: 'PATRONAL',
           pourcentage_patronal: 0.68,
@@ -793,7 +569,7 @@ async function main(): Promise<void> {
           organisme_id: rcPro.id,
           label: 'RC Pro (Responsabilité civile professionnelle)',
           description:
-            'Couvrir les risques liés à l’activité du consultant (erreurs, litiges client).  ',
+            'Couvrir les risques liés à ln\'activité du consultant (erreurs, litiges client).  ',
           type: 'PATRONAL',
           pourcentage_patronal: 0,
         },
@@ -818,77 +594,11 @@ async function main(): Promise<void> {
       },
     });
 
-    // const freelanceRequest2 = await prisma.freelanceRequest.create({
-    //   data: {
-    //     freelance_id: freelance2.id,
-    //     mission_status: 'PENDING',
-    //     client_name: 'Cabinet de Conseil Lyon',
-    //     client_address: '15 Place Bellecour, 69002 Lyon',
-    //     client_sector: 'Conseil et Transformation Digitale',
-    //     priority: 'MEDIUM',
-    //     tjm: 650.0,
-    //     days: 45.0,
-    //     wants_portage: true,
-    //     want_salaried: false,
-    //     start_date: new Date('2025-10-15'),
-    //   },
-    // });
-
-    // const freelanceRequest3 = await prisma.freelanceRequest.create({
-    //   data: {
-    //     freelance_id: freelance3.id,
-    //     mission_status: 'OPEN',
-    //     client_name: 'Startup Innovante',
-    //     client_address: "10 Avenue de l'Innovation, 75015 Paris",
-    //     client_sector: 'Design et UX',
-    //     priority: 'HIGH',
-    //     tjm: 450.0,
-    //     days: 20.0,
-    //     wants_portage: true,
-    //     want_salaried: true,
-    //     salary: 3800.0,
-    //     start_date: new Date('2025-08-20'),
-    //   },
-    // });
-
-    // const freelanceRequest4 = await prisma.freelanceRequest.create({
-    //   data: {
-    //     freelance_id: freelance4.id,
-    //     mission_status: 'CLOSED',
-    //     client_name: 'Entreprise Data',
-    //     client_address: '5 Rue des Données, 69003 Lyon',
-    //     client_sector: 'Intelligence Artificielle',
-    //     priority: 'LOW',
-    //     tjm: 700.0,
-    //     days: 60.0,
-    //     wants_portage: false,
-    //     want_salaried: false,
-    //     start_date: new Date('2025-07-01'),
-    //   },
-    // });
-
-    // const freelanceRequest5 = await prisma.freelanceRequest.create({
-    //   data: {
-    //     freelance_id: freelance5.id,
-    //     mission_status: 'OPEN',
-    //     client_name: 'Agence Marketing 360',
-    //     client_address: '20 Boulevard du Marketing, 33000 Bordeaux',
-    //     client_sector: 'Marketing Digital',
-    //     priority: 'MEDIUM',
-    //     tjm: 400.0,
-    //     days: 40.0,
-    //     wants_portage: true,
-    //     want_salaried: true,
-    //     salary: 3200.0,
-    //     start_date: new Date('2025-09-15'),
-    //   },
-    // });
-
-    // Link freelance requests to portage preferences
-    await prisma.freelanceRequestPortage.createMany({
+    // Link freelance requests to label syndicat preferences (updated table name)
+    await prisma.requestLabelSelected.createMany({
       data: [
-        { freelance_request_id: freelanceRequest1.id, portage_id: peps.id },
-        { freelance_request_id: freelanceRequest1.id, portage_id: feps.id },
+        { freelance_request_id: freelanceRequest1.id, label_syndicat_id: peps.id },
+        { freelance_request_id: freelanceRequest1.id, label_syndicat_id: feps.id },
       ],
     });
 
@@ -904,94 +614,6 @@ async function main(): Promise<void> {
             text: 'Recherche le meilleur taux de gestion possible pour une mission de 30 jours',
           },
         },
-        // {
-        //   freelance_request_id: freelanceRequest1.id,
-        //   service_option_id: platformService2.id,
-        //   is_required: true,
-        //   response_data: {
-        //     selected: ['Assurance RC Pro', 'Formation continue', 'Gestion administrative'],
-        //   },
-        // },
-        // {
-        //   freelance_request_id: freelanceRequest1.id,
-        //   service_option_id: platformService3.id,
-        //   is_required: true,
-        //   response_data: { selected: '30 jours' },
-        // },
-        // {
-        //   freelance_request_id: freelanceRequest1.id,
-        //   service_option_id: platformService5.id,
-        //   is_required: false,
-        //   response_data: { selected: 'CDI' },
-        // },
-        // // Request 2 options
-        // {
-        //   freelance_request_id: freelanceRequest2.id,
-        //   service_option_id: platformService1.id,
-        //   is_required: true,
-        //   response_data: {
-        //     text: 'Mission longue durée, recherche taux préférentiel',
-        //   },
-        // },
-        // {
-        //   freelance_request_id: freelanceRequest2.id,
-        //   service_option_id: platformService2.id,
-        //   is_required: true,
-        //   response_data: {
-        //     selected: ['Assurance RC Pro', 'Assistance juridique', 'Accompagnement commercial'],
-        //   },
-        // },
-        // {
-        //   freelance_request_id: freelanceRequest2.id,
-        //   service_option_id: platformService7.id,
-        //   is_required: false,
-        //   response_data: { selected: 'Oui' },
-        // },
-        // // Request 3 options
-        // {
-        //   freelance_request_id: freelanceRequest3.id,
-        //   service_option_id: platformService1.id,
-        //   is_required: true,
-        //   response_data: {
-        //     text: "Première mission en portage, besoin d'accompagnement",
-        //   },
-        // },
-        // {
-        //   freelance_request_id: freelanceRequest3.id,
-        //   service_option_id: platformService2.id,
-        //   is_required: true,
-        //   response_data: {
-        //     selected: [
-        //       'Assurance RC Pro',
-        //       'Formation continue',
-        //       'Gestion administrative',
-        //       'Mutuelle collective',
-        //     ],
-        //   },
-        // },
-        // {
-        //   freelance_request_id: freelanceRequest3.id,
-        //   service_option_id: platformService3.id,
-        //   is_required: true,
-        //   response_data: { selected: '15 jours' },
-        // },
-        // // Request 5 options
-        // {
-        //   freelance_request_id: freelanceRequest5.id,
-        //   service_option_id: platformService1.id,
-        //   is_required: true,
-        //   response_data: {
-        //     text: 'Spécialiste marketing digital, recherche société de portage spécialisée',
-        //   },
-        // },
-        // {
-        //   freelance_request_id: freelanceRequest5.id,
-        //   service_option_id: platformService2.id,
-        //   is_required: false,
-        //   response_data: {
-        //     selected: ['Formation continue', 'Accompagnement commercial'],
-        //   },
-        // },
       ],
     });
 
@@ -1060,458 +682,18 @@ async function main(): Promise<void> {
       },
     });
 
-    // const response1Itg = await prisma.companyResponse.create({
-    //   data: {
-    //     request_id: freelanceRequest1.id,
-    //     company_id: itgPortage.id,
-    //     response_data: {
-    //       services: [
-    //         {
-    //           service_id: platformService1.id,
-    //           service_name: 'Taux de Gestion',
-    //           service_description: 'Pourcentage prélevé par la société de portage',
-    //           is_available: true,
-    //           management_fee: 7.8,
-    //           comment: 'Taux spécialement compétitif pour les métiers IT',
-    //         },
-    //         {
-    //           service_id: platformService2.id,
-    //           service_name: 'Services Inclus',
-    //           service_description: 'Services additionnels proposés',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: 'Assurance RC Pro, Assistance juridique, Formation technique',
-    //         },
-    //         {
-    //           service_id: platformService3.id,
-    //           service_name: 'Délai de Paiement',
-    //           service_description: 'Délai de versement du salaire après facturation',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: '15 jours - Paiement rapide',
-    //         },
-    //         {
-    //           service_id: platformService4.id,
-    //           service_name: 'Frais de Dossier',
-    //           service_description: "Frais d'ouverture et de gestion du dossier",
-    //           is_available: false,
-    //           management_fee: 0,
-    //           comment: 'Aucun frais de dossier',
-    //         },
-    //       ],
-    //       selected_organismes: [
-    //         {
-    //           organisme_id: urssafItg.id,
-    //           label: 'URSSAF',
-    //           total_patronal: 1820.3,
-    //           total_salarial: 1180.25,
-    //         },
-    //         {
-    //           organisme_id: poleEmploiItg.id,
-    //           label: 'Pôle Emploi',
-    //           total_patronal: 410.5,
-    //           total_salarial: 275.8,
-    //         },
-    //       ],
-    //     },
-    //   },
-    // });
-
-    // const response1Freelance = await prisma.companyResponse.create({
-    //   data: {
-    //     request_id: freelanceRequest1.id,
-    //     company_id: freelancePlus.id,
-    //     response_data: {
-    //       services: [
-    //         {
-    //           service_id: platformService1.id,
-    //           service_name: 'Taux de Gestion',
-    //           service_description: 'Pourcentage prélevé par la société de portage',
-    //           is_available: true,
-    //           management_fee: 6.9,
-    //           comment: 'Le meilleur taux du marché',
-    //         },
-    //         {
-    //           service_id: platformService2.id,
-    //           service_name: 'Services Inclus',
-    //           service_description: 'Services additionnels proposés',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: 'Assurance RC Pro, Plateforme digitale, Support 24/7',
-    //         },
-    //         {
-    //           service_id: platformService3.id,
-    //           service_name: 'Délai de Paiement',
-    //           service_description: 'Délai de versement du salaire après facturation',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: '15 jours via plateforme digitale',
-    //         },
-    //         {
-    //           service_id: platformService6.id,
-    //           service_name: 'Description des Services',
-    //           service_description: 'Description détaillée des services proposés',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: 'Portage 100% digital avec interface moderne et intuitive',
-    //         },
-    //       ],
-    //       selected_organismes: [
-    //         {
-    //           organisme_id: urssafSta.id,
-    //           label: 'URSSAF',
-    //           total_patronal: 1780.0,
-    //           total_salarial: 1150.0,
-    //         },
-    //       ],
-    //     },
-    //   },
-    // });
-
-    // const response2Sta = await prisma.companyResponse.create({
-    //   data: {
-    //     request_id: freelanceRequest2.id,
-    //     company_id: staPortage.id,
-    //     response_data: {
-    //       services: [
-    //         {
-    //           service_id: platformService1.id,
-    //           service_name: 'Taux de Gestion',
-    //           service_description: 'Pourcentage prélevé par la société de portage',
-    //           is_available: true,
-    //           management_fee: 8.0,
-    //           comment: 'Taux préférentiel pour missions longue durée',
-    //         },
-    //         {
-    //           service_id: platformService2.id,
-    //           service_name: 'Services Inclus',
-    //           service_description: 'Services additionnels proposés',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment:
-    //             'Assurance RC Pro, Assistance juridique, Accompagnement commercial, Formation continue',
-    //         },
-    //         {
-    //           service_id: platformService3.id,
-    //           service_name: 'Délai de Paiement',
-    //           service_description: 'Délai de versement du salaire après facturation',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: '30 jours',
-    //         },
-    //         {
-    //           service_id: platformService4.id,
-    //           service_name: 'Frais de Dossier',
-    //           service_description: "Frais d'ouverture et de gestion du dossier",
-    //           is_available: true,
-    //           management_fee: 100,
-    //           comment: 'Frais réduits pour mission longue',
-    //         },
-    //         {
-    //           service_id: platformService5.id,
-    //           service_name: 'Type de Contrat',
-    //           service_description: 'Type de contrat de portage proposé',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: 'CDI disponible pour missions longues',
-    //         },
-    //       ],
-    //       selected_organismes: [
-    //         {
-    //           organisme_id: urssafSta.id,
-    //           label: 'URSSAF',
-    //           total_patronal: 2850.5,
-    //           total_salarial: 1850.25,
-    //         },
-    //         {
-    //           organisme_id: poleEmploiSta.id,
-    //           label: 'Pôle Emploi',
-    //           total_patronal: 620.0,
-    //           total_salarial: 420.5,
-    //         },
-    //         {
-    //           organisme_id: retraiteSta.id,
-    //           label: 'Caisse de Retraite',
-    //           total_patronal: 980.75,
-    //           total_salarial: 735.25,
-    //         },
-    //       ],
-    //     },
-    //   },
-    // });
-
-    // const response3Itg = await prisma.companyResponse.create({
-    //   data: {
-    //     request_id: freelanceRequest3.id,
-    //     company_id: itgPortage.id,
-    //     response_data: {
-    //       services: [
-    //         {
-    //           service_id: platformService1.id,
-    //           service_name: 'Taux de Gestion',
-    //           service_description: 'Pourcentage prélevé par la société de portage',
-    //           is_available: true,
-    //           management_fee: 7.5,
-    //           comment: 'Taux spécialisé pour designers UX/UI',
-    //         },
-    //         {
-    //           service_id: platformService2.id,
-    //           service_name: 'Services Inclus',
-    //           service_description: 'Services additionnels proposés',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment:
-    //             'Assurance RC Pro, Formation design, Outils Adobe inclus, Mutuelle collective',
-    //         },
-    //         {
-    //           service_id: platformService3.id,
-    //           service_name: 'Délai de Paiement',
-    //           service_description: 'Délai de versement du salaire après facturation',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: '15 jours',
-    //         },
-    //         {
-    //           service_id: platformService4.id,
-    //           service_name: 'Frais de Dossier',
-    //           service_description: "Frais d'ouverture et de gestion du dossier",
-    //           is_available: true,
-    //           management_fee: 50,
-    //           comment: 'Frais réduits pour la communauté créative',
-    //         },
-    //         {
-    //           service_id: platformService6.id,
-    //           service_name: 'Description des Services',
-    //           service_description: 'Description détaillée des services proposés',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: 'Spécialisation design avec accès aux outils Adobe et communauté créative',
-    //         },
-    //       ],
-    //       selected_organismes: [
-    //         {
-    //           organisme_id: urssafItg.id,
-    //           label: 'URSSAF',
-    //           total_patronal: 1580.75,
-    //           total_salarial: 1050.25,
-    //         },
-    //         {
-    //           organisme_id: poleEmploiItg.id,
-    //           label: 'Pôle Emploi',
-    //           total_patronal: 350.5,
-    //           total_salarial: 240.8,
-    //         },
-    //       ],
-    //     },
-    //   },
-    // });
-
-    // const response5Freelance = await prisma.companyResponse.create({
-    //   data: {
-    //     request_id: freelanceRequest5.id,
-    //     company_id: freelancePlus.id,
-    //     response_data: {
-    //       services: [
-    //         {
-    //           service_id: platformService1.id,
-    //           service_name: 'Taux de Gestion',
-    //           service_description: 'Pourcentage prélevé par la société de portage',
-    //           is_available: true,
-    //           management_fee: 6.9,
-    //           comment: 'Taux spécialisé marketing digital',
-    //         },
-    //         {
-    //           service_id: platformService2.id,
-    //           service_name: 'Services Inclus',
-    //           service_description: 'Services additionnels proposés',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: 'Formation marketing, Outils Google Ads, Accompagnement commercial',
-    //         },
-    //         {
-    //           service_id: platformService3.id,
-    //           service_name: 'Délai de Paiement',
-    //           service_description: 'Délai de versement du salaire après facturation',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: '15 jours via plateforme digitale',
-    //         },
-    //         {
-    //           service_id: platformService6.id,
-    //           service_name: 'Description des Services',
-    //           service_description: 'Description détaillée des services proposés',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment:
-    //             "Spécialisation marketing digital avec accès aux outils premium et réseau d'experts",
-    //         },
-    //         {
-    //           service_id: platformService7.id,
-    //           service_name: 'Avance sur Salaire',
-    //           service_description: "Possibilité d'obtenir une avance sur le salaire",
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: 'Oui, selon conditions',
-    //         },
-    //       ],
-    //       selected_organismes: [
-    //         {
-    //           organisme_id: urssafSta.id,
-    //           label: 'URSSAF',
-    //           total_patronal: 1420.5,
-    //           total_salarial: 920.75,
-    //         },
-    //         {
-    //           organisme_id: poleEmploiSta.id,
-    //           label: 'Pôle Emploi',
-    //           total_patronal: 290.8,
-    //           total_salarial: 195.25,
-    //         },
-    //       ],
-    //     },
-    //   },
-    // });
-
-    // // Add response for freelanceRequest4 (Data Science mission)
-    // const response4Itg = await prisma.companyResponse.create({
-    //   data: {
-    //     request_id: freelanceRequest4.id,
-    //     company_id: itgPortage.id,
-    //     response_data: {
-    //       services: [
-    //         {
-    //           service_id: platformService1.id,
-    //           service_name: 'Taux de Gestion',
-    //           service_description: 'Pourcentage prélevé par la société de portage',
-    //           is_available: true,
-    //           management_fee: 7.2,
-    //           comment: 'Taux spécialisé pour experts Data Science',
-    //         },
-    //         {
-    //           service_id: platformService2.id,
-    //           service_name: 'Services Inclus',
-    //           service_description: 'Services additionnels proposés',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment:
-    //             'Assurance RC Pro, Formation IA/ML, Accès outils analytics, Support technique',
-    //         },
-    //         {
-    //           service_id: platformService3.id,
-    //           service_name: 'Délai de Paiement',
-    //           service_description: 'Délai de versement du salaire après facturation',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment: '15 jours',
-    //         },
-    //         {
-    //           service_id: platformService6.id,
-    //           service_name: 'Description des Services',
-    //           service_description: 'Description détaillée des services proposés',
-    //           is_available: true,
-    //           management_fee: 0,
-    //           comment:
-    //             'Expertise Data Science avec accès aux derniers outils et formations spécialisées',
-    //         },
-    //       ],
-    //       selected_organismes: [
-    //         {
-    //           organisme_id: urssafItg.id,
-    //           label: 'URSSAF',
-    //           total_patronal: 3200.75,
-    //           total_salarial: 2100.5,
-    //         },
-    //         {
-    //           organisme_id: poleEmploiItg.id,
-    //           label: 'Pôle Emploi',
-    //           total_patronal: 850.25,
-    //           total_salarial: 580.75,
-    //         },
-    //       ],
-    //     },
-    //   },
-    // });
-
     // Link company responses to organismes (simplified - detailed data is now in response_data JSON)
     await prisma.companyResponseOrganisme.createMany({
       data: [
-        // Response 1 STA organismes
+        // Response 1 UNIT organismes
         { company_response_id: response1UnitPortage.id, organisme_id: urssafSecSoc.id },
         { company_response_id: response1UnitPortage.id, organisme_id: franceTravail.id },
         { company_response_id: response1UnitPortage.id, organisme_id: retraiteComplementaire.id },
-
-        // // Response 1 ITG organismes
-        // { company_response_id: response1Itg.id, organisme_id: urssafItg.id },
-        // { company_response_id: response1Itg.id, organisme_id: poleEmploiItg.id },
-
-        // // Response 1 FreelancePlus organismes
-        // { company_response_id: response1Freelance.id, organisme_id: urssafSta.id },
-
-        // // Response 2 STA organismes
-        // { company_response_id: response2Sta.id, organisme_id: urssafSta.id },
-        // { company_response_id: response2Sta.id, organisme_id: poleEmploiSta.id },
-        // { company_response_id: response2Sta.id, organisme_id: retraiteSta.id },
-
-        // // Response 3 ITG organismes
-        // { company_response_id: response3Itg.id, organisme_id: urssafItg.id },
-        // { company_response_id: response3Itg.id, organisme_id: poleEmploiItg.id },
-
-        // // Response 4 ITG organismes (Data Science mission)
-        // { company_response_id: response4Itg.id, organisme_id: urssafItg.id },
-        // { company_response_id: response4Itg.id, organisme_id: poleEmploiItg.id },
-
-        // // Response 5 FreelancePlus organismes
-        // { company_response_id: response5Freelance.id, organisme_id: urssafSta.id },
-        // { company_response_id: response5Freelance.id, organisme_id: poleEmploiSta.id },
       ],
     });
 
-    // logger.info('Données de portage salarial créées avec succès!', {
-    //   summary: {
-    //     users: {
-    //       admin: adminUser.id,
-    //       companyAdmins: [staAdminUser.id, itgAdminUser.id, freelanceAdminUser.id],
-    //       managers: [managerUser1.id, managerUser2.id],
-    //       freelancers: [
-    //         freelanceUser1.id,
-    //         freelanceUser2.id,
-    //         freelanceUser3.id,
-    //         freelanceUser4.id,
-    //         freelanceUser5.id,
-    //       ],
-    //     },
-    //     companies: {
-    //       staPortage: staPortage.id,
-    //       itgPortage: itgPortage.id,
-    //       freelancePlus: freelancePlus.id,
-    //     },
-    //     metiers: 10,
-    //     portageAssociations: [peps.id, feps.id, sneps.id],
-    //     platformServices: 7,
-    //     freelanceRequests: 5,
-    //     companyResponses: 5,
-    //     organismes: {
-    //       staPortage: [urssafSta.id, poleEmploiSta.id, retraiteSta.id],
-    //       itgPortage: [urssafItg.id, poleEmploiItg.id],
-    //     },
-    //     cotisations: 6,
-    //   },
-    //   statistics: {
-    //     totalUsers: 13,
-    //     totalCompanies: 3,
-    //     totalFreelancers: 5,
-    //     totalRequests: 5,
-    //     totalResponses: 5,
-    //     averageManagementFee: 7.7,
-    //   },
-    //   notes: [
-    //     'Tous les mots de passe sont: Admin123!',
-    //     'Les sociétés de portage sont certifiées',
-    //     'Les freelancers ont des profils variés',
-    //     'Les cotisations sociales sont réalistes',
-    //     'Les réponses incluent des détails financiers',
-    //   ],
-    // });
+    logger.info('Database seeded successfully with updated schema!');
+
   } catch (e) {
     logger.error('Erreur lors du seeding de la base de données', e as Error);
     process.exit(1);
