@@ -58,7 +58,7 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
 
     return pages;
   };
-// show request details
+  // show request details
   if (selectedDemande) {
     return (
       <FreelanceRequestDetails
@@ -67,16 +67,16 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
       />
     );
   }
-// show request responses
-  if (selectedResponse !== -1){
+  // show request responses
+  if (selectedResponse !== -1) {
     return (
       <MesReponses
         requestId={selectedResponse}
         // onClose={() => setSelectedResponse(-1)}
       />
-    )
+    );
   }
-// show new form
+  // show new form
   if (showNewRequest) {
     return <NewRequest onClose={() => setShowNewRequest(false)} />;
   }
@@ -222,7 +222,11 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
                             />
                           </svg>
                         </button>
-                        <button onClick={()=> setSelectedResponse(demandeItem.id)} className="group" title="Voir les réponses">
+                        <button
+                          onClick={() => setSelectedResponse(demandeItem.id)}
+                          className="group"
+                          title="Voir les réponses"
+                        >
                           <svg
                             className="fill-current group-hover:text-green-500"
                             width="18"

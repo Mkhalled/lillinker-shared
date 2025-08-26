@@ -237,9 +237,7 @@ export class FreelanceService {
   /**
    * Get freelance request by request ID
    */
-  static async getFreelanceRequestByRequestId(
-    requestId: number
-  ) {
+  static async getFreelanceRequestByRequestId(requestId: number) {
     const logContext = {
       operation: 'getFreelanceRequestByRequestId',
       requestId,

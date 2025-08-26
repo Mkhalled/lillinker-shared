@@ -54,8 +54,8 @@ export interface ServiceResponse {
   comment: string;
   requirements?: Record<string, unknown>;
 }
-export interface fraisGestion{
-  manual:boolean;
+export interface fraisGestion {
+  manual: boolean;
   value: number;
 }
 export interface CompanyResponseRequest {
@@ -63,7 +63,6 @@ export interface CompanyResponseRequest {
   services: ServiceResponse[]; // Will be transformed to ServiceResponseData
   selected_organismes: SelectedOrganisme[];
   frais_de_gestion: fraisGestion;
-
 }
 
 export interface CompanyService {
@@ -91,7 +90,7 @@ export interface ExistingCompanyResponse {
   created_at: Date;
   updated_at: Date;
   organismes: CompanyResponseOrganisme[];
-  company ?: CompanyPayload
+  company?: CompanyPayload;
 }
 
 // === COMPONENT PROP INTERFACES ===

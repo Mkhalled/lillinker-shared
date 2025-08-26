@@ -1,5 +1,5 @@
 import { Shield, Zap, Users, Award, Clock, Star } from 'lucide-react';
-import { motion } from "motion/react";
+import { motion } from 'motion/react';
 
 const Features = () => {
   const features = [
@@ -48,7 +48,8 @@ const Features = () => {
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16">
+          className="text-center mb-16"
+        >
           <p className="text-[var(--primary-color)] font-semibold text-lg mb-4">FEATURES</p>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             We have Amazing <span className="text-[var(--primary-color)]">Service.</span>
@@ -59,11 +60,12 @@ const Features = () => {
           </p>
         </motion.div>
 
-         <motion.div
+        <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
           {features.map((feature, index) => (
             <div
               key={index}

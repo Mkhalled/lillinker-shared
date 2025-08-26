@@ -132,14 +132,16 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         if (existingResp.frais_de_gestion) {
           setManualFee(!!existingResp.frais_de_gestion.manual);
           setManualFeeValue(
-            existingResp.frais_de_gestion.value !== undefined && existingResp.frais_de_gestion.value !== null
+            existingResp.frais_de_gestion.value !== undefined &&
+              existingResp.frais_de_gestion.value !== null
               ? String(existingResp.frais_de_gestion.value)
               : ''
           );
         } else if (responseData?.frais_de_gestion) {
           setManualFee(!!responseData.frais_de_gestion.manual);
           setManualFeeValue(
-            responseData.frais_de_gestion.value !== undefined && responseData.frais_de_gestion.value !== null
+            responseData.frais_de_gestion.value !== undefined &&
+              responseData.frais_de_gestion.value !== null
               ? String(responseData.frais_de_gestion.value)
               : ''
           );
@@ -183,7 +185,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
             }
           }
         );
-        
+
         setResponses(existingResponses);
         setSelectedOrganismes(existingSelectedOrganismes);
       } else {
@@ -293,7 +295,6 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
               total_salarial: totalSalarial,
             };
           }) || [];
-
 
       const submitData = {
         services: Object.values(responses),

@@ -41,19 +41,27 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
     const chiffreAffaires = tjm * days;
     const fraisGestionPercent = response.response_data.frais_de_gestion.value || 0;
     const fraisGestionAmount = (chiffreAffaires * fraisGestionPercent) / 100;
-    const totalPatronalPercent = response.response_data.selected_organismes?.reduce(
-      (sum, org) => sum + org.total_patronal, 0
-    ) || 0;
+    const totalPatronalPercent =
+      response.response_data.selected_organismes?.reduce(
+        (sum, org) => sum + org.total_patronal,
+        0
+      ) || 0;
     const totalPatronalAmount = (chiffreAffaires * totalPatronalPercent) / 100;
-    const totalSalarialPercent = response.response_data.selected_organismes?.reduce(
-      (sum, org) => sum + org.total_salarial, 0
-    ) || 0;
+    const totalSalarialPercent =
+      response.response_data.selected_organismes?.reduce(
+        (sum, org) => sum + org.total_salarial,
+        0
+      ) || 0;
     const totalSalarialAmount = (chiffreAffaires * totalSalarialPercent) / 100;
-    const totalChargesProPercent = response.response_data.services?.reduce(
-      (sum, service) => sum + service.management_fee, 0
-    ) || 0;
+    const totalChargesProPercent =
+      response.response_data.services?.reduce((sum, service) => sum + service.management_fee, 0) ||
+      0;
     const totalChargesProAmount = (chiffreAffaires * totalChargesProPercent) / 100;
-    const restChiffreAffaires = chiffreAffaires - fraisGestionAmount - totalChargesProAmount - (totalPatronalAmount + totalSalarialAmount);
+    const restChiffreAffaires =
+      chiffreAffaires -
+      fraisGestionAmount -
+      totalChargesProAmount -
+      (totalPatronalAmount + totalSalarialAmount);
     const percentageRecu = chiffreAffaires > 0 ? (restChiffreAffaires / chiffreAffaires) * 100 : 0;
 
     return {
@@ -67,15 +75,23 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
       totalSalarialAmount,
       totalChargesProAmount,
       restChiffreAffaires,
-      percentageRecu
+      percentageRecu,
     };
   };
 
   // Sorting and Pagination
   const sortedResponses = requestData?.responses
     ? [...requestData.responses].sort((a, b) => {
-        const metricsA = calculateMetrics(a, parseFloat(requestData!.tjm), parseInt(requestData!.days));
-        const metricsB = calculateMetrics(b, parseFloat(requestData!.tjm), parseInt(requestData!.days));
+        const metricsA = calculateMetrics(
+          a,
+          parseFloat(requestData!.tjm),
+          parseInt(requestData!.days)
+        );
+        const metricsB = calculateMetrics(
+          b,
+          parseFloat(requestData!.tjm),
+          parseInt(requestData!.days)
+        );
         return sortOrder === 'desc'
           ? metricsB.restChiffreAffaires - metricsA.restChiffreAffaires
           : metricsA.restChiffreAffaires - metricsB.restChiffreAffaires;
@@ -96,7 +112,7 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
   };
 
   const handleSort = () => {
-    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
     setCurrentPage(1); // Reset to first page when sorting changes
   };
 
@@ -115,9 +131,7 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
   };
 
   if (loading) {
-    return (
-     <ReponseSkeleton/>
-    );
+    return <ReponseSkeleton />;
   }
 
   return (
@@ -125,9 +139,7 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
       {/* Header with New Request Button */}
       <div className="flex justify-between items-center px-5 pt-6 pb-2 sm:px-7.5">
         <h4 className="text-xl font-semibold text-black dark:text-white">Mes Réponses</h4>
-        <button
-          className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-6 xl:px-8"
-        >
+        <button className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-6 xl:px-8">
           <svg
             className="mr-2 h-4 w-4"
             fill="none"
@@ -166,10 +178,7 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                   Charges Pro.
                 </th>
                 <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
-                  <button
-                    onClick={handleSort}
-                    className="flex items-center gap-1"
-                  >
+                  <button onClick={handleSort} className="flex items-center gap-1">
                     Reste CA
                     <svg
                       className={`w-4 h-4 transform ${sortOrder === 'asc' ? 'rotate-180' : ''}`}
@@ -178,7 +187,12 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                       viewBox="0 0 24 24"
                       xmlns="http://www.w3.org/2000/svg"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                      />
                     </svg>
                   </button>
                 </th>
@@ -191,8 +205,12 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
             <tbody>
               {paginatedResponses.length > 0 ? (
                 paginatedResponses.map(response => {
-                  const metrics = calculateMetrics(response, parseFloat(requestData!.tjm), parseInt(requestData!.days));
-                  
+                  const metrics = calculateMetrics(
+                    response,
+                    parseFloat(requestData!.tjm),
+                    parseInt(requestData!.days)
+                  );
+
                   return (
                     <tr key={response.id}>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -214,12 +232,16 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                         {metrics.totalChargesProAmount.toFixed(2)} €
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        <span className={`font-medium ${metrics.restChiffreAffaires > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <span
+                          className={`font-medium ${metrics.restChiffreAffaires > 0 ? 'text-green-600' : 'text-red-600'}`}
+                        >
                           {metrics.restChiffreAffaires.toFixed(2)} €
                         </span>
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        <span className={`font-medium ${metrics.percentageRecu > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <span
+                          className={`font-medium ${metrics.percentageRecu > 0 ? 'text-green-600' : 'text-red-600'}`}
+                        >
                           {metrics.percentageRecu.toFixed(1)}%
                         </span>
                       </td>
@@ -284,10 +306,7 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  Affichage{' '}
-                  <span className="font-medium">
-                    {(currentPage - 1) * pageSize + 1}
-                  </span>{' '}
+                  Affichage <span className="font-medium">{(currentPage - 1) * pageSize + 1}</span>{' '}
                   à{' '}
                   <span className="font-medium">
                     {Math.min(currentPage * pageSize, totalResponses)}

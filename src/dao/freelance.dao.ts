@@ -123,14 +123,15 @@ export class FreelanceDao {
             },
           },
         },
-        responses: { include: {
-           company: {
-            select : {
-              name : true
-            }
-           } 
-          } 
-        }
+        responses: {
+          include: {
+            company: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
   }

@@ -4,7 +4,7 @@ import 'jsvectormap/dist/jsvectormap.css';
 import 'flatpickr/dist/flatpickr.min.css';
 import '../css/satoshi.css';
 import '../css/style.css';
-import "./globals.css";
+import './globals.css';
 
 import { Providers } from '@/components/providers';
 
@@ -15,7 +15,8 @@ export const metadata: Metadata = {
     template: '%s | LILLINKER - Portage Salarial',
     default: 'LILLINKER - La Voie Rapide vers la Société de Portage Parfaite',
   },
-  description: 'Découvrez notre plateforme innovante qui révolutionne la gestion du portage salarial avec des solutions modernes et efficaces.',
+  description:
+    'Découvrez notre plateforme innovante qui révolutionne la gestion du portage salarial avec des solutions modernes et efficaces.',
   keywords: ['portage salarial', 'freelance', 'consultant', 'entreprise', 'simulation'],
   authors: [{ name: 'LILLINKER' }],
   creator: 'LILLINKER',

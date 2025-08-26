@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from "motion/react";
+import { motion } from 'motion/react';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -43,20 +43,23 @@ const Hero = () => {
 
       default:
         return (
-           <div
+          <div
             id="home"
             className="min-h-screen flex items-center py-16 md:pt-20 bg-gradient-to-br from-blue-50 to-blue-100"
           >
             <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }} className="container mx-auto px-6 sm:px-8 lg:px-12">
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="container mx-auto px-6 sm:px-8 lg:px-12"
+            >
               <div className="grid lg:grid-cols-2 gap-12 items-center">
                 <motion.div
                   initial={{ opacity: 0, x: 50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.9 }}
-                  className="space-y-8">
+                  className="space-y-8"
+                >
                   <div className="space-y-4">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                       La Voie <span className="text-[var(--primary-color)] ">Rapide</span>
@@ -89,10 +92,12 @@ const Hero = () => {
                   </div>
                 </motion.div>
 
-                 <motion.div
+                <motion.div
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8 }} className="relative">
+                  transition={{ duration: 0.8 }}
+                  className="relative"
+                >
                   <div className="relative bg-white rounded-2xl shadow-2xl p-8">
                     <Image
                       src="/images/landing/1.png"
@@ -113,7 +118,7 @@ const Hero = () => {
                 </motion.div>
               </div>
             </motion.div>
-         </div>
+          </div>
         );
     }
   };
