@@ -57,8 +57,8 @@ enum Role {
 model Freelance {
   id           Int               @id @default(autoincrement())
   freelance_id Int               @unique
-  metier_id    Int
-  metier       Metier            @relation(fields: [metier_id], references: [id])
+  secteur_activite_id    Int
+  secteurActivite       SecteurActivite            @relation(fields: [secteur_activite_id], references: [id])
   user         User              @relation(fields: [freelance_id], references: [id])
   requests     FreelanceRequest[]
 
@@ -74,14 +74,20 @@ model Company {
   logo              String?         @db.Text
   siret             String?         @unique
   consultant_count  Int
-  management_fees   Float
+  management_fees   Float?
   is_portage        Boolean         @default(false)
+  date_creation     DateTime?
+  chiffre_affaires  Decimal?
+  adresse           String?         @db.Text
+  site_web          String?
+  convention_collective String?
+  code_naf_ape      String?
   admin             User            @relation("CompanyAdmin", fields: [admin_user_id], references: [id])
   managers          CompanyManager[]
   services          CompanyService[]
   responses         CompanyResponse[]
-  metiers           CompanyMetier[]
-  portages          CompanyPortage[]
+  secteurActivites  SecteurActiviteCompany[]
+  labels            CompanyLabel[]
   organismes        Organisme[]
 
   @@map("companies")
@@ -99,28 +105,28 @@ model CompanyManager {
   @@map("company_managers")
 }
 
-// CompanyMetier junction table for many-to-many relationship
-model CompanyMetier {
+// SecteurActiviteCompany junction table for many-to-many relationship (renamed from CompanyMetier)
+model SecteurActiviteCompany {
   id          Int      @id @default(autoincrement())
   company_id  Int
-  metier_id   Int
+  secteur_activite_id   Int
   company     Company  @relation(fields: [company_id], references: [id])
-  metier      Metier   @relation(fields: [metier_id], references: [id])
+  secteurActivite      SecteurActivite   @relation(fields: [secteur_activite_id], references: [id])
   
-  @@unique([company_id, metier_id])
-  @@map("company_metiers")
+  @@unique([company_id, secteur_activite_id])
+  @@map("secteur_activite_companies")
 }
 
-// CompanyPortage junction table for many-to-many relationship
-model CompanyPortage {
+// CompanyLabel junction table for many-to-many relationship (renamed from CompanyPortage)
+model CompanyLabel {
   id          Int      @id @default(autoincrement())
   company_id  Int
-  portage_id  Int
+  label_syndicat_id  Int
   company     Company  @relation(fields: [company_id], references: [id])
-  portage     Portage  @relation(fields: [portage_id], references: [id])
+  labelSyndicat     LabelSyndicat  @relation(fields: [label_syndicat_id], references: [id])
   
-  @@unique([company_id, portage_id])
-  @@map("company_portages")
+  @@unique([company_id, label_syndicat_id])
+  @@map("company_labels")
 }
 
 // PlatformService model
@@ -129,9 +135,9 @@ model PlatformService {
   user_id          Int
   label            String
   description      String?         @db.Text
-  data_type        DataType
+  data_type        DataType?
   requires_data  Boolean         @default(false)
-  data_label       String
+  data_label       String?
   data_description String?         @db.Text
   choices          Json?
   status           ServiceStatus
@@ -186,7 +192,7 @@ model FreelanceRequest {
   freelance       Freelance              @relation(fields: [freelance_id], references: [id])
   options         FreelanceRequestOption[]
   responses       CompanyResponse[]
-  portages        FreelanceRequestPortage[]
+  requestLabelsSelected RequestLabelSelected[]
 
   @@map("freelance_requests")
 }
@@ -216,16 +222,16 @@ model FreelanceRequestOption {
   @@map("freelance_request_options")
 }
 
-// FreelanceRequestPortage junction table for freelance portage preferences
-model FreelanceRequestPortage {
+// RequestLabelSelected junction table for freelance label preferences (renamed from FreelanceRequestPortage)
+model RequestLabelSelected {
   id                  Int             @id @default(autoincrement())
   freelance_request_id Int
-  portage_id          Int
+  label_syndicat_id          Int
   request             FreelanceRequest @relation(fields: [freelance_request_id], references: [id])
-  portage             Portage         @relation(fields: [portage_id], references: [id])
+  labelSyndicat             LabelSyndicat         @relation(fields: [label_syndicat_id], references: [id])
   
-  @@unique([freelance_request_id, portage_id])
-  @@map("freelance_request_portages")
+  @@unique([freelance_request_id, label_syndicat_id])
+  @@map("request_labels_selected")
 }
 
 // CompanyResponse model
@@ -286,25 +292,30 @@ model Session {
 
   @@map("sessions")
 }
-model Metier {
+
+// SecteurActivite model (renamed from Metier)
+model SecteurActivite {
   id          Int             @id @default(autoincrement())
+  code        String          @unique
   name        String          @unique
   freelances  Freelance[]
-  companies   CompanyMetier[]
+  companies   SecteurActiviteCompany[]
   
-  @@map("metiers")
+  @@map("secteur_activites")
 }
 
-// Portage model - similar to Metier
-model Portage {
+// LabelSyndicat model (renamed from Portage)
+model LabelSyndicat {
   id          Int             @id @default(autoincrement())
   name        String          @unique
   description String?         @db.Text
-  companies   CompanyPortage[]
-  freelanceRequests FreelanceRequestPortage[]
+  logo        String?
+  companies   CompanyLabel[]
+  freelanceRequests RequestLabelSelected[]
   
-  @@map("portages")
+  @@map("label_syndicats")
 }
+
 model Organisme {
   id          Int      @id @default(autoincrement())
   company_id  Int
