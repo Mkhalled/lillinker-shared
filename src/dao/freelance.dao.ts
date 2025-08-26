@@ -6,14 +6,14 @@ export class FreelanceDao {
   static async findByFreelanceId(id: number) {
     return prisma.freelance.findUnique({
       where: { freelance_id: id },
-      include: { metier: true },
+      include: { secteurActivite: true },
     });
   }
   static async createFreelanceProfile(userId: number, metierId: number) {
     return prisma.freelance.create({
       data: {
         freelance_id: userId,
-        metier_id: metierId,
+        secteur_activite_id: metierId,
       },
     });
   }
@@ -43,11 +43,11 @@ export class FreelanceDao {
     });
     return option;
   }
-  static async createFreelanceRequestPortages(freelanceRequestId: number, portageIds: number[]) {
-    return prisma.freelanceRequestPortage.createMany({
+  static async createFreelanceRequestLabelSelected(freelanceRequestId: number, portageIds: number[]) {
+    return prisma.requestLabelSelected.createMany({
       data: portageIds.map(portageId => ({
         freelance_request_id: freelanceRequestId,
-        portage_id: portageId,
+        label_syndicat_id: portageId,
       })),
     });
   }
@@ -75,9 +75,9 @@ export class FreelanceDao {
             },
           },
           responses: true,
-          portages: {
+          requestLabelsSelected: {
             include: {
-              portage: true,
+              labelSyndicat: true,
             },
           },
         },

@@ -79,7 +79,7 @@ export class CompanyService {
   }
 
   /**
-   * Link metiers to a company
+   * Link Secteur d'activité to a company
    */
   static async linkMetiers(companyId: number, metierIds: number[]) {
     const logContext = {
@@ -89,14 +89,14 @@ export class CompanyService {
     };
 
     try {
-      logger.debug('Linking metiers to company', {
+      logger.debug('Linking secteurs d\'activité to company', {
         ...logContext,
         metierIds,
       });
 
       await CompanyDAO.addCompanyMetiers(companyId, metierIds);
 
-      logger.info('Metiers linked successfully', {
+      logger.info('Secteurs d\'activité linked successfully', {
         ...logContext,
         linkedMetiersCount: metierIds.length,
       });
@@ -111,9 +111,9 @@ export class CompanyService {
   /**
    * Link portages to a company
    */
-  static async linkPortages(companyId: number, portageIds: number[]) {
+  static async linkCompanyLabels(companyId: number, portageIds: number[]) {
     const logContext = {
-      operation: 'linkPortages',
+      operation: 'linkCompanyLabels',
       companyId,
       portageCount: portageIds.length,
     };
@@ -124,7 +124,7 @@ export class CompanyService {
         portageIds,
       });
 
-      await CompanyDAO.addCompanyPortages(companyId, portageIds);
+      await CompanyDAO.addCompanyLabel(companyId, portageIds);
 
       logger.info('Portages linked successfully', {
         ...logContext,

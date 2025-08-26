@@ -50,19 +50,22 @@ export class CompanyDAO {
       },
     });
   }
-  static async addCompanyMetiers(companyId: number, metierIds: number[]) {
-    return prisma.companyMetier.createMany({
-      data: metierIds.map(metierId => ({
+  static async addCompanyMetiers(
+    companyId: number,
+    metiers: number[]
+  ) {
+    return prisma.secteurActiviteCompany.createMany({
+      data: metiers.map(metier => ({
         company_id: companyId,
-        metier_id: metierId,
+        secteur_activite_id: metier,
       })),
     });
   }
-  static async addCompanyPortages(companyId: number, portageIds: number[]) {
-    return prisma.companyPortage.createMany({
+  static async addCompanyLabel(companyId: number, portageIds: number[]) {
+    return prisma.companyLabel.createMany({
       data: portageIds.map(portageId => ({
         company_id: companyId,
-        portage_id: portageId,
+        label_syndicat_id: portageId,
       })),
     });
   }
@@ -96,9 +99,9 @@ export class CompanyDAO {
             },
           },
           responses: true,
-          portages: {
+          requestLabelsSelected: {
             include: {
-              portage: true,
+              labelSyndicat: true,
             },
           },
         },
