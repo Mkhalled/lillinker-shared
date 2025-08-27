@@ -1,30 +1,20 @@
 'use client';
-
 import { Info, X } from 'lucide-react';
 import { useState } from 'react';
 
-interface ServiceInfoTooltipProps {
-  service: {
-    id: number;
-    label: string;
-    description: string | null;
-    data_type: string;
-    requires_data: boolean;
-    data_label: string;
-    data_description: string | null;
-    choices: unknown;
-    user?: {
-      first_name: string;
-      last_name: string;
-      ownedCompany: {
-        name: string;
-      } | null;
-    };
-  };
-}
+import type { PlatformService } from '@/types/platform';
 
-const ServiceInfoTooltip = ({ service }: ServiceInfoTooltipProps) => {
+const ServiceInfoTooltip = ({ service }: { service: PlatformService }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Debug log to inspect service data
+  console.log('ServiceInfoTooltip - Service:', {
+    id: service.id,
+    label: service.label,
+    requires_data: service.requires_data,
+    dataFields: service.dataFields,
+    dataFieldsLength: service.dataFields?.length,
+  });
 
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,19 +35,6 @@ const ServiceInfoTooltip = ({ service }: ServiceInfoTooltipProps) => {
       default:
         return 'Type de données non spécifié';
     }
-  };
-
-  const parseChoices = (choices: unknown): string[] => {
-    if (!choices) return [];
-    if (typeof choices === 'string') {
-      try {
-        return JSON.parse(choices);
-      } catch {
-        return [choices];
-      }
-    }
-    if (Array.isArray(choices)) return choices;
-    return [];
   };
 
   return (
@@ -102,41 +79,27 @@ const ServiceInfoTooltip = ({ service }: ServiceInfoTooltipProps) => {
                 </div>
               )}
 
-              {/* Data Type */}
-              <div>
-                <span className="font-medium text-gray-800">Type de données:</span>
-                <span className="text-gray-600 ml-1">
-                  {getDataTypeDescription(service.data_type)}
-                </span>
-              </div>
-
               {/* Data Requirements */}
               {service.requires_data && (
                 <div>
-                  <span className="font-medium text-gray-800">Données requises:</span>
-                  <div className="text-gray-600 ml-1">
-                    {service.data_label && <span>{service.data_label}</span>}
-                    {service.data_description && (
-                      <span>
-                        {service.data_label ? ', ' : ''}
-                        {service.data_description}
+                  <span className="font-medium text-gray-800">Champs de données requis:</span>
+                  <div className="text-gray-600 ml-1 space-y-2">
+                    {(service.dataFields ?? []).length > 0 ? (
+                      (service.dataFields ?? []).map((field) => (
+                        <div key={field.id}>
+                          <span>{field.label}</span>
+                          {field.description && <span>, {field.description}</span>}
+                          <span> ({getDataTypeDescription(field.data_type)})</span>
+                          {(field.data_type === 'SELECT' || field.data_type === 'RADIO') &&
+                            field.choices && field.choices.length > 0 && (
+                              <span>. Options: {field.choices.filter(c => c.trim() !== '').join(', ')}</span>
+                            )}
+                        </div>
+                      ))
+                    ) : (
+                      <span className="text-gray-600 ml-1">
+                        Aucun champ de données défini pour ce service.
                       </span>
-                    )}
-
-                    {/* Show choices for SELECT and RADIO types */}
-                    {(service.data_type === 'SELECT' || service.data_type === 'RADIO') &&
-                      parseChoices(service.choices).length > 0 && (
-                        <span>. Options: {parseChoices(service.choices).join(', ')}</span>
-                      )}
-
-                    {/* Show example for TEXT type */}
-                    {service.data_type === 'TEXT' && (
-                      <span>. Format: Texte libre (ex: description, commentaire, adresse)</span>
-                    )}
-
-                    {/* Show format for NUMBER type */}
-                    {service.data_type === 'NUMBER' && (
-                      <span>. Format: Valeur numérique (ex: 25, 1500.50, 3)</span>
                     )}
                   </div>
                 </div>

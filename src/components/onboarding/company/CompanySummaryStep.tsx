@@ -5,7 +5,7 @@ import ServiceInfoTooltip from '@/components/ServiceInfoTooltip';
 import type { Metier, Portage } from '@/hooks/useModalData';
 import type { CompanyFormData } from '@/types/company';
 import { PlatformService } from '@/types/platform';
-import type { NewService } from '@/types/user';
+import type { NewServiceData } from '@/types/platform';
 
 interface CompanySummaryStepProps {
   formData: CompanyFormData;
@@ -115,44 +115,44 @@ export const CompanySummaryStep = ({
         </div>
       )}
 
-   {/* Platform Services */}
-{formData.selectedPlatformServices.length > 0 && (
-  <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
-    <h4 className="font-medium text-gray-900 mb-3">
-      Services plateforme ({formData.selectedPlatformServices.length})
-    </h4>
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-      {formData.selectedPlatformServices.map((serviceId: string) => {
-        const service = platformServices?.find(s => s.id.toString() === serviceId);
-        return service ? (
-          <div key={service.id} className="flex items-start space-x-3">
-            <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <h5 className="font-medium text-gray-900">{service.label}</h5>
-                <ServiceInfoTooltip service={service} />
-              </div>
-            </div>
+      {/* Platform Services */}
+      {formData.selectedPlatformServices.length > 0 && (
+        <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
+          <h4 className="font-medium text-gray-900 mb-3">
+            Services plateforme ({formData.selectedPlatformServices.length})
+          </h4>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            {formData.selectedPlatformServices.map((serviceId: string) => {
+              const service = platformServices?.find(s => s.id.toString() === serviceId);
+              return service ? (
+                <div key={service.id} className="flex items-start space-x-3">
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-medium text-gray-900">{service.label}</h5>
+                      <ServiceInfoTooltip service={service} />
+                    </div>
+                  </div>
+                </div>
+              ) : null;
+            })}
           </div>
-        ) : null;
-      })}
-    </div>
-  </div>
-)}
+        </div>
+      )}
 
       {/* New Services */}
-      {formData.newServices.filter((s: NewService) => s.label.trim() !== '').length > 0 && (
+      {formData.newServices.filter((s: NewServiceData) => s.service_label.trim() !== '').length > 0 && (
         <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
           <h4 className="font-medium text-gray-900 mb-3">
             Nouveaux services (
-            {formData.newServices.filter((s: NewService) => s.label.trim() !== '').length})
+            {formData.newServices.filter((s: NewServiceData) => s.service_label.trim() !== '').length})
           </h4>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {formData.newServices
-              .filter((s: NewService) => s.label.trim() !== '')
-              .map((service: NewService) => (
+              .filter((s: NewServiceData) => s.service_label.trim() !== '')
+              .map((service: NewServiceData) => (
                 <div key={service.id} className="border-l-4 border-blue-500 pl-4 flex items-start">
                   <div className="flex-1">
-                    <h5 className="font-medium text-gray-900">{service.label}</h5>
+                    <h5 className="font-medium text-gray-900">{service.service_label}</h5>
                   </div>
                   <NewServiceToolTip service={service} />
                 </div>

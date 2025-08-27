@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
       ...enhancedLogContext,
       hasSelectedServices: !!validatedData.selected_services?.length,
       hasNewServices: !!validatedData.new_services?.length,
-      hasLegacyNewService: !!validatedData.service_label,
       consultantCount: validatedData.consultant_count,
     });
 
@@ -53,7 +52,7 @@ export async function POST(request: NextRequest) {
         throw new Error('Une société avec ce numéro SIRET existe déjà');
       }
 
-      // Step 1: Create company using the new CompanyService
+      // Step 1: Create company using CompanyService
       const company = await CompanyService.createCompany(parseInt(userId), validatedData);
 
       logger.info('Company created successfully', {
@@ -61,27 +60,25 @@ export async function POST(request: NextRequest) {
         companyId: company.id,
       });
 
-      // Step 2: Handle platform services (new services creation)
+      // Step 2: Handle new platform services creation
       const createdServices = [];
       if (validatedData.new_services && validatedData.new_services.length > 0) {
-        for (const newService of validatedData.new_services) {
-          const service = await PlatformServiceService.createService(parseInt(userId), newService);
-          createdServices.push(service);
-        }
-      }
-
-      // Handle legacy single service creation for backward compatibility
-      if (validatedData.service_label && !validatedData.new_services?.length) {
-        const legacyService = await PlatformServiceService.createService(parseInt(userId), {
-          service_label: validatedData.service_label,
-          service_description: validatedData.service_description,
-          data_type: validatedData.data_type!,
-          requires_data: validatedData.requires_data!,
-          data_label: validatedData.data_label,
-          data_description: validatedData.data_description,
-          choices: validatedData.choices,
+        logger.debug('Creating new platform services', {
+          ...enhancedLogContext,
+          serviceCount: validatedData.new_services.length,
         });
-        createdServices.push(legacyService);
+
+        // Use createMultipleServices from PlatformServiceService
+        const newServices = await PlatformServiceService.createMultipleServices(
+          parseInt(userId),
+          validatedData.new_services
+        );
+        createdServices.push(...newServices);
+
+        logger.info('New platform services created successfully', {
+          ...enhancedLogContext,
+          createdCount: newServices.length,
+        });
       }
 
       // Step 3: Link selected and created services to company
@@ -96,12 +93,25 @@ export async function POST(request: NextRequest) {
         service_id: number;
         is_active: boolean;
       }> = [];
+      
       if (allServiceIds.length > 0) {
+        logger.debug('Linking services to company', {
+          ...enhancedLogContext,
+          totalServices: allServiceIds.length,
+          selectedServices: validatedData.selected_services?.length || 0,
+          createdServices: createdServices.length,
+        });
+        
         companyServices = await CompanyService.linkPlatformServices(company.id, allServiceIds);
       }
 
       // Step 4: Link metiers to company
       if (validatedData.selected_metiers && validatedData.selected_metiers.length > 0) {
+        logger.debug('Linking metiers to company', {
+          ...enhancedLogContext,
+          metierCount: validatedData.selected_metiers.length,
+        });
+        
         await CompanyService.linkMetiers(company.id, validatedData.selected_metiers);
       }
 
@@ -111,6 +121,11 @@ export async function POST(request: NextRequest) {
         validatedData.selected_portages &&
         validatedData.selected_portages.length > 0
       ) {
+        logger.debug('Linking portages to company', {
+          ...enhancedLogContext,
+          portageCount: validatedData.selected_portages.length,
+        });
+        
         await CompanyService.linkCompanyLabels(company.id, validatedData.selected_portages);
       }
 
@@ -120,8 +135,6 @@ export async function POST(request: NextRequest) {
         platformServices: createdServices,
       };
     });
-
-    logger.info('Company onboarding completed, starting finalization', enhancedLogContext);
 
     logger.info('Company onboarding API completed successfully', {
       ...enhancedLogContext,

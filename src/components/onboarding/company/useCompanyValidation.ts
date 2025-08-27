@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 
+import type { NewServiceData } from '@/types/platform';
+
 import type { CompanyFormData } from '../../../types/company';
-import type { NewService } from '../../../types/user';
 
 export const useCompanyValidation = (
   formData: CompanyFormData,
@@ -86,12 +87,32 @@ export const useCompanyValidation = (
       case 6: {
         // Services step validation
         const hasSelectedServices = formData.selectedPlatformServices.length > 0;
-        const hasValidNewServices = formData.newServices.some(
-          (service: NewService) =>
-            service.label.trim() !== '' &&
-            (!service.requiresData ||
-              (service.dataLabel.trim() !== '' && service.dataType.trim() !== ''))
-        );
+        const hasValidNewServices = (formData.newServices as NewServiceData[]).some((service) => {
+          // Check if service_label is defined and not empty
+          if (!service.service_label || service.service_label.trim() === '') {
+            return false;
+          }
+
+          // If requires_data is true, validate dataFields
+          if (service.requires_data) {
+            const dataFields = service.dataFields || [];
+            return (
+              dataFields.length > 0 &&
+              dataFields.every((field) => {
+                return (
+                  field.label &&
+                  field.label.trim() !== '' &&
+                  // For RADIO or SELECT, ensure at least 2 non-empty choices
+                  (field.data_type !== 'RADIO' && field.data_type !== 'SELECT' ||
+                    (field.choices && field.choices.filter(c => c.trim() !== '').length >= 2))
+                );
+              })
+            );
+          }
+
+          // If requires_data is false, service is valid if service_label is valid
+          return true;
+        });
         return hasSelectedServices || hasValidNewServices;
       }
       case 7:

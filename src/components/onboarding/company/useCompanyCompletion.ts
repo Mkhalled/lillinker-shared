@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 
+import { NewServiceData } from '@/types/platform';
+
 import type { CompanyFormData } from '../../../types/company';
-import type { NewService } from '../../../types/user';
 
 export const useCompanyCompletion = (
   formData: CompanyFormData,
@@ -77,17 +78,20 @@ export const useCompanyCompletion = (
             currentFormData.isPortage === 'yes'
               ? currentFormData.selectedPortages.map((id: string) => parseInt(id))
               : [],
-          // Send all new services as array
+          // Fixed new services mapping
           new_services: currentFormData.newServices
-            .filter((service: NewService) => service.label.trim() !== '')
-            .map((service: NewService) => ({
-              service_label: service.label,
-              service_description: service.description,
-              data_type: service.dataType,
-              requires_data: service.requiresData,
-              data_label: service.dataLabel,
-              data_description: service.dataDescription,
-              choices: service.choices.filter((choice: string) => choice.trim() !== ''),
+            .filter((service: NewServiceData) => service.service_label && service.service_label.trim() !== '')
+            .map((service: NewServiceData) => ({
+              service_label: service.service_label,
+              service_description: service.service_description,
+              requires_data: service.requires_data,
+              dataFields: service.requires_data && service.dataFields ? 
+                service.dataFields.map(field => ({
+                  label: field.label,
+                  description: field.description,
+                  data_type: field.data_type,
+                  choices: field.choices?.filter((choice: string) => choice.trim() !== '') || undefined,
+                })) : undefined,
             })),
         };
 

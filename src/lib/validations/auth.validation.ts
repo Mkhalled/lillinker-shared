@@ -13,6 +13,22 @@ export const InitialRegistrationSchema = z.object({
   phone_number: z.string().optional(),
 });
 
+// Data field schema for nested structure
+const DataFieldSchema = z.object({
+  label: z.string().min(1, 'Field label is required'),
+  description: z.string().optional(),
+  data_type: z.enum(['TEXT', 'NUMBER', 'SELECT', 'RADIO']),
+  choices: z.array(z.string()).optional(),
+});
+
+// New service schema matching NewServiceData type
+const NewServiceSchema = z.object({
+  service_label: z.string().min(1, 'Service label is required'),
+  service_description: z.string().optional(),
+  requires_data: z.boolean(),
+  dataFields: z.array(DataFieldSchema).optional(),
+});
+
 export const CompanyOnboardingSchema = z
   .object({
     // Company data
@@ -32,20 +48,8 @@ export const CompanyOnboardingSchema = z
     // Selected metiers
     selected_metiers: z.array(z.number()).min(1, 'Must select at least one metier'),
 
-    // New services data (array of new services)
-    new_services: z
-      .array(
-        z.object({
-          service_label: z.string().min(1, 'Service label is required'),
-          service_description: z.string().optional(),
-          data_type: z.enum(['TEXT', 'NUMBER', 'SELECT', 'RADIO']),
-          requires_data: z.boolean(),
-          data_label: z.string().optional(),
-          data_description: z.string().optional(),
-          choices: z.array(z.string()).optional(),
-        })
-      )
-      .optional(),
+    // New services data (updated to match NewServiceData structure)
+    new_services: z.array(NewServiceSchema).optional(),
 
     // Legacy single service fields (for backward compatibility)
     service_label: z.string().optional(),

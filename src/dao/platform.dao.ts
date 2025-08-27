@@ -6,6 +6,7 @@ export class PlatformDAO {
       where: {
         status: 'ACTIVE',
       },
+      include: {dataFields:true},
       orderBy: {
         label: 'asc',
       },
@@ -30,14 +31,17 @@ export class PlatformDAO {
       data: {
         user_id: userId,
         label: serviceData.service_label,
-        description: serviceData.service_description || '',
-        data_type: serviceData.data_type,
+        description: serviceData.service_description || null,
         requires_data: serviceData.requires_data,
-        data_label: serviceData.data_label || '',
-        data_description: serviceData.data_description || '',
-        choices:
-          serviceData.choices && serviceData.choices.length > 0 ? serviceData.choices : undefined,
         status: 'PENDING',
+        dataFields: {
+          create: serviceData.dataFields?.map(field => ({
+            label: field.label,
+            description: field.description || null,
+            data_type: field.data_type,
+            choices: field.choices !== undefined ? field.choices : undefined, // Ensure choices is JSON-compatible
+          })) || [],
+        },
       },
     });
   }

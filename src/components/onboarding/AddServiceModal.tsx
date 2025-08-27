@@ -3,7 +3,7 @@
 import { Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
-import type { NewService } from '@/types/user';
+import type { NewServiceData } from '@/types/platform';
 
 import InputField from '../form/input/InputField';
 import TextAreaField from '../form/input/TextAreaField';
@@ -13,19 +13,15 @@ import { Button } from '../ui/button/Button';
 interface AddServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (service: NewService) => void;
+  onSave: (service: NewServiceData) => void;
 }
 
 const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
-  const [serviceData, setServiceData] = useState<NewService>({
-    id: Date.now().toString(),
-    label: '',
-    description: '',
-    requiresData: false,
-    dataType: 'TEXT',
-    dataLabel: '',
-    dataDescription: '',
-    choices: [],
+  const [serviceData, setServiceData] = useState<NewServiceData>({
+    service_label: '',
+    service_description: '',
+    requires_data: false,
+    dataFields: [], // Initialize with empty array to avoid undefined
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -34,20 +30,26 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
     const newErrors: Record<string, string> = {};
 
     // Validation
-    if (!serviceData.label.trim()) {
-      newErrors.label = 'Le libellé est requis';
+    if (!serviceData.service_label.trim()) {
+      newErrors.service_label = 'Le libellé est requis';
     }
 
-    if (serviceData.requiresData) {
-      if (!serviceData.dataLabel.trim()) {
-        newErrors.dataLabel = 'Le label du champ est requis';
+    if (serviceData.requires_data) {
+      const dataFields = serviceData.dataFields || [];
+      if (dataFields.length === 0) {
+        newErrors.dataFields = 'Au moins un champ de données est requis lorsque des données sont nécessaires';
       }
-      if (
-        (serviceData.dataType === 'RADIO' || serviceData.dataType === 'SELECT') &&
-        serviceData.choices.filter(c => c.trim() !== '').length < 2
-      ) {
-        newErrors.choices = 'Au moins 2 options sont requises';
-      }
+      dataFields.forEach((field, index) => {
+        if (!field.label.trim()) {
+          newErrors[`dataLabel_${index}`] = 'Le label du champ est requis';
+        }
+        if (
+          (field.data_type === 'RADIO' || field.data_type === 'SELECT') &&
+          (!field.choices || field.choices.filter(c => c.trim() !== '').length < 2)
+        ) {
+          newErrors[`choices_${index}`] = 'Au moins 2 options sont requises';
+        }
+      });
     }
 
     setErrors(newErrors);
@@ -55,7 +57,10 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
     if (Object.keys(newErrors).length === 0) {
       onSave({
         ...serviceData,
-        choices: serviceData.choices.filter(c => c.trim() !== ''),
+        dataFields: (serviceData.dataFields || []).map(field => ({
+          ...field,
+          choices: field.choices?.filter(c => c.trim() !== '') || [],
+        })),
       });
       handleClose();
     }
@@ -63,38 +68,95 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
 
   const handleClose = () => {
     setServiceData({
-      id: Date.now().toString(),
-      label: '',
-      description: '',
-      requiresData: false,
-      dataType: 'TEXT',
-      dataLabel: '',
-      dataDescription: '',
-      choices: [],
+      service_label: '',
+      service_description: '',
+      requires_data: false,
+      dataFields: [], // Reset to empty array
     });
     setErrors({});
     onClose();
   };
 
-  const addChoice = () => {
+  const addDataField = () => {
     setServiceData(prev => ({
       ...prev,
-      choices: [...prev.choices, ''],
+      dataFields: [
+        ...(prev.dataFields || []),
+        {
+          label: '',
+          description: '',
+          data_type: 'TEXT' as const,
+          choices: [],
+        },
+      ],
     }));
   };
 
-  const updateChoice = (index: number, value: string) => {
+  const updateDataField = (
+    index: number,
+    field: Partial<NonNullable<NewServiceData['dataFields']>[number]>
+  ) => {
+    setServiceData(prev => {
+      const dataFields = prev.dataFields || [];
+      return {
+        ...prev,
+        dataFields: dataFields.map((dataField, i) =>
+          i === index ? { ...dataField, ...field } : dataField
+        ),
+      };
+    });
+  };
+
+  const removeDataField = (index: number) => {
     setServiceData(prev => ({
       ...prev,
-      choices: prev.choices.map((choice, i) => (i === index ? value : choice)),
+      dataFields: (prev.dataFields || []).filter((_, i) => i !== index),
     }));
   };
 
-  const removeChoice = (index: number) => {
-    setServiceData(prev => ({
-      ...prev,
-      choices: prev.choices.filter((_, i) => i !== index),
-    }));
+  const addChoice = (dataFieldIndex: number) => {
+    setServiceData(prev => {
+      const dataFields = prev.dataFields || [];
+      return {
+        ...prev,
+        dataFields: dataFields.map((field, i) =>
+          i === dataFieldIndex ? { ...field, choices: [...(field.choices || []), ''] } : field
+        ),
+      };
+    });
+  };
+
+  const updateChoice = (dataFieldIndex: number, choiceIndex: number, value: string) => {
+    setServiceData(prev => {
+      const dataFields = prev.dataFields || [];
+      return {
+        ...prev,
+        dataFields: dataFields.map((field, i) =>
+          i === dataFieldIndex
+            ? {
+                ...field,
+                choices: (field.choices || []).map((choice, j) =>
+                  j === choiceIndex ? value : choice
+                ),
+              }
+            : field
+        ),
+      };
+    });
+  };
+
+  const removeChoice = (dataFieldIndex: number, choiceIndex: number) => {
+    setServiceData(prev => {
+      const dataFields = prev.dataFields || [];
+      return {
+        ...prev,
+        dataFields: dataFields.map((field, i) =>
+          i === dataFieldIndex
+            ? { ...field, choices: (field.choices || []).filter((_, j) => j !== choiceIndex) }
+            : field
+        ),
+      };
+    });
   };
 
   if (!isOpen) return null;
@@ -121,19 +183,23 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
               <InputField
                 id="service-label"
                 label="Libellé du service"
-                value={serviceData.label}
-                onChange={e => setServiceData(prev => ({ ...prev, label: e.target.value }))}
+                value={serviceData.service_label}
+                onChange={e =>
+                  setServiceData(prev => ({ ...prev, service_label: e.target.value }))
+                }
                 placeholder="Ex: Assurance RC Pro"
-                error={!!errors.label}
-                hint={errors.label}
+                error={!!errors.service_label}
+                hint={errors.service_label}
                 required
               />
 
               <InputField
                 id="service-description"
                 label="Description"
-                value={serviceData.description}
-                onChange={e => setServiceData(prev => ({ ...prev, description: e.target.value }))}
+                value={serviceData.service_description}
+                onChange={e =>
+                  setServiceData(prev => ({ ...prev, service_description: e.target.value }))
+                }
                 placeholder="Description du service"
               />
             </div>
@@ -142,104 +208,159 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
             <div className="space-y-4">
               <StyledCheckbox
                 id="requires-data"
-                checked={serviceData.requiresData}
+                checked={serviceData.requires_data}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setServiceData(prev => ({ ...prev, requiresData: e.target.checked }))
+                  setServiceData(prev => ({ ...prev, requires_data: e.target.checked }))
                 }
                 label="Ce service nécessite des données du consultant"
               />
 
-              {serviceData.requiresData && (
-                <div className="pl-7 space-y-4 border-l-2 border-blue-200">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="data-type" className="text-sm font-medium text-gray-700">
-                        Type de données *
-                      </label>
-                      <select
-                        id="data-type"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        value={serviceData.dataType}
-                        onChange={e =>
-                          setServiceData(prev => ({ ...prev, dataType: e.target.value }))
-                        }
-                      >
-                        <option value="TEXT">Texte libre</option>
-                        <option value="NUMBER">Numérique</option>
-                        <option value="RADIO">Choix unique</option>
-                        <option value="SELECT">Choix multiple</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <InputField
-                        id="data-label"
-                        label="Label du champ"
-                        value={serviceData.dataLabel}
-                        onChange={e =>
-                          setServiceData(prev => ({ ...prev, dataLabel: e.target.value }))
-                        }
-                        placeholder="Ex: Niveau d'expérience"
-                        error={!!errors.dataLabel}
-                        hint={errors.dataLabel}
-                        required
-                      />
-                    </div>
+              {serviceData.requires_data && (
+                <div className="pl-7 space-y-6 border-l-2 border-blue-200">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-sm font-medium text-gray-700">Champs de données</h2>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={addDataField}
+                      className="flex items-center space-x-1"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Ajouter un champ</span>
+                    </Button>
                   </div>
 
-                  <TextAreaField
-                    id="data-description"
-                    label="Description du champ"
-                    value={serviceData.dataDescription}
-                    onChange={e =>
-                      setServiceData(prev => ({ ...prev, dataDescription: e.target.value }))
-                    }
-                    placeholder="Instructions pour le freelance"
-                    rows={3}
-                  />
+                  {(serviceData.dataFields || []).length === 0 && (
+                    <p className="text-sm text-gray-500 italic">
+                      Cliquez sur &quot;Ajouter un champ&quot; pour créer des champs de données
+                    </p>
+                  )}
 
-                  {/* Choices for RADIO and SELECT */}
-                  {(serviceData.dataType === 'RADIO' || serviceData.dataType === 'SELECT') && (
-                    <div className="space-y-3">
+                  {(serviceData.dataFields || []).map((dataField, dataFieldIndex) => (
+                    <div key={dataFieldIndex} className="space-y-4 border-b border-gray-200 pb-4">
                       <div className="flex items-center justify-between">
-                        <h2 className="text-sm font-medium text-gray-700">Options disponibles *</h2>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={addChoice}
-                          className="flex items-center space-x-1"
+                        <h3 className="text-sm font-medium text-gray-700">
+                          Champ {dataFieldIndex + 1}
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => removeDataField(dataFieldIndex)}
+                          className="text-red-600 hover:text-red-700 p-1 transition-colors"
                         >
-                          <Plus className="h-4 w-4" />
-                          <span>Ajouter</span>
-                        </Button>
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
 
-                      {serviceData.choices.map((choice, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <input
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={choice}
-                            onChange={e => updateChoice(index, e.target.value)}
-                            placeholder={`Option ${index + 1}`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeChoice(index)}
-                            className="text-red-600 hover:text-red-700 p-1 transition-colors"
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label
+                            htmlFor={`data-type-${dataFieldIndex}`}
+                            className="text-sm font-medium text-gray-700"
                           >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+                            Type de données *
+                          </label>
+                          <select
+                            id={`data-type-${dataFieldIndex}`}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={dataField.data_type}
+                            onChange={e =>
+                              updateDataField(dataFieldIndex, {
+                                data_type: e.target.value as
+                                  | 'TEXT'
+                                  | 'NUMBER'
+                                  | 'SELECT'
+                                  | 'RADIO',
+                              })
+                            }
+                          >
+                            <option value="TEXT">Texte libre</option>
+                            <option value="NUMBER">Numérique</option>
+                            <option value="RADIO">Choix unique</option>
+                            <option value="SELECT">Choix multiple</option>
+                          </select>
                         </div>
-                      ))}
 
-                      {serviceData.choices.length === 0 && (
-                        <p className="text-sm text-gray-500 italic">
-                          Cliquez sur &quot;Ajouter&quot; pour créer des options
-                        </p>
+                        <div className="space-y-2">
+                          <InputField
+                            id={`data-label-${dataFieldIndex}`}
+                            label="Label du champ"
+                            value={dataField.label}
+                            onChange={e =>
+                              updateDataField(dataFieldIndex, { label: e.target.value })
+                            }
+                            placeholder="Ex: Niveau d'expérience"
+                            error={!!errors[`dataLabel_${dataFieldIndex}`]}
+                            hint={errors[`dataLabel_${dataFieldIndex}`]}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <TextAreaField
+                        id={`data-description-${dataFieldIndex}`}
+                        label="Description du champ"
+                        value={dataField.description}
+                        onChange={e =>
+                          updateDataField(dataFieldIndex, { description: e.target.value })
+                        }
+                        placeholder="Instructions pour le freelance"
+                        rows={3}
+                      />
+
+                      {(dataField.data_type === 'RADIO' || dataField.data_type === 'SELECT') && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h2 className="text-sm font-medium text-gray-700">
+                              Options disponibles *
+                            </h2>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => addChoice(dataFieldIndex)}
+                              className="flex items-center space-x-1"
+                            >
+                              <Plus className="h-4 w-4" />
+                              <span>Ajouter</span>
+                            </Button>
+                          </div>
+
+                          {(dataField.choices || []).map((choice, choiceIndex) => (
+                            <div key={choiceIndex} className="flex items-center space-x-2">
+                              <input
+                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={choice}
+                                onChange={e =>
+                                  updateChoice(dataFieldIndex, choiceIndex, e.target.value)
+                                }
+                                placeholder={`Option ${choiceIndex + 1}`}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeChoice(dataFieldIndex, choiceIndex)}
+                                className="text-red-600 hover:text-red-700 p-1 transition-colors"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ))}
+
+                          {(!dataField.choices || dataField.choices.length === 0) && (
+                            <p className="text-sm text-gray-500 italic">
+                              Cliquez sur &quot;Ajouter&quot; pour créer des options
+                            </p>
+                          )}
+
+                          {errors[`choices_${dataFieldIndex}`] && (
+                            <p className="text-sm text-red-600">
+                              {errors[`choices_${dataFieldIndex}`]}
+                            </p>
+                          )}
+                        </div>
                       )}
-
-                      {errors.choices && <p className="text-sm text-red-600">{errors.choices}</p>}
                     </div>
+                  ))}
+                  {errors.dataFields && (
+                    <p className="text-sm text-red-600">{errors.dataFields}</p>
                   )}
                 </div>
               )}

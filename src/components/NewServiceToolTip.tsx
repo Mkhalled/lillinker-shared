@@ -2,26 +2,10 @@
 import { Info, X } from 'lucide-react';
 import { useState } from 'react';
 
-interface NewService {
-  id: string;
-  label: string;
-  description: string | null;
-  dataType: string;
-  requiresData: boolean;
-  dataLabel: string | null;
-  dataDescription: string | null;
-  choices: unknown;
-  user?: {
-    first_name: string;
-    last_name: string;
-    ownedCompany: {
-      name: string;
-    } | null;
-  };
-}
+import type { NewServiceData } from '@/types/platform';
 
 interface NewServiceToolTipProps {
-  service: NewService;
+  service: NewServiceData;
 }
 
 const NewServiceToolTip = ({ service }: NewServiceToolTipProps) => {
@@ -48,19 +32,6 @@ const NewServiceToolTip = ({ service }: NewServiceToolTipProps) => {
     }
   };
 
-  const parseChoices = (choices: unknown): string[] => {
-    if (!choices) return [];
-    if (typeof choices === 'string') {
-      try {
-        return JSON.parse(choices);
-      } catch {
-        return [choices];
-      }
-    }
-    if (Array.isArray(choices)) return choices;
-    return [];
-  };
-
   return (
     <div className="relative">
       {/* Info Button */}
@@ -82,7 +53,7 @@ const NewServiceToolTip = ({ service }: NewServiceToolTipProps) => {
           {/* Tooltip Content - Compact design */}
           <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-4 overflow-y-auto max-w-md w-full max-h-[70vh]">
             <div className="flex items-start justify-between mb-3">
-              <h3 className="font-medium text-gray-900 pr-4">{service.label}</h3>
+              <h3 className="font-medium text-gray-900 pr-4">{service.service_label}</h3>
               <button
                 onClick={() => setIsOpen(false)}
                 className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
@@ -93,62 +64,39 @@ const NewServiceToolTip = ({ service }: NewServiceToolTipProps) => {
             </div>
             <div className="space-y-3 text-sm">
               {/* Description */}
-              {service.description && (
+              {service.service_description && (
                 <div>
                   <span className="font-medium text-gray-800">Description:</span>
-                  <span className="text-gray-600 ml-1">{service.description}</span>
+                  <span className="text-gray-600 ml-1">{service.service_description}</span>
                 </div>
               )}
-              {/* Data Type */}
-              <div>
-                <span className="font-medium text-gray-800">Type de données:</span>
-                <span className="text-gray-600 ml-1">
-                  {getDataTypeDescription(service.dataType)}
-                </span>
-              </div>
               {/* Data Requirements */}
-              {service.requiresData && (
+              {service.requires_data && (service.dataFields?.length ?? 0) > 0 && (
                 <div>
-                  <span className="font-medium text-gray-800">Données requises:</span>
-                  <div className="text-gray-600 ml-1">
-                    {service.dataLabel && <span>{service.dataLabel}</span>}
-                    {service.dataDescription && (
-                      <span>
-                        {service.dataLabel ? ', ' : ''}
-                        {service.dataDescription}
-                      </span>
-                    )}
-                    {/* Show choices for SELECT and RADIO types */}
-                    {(service.dataType === 'SELECT' || service.dataType === 'RADIO') &&
-                      parseChoices(service.choices).length > 0 && (
-                        <span>. Options: {parseChoices(service.choices).join(', ')}</span>
-                      )}
-                    {/* Show example for TEXT type */}
-                    {service.dataType === 'TEXT' && (
-                      <span>. Format: Texte libre (ex: description, commentaire, adresse)</span>
-                    )}
-                    {/* Show format for NUMBER type */}
-                    {service.dataType === 'NUMBER' && (
-                      <span>. Format: Valeur numérique (ex: 25, 1500.50, 3)</span>
-                    )}
+                  <span className="font-medium text-gray-800">Champs de données requis:</span>
+                  <div className="text-gray-600 ml-1 space-y-2">
+                    {service.dataFields?.map((field, index) => (
+                      <div key={index}>
+                        <span>{field.label}</span>
+                        {field.description && <span>, {field.description}</span>}
+                        <span> ({getDataTypeDescription(field.data_type)})</span>
+                        {(field.data_type === 'SELECT' || field.data_type === 'RADIO') &&
+                          field.choices && field.choices.length > 0 && (
+                            <span>. Options: {field.choices.filter(c => c.trim() !== '').join(', ')}</span>
+                          )}
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
               {/* Show what happens when no data is required */}
-              {!service.requiresData && (
+              {!service.requires_data && (
                 <div>
                   <span className="font-medium text-gray-800">Données requises:</span>
                   <span className="text-gray-600 ml-1">
                     Aucune donnée requise. Ce service ne nécessite aucune information supplémentaire
                     de la part du freelance
                   </span>
-                </div>
-              )}
-              {/* Provider */}
-              {service.user?.ownedCompany && (
-                <div className="pt-2 border-t border-gray-200">
-                  <span className="font-medium text-gray-800">Proposé par:</span>
-                  <span className="text-gray-600 ml-1">{service.user.ownedCompany.name}</span>
                 </div>
               )}
             </div>

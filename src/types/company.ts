@@ -1,5 +1,6 @@
 import { OrganismeWithCotisations } from './organisme';
-import { NewService, PortagePreference } from './user';
+import { NewServiceData } from './platform';
+import { PortagePreference } from './user';
 
 export interface CompanyFormData {
   // Step 1: General info
@@ -25,7 +26,7 @@ export interface CompanyFormData {
   // Step 5: Services selection and creation
   selectedPlatformServices: string[];
   selectedPortages: string[];
-  newServices: NewService[];
+newServices: NewServiceData[];
 }
 
 export interface CompanyPayload {

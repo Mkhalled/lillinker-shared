@@ -22,7 +22,6 @@ interface FreelanceServicesStepProps {
   handleServiceRequiredChange: (serviceId: number, isRequired: boolean) => void;
   handleServiceDataChange: (serviceId: number, data: string) => void;
   handleMultipleSelectChange: (serviceId: number, choice: string, isChecked: boolean) => void;
-  parseChoices: (choices: string | null) => string[];
   error?: string;
 }
 
@@ -33,7 +32,6 @@ export const FreelanceServicesStep = ({
   handleServiceRequiredChange,
   handleServiceDataChange,
   handleMultipleSelectChange,
-  parseChoices,
   error,
 }: FreelanceServicesStepProps) => {
   return (
@@ -61,7 +59,15 @@ export const FreelanceServicesStep = ({
             const selectedService = formData.selectedServices.find(
               (s: SelectedService) => s.serviceId === service.id
             );
-            const choices = parseChoices(service.choices as string | null);
+            // Use the first dataField for simplicity, or adjust based on your requirements
+            const dataField = service.dataFields[0] || {
+              id: 0,
+              label: 'Données requises',
+              description: null,
+              data_type: 'TEXT',
+              choices: null,
+            };
+            const choices = dataField.choices || [];
 
             return (
               <div key={service.id} className="border border-gray-200 rounded-lg p-3 sm:p-4">
@@ -120,13 +126,12 @@ export const FreelanceServicesStep = ({
                         <div className="space-y-3">
                           <div>
                             <label className="text-sm font-medium text-gray-700 block">
-                              {service.data_label || 'Données requises'}{' '}
-                              <span className="text-red-500">*</span>
+                              {dataField.label} <span className="text-red-500">*</span>
                             </label>
                           </div>
 
                           {/* TEXT input */}
-                          {service.data_type === 'TEXT' && (
+                          {dataField.data_type === 'TEXT' && (
                             <TextAreaField
                               id={`service-text-${service.id}`}
                               value={selectedService?.responseData || ''}
@@ -142,7 +147,7 @@ export const FreelanceServicesStep = ({
                           )}
 
                           {/* NUMBER input */}
-                          {service.data_type === 'NUMBER' && (
+                          {dataField.data_type === 'NUMBER' && (
                             <InputField
                               id={`service-number-${service.id}`}
                               type="number"
@@ -158,7 +163,7 @@ export const FreelanceServicesStep = ({
                           )}
 
                           {/* SELECT (multiple choice) */}
-                          {service.data_type === 'SELECT' && choices.length > 0 && (
+                          {dataField.data_type === 'SELECT' && choices.length > 0 && (
                             <div className="space-y-2">
                               <p className="text-xs text-gray-600">
                                 Sélectionnez une ou plusieurs options{' '}
@@ -198,7 +203,7 @@ export const FreelanceServicesStep = ({
                           )}
 
                           {/* RADIO (single choice) */}
-                          {service.data_type === 'RADIO' && choices.length > 0 && (
+                          {dataField.data_type === 'RADIO' && choices.length > 0 && (
                             <div className="space-y-2">
                               <p className="text-xs text-gray-600">
                                 Sélectionnez une option <span className="text-red-500">*</span> :

@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/button/Button';
 import { CollapsibleSection } from '@/components/ui/CollapsibleSection';
 import type { CompanyFormData } from '@/types/company';
 import { PlatformService } from '@/types/platform';
-import type { NewService } from '@/types/user';
+import type { NewServiceData } from '@/types/platform';
 
 import ServiceInfoTooltip from '../../ServiceInfoTooltip';
+
 interface CompanyServicesStepProps {
   formData: CompanyFormData;
   onFormDataChange: (updates: Partial<CompanyFormData>) => void;
@@ -102,7 +103,7 @@ export const CompanyServicesStep = ({
 
         {formData.newServices.length > 0 && (
           <div className="space-y-3">
-            {formData.newServices.map((service: NewService, index: number) => (
+            {formData.newServices.map((service: NewServiceData, index: number) => (
               <div key={service.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -111,9 +112,9 @@ export const CompanyServicesStep = ({
                         Nouveau
                       </span>
                     </div>
-                    <h5 className="font-medium text-gray-900 mb-1">{service.label}</h5>
-                    {service.description && (
-                      <p className="text-sm text-gray-600">{service.description}</p>
+                    <h5 className="font-medium text-gray-900 mb-1">{service.service_label}</h5>
+                    {service.service_description && (
+                      <p className="text-sm text-gray-600">{service.service_description}</p>
                     )}
                   </div>
                   <button

@@ -1,23 +1,21 @@
 export interface NewServiceData {
   service_label: string;
   service_description?: string;
-  data_type: 'TEXT' | 'NUMBER' | 'SELECT' | 'RADIO';
   requires_data: boolean;
-  data_label?: string;
-  data_description?: string;
-  choices?: string[];
+  dataFields?: {
+    label: string;
+    description?: string;
+    data_type: 'TEXT' | 'NUMBER' | 'SELECT' | 'RADIO';
+    choices?: string[];
+  }[];
 }
 
 export interface PlatformService {
   id: number;
   label: string;
   description: string | null;
-  data_type: string;
   requires_data: boolean;
-  data_label: string;
-  data_description: string | null;
-  choices: unknown;
-  status?: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
   user?: {
     first_name: string;
     last_name: string;
@@ -25,4 +23,11 @@ export interface PlatformService {
       name: string;
     } | null;
   };
+  dataFields: {
+    id: number;
+    label: string;
+    description: string | null;
+    data_type: 'TEXT' | 'NUMBER' | 'SELECT' | 'RADIO';
+    choices: string[] | null;
+  }[];
 }
