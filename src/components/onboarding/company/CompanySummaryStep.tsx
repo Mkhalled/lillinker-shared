@@ -1,5 +1,7 @@
 'use client';
 
+import NewServiceToolTip from '@/components/NewServiceToolTip';
+import ServiceInfoTooltip from '@/components/ServiceInfoTooltip';
 import type { Metier, Portage } from '@/hooks/useModalData';
 import type { CompanyFormData } from '@/types/company';
 import { PlatformService } from '@/types/platform';
@@ -113,29 +115,29 @@ export const CompanySummaryStep = ({
         </div>
       )}
 
-      {/* Platform Services */}
-      {formData.selectedPlatformServices.length > 0 && (
-        <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
-          <h4 className="font-medium text-gray-900 mb-3">
-            Services plateforme ({formData.selectedPlatformServices.length})
-          </h4>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {formData.selectedPlatformServices.map((serviceId: string) => {
-              const service = platformServices?.find(s => s.id.toString() === serviceId);
-              return service ? (
-                <div key={service.id} className="flex items-start space-x-3">
-                  <div className="flex-1">
-                    <h5 className="font-medium text-gray-900">{service.label}</h5>
-                    {service.description && (
-                      <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                    )}
-                  </div>
-                </div>
-              ) : null;
-            })}
+   {/* Platform Services */}
+{formData.selectedPlatformServices.length > 0 && (
+  <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
+    <h4 className="font-medium text-gray-900 mb-3">
+      Services plateforme ({formData.selectedPlatformServices.length})
+    </h4>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+      {formData.selectedPlatformServices.map((serviceId: string) => {
+        const service = platformServices?.find(s => s.id.toString() === serviceId);
+        return service ? (
+          <div key={service.id} className="flex items-start space-x-3">
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <h5 className="font-medium text-gray-900">{service.label}</h5>
+                <ServiceInfoTooltip service={service} />
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        ) : null;
+      })}
+    </div>
+  </div>
+)}
 
       {/* New Services */}
       {formData.newServices.filter((s: NewService) => s.label.trim() !== '').length > 0 && (
@@ -148,15 +150,11 @@ export const CompanySummaryStep = ({
             {formData.newServices
               .filter((s: NewService) => s.label.trim() !== '')
               .map((service: NewService) => (
-                <div key={service.id} className="border-l-4 border-blue-500 pl-4">
-                  <h5 className="font-medium text-gray-900">{service.label}</h5>
-                  {service.description && (
-                    <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                  )}
-                  <div className="text-xs text-gray-500 mt-2">
-                    Type: {service.dataType} | Données requises:{' '}
-                    {service.requiresData ? 'Oui' : 'Non'}
+                <div key={service.id} className="border-l-4 border-blue-500 pl-4 flex items-start">
+                  <div className="flex-1">
+                    <h5 className="font-medium text-gray-900">{service.label}</h5>
                   </div>
+                  <NewServiceToolTip service={service} />
                 </div>
               ))}
           </div>
