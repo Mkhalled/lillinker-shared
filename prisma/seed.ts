@@ -1,14 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
-
 import { logger } from '../src/lib/logger';
-
 const prisma = new PrismaClient();
-
 // Constants for better maintainability
 const DEFAULT_PASSWORD = 'Admin123!';
 const HASH_ROUNDS = 10;
-
 // TypeScript interfaces for better type safety
 interface UserCreateData {
   first_name: string;
@@ -21,13 +17,12 @@ interface UserCreateData {
   email_verified?: boolean;
   sex?: 'MALE' | 'FEMALE';
 }
-
 interface CompanyCreateData {
   admin_user_id: number;
   name: string;
-  description: string;
-  logo: string;
-  siret: string;
+  description?: string;
+  logo?: string;
+  siret?: string;
   consultant_count: number;
   management_fees?: number;
   is_portage?: boolean;
@@ -38,7 +33,6 @@ interface CompanyCreateData {
   convention_collective?: string;
   code_naf_ape?: string;
 }
-
 /**
  * Helper function for creating users with consistent password hashing
  * @param userData - User data without password (password will be auto-generated)
@@ -52,7 +46,6 @@ async function createUser(userData: Omit<UserCreateData, 'password'>): Promise<a
     },
   });
 }
-
 /**
  * Helper function for creating companies
  * @param companyData - Complete company data
@@ -63,7 +56,6 @@ async function createCompany(companyData: CompanyCreateData) {
     data: companyData,
   });
 }
-
 /**
  * Script de données de test pour la plateforme Lillinker - Portage Salarial
  *
@@ -77,11 +69,9 @@ async function createCompany(companyData: CompanyCreateData) {
  *
  * Note: Tous les mots de passe sont définis à 'Admin123!' pour le développement
  */
-
 async function main(): Promise<void> {
   try {
     logger.info('Starting database seeding for Portage Salarial platform...');
-
     // Clean up existing data in correct order (respecting foreign key constraints)
     await prisma.companyResponseOrganisme.deleteMany();
     await prisma.companyResponse.deleteMany();
@@ -89,6 +79,7 @@ async function main(): Promise<void> {
     await prisma.requestLabelSelected.deleteMany();
     await prisma.freelanceRequest.deleteMany();
     await prisma.companyService.deleteMany();
+    await prisma.platformServiceData.deleteMany();
     await prisma.platformService.deleteMany();
     await prisma.secteurActiviteCompany.deleteMany();
     await prisma.companyLabel.deleteMany();
@@ -102,59 +93,34 @@ async function main(): Promise<void> {
     await prisma.session.deleteMany();
     await prisma.account.deleteMany();
     await prisma.user.deleteMany();
-
-    // tables de references
-
-    // <option value="IT" selected="">IT - Digital</option>
-    // <option value="ACCOUNTING">Gestion - comptabilité</option>
-    // <option value="FINANCE">Finance, banque et assurances</option>
-    // <option value="MARKETING">Marketing</option>
-    // <option value="HR">Ressources humaines</option>
-    // <option value="EVENT">Événementiel</option>
-    // <option value="BUILDING">BTP</option>
-    // <option value="REAL_ESTATE">Immobilier</option>
-    //<option value="AUTOMOTIVE">Automobile</option>
-    // <option value="PERSONAL_SERVICES">Service à la personne</option>
-    // <option value="SPORT">Sport</option>
-    // <option value="OTHER">Autre</option>
-
-    // Secteur d'activité (renamed from Metier)
+    // Secteur d'activité
     const IT = await prisma.secteurActivite.create({
       data: { code: 'IT', name: 'IT - Digital' },
     });
-
     const ACCOUNTING = await prisma.secteurActivite.create({
       data: { code: 'ACCOUNTING', name: 'Gestion - comptabilité' },
     });
-
     const FINANCE = await prisma.secteurActivite.create({
       data: { code: 'FINANCE', name: 'Finance, banque et assurances' },
     });
-
     const MARKETING = await prisma.secteurActivite.create({
       data: { code: 'MARKETING', name: 'Marketing' },
     });
-
     const HR = await prisma.secteurActivite.create({
       data: { code: 'HR', name: 'Ressources humaines' },
     });
-
     const EVENT = await prisma.secteurActivite.create({
       data: { code: 'EVENT', name: 'Événementiel' },
     });
-
     const BUILDING = await prisma.secteurActivite.create({
       data: { code: 'BUILDING', name: 'BTP' },
     });
-
     const REAL_ESTATE = await prisma.secteurActivite.create({
       data: { code: 'REAL_ESTATE', name: 'Immobilier' },
     });
-
     const AUTOMOTIVE = await prisma.secteurActivite.create({
       data: { code: 'AUTOMOTIVE', name: 'Automobile' },
     });
-
     const PERSONAL_SERVICES = await prisma.secteurActivite.create({
       data: { code: 'PERSONAL_SERVICES', name: 'Service à la personne' },
     });
@@ -164,7 +130,6 @@ async function main(): Promise<void> {
     const OTHER = await prisma.secteurActivite.create({
       data: { code: 'OTHER', name: 'Autre' },
     });
-
     // Create platform admin user (no company affiliation)
     const adminPlateforme = await createUser({
       first_name: 'Admin',
@@ -176,8 +141,6 @@ async function main(): Promise<void> {
       email_verified: true,
       sex: 'MALE',
     });
-
-    //
     // Create Consultant profil
     const adminUnitPortageCompany = await createUser({
       first_name: 'Ludovic',
@@ -189,11 +152,10 @@ async function main(): Promise<void> {
       email_verified: true,
       sex: 'MALE',
     });
-
     // Create freelance users
     const freelanceUser1 = await createUser({
-      first_name: 'khalled',
-      last_name: 'meneouali',
+      first_name: 'Khalled',
+      last_name: 'Meneouali',
       email: 'khalled.men@gmail.com',
       role: 'FREELANCE',
       phone_number: '+33123456792',
@@ -201,16 +163,14 @@ async function main(): Promise<void> {
       email_verified: true,
       sex: 'MALE',
     });
-
-    // Create freelance profiles (updated field name)
+    // Create freelance profiles
     const freelance1 = await prisma.freelance.create({
       data: {
         freelance_id: freelanceUser1.id,
         secteur_activite_id: IT.id,
       },
     });
-
-    // Create the main portage companies (with new nullable fields)
+    // Create the main portage companies
     const unitPortage = await createCompany({
       admin_user_id: adminUnitPortageCompany.id,
       name: 'UNIT PORTAGE',
@@ -228,11 +188,9 @@ async function main(): Promise<void> {
       convention_collective: 'Convention collective du portage salarial',
       code_naf_ape: '7830Z',
     });
-
-    // Link companies to secteurs activités (updated table name)
+    // Link companies to secteurs activités
     await prisma.secteurActiviteCompany.createMany({
       data: [
-        // unitPortage
         { company_id: unitPortage.id, secteur_activite_id: IT.id },
         { company_id: unitPortage.id, secteur_activite_id: ACCOUNTING.id },
         { company_id: unitPortage.id, secteur_activite_id: FINANCE.id },
@@ -247,8 +205,7 @@ async function main(): Promise<void> {
         { company_id: unitPortage.id, secteur_activite_id: OTHER.id },
       ],
     });
-
-    // Create label syndicats (renamed from portage associations)
+    // Create label syndicats
     const peps = await prisma.labelSyndicat.create({
       data: {
         name: "PEPS (Syndicat des Professionnels de l'Emploi)",
@@ -256,7 +213,6 @@ async function main(): Promise<void> {
         logo: 'https://example.com/logos/peps.png',
       },
     });
-
     const feps = await prisma.labelSyndicat.create({
       data: {
         name: 'FEPS (Fédération des Entreprises de Portage Salarial)',
@@ -264,7 +220,6 @@ async function main(): Promise<void> {
         logo: 'https://example.com/logos/feps.png',
       },
     });
-
     const sneps = await prisma.labelSyndicat.create({
       data: {
         name: 'SNEPS (Syndicat National des Entreprises de Portage Salarial)',
@@ -273,28 +228,25 @@ async function main(): Promise<void> {
         logo: null,
       },
     });
-
-    // Link portage companies to professional associations (updated table name)
+    // Link portage companies to professional associations
     await prisma.companyLabel.createMany({
       data: [
-        // UNIT Portage is member of multiple associations
         { company_id: unitPortage.id, label_syndicat_id: peps.id },
         { company_id: unitPortage.id, label_syndicat_id: feps.id },
         { company_id: unitPortage.id, label_syndicat_id: sneps.id },
       ],
     });
-
-    // Create platform services for portage salarial (updated nullable fields)
+    // Create platform services for portage salarial with PlatformServiceData
     const platformService1 = await prisma.platformService.create({
       data: {
         user_id: adminPlateforme.id,
         label: 'Une avance sur salaire',
-        description: 'paiement mensuel même si le client n\'a pas encore réglé la facture',
-        data_type: null,
+        description: 'Paiement mensuel même si le client n\'a pas encore réglé la facture',
         requires_data: false,
-        data_label: null,
-        data_description: null,
         status: 'ACTIVE',
+        dataFields: {
+          create: [],
+        },
       },
     });
     const platformService2 = await prisma.platformService.create({
@@ -303,11 +255,11 @@ async function main(): Promise<void> {
         label: 'Une fin de contrat avec rupture conventionnelle',
         description:
           'La rupture conventionnelle est une modalité de fin de contrat amiable entre le salarié porté et la société de portage. Elle permet de mettre fin au CDI de portage salarial (s\'il existe) d\'un commun accord, tout en donnant droit aux allocations chômage.',
-        data_type: null,
         requires_data: false,
-        data_label: null,
-        data_description: null,
         status: 'ACTIVE',
+        dataFields: {
+          create: [],
+        },
       },
     });
     const platformService3 = await prisma.platformService.create({
@@ -315,12 +267,12 @@ async function main(): Promise<void> {
         user_id: adminPlateforme.id,
         label: 'Un interlocuteur unique dédié',
         description:
-          'Bénéficiez d n\'un interlocuteur unique dédié qui connaît votre dossier et vous accompagne au quotidien. Vous gagnez en réactivité, en simplicité et en sérénité dans la gestion de vos missions et de votre rémunération.',
-        data_type: null,
+          'Bénéficiez d\'un interlocuteur unique dédié qui connaît votre dossier et vous accompagne au quotidien. Vous gagnez en réactivité, en simplicité et en sérénité dans la gestion de vos missions et de votre rémunération.',
         requires_data: false,
-        data_label: null,
-        data_description: null,
         status: 'ACTIVE',
+        dataFields: {
+          create: [],
+        },
       },
     });
     const platformService4 = await prisma.platformService.create({
@@ -329,11 +281,11 @@ async function main(): Promise<void> {
         label: 'Rétrocession de la TVA sur frais professionnels',
         description:
           'Possibilité de récupérer la TVA payée sur vos dépenses professionnelles (déplacements, matériel, abonnements…), ce qui réduit directement le coût réel de vos frais.',
-        data_type: null,
         requires_data: false,
-        data_label: null,
-        data_description: null,
         status: 'ACTIVE',
+        dataFields: {
+          create: [],
+        },
       },
     });
     const platformService5 = await prisma.platformService.create({
@@ -342,18 +294,22 @@ async function main(): Promise<void> {
         label: 'Prise en charge des indemnités kilométriques',
         description:
           'Remboursement de vos déplacements professionnels avec véhicule personnel, calculé selon le barème fiscal officiel (nombre de kilomètres et puissance fiscale du véhicule).',
-        data_type: 'NUMBER',
         requires_data: true,
-        data_label: 'nombre de kilomètres',
-        data_description: 'nombre de kilomètres effectués pour la mission',
         status: 'ACTIVE',
+        dataFields: {
+          create: [
+            {
+              label: 'Nombre de kilomètres',
+              description: 'Nombre de kilomètres effectués pour la mission',
+              data_type: 'NUMBER',
+            },
+          ],
+        },
       },
     });
-
     // Create company services
     await prisma.companyService.createMany({
       data: [
-        // unitPortage services
         { company_id: unitPortage.id, service_id: platformService1.id, is_active: true },
         { company_id: unitPortage.id, service_id: platformService2.id, is_active: true },
         { company_id: unitPortage.id, service_id: platformService3.id, is_active: true },
@@ -361,9 +317,7 @@ async function main(): Promise<void> {
         { company_id: unitPortage.id, service_id: platformService5.id, is_active: true },
       ],
     });
-
     // Create organismes sociaux and cotisations for each company
-    // unitPortage organismes
     const urssafSecSoc = await prisma.organisme.create({
       data: {
         company_id: unitPortage.id,
@@ -371,7 +325,6 @@ async function main(): Promise<void> {
         description: 'Cotisations sociales pour financer la Sécurité sociale.',
       },
     });
-
     const csgCrds = await prisma.organisme.create({
       data: {
         company_id: unitPortage.id,
@@ -380,15 +333,13 @@ async function main(): Promise<void> {
           'Contribution Sociale Généralisée & Contribution au Remboursement de la Dette Sociale',
       },
     });
-
     const franceTravail = await prisma.organisme.create({
       data: {
         company_id: unitPortage.id,
         label: 'France Travail',
-        description: 'Gère ln\'assurance chômage.',
+        description: 'Gère l\'assurance chômage.',
       },
     });
-
     const retraiteComplementaire = await prisma.organisme.create({
       data: {
         company_id: unitPortage.id,
@@ -396,7 +347,6 @@ async function main(): Promise<void> {
         description: 'Retraite complémentaire',
       },
     });
-
     const autresContributions = await prisma.organisme.create({
       data: {
         company_id: unitPortage.id,
@@ -404,15 +354,13 @@ async function main(): Promise<void> {
         description: 'Autres contributions',
       },
     });
-
     const rcPro = await prisma.organisme.create({
       data: {
         company_id: unitPortage.id,
-        label: 'Couvrir les risques liés à ln\'activité du consultant (erreurs, litiges client).',
-        description: 'Autres contributions',
+        label: 'RC Pro (Responsabilité civile professionnelle)',
+        description: 'Couvrir les risques liés à l\'activité du consultant (erreurs, litiges client).',
       },
     });
-
     // Create cotisations
     await prisma.cotisation.createMany({
       data: [
@@ -420,7 +368,7 @@ async function main(): Promise<void> {
           organisme_id: urssafSecSoc.id,
           label: 'Maladie, maternité, invalidité, décès',
           description:
-            'Financement des soins de santé, arrêts maladie, maternité/paternité, indemnités en cas dn\'invalidité ou décès.',
+            'Financement des soins de santé, arrêts maladie, maternité/paternité, indemnités en cas d\'invalidité ou décès.',
           type: 'PATRONAL',
           pourcentage_salarial: 7,
         },
@@ -449,16 +397,14 @@ async function main(): Promise<void> {
           type: 'PATRONAL',
           pourcentage_patronal: 3.45,
         },
-
         {
           organisme_id: urssafSecSoc.id,
           label: 'Accident du travail',
           description:
-            'Financement des indemnités en cas dn\'accidents professionnels ou maladies professionnelles.',
+            'Financement des indemnités en cas d\'accidents professionnels ou maladies professionnelles.',
           type: 'PATRONAL',
           pourcentage_patronal: 0.9,
         },
-
         {
           organisme_id: csgCrds.id,
           label: 'CSG déductible',
@@ -466,15 +412,13 @@ async function main(): Promise<void> {
           type: 'SALARIAL',
           pourcentage_salarial: 6.8,
         },
-
         {
           organisme_id: csgCrds.id,
           label: 'CSG/CRDS non déductible',
-          description: "'CSG/CRDS non déductible",
+          description: 'CSG/CRDS non déductible',
           type: 'SALARIAL',
           pourcentage_salarial: 2.9,
         },
-
         {
           organisme_id: franceTravail.id,
           label: 'Assurance chômage',
@@ -482,26 +426,23 @@ async function main(): Promise<void> {
           type: 'PATRONAL',
           pourcentage_patronal: 4.05,
         },
-
         {
           organisme_id: franceTravail.id,
           label:
             'AGS (Association pour la Gestion du régime de garantie des créances des Salariés)',
-          description: 'Couvre les salaires impayés en cas de faillite de ln\'employeur.',
+          description: 'Couvre les salaires impayés en cas de faillite de l\'employeur.',
           type: 'PATRONAL',
           pourcentage_patronal: 0.15,
         },
-
         {
           organisme_id: retraiteComplementaire.id,
-          label: 'Tranche 1 (jusqun\'à 1 PASS ~3 864 €/mois)',
+          label: 'Tranche 1 (jusqu\'à 1 PASS ~3 864 €/mois)',
           description:
-            'Retraite complémentaire pour les salaires jusqun\'à 1 PASS (Plafond Annuel de la Sécurité Sociale)',
+            'Retraite complémentaire pour les salaires jusqu\'à 1 PASS (Plafond Annuel de la Sécurité Sociale)',
           type: 'DEUX',
           pourcentage_salarial: 3.15,
           pourcentage_patronal: 4.72,
         },
-
         {
           organisme_id: retraiteComplementaire.id,
           label: 'Tranche 2 (entre 1 et 8 PASS)',
@@ -513,9 +454,9 @@ async function main(): Promise<void> {
         },
         {
           organisme_id: retraiteComplementaire.id,
-          label: 'CEG (Contribution dn\'Équilibre Général)',
+          label: 'CEG (Contribution d\'Équilibre Général)',
           description:
-            'Cotisation additionnelle pour assurer ln\'équilibre financier du régime de retraite complémentaire.',
+            'Cotisation additionnelle pour assurer l\'équilibre financier du régime de retraite complémentaire.',
           type: 'DEUX',
           pourcentage_salarial: 0.86,
           pourcentage_patronal: 1.29,
@@ -531,7 +472,7 @@ async function main(): Promise<void> {
         },
         {
           organisme_id: autresContributions.id,
-          label: 'FNAL (Fonds National dn\'Aide au Logement)',
+          label: 'FNAL (Fonds National d\'Aide au Logement)',
           description: 'Financement des aides au logement pour les salariés.',
           type: 'PATRONAL',
           pourcentage_patronal: 0.1,
@@ -545,7 +486,7 @@ async function main(): Promise<void> {
         },
         {
           organisme_id: autresContributions.id,
-          label: 'Taxe dn\'apprentissage',
+          label: 'Taxe d\'apprentissage',
           description: 'Financement des formations technologiques et professionnelles.',
           type: 'PATRONAL',
           pourcentage_patronal: 0.68,
@@ -569,13 +510,12 @@ async function main(): Promise<void> {
           organisme_id: rcPro.id,
           label: 'RC Pro (Responsabilité civile professionnelle)',
           description:
-            'Couvrir les risques liés à ln\'activité du consultant (erreurs, litiges client).  ',
+            'Couvrir les risques liés à l\'activité du consultant (erreurs, litiges client).',
           type: 'PATRONAL',
           pourcentage_patronal: 0,
         },
       ],
     });
-
     // Create freelance requests
     const freelanceRequest1 = await prisma.freelanceRequest.create({
       data: {
@@ -593,19 +533,16 @@ async function main(): Promise<void> {
         start_date: new Date('2025-09-01'),
       },
     });
-
-    // Link freelance requests to label syndicat preferences (updated table name)
+    // Link freelance requests to label syndicat preferences
     await prisma.requestLabelSelected.createMany({
       data: [
         { freelance_request_id: freelanceRequest1.id, label_syndicat_id: peps.id },
         { freelance_request_id: freelanceRequest1.id, label_syndicat_id: feps.id },
       ],
     });
-
-    // Create freelance request options (services requested by freelancers)
+    // Create freelance request options
     await prisma.freelanceRequestOption.createMany({
       data: [
-        // Request 1 options
         {
           freelance_request_id: freelanceRequest1.id,
           service_option_id: platformService1.id,
@@ -616,7 +553,6 @@ async function main(): Promise<void> {
         },
       ],
     });
-
     // Create company responses
     const response1UnitPortage = await prisma.companyResponse.create({
       data: {
@@ -681,19 +617,15 @@ async function main(): Promise<void> {
         },
       },
     });
-
-    // Link company responses to organismes (simplified - detailed data is now in response_data JSON)
+    // Link company responses to organismes
     await prisma.companyResponseOrganisme.createMany({
       data: [
-        // Response 1 UNIT organismes
         { company_response_id: response1UnitPortage.id, organisme_id: urssafSecSoc.id },
         { company_response_id: response1UnitPortage.id, organisme_id: franceTravail.id },
         { company_response_id: response1UnitPortage.id, organisme_id: retraiteComplementaire.id },
       ],
     });
-
     logger.info('Database seeded successfully with updated schema!');
-
   } catch (e) {
     logger.error('Erreur lors du seeding de la base de données', e as Error);
     process.exit(1);
@@ -701,5 +633,4 @@ async function main(): Promise<void> {
     await prisma.$disconnect();
   }
 }
-
 main();

@@ -128,26 +128,33 @@ model CompanyLabel {
   @@unique([company_id, label_syndicat_id])
   @@map("company_labels")
 }
-
-// PlatformService model
+// platform service
 model PlatformService {
-  id               Int             @id @default(autoincrement())
-  user_id          Int
-  label            String
-  description      String?         @db.Text
-  data_type        DataType?
-  requires_data  Boolean         @default(false)
-  data_label       String?
-  data_description String?         @db.Text
-  choices          Json?
-  status           ServiceStatus
-  user             User            @relation(fields: [user_id], references: [id])
-  companyServices  CompanyService[]
+  id                Int                     @id @default(autoincrement())
+  user_id           Int
+  label             String
+  description       String?                 @db.Text
+  requires_data     Boolean                 @default(false)
+  status            ServiceStatus
+  user              User                    @relation(fields: [user_id], references: [id])
+  companyServices   CompanyService[]
   freelanceRequests FreelanceRequestOption[]
+  dataFields        PlatformServiceData[]
 
   @@map("platform_services")
 }
+// platform service data
+model PlatformServiceData {
+  id                 Int             @id @default(autoincrement())
+  platformServiceId  Int
+  label              String
+  description        String?         @db.Text
+  data_type          DataType
+  choices            Json?
+  platformService    PlatformService @relation(fields: [platformServiceId], references: [id])
 
+  @@map("platform_service_data")
+}
 enum DataType {
   TEXT
   NUMBER
