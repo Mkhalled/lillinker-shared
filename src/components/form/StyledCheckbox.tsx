@@ -55,15 +55,6 @@ export const StyledCheckbox = ({
               ? 'border-gray-200 bg-gray-100'
               : 'border-gray-300 bg-white hover:border-indigo-400'
         }`}
-        onClick={() => {
-          if (disabled) return;
-          // Create a synthetic event to trigger onChange
-          const syntheticEvent = {
-            target: { checked: !checked },
-            currentTarget: { checked: !checked },
-          } as React.ChangeEvent<HTMLInputElement>;
-          onChange(syntheticEvent);
-        }}
       >
         {checked && (
           <svg
@@ -85,6 +76,7 @@ export const StyledCheckbox = ({
   if (label) {
     return (
       <label
+        htmlFor={id}
         className={`flex items-center space-x-3 group ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
       >
         {component}

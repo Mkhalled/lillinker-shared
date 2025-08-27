@@ -72,15 +72,8 @@ export const FreelanceServicesStep = ({
                         checked={isSelected}
                         onChange={() => handleServiceToggle(service.id)}
                         id={`service-${service.id}`}
+                        label={service.label}
                       />
-                      <div className="flex-1">
-                        <label
-                          htmlFor={`service-${service.id}`}
-                          className="font-medium cursor-pointer block select-none"
-                        >
-                          {service.label}
-                        </label>
-                      </div>
                     </div>
 
                     {/* Service Info Tooltip */}
