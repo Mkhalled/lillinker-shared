@@ -123,11 +123,6 @@ export const FreelanceServicesStep = ({
                               {service.data_label || 'Données requises'}{' '}
                               <span className="text-red-500">*</span>
                             </label>
-                            {service.data_description && (
-                              <p className="text-xs text-gray-500 mt-1">
-                                {service.data_description}
-                              </p>
-                            )}
                           </div>
 
                           {/* TEXT input */}
