@@ -20,6 +20,23 @@ export const FreelancePersonalInfoStep = ({
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <StyledSelect
+          label="Sexe"
+          id="sex"
+          value={formData.sex || ''}
+          onChange={e =>
+            setFormData((prev: FreelanceFormData) => ({
+              ...prev,
+              sex: e.target.value as 'MALE' | 'FEMALE',
+            }))
+          }
+          options={[
+            { value: 'MALE', label: 'Homme' },
+            { value: 'FEMALE', label: 'Femme' },
+          ]}
+          placeholder="Sexe *"
+          required
+        />
         <InputField
           id="prenom"
           label="Prénom"
@@ -30,6 +47,9 @@ export const FreelancePersonalInfoStep = ({
           placeholder="Jean"
           required
         />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <InputField
           id="nom"
           label="Nom"
@@ -40,63 +60,45 @@ export const FreelancePersonalInfoStep = ({
           placeholder="Dupont"
           required
         />
+        <BasicEmailInput
+          email={formData.email}
+          onEmailChange={(email: string) =>
+            setFormData((prev: FreelanceFormData) => ({ ...prev, email: email }))
+          }
+          label="Email *"
+          placeholder="jean.dupont@email.com"
+          id="freelance-email"
+        />
       </div>
-      <BasicEmailInput
-        email={formData.email}
-        onEmailChange={(email: string) =>
-          setFormData((prev: FreelanceFormData) => ({ ...prev, email: email }))
-        }
-        label="Email *"
-        placeholder="jean.dupont@email.com"
-        id="freelance-email"
-      />
-      <InputField
-        id="phone"
-        label="Téléphone"
-        value={formData.phone}
-        onChange={e =>
-          setFormData((prev: FreelanceFormData) => ({ ...prev, phone: e.target.value }))
-        }
-        placeholder="06 12 34 56 78"
-        required
-      />
-      <div className="space-y-2">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <StyledSelect
-            id="metier"
-            label="Métier"
-            value={formData.metierId}
-            onChange={e =>
-              setFormData((prev: FreelanceFormData) => ({
-                ...prev,
-                metierId: parseInt(e.target.value),
-              }))
-            }
-            options={[
-              { value: 0, label: 'Sélectionnez votre métier' },
-              ...metiers.map(metier => ({ value: metier.id, label: metier.name })),
-            ]}
-            placeholder=""
-            required
-          />
-          <StyledSelect
-            label="Sexe"
-            id="sex"
-            value={formData.sex || ''}
-            onChange={e =>
-              setFormData((prev: FreelanceFormData) => ({
-                ...prev,
-                sex: e.target.value as 'MALE' | 'FEMALE',
-              }))
-            }
-            options={[
-              { value: 'MALE', label: 'Homme' },
-              { value: 'FEMALE', label: 'Femme' },
-            ]}
-            placeholder="Sexe *"
-            required
-          />
-        </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <InputField
+          id="phone"
+          label="Téléphone"
+          value={formData.phone}
+          onChange={e =>
+            setFormData((prev: FreelanceFormData) => ({ ...prev, phone: e.target.value }))
+          }
+          placeholder="06 12 34 56 78"
+          required
+        />
+        <StyledSelect
+          id="metier"
+          label="Métier"
+          value={formData.metierId}
+          onChange={e =>
+            setFormData((prev: FreelanceFormData) => ({
+              ...prev,
+              metierId: parseInt(e.target.value),
+            }))
+          }
+          options={[
+            { value: 0, label: 'Sélectionnez votre métier' },
+            ...metiers.map(metier => ({ value: metier.id, label: metier.name })),
+          ]}
+          placeholder=""
+          required
+        />
       </div>
     </div>
   );
