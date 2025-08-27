@@ -264,4 +264,34 @@ export class AuthService {
       throw error;
     }
   }
+  /**
+   * Delete user by ID
+   */
+  static async deleteUserById(id: number) {
+    const logContext = {
+      operation: 'deleteUserById',
+      userId: id,
+    };
+
+    try {
+      logger.info('Starting user deletion process', logContext);
+
+      const deletedUser = await UserDAO.deleteById(id);
+
+      if (!deletedUser) {
+        logger.warn('User not found for deletion', logContext);
+        throw new Error('Utilisateur non trouvé');
+      }
+
+      logger.info('User deleted successfully', {
+        ...logContext,
+        email: deletedUser.email,
+      });
+
+      return { success: true, message: 'Utilisateur supprimé avec succès' };
+    } catch (error) {
+      logger.error('User deletion failed', error as Error, logContext);
+      throw error;
+    }
+  }
 }

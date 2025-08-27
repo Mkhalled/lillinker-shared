@@ -34,8 +34,17 @@ export async function POST(request: NextRequest) {
 
     // Registration and email verification without transaction
     const { user } = await AuthService.createUser(validatedData, prisma);
-    await AuthService.sendVerificationEmail(user.id, prisma);
-
+    try {
+        await AuthService.sendVerificationEmail(user.id, prisma);
+    } catch(error){
+        logger.error('Failed to send verification email, deleting user', error as Error, {
+            ...logContext,
+            userId: user.id,
+            email: user.email,
+        });
+        await AuthService.deleteUserById(user.id);
+        throw new Error('Échec de l\'envoi de l\'e-mail de vérification. Veuillez réessayer.');
+    }
     logger.info('Registration API completed successfully', {
       ...logContext,
       userId: user.id,

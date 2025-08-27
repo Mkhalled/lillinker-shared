@@ -122,4 +122,12 @@ export class UserDAO {
       },
     });
   }
+  static async deleteById(id: number): Promise<User | null> {
+    logger.info('Deleting user by id', { userId: id });
+    const user = await prisma.user.delete({
+      where: { id },
+    });
+    logger.info('User deleted successfully by id', { userId: user.id, email: user.email });
+    return user;
+  }
 }
