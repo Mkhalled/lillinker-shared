@@ -36,7 +36,6 @@ const NewRequest = ({ onClose }: NewRequestProps) => {
     handleServiceRequiredChange,
     handleServiceDataChange,
     handlePortageToggle,
-    parseChoices,
     handleMultipleSelectChange,
   } = useFreelanceHandlers(setFormData);
   const { isLoading, error, setError, handleComplete } = useRequestCompletion(
@@ -77,6 +76,7 @@ const NewRequest = ({ onClose }: NewRequestProps) => {
 
       case 3:
         return <FreelanceTjmStep formData={formData} setFormData={setFormData} />;
+        
       case 4:
         return (
           <FreelanceServicesStep
@@ -87,7 +87,6 @@ const NewRequest = ({ onClose }: NewRequestProps) => {
             handleServiceRequiredChange={handleServiceRequiredChange}
             handleServiceDataChange={handleServiceDataChange}
             handleMultipleSelectChange={handleMultipleSelectChange}
-            parseChoices={parseChoices}
             error={error || undefined}
           />
         );
