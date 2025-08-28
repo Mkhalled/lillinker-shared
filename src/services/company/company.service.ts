@@ -31,6 +31,13 @@ export class CompanyService {
         management_min: data.management_min ?? 0,
         management_max: data.management_max ?? 0,
         is_portage: data.is_portage || false,
+        logo: data.logo,
+        date_creation: data.date_creation,
+        chiffre_affaires: data.chiffre_affaires,
+        adresse: data.adresse,
+        site_web: data.site_web,
+        convention_collective: data.convention_collective,
+        code_naf_ape: data.code_naf_ape,
       });
 
       logger.info('Company record created successfully', {

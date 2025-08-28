@@ -33,23 +33,34 @@ export const CompanyOnboardingSchema = z
   .object({
     // Company data
     company_name: z.string().min(2, 'Company name is required'),
-    company_description: z.string().optional(),
     siret: z.string().min(1, 'SIRET number is required'),
+    company_description: z.string().optional(),
+    is_portage: z.boolean().default(false),
+
+    // New fields from DB
+    date_creation: z
+      .string()
+      .transform(str => new Date(str))
+      .or(z.date())
+      .optional(),
+    chiffre_affaires: z.number().optional(),
+    adresse: z.string().optional(),
+    site_web: z.string().optional(),
+    convention_collective: z.string().optional(),
+    code_naf_ape: z.string().optional(),
+    logo: z.string().optional(),
+
+    // Step 2: Consultants and fees
     consultant_count: z.number().min(1, 'Consultant count must be at least 1'),
     management_min: z.number().min(0, 'Management fees must be positive').optional(),
     management_max: z.number().min(0, 'Management fees must be positive').optional(),
 
-    // Portage company flag and services
-    is_portage: z.boolean().default(false),
-    selected_portages: z.array(z.number()).optional(),
-
-    // Selected platform services
-    selected_services: z.array(z.number()).optional(),
-
-    // Selected metiers
+    // Step 3: Metiers selection
     selected_metiers: z.array(z.number()).min(1, 'Must select at least one metier'),
 
-    // New services data (updated to match NewServiceData structure)
+    // Step 5: Services selection and creation
+    selected_services: z.array(z.number()).optional(),
+    selected_portages: z.array(z.number()).optional(),
     new_services: z.array(NewServiceSchema).optional(),
 
     // Legacy single service fields (for backward compatibility)

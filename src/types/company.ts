@@ -8,6 +8,13 @@ export interface CompanyFormData {
   siret: string;
   description: string;
   isPortage: PortagePreference;
+  date_creation?: Date;
+  chiffre_affaires?: number;
+  adresse?: string;
+  site_web?: string;
+  convention_collective?: string;
+  code_naf_ape?: string;
+  logo?: string ;
 
   // Step 2: Consultants and fees
   consultantCount: string;
@@ -27,7 +34,7 @@ export interface CompanyFormData {
   // Step 5: Services selection and creation
   selectedPlatformServices: string[];
   selectedPortages: string[];
-newServices: NewServiceData[];
+  newServices: NewServiceData[];
 }
 
 export interface CompanyPayload {
@@ -41,6 +48,12 @@ export interface CompanyPayload {
   management_min: number;
   management_max: number;
   is_portage: boolean;
+  date_creation?: Date;
+  chiffre_affaires?: number;
+  adresse?: string;
+  site_web?: string;
+  convention_collective?: string;
+  code_naf_ape?: string;
 }
 
 export interface CompanyWithOrganismes extends CompanyPayload {
