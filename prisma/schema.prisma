@@ -74,7 +74,8 @@ model Company {
   logo              String?         @db.Text
   siret             String?         @unique
   consultant_count  Int
-  management_fees   Float?
+  management_min  Float?
+  management_max  Float?
   is_portage        Boolean         @default(false)
   date_creation     DateTime?
   chiffre_affaires  Decimal?

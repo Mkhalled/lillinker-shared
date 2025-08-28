@@ -26,16 +26,12 @@ export const CompanyAdminStep = ({
     const isFormValid = Boolean(
       formData.adminFirstName &&
         formData.adminLastName &&
-        formData.adminPhone &&
-        formData.adminSex &&
         isEmailValid
     );
     onValidityChange?.(isFormValid);
   }, [
     formData.adminFirstName,
     formData.adminLastName,
-    formData.adminPhone,
-    formData.adminSex,
     isEmailValid,
     onValidityChange,
   ]);
@@ -53,7 +49,6 @@ export const CompanyAdminStep = ({
             { value: 'FEMALE', label: 'Femme' },
           ]}
           placeholder="Sélectionner..."
-          required
         />
         <InputField
           id="prenom"
@@ -91,7 +86,6 @@ export const CompanyAdminStep = ({
           value={formData.adminPhone}
           onChange={e => onFormDataChange({ adminPhone: e.target.value })}
           placeholder="01 23 45 67 89"
-          required
         />
       </div>
     </div>

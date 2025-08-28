@@ -11,7 +11,8 @@ export interface CompanyFormData {
 
   // Step 2: Consultants and fees
   consultantCount: string;
-  managementFeeRate: string;
+  managementFeeRateMin: string;
+  managementFeeRateMax: string;
 
   // Step 3: Metiers selection
   selectedMetiers: string[];
@@ -37,7 +38,8 @@ export interface CompanyPayload {
   logo?: string;
   siret?: string;
   consultant_count: number;
-  management_fees: number;
+  management_min: number;
+  management_max: number;
   is_portage: boolean;
 }
 

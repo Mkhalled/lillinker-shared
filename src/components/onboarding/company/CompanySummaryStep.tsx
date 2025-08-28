@@ -40,7 +40,7 @@ export const CompanySummaryStep = ({
             <span className="font-medium">Consultants:</span> {formData.consultantCount}
           </div>
           <div className="lg:col-span-2">
-            <span className="font-medium">Frais de gestion:</span> {formData.managementFeeRate}%
+            <span className="font-medium">Frais de gestion:</span> entre: {formData.managementFeeRateMin}% et {formData.managementFeeRateMax}%
           </div>
         </div>
       </div>
@@ -150,7 +150,7 @@ export const CompanySummaryStep = ({
             {formData.newServices
               .filter((s: NewServiceData) => s.service_label.trim() !== '')
               .map((service: NewServiceData) => (
-                <div key={service.id} className="border-l-4 border-blue-500 pl-4 flex items-start">
+                <div key={service.service_label} className="border-l-4 border-blue-500 pl-4 flex items-start">
                   <div className="flex-1">
                     <h5 className="font-medium text-gray-900">{service.service_label}</h5>
                   </div>

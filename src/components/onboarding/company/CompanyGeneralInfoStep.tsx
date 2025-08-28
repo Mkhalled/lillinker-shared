@@ -45,7 +45,6 @@ export const CompanyGeneralInfoStep = ({
         onChange={e => onFormDataChange({ description: e.target.value })}
         placeholder="Décrivez votre société de portage salarial..."
         rows={4}
-        required
       />
     </div>
   );

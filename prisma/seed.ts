@@ -24,7 +24,8 @@ interface CompanyCreateData {
   logo?: string;
   siret?: string;
   consultant_count: number;
-  management_fees?: number;
+  management_min?: number;
+  management_max?:  number;
   is_portage?: boolean;
   date_creation?: Date;
   chiffre_affaires?: number;
@@ -179,7 +180,8 @@ async function main(): Promise<void> {
       logo: 'https://lillinker.com/logos/sta-portage.png',
       siret: '900571803',
       consultant_count: 90,
-      management_fees: 5,
+      management_min: 5,
+      management_max: 10,
       is_portage: true,
       date_creation: new Date('2015-03-15'),
       chiffre_affaires: 2500000,

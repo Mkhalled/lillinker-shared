@@ -67,7 +67,6 @@ export const useCompanyValidation = (
         const basicValid = !!(
           formData.companyName &&
           formData.siret &&
-          formData.description &&
           !siretExists
         );
         return basicValid;
@@ -77,7 +76,7 @@ export const useCompanyValidation = (
         return true;
       case 3:
         // Consultants and management fee step
-        return !!(formData.consultantCount && formData.managementFeeRate);
+        return !!(formData.consultantCount);
       case 4:
         // Metiers selection step
         return formData.selectedMetiers.length > 0;

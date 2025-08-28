@@ -28,7 +28,8 @@ export class CompanyService {
         description: data.company_description,
         siret: data.siret,
         consultant_count: data.consultant_count,
-        management_fees: data.management_fees,
+        management_min: data.management_min ?? 0,
+        management_max: data.management_max ?? 0,
         is_portage: data.is_portage || false,
       });
 
@@ -36,7 +37,10 @@ export class CompanyService {
         ...logContext,
         companyId: company.id,
         consultantCount: data.consultant_count,
-        managementFees: data.management_fees,
+        managementFees: {
+          min: data.management_min,
+          max: data.management_max,
+        },
       });
 
       return company;

@@ -35,7 +35,6 @@ export const FreelancePersonalInfoStep = ({
             { value: 'FEMALE', label: 'Femme' },
           ]}
           placeholder="Sexe *"
-          required
         />
         <InputField
           id="prenom"
@@ -80,7 +79,6 @@ export const FreelancePersonalInfoStep = ({
             setFormData((prev: FreelanceFormData) => ({ ...prev, phone: e.target.value }))
           }
           placeholder="06 12 34 56 78"
-          required
         />
         <StyledSelect
           id="metier"

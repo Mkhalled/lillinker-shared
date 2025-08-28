@@ -70,7 +70,6 @@ export const useFreelanceValidation = (
           formData.firstName &&
           formData.lastName &&
           formData.email &&
-          formData.phone &&
           formData.metierId > 0 &&
           isValidEmail(formData.email) &&
           !emailExists

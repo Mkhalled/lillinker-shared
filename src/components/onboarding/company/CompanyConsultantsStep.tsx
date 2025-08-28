@@ -24,28 +24,33 @@ export const CompanyConsultantsStep = ({
         placeholder="50"
         required
       />
-
       <div className="space-y-2">
-        <label htmlFor="fees" className="text-sm font-medium text-gray-700">
-          Taux de frais de gestion (%) *
-        </label>
-        <input
-          id="fees"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          type="range"
-          step="0.1"
-          min="0"
-          max="20"
-          value={formData.managementFeeRate}
-          onChange={e => onFormDataChange({ managementFeeRate: e.target.value })}
-          placeholder="8.5"
-          required
-        />
-        <div className="flex justify-between items-center">
-          <p className="text-sm text-gray-600">
-            Taux standard appliqué sur le chiffre d&apos;affaires
-          </p>
-          <span className="text-sm font-medium text-gray-900">{formData.managementFeeRate}%</span>
+        <span className="text-sm font-medium text-gray-700">
+          Taux de frais de gestion (%)
+        </span>
+        <div className="flex space-x-4">
+          <InputField
+            id="managementFeeRateMin"
+            label="Taux minimum"
+            type="number"
+            step="0.1"
+            min="0"
+            max="20"
+            value={formData.managementFeeRateMin}
+            onChange={e => onFormDataChange({ managementFeeRateMin: e.target.value })}
+            placeholder="0"
+          />
+          <InputField
+            id="managementFeeRateMax"
+            label="Taux maximum"
+            type="number"
+            step="0.1"
+            min="0"
+            max="20"
+            value={formData.managementFeeRateMax}
+            onChange={e => onFormDataChange({ managementFeeRateMax: e.target.value })}
+            placeholder="20"
+          />
         </div>
       </div>
     </div>

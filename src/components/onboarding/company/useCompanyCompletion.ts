@@ -68,7 +68,8 @@ export const useCompanyCompletion = (
           company_description: currentFormData.description,
           siret: currentFormData.siret,
           consultant_count: parseInt(currentFormData.consultantCount),
-          management_fees: parseFloat(currentFormData.managementFeeRate),
+          management_min: parseFloat(currentFormData.managementFeeRateMin),
+          management_max: parseFloat(currentFormData.managementFeeRateMax),
           is_portage: currentFormData.isPortage === 'yes',
           selected_services: currentFormData.selectedPlatformServices.map((id: string) =>
             parseInt(id)

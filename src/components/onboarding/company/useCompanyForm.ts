@@ -13,7 +13,8 @@ const initialFormData: CompanyFormData = {
 
   // Step 2: Consultants and fees
   consultantCount: '',
-  managementFeeRate: '',
+  managementFeeRateMin: '',
+  managementFeeRateMax: '',
 
   // Step 3: Metiers selection
   selectedMetiers: [],

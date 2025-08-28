@@ -6,7 +6,7 @@ export const InitialRegistrationSchema = z.object({
   last_name: z.string().min(2, 'Last name must be at least 2 characters'),
   sex: z.enum(['MALE', 'FEMALE'], {
     required_error: 'Please select your sex',
-  }),
+  }).optional(),
   role: z.enum(['COMPANY', 'FREELANCE'], {
     required_error: 'Please select a role',
   }),
@@ -36,7 +36,8 @@ export const CompanyOnboardingSchema = z
     company_description: z.string().optional(),
     siret: z.string().min(1, 'SIRET number is required'),
     consultant_count: z.number().min(1, 'Consultant count must be at least 1'),
-    management_fees: z.number().min(0, 'Management fees must be positive'),
+    management_min: z.number().min(0, 'Management fees must be positive').optional(),
+    management_max: z.number().min(0, 'Management fees must be positive').optional(),
 
     // Portage company flag and services
     is_portage: z.boolean().default(false),
@@ -79,11 +80,11 @@ export const FreelanceOnboardingSchema = z.object({
   metier_id: z.number().min(1, 'Metier selection is required'),
 
   // Freelance request data
-  mission_status: z.enum(['OPEN', 'CLOSED', 'PENDING']).default('OPEN'),
+  mission_status: z.enum(['OPEN', 'CLOSED', 'PENDING']),
   client_name: z.string().optional(),
   client_address: z.string().optional(),
   client_sector: z.string().optional(),
-  priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).default('MEDIUM'),
+  priority: z.enum(['HIGH', 'MEDIUM', 'LOW']),
   tjm: z.number().min(1, 'Daily rate (TJM) is required'),
   days: z.number().min(0.5, 'Days must be at least 0.5'),
 
