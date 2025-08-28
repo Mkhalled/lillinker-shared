@@ -2,7 +2,7 @@
 
 import { useModalNavigation } from '../../../hooks/useModalNavigation';
 
-export const useStepNavigation = (totalSteps: number = 7, onFormDataExpired?: () => void) => {
+export const useStepNavigation = (totalSteps: number = 8, onFormDataExpired?: () => void) => {
   return useModalNavigation({
     totalSteps,
     storageKey: 'company-modal-step',

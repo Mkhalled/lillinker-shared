@@ -16,7 +16,6 @@ const initialFormData: CompanyFormData = {
   site_web: '',
   convention_collective: '',
   code_naf_ape: '',
-  logo: '',
 
   // Step 2: Consultants and fees
   consultantCount: '',

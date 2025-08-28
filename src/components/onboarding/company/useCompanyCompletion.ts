@@ -20,7 +20,7 @@ export const useCompanyCompletion = (
   };
 
   const handleComplete = async (currentStep: number) => {
-    if (currentStep === 7) {
+    if (currentStep === 8) {
       setIsLoading(true);
       setError(null);
 
@@ -100,7 +100,6 @@ export const useCompanyCompletion = (
           site_web: currentFormData.site_web,
           convention_collective: currentFormData.convention_collective,
           code_naf_ape: currentFormData.code_naf_ape,
-          logo: currentFormData.logo,
         };
 
         const onboardingResponse = await fetch('/api/auth/onboarding/company', {

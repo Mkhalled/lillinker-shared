@@ -39,8 +39,29 @@ export const CompanySummaryStep = ({
           <div>
             <span className="font-medium">Consultants:</span> {formData.consultantCount}
           </div>
+          <div>
+            <span className="font-medium">Date de création:</span> {formData.date_creation ? new Date(formData.date_creation).toLocaleDateString() : ''}
+          </div>
+          <div>
+            <span className="font-medium">Chiffre d'affaires:</span> {formData.chiffre_affaires ?? ''}
+          </div>
+          <div>
+            <span className="font-medium">Adresse:</span> {formData.adresse}
+          </div>
+          <div>
+            <span className="font-medium">Site web:</span> {formData.site_web}
+          </div>
+          <div>
+            <span className="font-medium">Convention collective:</span> {formData.convention_collective}
+          </div>
+          <div>
+            <span className="font-medium">Code NAF/APE:</span> {formData.code_naf_ape}
+          </div>
           <div className="lg:col-span-2">
             <span className="font-medium">Frais de gestion:</span> entre: {formData.managementFeeRateMin}% et {formData.managementFeeRateMax}%
+          </div>
+          <div className="lg:col-span-2">
+            <span className="font-medium">Description:</span> {formData.description}
           </div>
         </div>
       </div>

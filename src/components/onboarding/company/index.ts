@@ -1,4 +1,5 @@
 export { CompanyGeneralInfoStep } from './CompanyGeneralInfoStep';
+export { CompanyJuridiqueStep } from './CompanyJuridiqueStep';
 export { CompanyConsultantsStep } from './CompanyConsultantsStep';
 export { CompanyMetiersStep } from './CompanyMetiersStep';
 export { CompanyAdminStep } from './CompanyAdminStep';
