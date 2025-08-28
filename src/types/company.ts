@@ -14,7 +14,6 @@ export interface CompanyFormData {
   site_web?: string;
   convention_collective?: string;
   code_naf_ape?: string;
-  logo?: string ;
 
   // Step 2: Consultants and fees
   consultantCount: string;
@@ -42,7 +41,6 @@ export interface CompanyPayload {
   admin_user_id: number;
   name: string;
   description?: string;
-  logo?: string;
   siret?: string;
   consultant_count: number;
   management_min: number;

@@ -48,7 +48,6 @@ export const CompanyOnboardingSchema = z
     site_web: z.string().optional(),
     convention_collective: z.string().optional(),
     code_naf_ape: z.string().optional(),
-    logo: z.string().optional(),
 
     // Step 2: Consultants and fees
     consultant_count: z.number().min(1, 'Consultant count must be at least 1'),
