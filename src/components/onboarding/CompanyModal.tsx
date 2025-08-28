@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 
 import { useModalData } from '@/hooks/useModalData';
-import type { NewService, BaseModalProps } from '@/types/user';
+import { NewServiceData } from '@/types/platform';
+import type { BaseModalProps } from '@/types/user';
 
 import AddServiceModal from './AddServiceModal';
 import {
@@ -29,6 +30,10 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   const [siretExists, setSiretExists] = useState(false);
   const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false);
   const [isAdminStepValid, setIsAdminStepValid] = useState(false);
+  
+  // New state for editing services
+  const [editingService, setEditingService] = useState<NewServiceData | undefined>(undefined);
+  const [editingIndex, setEditingIndex] = useState<number | undefined>(undefined);
 
   // Use custom hooks
   const { formData, updateFormData, clearFormData } = useCompanyForm();
@@ -71,11 +76,34 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
   };
 
   const addNewService = () => {
+    setEditingService(undefined);
+    setEditingIndex(undefined);
     setIsAddServiceModalOpen(true);
   };
 
-  const handleAddService = (newService: NewService) => {
-    updateFormData({ newServices: [...formData.newServices, newService] });
+  const editNewService = (service: NewServiceData, index: number) => {
+    setEditingService(service);
+    setEditingIndex(index);
+    setIsAddServiceModalOpen(true);
+  };
+
+  const handleSaveService = (service: NewServiceData, editIndex?: number) => {
+    if (editIndex !== undefined) {
+      // Update existing service
+      const updatedServices = [...formData.newServices];
+      updatedServices[editIndex] = service;
+      updateFormData({ newServices: updatedServices });
+    } else {
+      // Add new service
+      updateFormData({ newServices: [...formData.newServices, service] });
+    }
+    handleCloseServiceModal();
+  };
+
+  const handleCloseServiceModal = () => {
+    setIsAddServiceModalOpen(false);
+    setEditingService(undefined);
+    setEditingIndex(undefined);
   };
 
   const handleCompleteWrapper = () => {
@@ -126,6 +154,7 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             onFormDataChange={updateFormData}
             platformServices={platformServices}
             onAddNewService={addNewService}
+            onEditNewService={editNewService}
           />
         );
       case 7:
@@ -219,8 +248,10 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
 
       <AddServiceModal
         isOpen={isAddServiceModalOpen}
-        onClose={() => setIsAddServiceModalOpen(false)}
-        onSave={handleAddService}
+        onClose={handleCloseServiceModal}
+        onSave={handleSaveService}
+        editingService={editingService}
+        editingIndex={editingIndex}
       />
     </>
   );

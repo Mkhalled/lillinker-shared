@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { Plus, Edit } from 'lucide-react';
 
 import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 import { Button } from '@/components/ui/button/Button';
@@ -16,6 +16,7 @@ interface CompanyServicesStepProps {
   onFormDataChange: (updates: Partial<CompanyFormData>) => void;
   platformServices: PlatformService[];
   onAddNewService: () => void;
+  onEditNewService: (service: NewServiceData, index: number) => void;
 }
 
 export const CompanyServicesStep = ({
@@ -23,6 +24,7 @@ export const CompanyServicesStep = ({
   onFormDataChange,
   platformServices,
   onAddNewService,
+  onEditNewService,
 }: CompanyServicesStepProps) => {
   const toggleServiceSelection = (serviceId: number) => {
     const serviceIdStr = serviceId.toString();
@@ -104,25 +106,44 @@ export const CompanyServicesStep = ({
         {formData.newServices.length > 0 && (
           <div className="space-y-3">
             {formData.newServices.map((service: NewServiceData, index: number) => (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         Nouveau
                       </span>
+                      {service.requires_data && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Données requises
+                        </span>
+                      )}
                     </div>
                     <h5 className="font-medium text-gray-900 mb-1">{service.service_label}</h5>
                     {service.service_description && (
-                      <p className="text-sm text-gray-600">{service.service_description}</p>
+                      <p className="text-sm text-gray-600 mb-2">{service.service_description}</p>
+                    )}
+                    {service.requires_data && service.dataFields && service.dataFields.length > 0 && (
+                      <div className="text-xs text-gray-500">
+                        {service.dataFields.length} champ{service.dataFields.length > 1 ? 's' : ''} de données
+                      </div>
                     )}
                   </div>
-                  <button
-                    onClick={() => removeService(index)}
-                    className="text-red-600 hover:text-red-700 text-sm font-medium ml-4 px-2 py-1 rounded hover:bg-red-50"
-                  >
-                    Supprimer
-                  </button>
+                  <div className="flex items-center space-x-2 ml-4">
+                    <button
+                      onClick={() => onEditNewService(service, index)}
+                      className="text-blue-600 hover:text-blue-700 text-sm font-medium px-2 py-1 rounded hover:bg-blue-50 flex items-center space-x-1"
+                    >
+                      <Edit className="h-3 w-3" />
+                      <span>Modifier</span>
+                    </button>
+                    <button
+                      onClick={() => removeService(index)}
+                      className="text-red-600 hover:text-red-700 text-sm font-medium px-2 py-1 rounded hover:bg-red-50"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

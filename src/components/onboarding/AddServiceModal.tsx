@@ -1,7 +1,7 @@
 'use client';
 
 import { Plus, Trash2, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import type { NewServiceData } from '@/types/platform';
 
@@ -13,10 +13,18 @@ import { Button } from '../ui/button/Button';
 interface AddServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (service: NewServiceData) => void;
+  onSave: (service: NewServiceData, editIndex?: number) => void;
+  editingService?: NewServiceData;
+  editingIndex?: number;
 }
 
-const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
+const AddServiceModal = ({ 
+  isOpen, 
+  onClose, 
+  onSave, 
+  editingService,
+  editingIndex 
+}: AddServiceModalProps) => {
   const [serviceData, setServiceData] = useState<NewServiceData>({
     service_label: '',
     service_description: '',
@@ -25,6 +33,25 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Initialize form data when editing
+  useEffect(() => {
+    if (editingService) {
+      setServiceData({
+        ...editingService,
+        dataFields: editingService.dataFields || [],
+      });
+    } else {
+      setServiceData({
+        service_label: '',
+        service_description: '',
+        requires_data: false,
+        dataFields: [],
+      });
+    }
+  }, [editingService, isOpen]);
+
+  const isEditing = editingService !== undefined;
 
   const handleSave = () => {
     const newErrors: Record<string, string> = {};
@@ -55,13 +82,15 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      onSave({
+      const cleanedServiceData = {
         ...serviceData,
         dataFields: (serviceData.dataFields || []).map(field => ({
           ...field,
           choices: field.choices?.filter(c => c.trim() !== '') || [],
         })),
-      });
+      };
+      
+      onSave(cleanedServiceData, isEditing ? editingIndex : undefined);
       handleClose();
     }
   };
@@ -166,7 +195,9 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Créer un nouveau service</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            {isEditing ? 'Modifier le service' : 'Créer un nouveau service'}
+          </h3>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -374,7 +405,7 @@ const AddServiceModal = ({ isOpen, onClose, onSave }: AddServiceModalProps) => {
             Annuler
           </Button>
           <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white">
-            Créer le service
+            {isEditing ? 'Mettre à jour' : 'Créer le service'}
           </Button>
         </div>
       </div>

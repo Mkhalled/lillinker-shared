@@ -13,18 +13,6 @@ export interface SelectedService {
   isRequired: boolean;
   responseData?: string;
 }
-
-export interface NewService {
-  id: string;
-  label: string;
-  description: string;
-  requiresData: boolean;
-  dataType: string;
-  dataLabel: string;
-  dataDescription: string;
-  choices: string[];
-}
-
 export interface BaseModalProps {
   onClose: () => void;
 }

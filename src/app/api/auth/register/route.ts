@@ -32,31 +32,90 @@ export async function POST(request: NextRequest) {
       role: validatedData.role,
     });
 
-    // Registration and email verification without transaction
-    const { user } = await AuthService.createUser(validatedData, prisma);
-    try {
-        await AuthService.sendVerificationEmail(user.id, prisma);
-    } catch(error){
-        logger.error('Failed to send verification email, deleting user', error as Error, {
-            ...logContext,
-            userId: user.id,
-            email: user.email,
+    // Registration with transaction and email verification
+    const result = await prisma.$transaction(async (tx) => {
+      const { user } = await AuthService.createUser(validatedData, tx);
+      
+      logger.debug('User created in transaction', {
+        ...logContext,
+        userId: user.id,
+        email: user.email,
+      });
+
+      // Try to send email within transaction
+      try {
+        await AuthService.sendVerificationEmail(user.id, tx);
+        
+        logger.debug('Verification email sent successfully in transaction', {
+          ...logContext,
+          userId: user.id,
+          email: user.email,
         });
-        await AuthService.deleteUserById(user.id);
-        throw new Error('Échec de l\'envoi de l\'e-mail de vérification. Veuillez réessayer.');
+        
+        return { user, emailSent: true, emailError: null };
+      } catch (emailError) {
+        logger.warn('Email failed during transaction, but keeping user', emailError as Error, {
+          ...logContext,
+          userId: user.id,
+          email: user.email,
+        });
+        
+        // Don't throw - handle gracefully by returning the error
+        return { user, emailSent: false, emailError: emailError as Error };
+      }
+    }, {
+      // Transaction options
+      maxWait: 10000, 
+      timeout: 30000,
+    });
+
+    // Handle email retry outside transaction if needed
+    if (!result.emailSent) {
+      logger.info('Attempting email retry outside transaction', {
+        ...logContext,
+        userId: result.user.id,
+        email: result.user.email,
+      });
+
+      // Retry email sending outside transaction (non-blocking)
+      setTimeout(async () => {
+        try {
+          await AuthService.sendVerificationEmail(result.user.id, prisma);
+          logger.info('Email sent successfully on retry', { 
+            ...logContext,
+            userId: result.user.id,
+            email: result.user.email,
+          });
+        } catch (retryError) {
+          logger.error('Email retry also failed', retryError as Error, {
+            ...logContext,
+            userId: result.user.id,
+            email: result.user.email,
+          });
+        }
+      }, 2000); // Retry after 2 seconds
     }
+
     logger.info('Registration API completed successfully', {
       ...logContext,
-      userId: user.id,
-      email: user.email,
-      role: user.role,
+      userId: result.user.id,
+      email: result.user.email,
+      role: result.user.role,
+      emailSent: result.emailSent,
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Registration initiated successfully',
-      userId: user.id,
-      role: user.role,
+      message: result.emailSent 
+        ? 'Registration completed successfully. Please check your email for verification.'
+        : 'Registration completed successfully. Verification email will be sent shortly.',
+      userId: result.user.id,
+      role: result.user.role,
+      emailSent: result.emailSent,
+      ...(result.emailSent ? {} : {
+        emailRetry: true,
+        emailRetryMessage: 'Si vous ne recevez pas d\'email, vous pourrez demander un nouveau lien de vérification.'
+      })
     });
   } catch (error) {
     logger.error('Registration API failed', error as Error, logContext);
