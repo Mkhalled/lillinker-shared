@@ -1,26 +1,22 @@
 'use client';
 import type { Portage } from '@/hooks/useModalData';
 import type { CompanyFormData } from '@/types/company';
+
 import InputField from '../../form/input/InputField';
 import TextAreaField from '../../form/input/TextAreaField';
 import { SiretValidationInput } from '../../form/SiretValidationInput';
-import { FileUploadInput } from '@/components/form/FileUploadInput';
 
 interface CompanyGeneralInfoStepProps {
   formData: CompanyFormData;
   onFormDataChange: (updates: Partial<CompanyFormData>) => void;
   onSiretExistsChange: (exists: boolean) => void;
   portages: Portage[];
-  isUploading?: boolean;
-  uploadError?: string | null;
 }
 
 export const CompanyGeneralInfoStep = ({
   formData,
   onFormDataChange,
   onSiretExistsChange,
-  isUploading = false,
-  uploadError = null,
 }: CompanyGeneralInfoStepProps) => {
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -92,56 +88,7 @@ export const CompanyGeneralInfoStep = ({
           onChange={e => onFormDataChange({ code_naf_ape: e.target.value })}
           placeholder="6202A"
         />
-        
-        {/* Logo upload section */}
-        <div className="space-y-2">
-          <FileUploadInput
-            id="logo"
-            label="Logo"
-            onFileChange={file => onFormDataChange({ logo: file })}
-            accept="image/jpeg,image/png,image/gif"
-            maxSizeMB={5}
-          />
-          
-          {/* Upload status indicators */}
-          {isUploading && (
-            <div className="flex items-center space-x-2 text-sm text-blue-600">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-              <span>Téléchargement en cours...</span>
-            </div>
-          )}
-          
-          {uploadError && (
-            <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-              Erreur: {uploadError}
-            </div>
-          )}
-          
-          {formData.logo && typeof formData.logo === 'string' && !isUploading && (
-            <div className="flex items-center space-x-2 text-sm text-green-600">
-              <div className="flex-shrink-0">
-                <img 
-                  src={formData.logo} 
-                  alt="Logo prévisualisé" 
-                  className="h-12 w-12 object-cover rounded border"
-                />
-              </div>
-              <div>
-                <div className="font-medium">Logo téléchargé avec succès</div>
-                <div className="text-xs text-gray-500">{formData.logo}</div>
-              </div>
-              <button
-                type="button"
-                onClick={() => onFormDataChange({ logo: undefined })}
-                className="text-red-600 hover:text-red-800 text-xs"
-              >
-                Supprimer
-              </button>
-            </div>
-          )}
-        </div>
       </div>
-      
       <TextAreaField
         id="desc"
         label="Description de la société"
