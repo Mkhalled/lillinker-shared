@@ -58,6 +58,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
     handleServiceRequiredChange,
     handleServiceDataChange,
     handlePortageToggle,
+    parseChoices,
     handleMultipleSelectChange,
   } = useFreelanceHandlers(setFormDataWrapper);
   const { isLoading, error, setError, handleComplete } = useFreelanceCompletion(
@@ -117,6 +118,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
             handleServiceRequiredChange={handleServiceRequiredChange}
             handleServiceDataChange={handleServiceDataChange}
             handleMultipleSelectChange={handleMultipleSelectChange}
+            parseChoices={parseChoices}
             error={error || undefined}
           />
         );
