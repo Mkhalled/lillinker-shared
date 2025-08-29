@@ -21,7 +21,6 @@ const DataFieldSchema = z.object({
   choices: z.array(z.string()).optional(),
 });
 
-// New service schema matching NewServiceData type
 const NewServiceSchema = z.object({
   service_label: z.string().min(1, 'Service label is required'),
   service_description: z.string().optional(),
@@ -37,7 +36,6 @@ export const CompanyOnboardingSchema = z
     company_description: z.string().optional(),
     is_portage: z.boolean().default(false),
 
-    // New fields from DB
     date_creation: z
       .string()
       .transform(str => new Date(str))
@@ -117,7 +115,7 @@ export const FreelanceOnboardingSchema = z.object({
       z.object({
         serviceId: z.number(),
         isRequired: z.boolean(),
-        responseData: z.record(z.string(), z.string()).optional(), // Changed to support field-based data
+        responseData: z.record(z.number(), z.string()).optional(), // Changed to support field-based data with number keys
       })
     )
     .optional(),

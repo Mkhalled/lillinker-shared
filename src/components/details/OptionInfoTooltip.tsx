@@ -29,19 +29,6 @@ const OptionInfoTooltip = ({ option }: { option: OptionInfo }) => {
     }
   };
 
-  const parseChoices = (choices: unknown) => {
-    if (!choices) return [];
-    if (typeof choices === 'string') {
-      try {
-        return JSON.parse(choices);
-      } catch {
-        return [choices];
-      }
-    }
-    if (Array.isArray(choices)) return choices;
-    return [];
-  };
-
   return (
     <div className="relative">
       {/* Info Button */}
@@ -103,7 +90,7 @@ const OptionInfoTooltip = ({ option }: { option: OptionInfo }) => {
                 <div>
                   <span className="font-medium text-gray-800">Données requises:</span>
                   <div className="text-gray-600 ml-1 space-y-1">
-                    {option.platformService.dataFields.map((field, index) => (
+                    {option.platformService.dataFields.map((field, _) => (
                       <div key={field.id} className="pl-2 border-l-2 border-gray-200">
                         <div className="font-medium">{field.label}</div>
                         {field.description && (
@@ -141,11 +128,18 @@ const OptionInfoTooltip = ({ option }: { option: OptionInfo }) => {
                   <span className="font-medium text-gray-800">Donnée de réponse:</span>
                   <span className="text-gray-600 ml-1">
                     {typeof option.response_data === 'object' && option.response_data !== null
-                      ? Object.entries(option.response_data).map(([key, value]) => (
-                          <div key={key} className="text-xs">
-                            {key}: {Array.isArray(value) ? value.join(', ') : value}
-                          </div>
-                        ))
+                      ? Object.entries(option.response_data).map(([key, value]) => {
+                          // Find the corresponding field by ID (since response data uses field IDs as keys)
+                          const fieldId = parseInt(key);
+                          const field = option.platformService.dataFields?.find(f => f.id === fieldId);
+                          
+                          return (
+                            <div key={key} className="text-xs">
+                              <span className="font-medium">{field?.label || key}:</span>{' '}
+                              {Array.isArray(value) ? value.join(', ') : value}
+                            </div>
+                          );
+                        })
                       : option.response_data}
                   </span>
                 </div>

@@ -185,12 +185,12 @@ export class FreelanceService {
   private static convertResponseData(
     responseData: Record<number, string> | undefined,
     dataFields: Array<{ id: number; data_type: string; label: string }>
-  ) {
+  ): Record<string, string | string[]> | undefined {
     if (!responseData || Object.keys(responseData).length === 0) {
       return undefined;
     }
 
-    const convertedData: Record<string, any> = {};
+    const convertedData: Record<string, string | string[]> = {};
 
     dataFields.forEach(field => {
       const fieldResponse = responseData[field.id];

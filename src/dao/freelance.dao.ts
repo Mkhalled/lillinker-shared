@@ -117,21 +117,6 @@ export class FreelanceDao {
               include: {
                 dataFields: true,
               },
-              select: {
-                id: true,
-                label: true,
-                description: true,
-                requires_data: true,
-                dataFields: {
-                  select: {
-                    id: true,
-                    label: true,
-                    description: true,
-                    data_type: true,
-                    choices: true,
-                  },
-                },
-              },
             },
           },
         },

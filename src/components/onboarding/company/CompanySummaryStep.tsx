@@ -43,7 +43,7 @@ export const CompanySummaryStep = ({
             <span className="font-medium">Date de création:</span> {formData.date_creation ? new Date(formData.date_creation).toLocaleDateString() : ''}
           </div>
           <div>
-            <span className="font-medium">Chiffre d'affaires:</span> {formData.chiffre_affaires ?? ''}
+            <span className="font-medium">Chiffre d&apos;affaires:</span> {formData.chiffre_affaires ?? ''}
           </div>
           <div>
             <span className="font-medium">Adresse:</span> {formData.adresse}

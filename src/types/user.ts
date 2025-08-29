@@ -11,7 +11,7 @@ export interface BaseUserInfo {
 export interface SelectedService {
   serviceId: number;
   isRequired: boolean;
-  responseData?: Record<number, string>; // Changed from string to Record<number, string> to support multiple dataFields
+  responseData?: Record<number, string>;
 }
 export interface BaseModalProps {
   onClose: () => void;
