@@ -15,12 +15,15 @@ export interface OptionInfo {
   platformService: {
     id?: number;
     label: string;
-    data_label?: string | null;
     description?: string | null;
-    data_type: string;
     requires_data: boolean;
-    data_description?: string | null;
-    choices?: string[]; // Replace unknown with string[] or a more specific type if needed
+    dataFields?: {
+      id: number;
+      label: string;
+      description: string | null;
+      data_type: string;
+      choices: string[] | null;
+    }[];
     user?: {
       first_name: string;
       last_name: string;

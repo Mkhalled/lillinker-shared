@@ -1,6 +1,7 @@
 import { FreelanceDao } from '@/dao/freelance.dao';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
+import { generateFieldKeyFromField } from '@/lib/utils';
 import type { FreelanceOnboarding } from '@/lib/validations/auth.validation';
 import type { SelectedService } from '@/types/user';
 
@@ -94,13 +95,14 @@ export class FreelanceService {
           // Verify that the platform service exists
           const platformService = await prisma.platformService.findUnique({
             where: { id: selectedService.serviceId },
+            include: { dataFields: true },
           });
 
           if (platformService) {
-            // Convert responseData string to appropriate JSON structure based on data_type
+            // Convert responseData object to appropriate JSON structure based on dataFields
             const responseDataJson = this.convertResponseData(
               selectedService.responseData,
-              platformService.data_type ?? "TEXT"
+              platformService.dataFields
             );
 
             // Create freelance request option with direct reference to platform service
@@ -115,7 +117,7 @@ export class FreelanceService {
               ...logContext,
               serviceId: selectedService.serviceId,
               platformServiceLabel: platformService.label,
-              dataType: platformService.data_type,
+              dataFieldsCount: platformService.dataFields.length,
               isRequired: selectedService.isRequired,
             });
 
@@ -178,32 +180,52 @@ export class FreelanceService {
   }
 
   /**
-   * Convert response data based on platform service data type
+   * Convert response data based on platform service data fields
    */
-  private static convertResponseData(responseData: string | undefined, dataType: string) {
-    if (!responseData || responseData.trim() === '') {
+  private static convertResponseData(
+    responseData: Record<number, string> | undefined,
+    dataFields: Array<{ id: number; data_type: string; label: string }>
+  ) {
+    if (!responseData || Object.keys(responseData).length === 0) {
       return undefined;
     }
 
-    switch (dataType) {
-      case 'TEXT':
-        return { text: responseData };
-      case 'NUMBER':
-        return { number: responseData };
-      case 'SELECT': {
-        // For SELECT type, responseData comes as comma-separated values
-        const selections = responseData
-          .split(',')
-          .map(s => s.trim())
-          .filter(s => s !== '');
-        return { select: selections };
+    const convertedData: Record<string, any> = {};
+
+    dataFields.forEach(field => {
+      const fieldResponse = responseData[field.id];
+      if (fieldResponse && fieldResponse.trim() !== '') {
+        // Use the utility function to generate consistent field keys
+        const fieldKey = generateFieldKeyFromField(field);
+
+        switch (field.data_type) {
+          case 'TEXT':
+            convertedData[fieldKey] = fieldResponse;
+            break;
+          case 'NUMBER':
+            convertedData[fieldKey] = fieldResponse;
+            break;
+          case 'SELECT': {
+            // For SELECT type, responseData comes as comma-separated values
+            const selections = fieldResponse
+              .split(',')
+              .map(s => s.trim())
+              .filter(s => s !== '');
+            convertedData[fieldKey] = selections;
+            break;
+          }
+          case 'RADIO':
+            convertedData[fieldKey] = fieldResponse;
+            break;
+          default:
+            convertedData[fieldKey] = fieldResponse;
+        }
       }
-      case 'RADIO':
-        return { radio: responseData };
-      default:
-        return { value: responseData };
-    }
+    });
+
+    return convertedData;
   }
+
   /**
    * Get freelance requests by freelance ID
    */
@@ -234,6 +256,7 @@ export class FreelanceService {
       throw error;
     }
   }
+
   /**
    * Get freelance request by request ID
    */

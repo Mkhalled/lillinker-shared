@@ -66,7 +66,11 @@ export const useFreelanceCompletion = (
           currentFormData.wantsPortage === 'yes'
             ? currentFormData.selectedPortages.map((id: string) => parseInt(id))
             : [],
-        selected_services: currentFormData.selectedServices,
+        selected_services: currentFormData.selectedServices.map(service => ({
+          serviceId: service.serviceId,
+          isRequired: service.isRequired,
+          responseData: service.responseData || {},
+        })),
         // Salary preferences
         want_salaried: currentFormData.wantSalaried || false,
         ...(currentFormData.salary !== undefined &&

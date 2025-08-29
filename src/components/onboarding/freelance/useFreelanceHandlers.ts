@@ -41,12 +41,21 @@ export const useFreelanceHandlers = (
     }));
   };
 
-  const handleServiceDataChange = (serviceId: number, value: string) => {
+  const handleServiceDataChange = (serviceId: number, fieldId: number, value: string) => {
     setFormData((prev: FreelanceFormData | FreelanceRequest) => ({
       ...prev,
-      selectedServices: prev.selectedServices.map((s: SelectedService) =>
-        s.serviceId === serviceId ? { ...s, responseData: value } : s
-      ),
+      selectedServices: prev.selectedServices.map((s: SelectedService) => {
+        if (s.serviceId === serviceId) {
+          return {
+            ...s,
+            responseData: {
+              ...s.responseData,
+              [fieldId]: value,
+            },
+          };
+        }
+        return s;
+      }),
     }));
   };
 
@@ -75,13 +84,13 @@ export const useFreelanceHandlers = (
   };
 
   // Handle multiple selections for SELECT type
-  const handleMultipleSelectChange = (serviceId: number, option: string, isChecked: boolean) => {
+  const handleMultipleSelectChange = (serviceId: number, fieldId: number, option: string, isChecked: boolean) => {
     setFormData((prev: FreelanceFormData | FreelanceRequest) => {
       const service = prev.selectedServices.find((s: SelectedService) => s.serviceId === serviceId);
       if (!service) return prev;
 
-      let currentSelections = service.responseData
-        ? service.responseData.split(',').filter((s: string) => s.trim() !== '')
+      let currentSelections = service.responseData?.[fieldId]
+        ? service.responseData[fieldId].split(',').filter((s: string) => s.trim() !== '')
         : [];
 
       if (isChecked) {
@@ -94,9 +103,18 @@ export const useFreelanceHandlers = (
 
       return {
         ...prev,
-        selectedServices: prev.selectedServices.map((s: SelectedService) =>
-          s.serviceId === serviceId ? { ...s, responseData: currentSelections.join(',') } : s
-        ),
+        selectedServices: prev.selectedServices.map((s: SelectedService) => {
+          if (s.serviceId === serviceId) {
+            return {
+              ...s,
+              responseData: {
+                ...s.responseData,
+                [fieldId]: currentSelections.join(','),
+              },
+            };
+          }
+          return s;
+        }),
       };
     });
   };

@@ -20,8 +20,8 @@ interface FreelanceServicesStepProps {
   platformServices: PlatformService[];
   handleServiceToggle: (serviceId: number) => void;
   handleServiceRequiredChange: (serviceId: number, isRequired: boolean) => void;
-  handleServiceDataChange: (serviceId: number, data: string) => void;
-  handleMultipleSelectChange: (serviceId: number, choice: string, isChecked: boolean) => void;
+  handleServiceDataChange: (serviceId: number, fieldId: number, data: string) => void;
+  handleMultipleSelectChange: (serviceId: number, fieldId: number, choice: string, isChecked: boolean) => void;
   parseChoices: (choices: string | null) => string[];
   error?: string;
 }
@@ -61,7 +61,6 @@ export const FreelanceServicesStep = ({
             const selectedService = formData.selectedServices.find(
               (s: SelectedService) => s.serviceId === service.id
             );
-            const choices = parseChoices(service.choices as string | null);
 
             return (
               <div key={service.id} className="border border-gray-200 rounded-lg p-3 sm:p-4">
@@ -123,119 +122,120 @@ export const FreelanceServicesStep = ({
                       />
 
                       {/* Data input for services that require data */}
-                      {service.requires_data && (
-                        <div className="space-y-3">
-                          <div>
-                            <label className="text-sm font-medium text-gray-700 block">
-                              {service.data_label || 'Données requises'}{' '}
-                              <span className="text-red-500">*</span>
-                            </label>
-                            {service.data_description && (
-                              <p className="text-xs text-gray-500 mt-1">
-                                {service.data_description}
-                              </p>
-                            )}
-                          </div>
+                      {service.requires_data && service.dataFields && service.dataFields.length > 0 && (
+                        <div className="space-y-4 mt-3">
+                          {service.dataFields.map((field) => {
+                            const choices = parseChoices(field.choices as string | null);
+                            const fieldResponseData = selectedService?.responseData?.[field.id] || '';
 
-                          {/* TEXT input */}
-                          {service.data_type === 'TEXT' && (
-                            <TextAreaField
-                              id={`service-text-${service.id}`}
-                              value={selectedService?.responseData || ''}
-                              onChange={e => handleServiceDataChange(service.id, e.target.value)}
-                              placeholder="Saisissez votre réponse... (obligatoire)"
-                              rows={3}
-                              error={
-                                !selectedService?.responseData ||
-                                selectedService.responseData.trim() === ''
-                              }
-                              required
-                            />
-                          )}
+                            return (
+                              <div key={field.id} className="space-y-3">
+                                <div>
+                                  <label className="text-sm font-medium text-gray-700 block">
+                                    {field.label} <span className="text-red-500">*</span>
+                                  </label>
+                                  {field.description && (
+                                    <p className="text-xs text-gray-500 mt-1">
+                                      {field.description}
+                                    </p>
+                                  )}
+                                </div>
 
-                          {/* NUMBER input */}
-                          {service.data_type === 'NUMBER' && (
-                            <InputField
-                              id={`service-number-${service.id}`}
-                              type="number"
-                              value={selectedService?.responseData || ''}
-                              onChange={e => handleServiceDataChange(service.id, e.target.value)}
-                              placeholder="Entrez un nombre... (obligatoire)"
-                              error={
-                                !selectedService?.responseData ||
-                                selectedService.responseData.trim() === ''
-                              }
-                              required
-                            />
-                          )}
-
-                          {/* SELECT (multiple choice) */}
-                          {service.data_type === 'SELECT' && choices.length > 0 && (
-                            <div className="space-y-2">
-                              <p className="text-xs text-gray-600">
-                                Sélectionnez une ou plusieurs options{' '}
-                                <span className="text-red-500">*</span> :
-                              </p>
-                              {choices.map((choice: string, index: number) => {
-                                const currentSelections = selectedService?.responseData
-                                  ? selectedService.responseData
-                                      .split(',')
-                                      .filter((s: string) => s.trim() !== '')
-                                  : [];
-                                const isChecked = currentSelections.includes(choice);
-
-                                return (
-                                  <StyledCheckbox
-                                    key={index}
-                                    checked={isChecked}
-                                    onChange={e =>
-                                      handleMultipleSelectChange(
-                                        service.id,
-                                        choice,
-                                        e.target.checked
-                                      )
-                                    }
-                                    label={choice}
-                                    size="sm"
+                                {/* TEXT input */}
+                                {field.data_type === 'TEXT' && (
+                                  <TextAreaField
+                                    id={`service-text-${service.id}-${field.id}`}
+                                    value={fieldResponseData}
+                                    onChange={e => handleServiceDataChange(service.id, field.id, e.target.value)}
+                                    placeholder="Saisissez votre réponse... (obligatoire)"
+                                    rows={3}
+                                    error={!fieldResponseData || fieldResponseData.trim() === ''}
+                                    required
                                   />
-                                );
-                              })}
-                              {(!selectedService?.responseData ||
-                                selectedService.responseData.trim() === '') && (
-                                <p className="text-xs text-red-500 mt-1">
-                                  Veuillez sélectionner au moins une option.
-                                </p>
-                              )}
-                            </div>
-                          )}
+                                )}
 
-                          {/* RADIO (single choice) */}
-                          {service.data_type === 'RADIO' && choices.length > 0 && (
-                            <div className="space-y-2">
-                              <p className="text-xs text-gray-600">
-                                Sélectionnez une option <span className="text-red-500">*</span> :
-                              </p>
-                              {choices.map((choice: string, index: number) => (
-                                <StyledRadio
-                                  key={index}
-                                  name={`service-${service.id}-radio`}
-                                  value={choice}
-                                  checked={selectedService?.responseData === choice}
-                                  onChange={e =>
-                                    handleServiceDataChange(service.id, e.target.value)
-                                  }
-                                  label={choice}
-                                  size="sm"
-                                />
-                              ))}
-                              {(!selectedService?.responseData ||
-                                selectedService.responseData.trim() === '') && (
-                                <p className="text-xs text-red-500 mt-1">
-                                  Veuillez sélectionner une option.
-                                </p>
-                              )}
-                            </div>
-                          )}
+                                {/* NUMBER input */}
+                                {field.data_type === 'NUMBER' && (
+                                  <InputField
+                                    id={`service-number-${service.id}-${field.id}`}
+                                    type="number"
+                                    value={fieldResponseData}
+                                    onChange={e => handleServiceDataChange(service.id, field.id, e.target.value)}
+                                    placeholder="Entrez un nombre... (obligatoire)"
+                                    error={!fieldResponseData || fieldResponseData.trim() === ''}
+                                    required
+                                  />
+                                )}
+
+                                {/* SELECT (multiple choice) */}
+                                {field.data_type === 'SELECT' && choices.length > 0 && (
+                                  <div className="space-y-2">
+                                    <p className="text-xs text-gray-600">
+                                      Sélectionnez une ou plusieurs options{' '}
+                                      <span className="text-red-500">*</span> :
+                                    </p>
+                                    {choices.map((choice: string, index: number) => {
+                                      const currentSelections = fieldResponseData
+                                        ? fieldResponseData
+                                            .split(',')
+                                            .filter((s: string) => s.trim() !== '')
+                                        : [];
+                                      const isChecked = currentSelections.includes(choice);
+
+                                      return (
+                                        <StyledCheckbox
+                                          key={index}
+                                          checked={isChecked}
+                                          onChange={e =>
+                                            handleMultipleSelectChange(
+                                              service.id,
+                                              field.id,
+                                              choice,
+                                              e.target.checked
+                                            )
+                                          }
+                                          label={choice}
+                                          size="sm"
+                                        />
+                                      );
+                                    })}
+                                    {(!fieldResponseData || fieldResponseData.trim() === '') && (
+                                      <p className="text-xs text-red-500 mt-1">
+                                        Veuillez sélectionner au moins une option.
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* RADIO (single choice) */}
+                                {field.data_type === 'RADIO' && choices.length > 0 && (
+                                  <div className="space-y-2">
+                                    <p className="text-xs text-gray-600">
+                                      Sélectionnez une option <span className="text-red-500">*</span> :
+                                    </p>
+                                    {choices.map((choice: string, index: number) => (
+                                      <StyledRadio
+                                        key={index}
+                                        name={`service-${service.id}-${field.id}-radio`}
+                                        value={choice}
+                                        checked={fieldResponseData === choice}
+                                        onChange={e =>
+                                          handleServiceDataChange(service.id, field.id, e.target.value)
+                                        }
+                                        label={choice}
+                                        size="sm"
+                                      />
+                                    ))}
+                                    {(!fieldResponseData || fieldResponseData.trim() === '') && (
+                                      <p className="text-xs text-red-500 mt-1">
+                                        Veuillez sélectionner une option.
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>

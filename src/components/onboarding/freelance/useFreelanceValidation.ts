@@ -94,13 +94,16 @@ export const useFreelanceValidation = (
           return true;
         }
 
-        // If services are selected, validate that required data is provided
+        // If services are selected, validate that required data is provided for each field
         for (const selectedService of formData.selectedServices) {
           const service = platformServices.find(s => s.id === selectedService.serviceId);
-          if (service?.requires_data) {
-            // For services that require data, check if responseData is provided
-            if (!selectedService.responseData || selectedService.responseData.trim() === '') {
-              return false; // Data is required but not provided
+          if (service?.requires_data && service.dataFields && service.dataFields.length > 0) {
+            // For services that require data, check if all required fields have responseData
+            for (const field of service.dataFields) {
+              const fieldResponseData = selectedService.responseData?.[field.id];
+              if (!fieldResponseData || fieldResponseData.trim() === '') {
+                return false; // Data is required but not provided for this field
+              }
             }
           }
         }

@@ -111,13 +111,13 @@ export const FreelanceOnboardingSchema = z.object({
   wants_portage: z.boolean().default(false),
   selected_portages: z.array(z.number()).optional(),
 
-  // Service requirements - array of service objects with required flags
+  // Service requirements - array of service objects with required flags and field-based response data
   selected_services: z
     .array(
       z.object({
         serviceId: z.number(),
         isRequired: z.boolean(),
-        responseData: z.string().optional(),
+        responseData: z.record(z.string(), z.string()).optional(), // Changed to support field-based data
       })
     )
     .optional(),

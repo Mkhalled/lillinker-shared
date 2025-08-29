@@ -71,7 +71,11 @@ export class FreelanceDao {
           freelance: true,
           options: {
             include: {
-              platformService: true,
+              platformService: {
+                include: {
+                  dataFields: true,
+                },
+              },
             },
           },
           responses: true,
@@ -110,15 +114,23 @@ export class FreelanceDao {
         options: {
           include: {
             platformService: {
+              include: {
+                dataFields: true,
+              },
               select: {
                 id: true,
                 label: true,
                 description: true,
-                data_type: true,
                 requires_data: true,
-                data_label: true,
-                data_description: true,
-                choices: true,
+                dataFields: {
+                  select: {
+                    id: true,
+                    label: true,
+                    description: true,
+                    data_type: true,
+                    choices: true,
+                  },
+                },
               },
             },
           },
