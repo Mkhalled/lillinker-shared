@@ -119,8 +119,7 @@ const NextButton = ({
       {isLoading ? (
         <>
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-          <span className="hidden sm:inline">Inscription en cours...</span>
-          <span className="sm:hidden">En cours...</span>
+            <span>En cours...</span>
         </>
       ) : (
         <>
