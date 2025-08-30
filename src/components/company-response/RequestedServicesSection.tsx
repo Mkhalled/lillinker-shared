@@ -69,30 +69,7 @@ const RequestedServicesSection: React.FC<RequestedServicesSectionProps> = ({
                     service={service}
                     response={responses[service.service.id]}
                     isRequested={true}
-                    requestedOption={
-                      requestedOption
-                        ? {
-                            id: requestedOption.id,
-                            freelance_request_id: requestedOption.freelance_request_id || 0,
-                            service_option_id: requestedOption.service_option_id || 0,
-                            is_required: requestedOption.is_required || false,
-                            response_data: requestedOption.response_data as Record<string, unknown>,
-                            platformService: requestedOption.platformService.id
-                              ? {
-                                  id: requestedOption.platformService.id,
-                                  label: requestedOption.platformService.label,
-                                  description: requestedOption.platformService.description,
-                                  data_type: requestedOption.platformService.data_type,
-                                  requires_data: requestedOption.platformService.requires_data,
-                                  data_label: requestedOption.platformService.data_label,
-                                  data_description:
-                                    requestedOption.platformService.data_description,
-                                  choices: requestedOption.platformService.choices,
-                                }
-                              : undefined,
-                          }
-                        : undefined
-                    }
+                    requestedOption={requestedOption}
                     onToggle={onToggle}
                     onFeeChange={onFeeChange}
                     onCommentChange={onCommentChange}

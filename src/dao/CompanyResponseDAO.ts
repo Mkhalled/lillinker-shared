@@ -26,16 +26,7 @@ export class CompanyResponseDAO {
         options: {
           include: {
             platformService: {
-              select: {
-                id: true,
-                label: true,
-                description: true,
-                data_type: true,
-                requires_data: true,
-                data_label: true,
-                data_description: true,
-                choices: true,
-              },
+              include: { dataFields: true },
             },
           },
         },

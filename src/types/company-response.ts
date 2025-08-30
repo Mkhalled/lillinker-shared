@@ -3,12 +3,12 @@ import type { OrganismeWithCotisations } from '@/types/organisme';
 
 import { CompanyPayload } from './company';
 
-// === COMPANY RESPONSE SPECIFIC TYPES (not duplicated elsewhere) ===
+// === COMPANY RESPONSE SPECIFIC TYPES  ===
 export interface CompanyResponse {
   id: number;
   request_id: number;
   company_id: number;
-  response_data: CompanyResponseContent; // Changed from Json to structured type
+  response_data: CompanyResponseContent; 
   created_at: Date;
   updated_at: Date;
 }
@@ -44,7 +44,7 @@ export interface SelectedOrganisme {
   total_salarial: number;
 }
 
-// Keep legacy ServiceResponse for compatibility (will be deprecated)
+// Keep legacy ServiceResponse for compatibility 
 export interface ServiceResponse {
   service_id: number;
   service_name: string;

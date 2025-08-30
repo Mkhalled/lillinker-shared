@@ -43,20 +43,24 @@ export class CompanyResponseService {
         freelance_request: {
           ...freelanceRequest,
           options: freelanceRequest.options.map(option => ({
-            ...option,
-            response_data: option.response_data as Record<string, string | number | boolean | null>,
-            platformService: {
-              ...option.platformService,
-              data_type: option.platformService.data_type as string,
-              description: option.platformService.description as string | null | undefined,
-              choices: Array.isArray(option.platformService.choices)
-                ? (option.platformService.choices as string[])
-                : undefined,
-            },
+        ...option,
+        response_data: option.response_data as Record<string, string | number | boolean | null>,
+        platformService: {
+          ...option.platformService,
+          dataFields: Array.isArray(option.platformService.dataFields)
+            ? option.platformService.dataFields.map((field: any) => ({
+            ...field,
+            data_type: field.data_type as string,
+            description: field.description as string | null | undefined,
+            choices: Array.isArray(field.choices) ? field.choices as string[] : undefined,
+          }))
+            : [],
+          description: option.platformService.description as string | null | undefined,
+        },
           })),
         },
         company_services: companyServices,
-        organismes: [], // Will be fetched separately in the frontend
+        organismes: [], 
       };
     } catch (error) {
       logger.warn('Error getting response data', {

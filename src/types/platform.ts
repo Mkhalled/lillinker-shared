@@ -10,6 +10,14 @@ export interface NewServiceData {
   }[];
 }
 
+export interface PlatformServiceDataField {
+  id: number;
+  label: string;
+  description: string | null;
+  data_type: 'TEXT' | 'NUMBER' | 'SELECT' | 'RADIO';
+  choices: string[] | null;
+}
+
 export interface PlatformService {
   id: number;
   label: string;
@@ -23,11 +31,5 @@ export interface PlatformService {
       name: string;
     } | null;
   };
-  dataFields: {
-    id: number;
-    label: string;
-    description: string | null;
-    data_type: 'TEXT' | 'NUMBER' | 'SELECT' | 'RADIO';
-    choices: string[] | null;
-  }[];
+  dataFields: PlatformServiceDataField[];
 }
