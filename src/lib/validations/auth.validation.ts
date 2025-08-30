@@ -115,7 +115,16 @@ export const FreelanceOnboardingSchema = z.object({
       z.object({
         serviceId: z.number(),
         isRequired: z.boolean(),
-        responseData: z.record(z.number(), z.string()).optional(), // Changed to support field-based data with number keys
+        responseData: z.record(z.string(), z.string())
+          .transform((data) => {
+            // Transform string keys to number keys
+            const transformed: Record<number, string> = {};
+            Object.entries(data).forEach(([key, value]) => {
+              transformed[parseInt(key)] = value;
+            });
+            return transformed;
+          })
+          .optional(),
       })
     )
     .optional(),

@@ -78,22 +78,54 @@ export async function POST(request: NextRequest) {
       });
 
       // Retry email sending outside transaction (non-blocking)
-      setTimeout(async () => {
+      // Use a more robust retry mechanism with exponential backoff
+      let retryCount = 0;
+      const maxRetries = 3;
+      const retryDelay = 2000; // Start with 2 seconds
+
+      const attemptRetry = async () => {
         try {
           await AuthService.sendVerificationEmail(result.user.id, prisma);
           logger.info('Email sent successfully on retry', { 
             ...logContext,
             userId: result.user.id,
             email: result.user.email,
+            retryCount,
           });
         } catch (retryError) {
-          logger.error('Email retry also failed', retryError as Error, {
+          retryCount++;
+          logger.error('Email retry failed', retryError as Error, {
             ...logContext,
             userId: result.user.id,
             email: result.user.email,
+            retryCount,
+            maxRetries,
           });
+
+          // If we haven't exceeded max retries, try again with exponential backoff
+          if (retryCount < maxRetries) {
+            const nextDelay = retryDelay * Math.pow(2, retryCount - 1); // Exponential backoff
+            logger.info('Scheduling next email retry', {
+              ...logContext,
+              userId: result.user.id,
+              email: result.user.email,
+              retryCount,
+              nextDelay,
+            });
+            setTimeout(attemptRetry, nextDelay);
+          } else {
+            logger.error('Email retry exhausted all attempts', {
+              ...logContext,
+              userId: result.user.id,
+              email: result.user.email,
+              finalRetryCount: retryCount,
+            });
+          }
         }
-      }, 2000); // Retry after 2 seconds
+      };
+
+      // Start the retry process
+      setTimeout(attemptRetry, retryDelay);
     }
 
     logger.info('Registration API completed successfully', {
@@ -108,13 +140,17 @@ export async function POST(request: NextRequest) {
       success: true,
       message: result.emailSent 
         ? 'Registration completed successfully. Please check your email for verification.'
-        : 'Registration completed successfully. Verification email will be sent shortly.',
+        : 'Registration completed successfully. Verification email will be sent shortly (retry in progress).',
       userId: result.user.id,
       role: result.user.role,
       emailSent: result.emailSent,
       ...(result.emailSent ? {} : {
         emailRetry: true,
-        emailRetryMessage: 'Si vous ne recevez pas d\'email, vous pourrez demander un nouveau lien de vérification.'
+        emailRetryMessage: 'Un problème temporaire a empêché l\'envoi immédiat de l\'email. Nous réessayons automatiquement. Si vous ne recevez pas d\'email dans les 5 minutes, vous pourrez demander un nouveau lien de vérification.',
+        retryInfo: {
+          maxRetries: 3,
+          retryDelays: [2, 4, 8], // seconds
+        }
       })
     });
   } catch (error) {
