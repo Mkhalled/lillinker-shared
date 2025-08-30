@@ -36,6 +36,7 @@ const NewRequest = ({ onClose }: NewRequestProps) => {
     handleServiceRequiredChange,
     handleServiceDataChange,
     handlePortageToggle,
+    parseChoices,
     handleMultipleSelectChange,
   } = useFreelanceHandlers(setFormData);
   const { isLoading, error, setError, handleComplete } = useRequestCompletion(
@@ -87,6 +88,7 @@ const NewRequest = ({ onClose }: NewRequestProps) => {
             handleServiceRequiredChange={handleServiceRequiredChange}
             handleServiceDataChange={handleServiceDataChange}
             handleMultipleSelectChange={handleMultipleSelectChange}
+            parseChoices={parseChoices}
             error={error || undefined}
           />
         );

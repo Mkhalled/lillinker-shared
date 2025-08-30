@@ -22,7 +22,7 @@ interface FreelanceServicesStepProps {
   handleServiceRequiredChange: (serviceId: number, isRequired: boolean) => void;
   handleServiceDataChange: (serviceId: number, fieldId: number, data: string) => void;
   handleMultipleSelectChange: (serviceId: number, fieldId: number, choice: string, isChecked: boolean) => void;
-  parseChoices: (choices: string | null) => string[];
+  parseChoices: (choices: unknown) => string[];
   error?: string;
 }
 
@@ -125,7 +125,7 @@ export const FreelanceServicesStep = ({
                       {service.requires_data && service.dataFields && service.dataFields.length > 0 && (
                         <div className="space-y-4 mt-3">
                           {service.dataFields.map((field) => {
-                            const choices = parseChoices(field.choices as string | null);
+                            const choices = parseChoices(field.choices);
                             const fieldResponseData = selectedService?.responseData?.[field.id] || '';
 
                             return (
