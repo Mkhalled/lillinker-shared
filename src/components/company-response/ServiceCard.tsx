@@ -35,7 +35,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   // Extract relevant response data for this specific service from the ServiceResponse
   // Provide fallback values if response is undefined
   const isServiceAvailable = response?.is_available || false;
-  const managementFee = response?.management_fee ? String(response.management_fee) : '';
+  const managementFee = response?.management_fee !== undefined && response?.management_fee !== null ? String(response.management_fee) : '';
   const comment = response?.comment || '';
 
   const hasAdditionalData =

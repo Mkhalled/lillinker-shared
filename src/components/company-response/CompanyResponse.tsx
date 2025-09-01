@@ -155,7 +155,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
               service_name: service.service_name,
               service_description: service.service_description || '',
               is_available: service.is_available,
-              management_fee: service.management_fee || 0,
+              management_fee: service.management_fee ?? 0,
               comment: service.comment || '',
             };
           });
@@ -266,9 +266,12 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         return prev;
       }
       
+      const parsedFee = Number.parseFloat(fee);
+      const managementFee = isNaN(parsedFee) ? 0 : parsedFee;
+      
       return {
         ...prev,
-        [serviceId]: { ...existingResponse, management_fee: Number.parseFloat(fee) || 0 },
+        [serviceId]: { ...existingResponse, management_fee: managementFee },
       };
     });
   };
@@ -352,7 +355,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         selected_organismes: selectedOrganismeDetails,
         frais_de_gestion: {
           manual: manualFee,
-          value: parseFloat(manualFeeValue) || 0,
+          value: manualFeeValue.trim() === '' ? 0 : parseFloat(manualFeeValue),
         },
       };
 
