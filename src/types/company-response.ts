@@ -99,6 +99,9 @@ export interface CompanyResponseProps {
   onClose: () => void;
 }
 
+// Type for freelance response data structure
+export type FreelanceResponseData = Record<string, string | number | boolean | null>;
+
 export interface ModalState {
   isOpen: boolean;
   type: 'success' | 'error' | 'info';

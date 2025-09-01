@@ -6,14 +6,14 @@ import { useState } from 'react';
 import InputField from '@/components/form/input/InputField';
 import TextAreaField from '@/components/form/input/TextAreaField';
 import { generateFieldKeyFromField } from '@/lib/utils';
-import type { CompanyService, ServiceResponse } from '@/types/company-response'; 
-import { OptionInfo } from '@/types/demande';
+import type { CompanyService, ServiceResponse, FreelanceResponseData } from '@/types/company-response'; 
+import type { OptionInfo } from '@/types/demande';
 
 interface ServiceCardProps {
   service: CompanyService;
   response: ServiceResponse;
   isRequested: boolean;
-  requestedOption?:OptionInfo
+  requestedOption?: OptionInfo;
   onToggle: (platformServiceId: number, isActive: boolean) => void;
   onFeeChange: (platformServiceId: number, fee: string) => void; 
   onCommentChange: (platformServiceId: number, comment: string) => void; 
@@ -270,7 +270,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                         if (!requestedOption.response_data) return '-';
                         const firstDataField = requestedOption.platformService.dataFields[0];
                         const fieldKey = generateFieldKeyFromField(firstDataField);
-                        const value = (requestedOption.response_data as any)[fieldKey];
+                        const value = (requestedOption.response_data as FreelanceResponseData)[fieldKey];
                         
                         if (!value) return '-';
                         if (Array.isArray(value)) return value.join(', ');
@@ -385,7 +385,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                           (() => {
                             // Generate consistent field key using utility function
                             const fieldKey = generateFieldKeyFromField(dataField);
-                            const value = (requestedOption.response_data as any)[fieldKey];
+                            const value = (requestedOption.response_data as FreelanceResponseData)[fieldKey];
                             
                             if (value === undefined || value === null || value === '') {
                               return (

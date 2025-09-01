@@ -2,6 +2,15 @@ import { CompanyResponseDAO } from '@/dao/CompanyResponseDAO';
 import { logger } from '@/lib/logger';
 import { CompanyResponseRequest, CompanyResponseData } from '@/types/company-response';
 
+// Type for raw database field structure  
+interface RawDataField {
+  id: number;
+  label: string;
+  description: string | null | undefined;
+  data_type: string;
+  choices: unknown; // Use unknown instead of any for better type safety
+}
+
 export class CompanyResponseService {
   static async getResponseData(
     requestId: number,
@@ -48,11 +57,16 @@ export class CompanyResponseService {
         platformService: {
           ...option.platformService,
           dataFields: Array.isArray(option.platformService.dataFields)
-            ? option.platformService.dataFields.map((field: any) => ({
-            ...field,
-            data_type: field.data_type as string,
-            description: field.description as string | null | undefined,
-            choices: Array.isArray(field.choices) ? field.choices as string[] : undefined,
+            ? option.platformService.dataFields.map((field: RawDataField) => ({
+            id: field.id,
+            label: field.label,
+            description: field.description ?? null,
+            data_type: field.data_type,
+            choices: Array.isArray(field.choices) 
+              ? (field.choices as string[]) 
+              : field.choices === null || field.choices === undefined 
+              ? null 
+              : null, // fallback for unexpected types
           }))
             : [],
           description: option.platformService.description as string | null | undefined,

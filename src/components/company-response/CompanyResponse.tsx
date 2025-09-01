@@ -3,7 +3,6 @@ import type React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
 import InputField from '@/components/form/input/InputField';
-import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 import SimpleModal from '@/components/modals/SimpleModal';
 import type {
   CompanyResponseData,
@@ -574,11 +573,21 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
 
           {/* Manual Management Fee Section */}
           <div className="flex items-center gap-4 mb-4">
-            <StyledCheckbox
-              checked={manualFee}
-              onChange={e => setManualFee(e.target.checked)}
-              label="Frais de gestion manuel"
-            />
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="manual-fee-checkbox"
+                checked={manualFee}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setManualFee(e.target.checked)}
+                className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2"
+              />
+              <label 
+                htmlFor="manual-fee-checkbox"
+                className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
+              >
+                Frais de gestion manuel
+              </label>
+            </div>
             <InputField
               type="number"
               min={0}
