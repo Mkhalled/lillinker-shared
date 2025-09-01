@@ -129,10 +129,18 @@ export async function POST(request: NextRequest) {
         await CompanyService.linkCompanyLabels(company.id, validatedData.selected_portages);
       }
 
+      // Step 6: Link all existing organismes to the new company
+      logger.debug('Linking all existing organismes to company', {
+        ...enhancedLogContext,
+      });
+      
+      const linkedOrganismes = await CompanyService.linkExistingOrganismesToCompany(company.id);
+
       return {
         company,
         companyServices,
         platformServices: createdServices,
+        linkedOrganismes,
       };
     });
 
@@ -141,6 +149,10 @@ export async function POST(request: NextRequest) {
       companyId: result.company.id,
       servicesLinked: result.companyServices.length,
       newServicesCreated: result.platformServices.length,
+      organismes: {
+        linked: result.linkedOrganismes?.length || 0,
+        totalCotisations: result.linkedOrganismes?.reduce((sum, org) => sum + org.cotisations.length, 0) || 0,
+      },
     });
 
     return NextResponse.json({

@@ -424,4 +424,31 @@ export class CompanyService {
       throw error;
     }
   }
+
+  /**
+   * Link all existing organismes from the platform to a new company
+   */
+  static async linkExistingOrganismesToCompany(companyId: number) {
+    const logContext = {
+      operation: 'linkExistingOrganismesToCompany',
+      companyId,
+    };
+
+    try {
+      logger.info('Linking existing organismes to company', logContext);
+
+      const linkedOrganismes = await CompanyDAO.linkAllExistingOrganismesToCompany(companyId);
+
+      logger.info('Existing organismes linked successfully', {
+        ...logContext,
+        linkedOrganismesCount: linkedOrganismes.length,
+        totalCotisations: linkedOrganismes.reduce((sum, org) => sum + org.cotisations.length, 0),
+      });
+
+      return linkedOrganismes;
+    } catch (error) {
+      logger.error('Linking existing organismes failed', error as Error, logContext);
+      throw error;
+    }
+  }
 }

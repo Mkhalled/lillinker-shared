@@ -281,4 +281,44 @@ export class CompanyDAO {
       },
     });
   }
+
+  // Link existing organismes to company
+  static async linkAllExistingOrganismesToCompany(companyId: number) {
+    // Get all existing organismes from other companies (excluding current company)
+    const existingOrganismes = await prisma.organisme.findMany({
+      where: {
+        company_id: {
+          not: companyId,
+        },
+      },
+      include: {
+        cotisations: true,
+      },
+    });
+
+    // Create copies of all existing organismes for this company
+    const organismePromises = existingOrganismes.map(async (originalOrganisme) => {
+      return prisma.organisme.create({
+        data: {
+          company_id: companyId,
+          label: originalOrganisme.label,
+          description: originalOrganisme.description,
+          cotisations: {
+            create: originalOrganisme.cotisations.map(cotisation => ({
+              label: cotisation.label,
+              description: cotisation.description,
+              type: cotisation.type,
+              pourcentage_salarial: cotisation.pourcentage_salarial,
+              pourcentage_patronal: cotisation.pourcentage_patronal,
+            })),
+          },
+        },
+        include: {
+          cotisations: true,
+        },
+      });
+    });
+
+    return Promise.all(organismePromises);
+  }
 }
