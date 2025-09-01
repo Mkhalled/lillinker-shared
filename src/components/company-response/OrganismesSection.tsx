@@ -1,5 +1,6 @@
 import type React from 'react';
 
+import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 import CollapsibleRow from '@/components/settings/CollapsibleRow';
 import type { OrganismeWithCotisations } from '@/types/organisme';
 
@@ -54,23 +55,14 @@ const OrganismesSection: React.FC<OrganismesSectionProps> = ({
                     >
                       <td className="py-2 px-3">
                         <div className="flex items-center space-x-3">
-                          <div className="flex items-center">
-                            <input
-                              type="checkbox"
-                              id={`organisme-${organisme.id}`}
-                              checked={isSelected}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onOrganismeChange(organisme.id)(e)}
-                              className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2 flex-shrink-0"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <label 
-                              htmlFor={`organisme-${organisme.id}`}
-                              className="font-medium text-slate-900 dark:text-white text-sm mb-1 cursor-pointer"
-                            >
-                              {organisme.label}
-                            </label>
-                          </div>
+                          <StyledCheckbox
+                            id={`organisme-${organisme.id}`}
+                            checked={isSelected}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onOrganismeChange(organisme.id)(e)}
+                            label={organisme.label}
+                            size="md"
+                            className="flex-shrink-0"
+                          />
                         </div>
                       </td>
                       <td className="py-2 px-3 text-center">
