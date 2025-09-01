@@ -217,24 +217,69 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
   }, [fetchResponseData]);
 
   const handleServiceToggle = (serviceId: number, isAvailable: boolean) => {
-    setResponses(prev => ({
-      ...prev,
-      [serviceId]: { ...prev[serviceId], is_available: isAvailable },
-    }));
+    setResponses(prev => {
+      // Ensure we have a valid response object for this service
+      const existingResponse = prev[serviceId];
+      
+      if (!existingResponse) {
+        // Find the service in responseData to get the name
+        const companyService = responseData?.company_services.find(
+          cs => cs.service.id === serviceId
+        );
+        
+        const newResponse = {
+          service_id: serviceId,
+          service_name: companyService?.service.label || '',
+          service_description: companyService?.service.description || '',
+          is_available: isAvailable,
+          management_fee: 0,
+          comment: '',
+        };
+        
+        const updated = {
+          ...prev,
+          [serviceId]: newResponse,
+        };
+        return updated;
+      }
+      
+      const updated = {
+        ...prev,
+        [serviceId]: { 
+          ...existingResponse, 
+          is_available: isAvailable 
+        },
+      };
+      return updated;
+    });
   };
 
   const handleFeeChange = (serviceId: number, fee: string) => {
-    setResponses(prev => ({
-      ...prev,
-      [serviceId]: { ...prev[serviceId], management_fee: Number.parseFloat(fee) || 0 },
-    }));
+    setResponses(prev => {
+      const existingResponse = prev[serviceId];
+      if (!existingResponse) {
+        return prev;
+      }
+      
+      return {
+        ...prev,
+        [serviceId]: { ...existingResponse, management_fee: Number.parseFloat(fee) || 0 },
+      };
+    });
   };
 
   const handleCommentChange = (serviceId: number, comment: string) => {
-    setResponses(prev => ({
-      ...prev,
-      [serviceId]: { ...prev[serviceId], comment },
-    }));
+    setResponses(prev => {
+      const existingResponse = prev[serviceId];
+      if (!existingResponse) {
+        return prev;
+      }
+      
+      return {
+        ...prev,
+        [serviceId]: { ...existingResponse, comment },
+      };
+    });
   };
 
   const handleOrganismeToggle = (organismeId: number) => {
@@ -297,11 +342,12 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           }) || [];
 
       const submitData = {
+        request_id: requestId,
         services: Object.values(responses),
         selected_organismes: selectedOrganismeDetails,
         frais_de_gestion: {
           manual: manualFee,
-          value: manualFeeValue,
+          value: parseFloat(manualFeeValue) || 0,
         },
       };
 

@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import InputField from '@/components/form/input/InputField';
 import TextAreaField from '@/components/form/input/TextAreaField';
-import { StyledCheckbox } from '@/components/form/StyledCheckbox';
+import { generateFieldKeyFromField } from '@/lib/utils';
 import type { CompanyService, ServiceResponse } from '@/types/company-response'; 
 import { OptionInfo } from '@/types/demande';
 
@@ -14,9 +14,9 @@ interface ServiceCardProps {
   response: ServiceResponse;
   isRequested: boolean;
   requestedOption?:OptionInfo
-  onToggle: (companyServiceId: number, isActive: boolean) => void;
-  onFeeChange: (companyServiceId: number, fee: string) => void; 
-  onCommentChange: (companyServiceId: number, comment: string) => void; 
+  onToggle: (platformServiceId: number, isActive: boolean) => void;
+  onFeeChange: (platformServiceId: number, fee: string) => void; 
+  onCommentChange: (platformServiceId: number, comment: string) => void; 
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
@@ -31,11 +31,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   const isPending = service.service.status === 'PENDING';
   const [showDetails, setShowDetails] = useState(false);
 
-  // Extract relevant response data for this specific service from the overall company response
-  const serviceResponseData = (response.response_data as any)?.services?.[service.id] || {};
-  const isServiceAvailable = serviceResponseData.is_available || false;
-  const managementFee = serviceResponseData.management_fee || '';
-  const comment = serviceResponseData.comment || '';
+  // Extract relevant response data for this specific service from the ServiceResponse
+  // Provide fallback values if response is undefined
+  const isServiceAvailable = response?.is_available || false;
+  const managementFee = response?.management_fee ? String(response.management_fee) : '';
+  const comment = response?.comment || '';
 
   const hasAdditionalData =
     isRequested &&
@@ -58,23 +58,56 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         {/* Service Info */}
         <td className="py-4 px-3">
           <div className="flex items-center space-x-3">
-            <StyledCheckbox
-              checked={isServiceAvailable}
-              onChange={e => onToggle(service.id, e.target.checked)} // Use service.id (CompanyService.id)
-              disabled={isPending}
-              size="md"
-            />
+            <div className="relative">
+              <input
+                type="checkbox"
+                id={`bonus-service-${service.service.id}`}
+                checked={isServiceAvailable}
+                onChange={e => onToggle(service.service.id, e.target.checked)}
+                disabled={isPending}
+                className="sr-only"
+              />
+              <div
+                onClick={() => !isPending && onToggle(service.service.id, !isServiceAvailable)}
+                className={`w-5 h-5 rounded-md border-2 transition-all duration-200 flex items-center justify-center ${
+                  isPending ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                } ${
+                  isServiceAvailable
+                    ? isPending
+                      ? 'border-gray-400 bg-gray-400'
+                      : 'border-indigo-600 bg-indigo-600'
+                    : isPending
+                      ? 'border-gray-200 bg-gray-100'
+                      : 'border-gray-300 bg-white hover:border-indigo-400'
+                }`}
+              >
+                {isServiceAvailable && (
+                  <svg
+                    className="w-3 h-3 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </div>
+            </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
-                <h4
-                  className={`font-medium text-sm ${
+                <label 
+                  htmlFor={`bonus-service-${service.service.id}`}
+                  className={`font-medium text-sm cursor-pointer ${
                     isPending
-                      ? 'text-slate-400 dark:text-slate-500'
-                      : 'text-slate-900 dark:text-white'
+                      ? 'text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                      : 'text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400'
                   }`}
                 >
                   {service.service.label}
-                </h4>
+                </label>
                 {isPending && (
                   <span className="inline-flex items-center bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs px-2 py-1 rounded-full font-medium">
                     En attente
@@ -109,7 +142,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               <TextAreaField
                 rows={2}
                 value={comment}
-                onChange={e => onCommentChange(service.id, e.target.value)} // Use service.id
+                onChange={e => onCommentChange(service.service.id, e.target.value)} // Use service.service.id
                 placeholder="Décrivez ce service bonus..."
                 className="text-xs"
               />
@@ -137,23 +170,56 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         {/* Checkbox + Service Label */}
         <td className="py-4 px-3">
           <div className="flex items-center space-x-3">
-            <StyledCheckbox
-              checked={isServiceAvailable}
-              onChange={e => onToggle(service.id, e.target.checked)} // Use service.id
-              disabled={isPending}
-              size="md"
-            />
+            <div className="relative">
+              <input
+                type="checkbox"
+                id={`requested-service-${service.service.id}`}
+                checked={isServiceAvailable}
+                onChange={e => onToggle(service.service.id, e.target.checked)}
+                disabled={isPending}
+                className="sr-only"
+              />
+              <div
+                onClick={() => !isPending && onToggle(service.service.id, !isServiceAvailable)}
+                className={`w-5 h-5 rounded-md border-2 transition-all duration-200 flex items-center justify-center ${
+                  isPending ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                } ${
+                  isServiceAvailable
+                    ? isPending
+                      ? 'border-gray-400 bg-gray-400'
+                      : 'border-indigo-600 bg-indigo-600'
+                    : isPending
+                      ? 'border-gray-200 bg-gray-100'
+                      : 'border-gray-300 bg-white hover:border-indigo-400'
+                }`}
+              >
+                {isServiceAvailable && (
+                  <svg
+                    className="w-3 h-3 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </div>
+            </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
-                <h4
-                  className={`font-medium text-sm ${
+                <label 
+                  htmlFor={`requested-service-${service.service.id}`}
+                  className={`font-medium text-sm cursor-pointer ${
                     isPending
-                      ? 'text-slate-400 dark:text-slate-500'
-                      : 'text-slate-900 dark:text-white'
+                      ? 'text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                      : 'text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400'
                   }`}
                 >
                   {service.service.label}
-                </h4>
+                </label>
                 {isPending && (
                   <span className="inline-flex items-center bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs px-2 py-1 rounded-full font-medium">
                     En attente
@@ -192,28 +258,28 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             <div className="flex items-center space-x-2">
               <div className="flex-1">
                 <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-                  {requestedOption?.platformService?.dataFields[0]?.label || 'Donnée Requise'}
+                  {requestedOption?.platformService?.dataFields?.length === 1 
+                    ? requestedOption.platformService.dataFields[0].label 
+                    : `${requestedOption?.platformService?.dataFields?.length || 0} champ(s) de données`}
                 </span>
                 <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Réponse:{' '}
-                  {(() => {
-                    if (!requestedOption.response_data) return '-';
-                    // Assuming response_data structure might be { dataFieldId: value } or similar
-                    // For simplicity, taking the first value if it's an object, or direct value
-                    const firstEntry = Object.values(requestedOption.response_data)[0];
-                    if (!firstEntry) return '-';
-                    if (Array.isArray(firstEntry)) return firstEntry.join(', ');
-                    if (typeof firstEntry === 'object' && firstEntry !== null) {
-                      const objValue = firstEntry as Record<string, unknown>;
-                      return String(
-                        objValue.label ||
-                          objValue.name ||
-                          objValue.value ||
-                          JSON.stringify(objValue)
-                      );
-                    }
-                    return String(firstEntry);
-                  })()}
+                  {requestedOption?.platformService?.dataFields?.length === 1 ? (
+                    <>
+                      Réponse:{' '}
+                      {(() => {
+                        if (!requestedOption.response_data) return '-';
+                        const firstDataField = requestedOption.platformService.dataFields[0];
+                        const fieldKey = generateFieldKeyFromField(firstDataField);
+                        const value = (requestedOption.response_data as any)[fieldKey];
+                        
+                        if (!value) return '-';
+                        if (Array.isArray(value)) return value.join(', ');
+                        return String(value);
+                      })()}
+                    </>
+                  ) : (
+                    <>Plusieurs réponses - cliquez pour voir</>
+                  )}
                 </div>
               </div>
               <button
@@ -245,7 +311,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 min="0"
                 max="100"
                 value={managementFee}
-                onChange={e => onFeeChange(service.id, e.target.value)} // Use service.id
+                onChange={e => onFeeChange(service.service.id, e.target.value)} // Use service.service.id
                 placeholder="8.5"
                 className="text-center text-xs"
               />
@@ -262,7 +328,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               <TextAreaField
                 rows={2}
                 value={comment}
-                onChange={e => onCommentChange(service.id, e.target.value)} // Use service.id
+                onChange={e => onCommentChange(service.service.id, e.target.value)} // Use service.service.id
                 placeholder="Conditions, délais..."
                 className="text-xs"
               />
@@ -284,7 +350,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 </h5>
               </div>
 
-              {requestedOption?.platformService?.dataFields.map(dataField => (
+              {requestedOption?.platformService?.dataFields?.map(dataField => (
                 <div key={dataField.id} className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-600 p-3">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {/* Data Label & Description */}
@@ -301,6 +367,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                             {dataField.description}
                           </p>
                         )}
+                        <div className="mt-1">
+                          <span className="text-xs bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                            Type: {dataField.data_type}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
@@ -310,60 +381,78 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                         Réponse du freelancer
                       </h6>
                       <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-2">
-                        {requestedOption.response_data &&
-                          (requestedOption.response_data as any)?.[dataField.id] !== undefined ? (
-                            (() => {
-                              const value = (requestedOption.response_data as any)[dataField.id];
-                              let displayValue = '';
-                              if (Array.isArray(value)) {
-                                displayValue = value.join(', ');
-                              } else if (typeof value === 'object' && value !== null) {
-                                const objectValue = value as Record<string, unknown>;
-                                displayValue = String(
-                                  objectValue.label ||
-                                    objectValue.name ||
-                                    objectValue.value ||
-                                    JSON.stringify(objectValue)
-                                );
-                              } else {
-                                displayValue = String(value);
-                              }
+                        {requestedOption.response_data ? (
+                          (() => {
+                            // Generate consistent field key using utility function
+                            const fieldKey = generateFieldKeyFromField(dataField);
+                            const value = (requestedOption.response_data as any)[fieldKey];
+                            
+                            if (value === undefined || value === null || value === '') {
                               return (
-                                <p className="text-xs font-medium text-emerald-900 dark:text-emerald-100">
-                                  {displayValue}
+                                <p className="text-xs text-slate-400 dark:text-slate-500">
+                                  Pas de réponse fournie
                                 </p>
                               );
-                            })()
-                          ) : (
-                            <p className="text-xs text-slate-400 dark:text-slate-500">Pas de réponse fournie</p>
-                          )}
+                            }
+
+                            let displayValue = '';
+                            if (Array.isArray(value)) {
+                              displayValue = value.join(', ');
+                            } else if (typeof value === 'object') {
+                              // Handle object values by extracting meaningful content
+                              const objectValue = value as Record<string, unknown>;
+                              displayValue = String(
+                                objectValue.label ||
+                                  objectValue.name ||
+                                  objectValue.value ||
+                                  JSON.stringify(objectValue)
+                              );
+                            } else {
+                              displayValue = String(value);
+                            }
+
+                            return (
+                              <p className="text-xs font-medium text-emerald-900 dark:text-emerald-100">
+                                {displayValue}
+                              </p>
+                            );
+                          })()
+                        ) : (
+                          <p className="text-xs text-slate-400 dark:text-slate-500">
+                            Pas de réponse fournie
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   {/* Available Choices */}
                   {dataField.choices &&
-                    (dataField.data_type === 'SELECT' ||
-                      dataField.data_type === 'RADIO') && (
+                    Array.isArray(dataField.choices) &&
+                    dataField.choices.length > 0 &&
+                    (dataField.data_type === 'SELECT' || dataField.data_type === 'RADIO') && (
                       <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-600">
                         <h6 className="text-xs font-medium text-slate-900 dark:text-slate-100 mb-1">
                           Choix disponibles
                         </h6>
                         <div className="flex flex-wrap gap-1">
-                          {(dataField.choices as string[]).map((choice: string, index: number) => (
-                              <span
-                                key={index}
-                                className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-1 rounded-full border"
-                              >
-                                {choice}
-                              </span>
-                            )
-                          )}
+                          {dataField.choices.map((choice: string, index: number) => (
+                            <span
+                              key={index}
+                              className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-1 rounded-full border"
+                            >
+                              {choice}
+                            </span>
+                          ))}
                         </div>
                       </div>
                     )}
                 </div>
-              ))}
+              )) || (
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  Aucun champ de données disponible
+                </div>
+              )}
             </div>
           </td>
         </tr>
