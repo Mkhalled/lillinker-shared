@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import { FreelanceRequestInput } from '@/types/freelance';
+
 export class FreelanceDao {
   static async findByFreelanceId(id: number) {
     return prisma.freelance.findUnique({
@@ -14,6 +15,15 @@ export class FreelanceDao {
       data: {
         freelance_id: userId,
         secteur_activite_id: metierId,
+      },
+    });
+  }
+
+  static async update(freelanceUserId: number, data: number) {
+    return prisma.freelance.update({
+      where: { freelance_id: freelanceUserId },
+      data: {
+        secteur_activite_id: data
       },
     });
   }

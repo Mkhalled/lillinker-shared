@@ -11,29 +11,55 @@ import { ProfileData } from '@/types/company';
 
 const Settings = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchProfile() {
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
       const res = await fetch('/api/profile');
       const data = await res.json();
       setProfile(data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchProfile();
   }, []);
-  if (!profile) {
+
+  const handleProfileUpdate = () => {
+    // Refresh profile data after updates
+    fetchProfile();
+  };
+
+  if (loading) {
     return <Loader />;
+  }
+
+  if (!profile) {
+    return (
+      <div className="mx-auto max-w-270">
+        <Breadcrumb pageName="Paramètres" />
+        <div className="text-center py-8">
+          <p className="text-red-600">Erreur lors du chargement des données du profil</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="mx-auto max-w-270">
       <Breadcrumb pageName="Paramètres" />
       <div className="space-y-6">
-        <CollapsibleRow title="Informations de société">
-          <CompanyInfoForm profile={profile} />
+        <CollapsibleRow title="Informations personnelles">
+          <PersonalInfoForm profile={profile} onUpdate={handleProfileUpdate} />
         </CollapsibleRow>
 
-        <CollapsibleRow title="Informations de l'administrateur">
-          <PersonalInfoForm profile={profile} />
+        <CollapsibleRow title="Informations de société">
+          <CompanyInfoForm profile={profile} onUpdate={handleProfileUpdate} />
         </CollapsibleRow>
 
         <CollapsibleRow title="Management des organismes">

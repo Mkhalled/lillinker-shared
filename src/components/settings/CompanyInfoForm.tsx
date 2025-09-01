@@ -1,28 +1,204 @@
+import { useState, useEffect } from 'react';
+
 import { ProfileData } from '@/types/company';
 
-const CompanyInfoForm = ({ profile }: { profile: ProfileData }) => {
-  const company = profile.roleData;
+interface LabelPortage {
+  id: number;
+  name: string;
+  description?: string;
+}
+
+interface CompanyInfoFormProps {
+  profile: ProfileData;
+  onUpdate?: () => void;
+}
+
+const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
+  const company = profile.roleData as any; // Using any for broader access to company fields
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
+
+  // Label portages state
+  const [labelPortages, setLabelPortages] = useState<LabelPortage[]>([]);
+  const [loadingLabels, setLoadingLabels] = useState(false);
+  const [selectedLabels, setSelectedLabels] = useState<number[]>([]);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    name: company?.name || '',
+    description: company?.description || '',
+    consultant_count: company?.consultant_count || 0,
+    siret: company?.siret || '',
+    management_min: company?.management_min || '',
+    management_max: company?.management_max || '',
+    is_portage: company?.is_portage || false,
+    date_creation: company?.date_creation ? new Date(company.date_creation).toISOString().split('T')[0] : '',
+    chiffre_affaires: company?.chiffre_affaires || '',
+    adresse: company?.adresse || '',
+    site_web: company?.site_web || '',
+    convention_collective: company?.convention_collective || '',
+    code_naf_ape: company?.code_naf_ape || '',
+  });
+
+  // Fetch label portages when component mounts or when is_portage changes to true
+  useEffect(() => {
+    if (formData.is_portage && labelPortages.length === 0) {
+      fetchLabelPortages();
+    }
+  }, [formData.is_portage]);
+
+  // Initialize selected labels from company data
+  useEffect(() => {
+    if (company?.labels && Array.isArray(company.labels)) {
+      setSelectedLabels(company.labels.map((label: any) => label.label_syndicat_id || label.id));
+    }
+  }, [company]);
+
+  const fetchLabelPortages = async () => {
+    setLoadingLabels(true);
+    try {
+      const response = await fetch('/api/portages');
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setLabelPortages(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching label portages:', error);
+    } finally {
+      setLoadingLabels(false);
+    }
+  };
+
+  const toggleLabelSelection = (labelId: number) => {
+    setSelectedLabels(prev => 
+      prev.includes(labelId) 
+        ? prev.filter(id => id !== labelId)
+        : [...prev, labelId]
+    );
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setMessage(null);
+
+    try {
+      // Prepare the data to send
+      const submitData = {
+        ...formData,
+        // Include selected labels if the company is a portage company
+        ...(formData.is_portage && { selected_labels: selectedLabels }),
+      };
+
+      const response = await fetch('/api/profile/company', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submitData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage({
+          type: 'success',
+          text: 'Informations de l\'entreprise mises à jour avec succès',
+        });
+        setIsEditing(false);
+        onUpdate?.();
+      } else {
+        setMessage({
+          type: 'error',
+          text: data.error || 'Erreur lors de la mise à jour des informations de l\'entreprise',
+        });
+      }
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Erreur de connexion lors de la mise à jour',
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // Reset form data to original values
+    setFormData({
+      name: company?.name || '',
+      description: company?.description || '',
+      consultant_count: company?.consultant_count || 0,
+      siret: company?.siret || '',
+      management_min: company?.management_min || '',
+      management_max: company?.management_max || '',
+      is_portage: company?.is_portage || false,
+      date_creation: company?.date_creation ? new Date(company.date_creation).toISOString().split('T')[0] : '',
+      chiffre_affaires: company?.chiffre_affaires || '',
+      adresse: company?.adresse || '',
+      site_web: company?.site_web || '',
+      convention_collective: company?.convention_collective || '',
+      code_naf_ape: company?.code_naf_ape || '',
+    });
+    // Reset selected labels
+    if (company?.labels && Array.isArray(company.labels)) {
+      setSelectedLabels(company.labels.map((label: any) => label.label_syndicat_id || label.id));
+    } else {
+      setSelectedLabels([]);
+    }
+    setIsEditing(false);
+    setMessage(null);
+  };
+
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="p-7">
-        <form action="#">
-          {/* Infos entreprise */}
+        {message && (
+          <div className={`mb-4 p-3 rounded ${
+            message.type === 'success' 
+              ? 'bg-green-100 text-green-700 border border-green-300' 
+              : 'bg-red-100 text-red-700 border border-red-300'
+          }`}>
+            {message.text}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          {/* Informations principales */}
           <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
             <div className="w-full sm:w-1/2">
               <label
                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                 htmlFor="name"
               >
-                Nom de l&apos;entreprise
+                Nom de l&apos;entreprise *
               </label>
               <input
-                className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
+                className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                  isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+                }`}
                 type="text"
                 name="name"
                 id="name"
                 placeholder="Nom de l'entreprise"
-                defaultValue={company?.name || ''}
-                readOnly
+                value={formData.name}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+                required
               />
             </div>
             <div className="w-full sm:w-1/2">
@@ -30,37 +206,68 @@ const CompanyInfoForm = ({ profile }: { profile: ProfileData }) => {
                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                 htmlFor="consultant_count"
               >
-                Nombre de consultants
+                Nombre de consultants *
               </label>
               <input
-                className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
+                className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                  isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+                }`}
                 type="number"
                 name="consultant_count"
                 id="consultant_count"
                 placeholder="Nombre de consultants"
                 min={0}
-                defaultValue={company?.consultant_count || ''}
-                readOnly
+                value={formData.consultant_count}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+                required
               />
             </div>
           </div>
-          <div className="mb-5.5">
-            <label
-              className="mb-3 block text-sm font-medium text-black dark:text-white"
-              htmlFor="siret"
-            >
-              SIRET
-            </label>
-            <input
-              className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
-              type="text"
-              name="siret"
-              id="siret"
-              placeholder="Numéro SIRET"
-              defaultValue={company?.siret || ''}
-              readOnly
-            />
+
+          <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+            <div className="w-full sm:w-1/2">
+              <label
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+                htmlFor="siret"
+              >
+                SIRET
+              </label>
+              <input
+                className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                  isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+                }`}
+                type="text"
+                name="siret"
+                id="siret"
+                placeholder="Numéro SIRET"
+                value={formData.siret}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+              />
+            </div>
+            <div className="w-full sm:w-1/2">
+              <label
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+                htmlFor="code_naf_ape"
+              >
+                Code NAF/APE
+              </label>
+              <input
+                className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                  isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+                }`}
+                type="text"
+                name="code_naf_ape"
+                id="code_naf_ape"
+                placeholder="Code NAF/APE"
+                value={formData.code_naf_ape}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+              />
+            </div>
           </div>
+
           <div className="mb-5.5">
             <label
               className="mb-3 block text-sm font-medium text-black dark:text-white"
@@ -69,22 +276,275 @@ const CompanyInfoForm = ({ profile }: { profile: ProfileData }) => {
               Description de l&apos;entreprise
             </label>
             <textarea
-              className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]"
+              className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+              }`}
               name="description"
               id="description"
               placeholder="Description de l'entreprise"
               rows={3}
-              defaultValue={company?.description || ''}
-              readOnly
+              value={formData.description}
+              onChange={handleInputChange}
+              readOnly={!isEditing}
             />
           </div>
-          <div className="flex justify-end gap-4.5">
-            <button
-              className="flex justify-center rounded bg-[var(--primary-color)] px-6 py-2 font-medium text-gray hover:bg-[var(--primary-hover)]"
-              type="submit"
+
+          <div className="mb-5.5">
+            <label
+              className="mb-3 block text-sm font-medium text-black dark:text-white"
+              htmlFor="adresse"
             >
-              Enregistrer
-            </button>
+              Adresse
+            </label>
+            <textarea
+              className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+              }`}
+              name="adresse"
+              id="adresse"
+              placeholder="Adresse complète de l'entreprise"
+              rows={2}
+              value={formData.adresse}
+              onChange={handleInputChange}
+              readOnly={!isEditing}
+            />
+          </div>
+
+          {/* Informations financières */}
+          <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+            <div className="w-full sm:w-1/3">
+              <label
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+                htmlFor="management_min"
+              >
+                Frais de gestion min (%)
+              </label>
+              <input
+                className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                  isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+                }`}
+                type="number"
+                step="0.1"
+                min="0"
+                max="100"
+                name="management_min"
+                id="management_min"
+                placeholder="0.0"
+                value={formData.management_min}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+              />
+            </div>
+            <div className="w-full sm:w-1/3">
+              <label
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+                htmlFor="management_max"
+              >
+                Frais de gestion max (%)
+              </label>
+              <input
+                className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                  isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+                }`}
+                type="number"
+                step="0.1"
+                min="0"
+                max="100"
+                name="management_max"
+                id="management_max"
+                placeholder="0.0"
+                value={formData.management_max}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+              />
+            </div>
+            <div className="w-full sm:w-1/3">
+              <label
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+                htmlFor="chiffre_affaires"
+              >
+                Chiffre d&apos;affaires (€)
+              </label>
+              <input
+                className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                  isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+                }`}
+                type="number"
+                step="0.01"
+                min="0"
+                name="chiffre_affaires"
+                id="chiffre_affaires"
+                placeholder="0.00"
+                value={formData.chiffre_affaires}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+              />
+            </div>
+          </div>
+
+          {/* Informations complémentaires */}
+          <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+            <div className="w-full sm:w-1/2">
+              <label
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+                htmlFor="site_web"
+              >
+                Site web
+              </label>
+              <input
+                className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                  isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+                }`}
+                type="url"
+                name="site_web"
+                id="site_web"
+                placeholder="https://www.example.com"
+                value={formData.site_web}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+              />
+            </div>
+            <div className="w-full sm:w-1/2">
+              <label
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+                htmlFor="date_creation"
+              >
+                Date de création
+              </label>
+              <input
+                className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                  isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+                }`}
+                type="date"
+                name="date_creation"
+                id="date_creation"
+                value={formData.date_creation}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+              />
+            </div>
+          </div>
+
+          <div className="mb-5.5">
+            <label
+              className="mb-3 block text-sm font-medium text-black dark:text-white"
+              htmlFor="convention_collective"
+            >
+              Convention collective
+            </label>
+            <input
+              className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
+                isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
+              }`}
+              type="text"
+              name="convention_collective"
+              id="convention_collective"
+              placeholder="Convention collective applicable"
+              value={formData.convention_collective}
+              onChange={handleInputChange}
+              readOnly={!isEditing}
+            />
+          </div>
+
+          <div className="mb-5.5">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                name="is_portage"
+                checked={formData.is_portage}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                className="mr-2"
+              />
+              <span className="text-sm font-medium text-black dark:text-white">
+                Société de portage salarial
+              </span>
+            </label>
+          </div>
+
+          {/* Label Portages Selection - Only show if company is portage */}
+          {formData.is_portage && (
+            <div className="mb-5.5">
+              <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                Services de portage proposés
+              </label>
+              {loadingLabels ? (
+                <div className="p-4 text-center text-gray-500">
+                  Chargement des services de portage...
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {labelPortages.map((label) => (
+                    <div
+                      key={label.id}
+                      className={`p-3 border rounded-lg transition-all duration-200 ${
+                        isEditing ? 'hover:bg-gray-50' : ''
+                      } ${
+                        selectedLabels.includes(label.id) 
+                          ? 'border-[var(--primary-color)] bg-blue-50' 
+                          : 'border-stroke'
+                      }`}
+                    >
+                      <label className="flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedLabels.includes(label.id)}
+                          onChange={() => toggleLabelSelection(label.id)}
+                          disabled={!isEditing}
+                          className="mr-3 h-4 w-4 text-[var(--primary-color)] border-gray-300 rounded focus:ring-[var(--primary-color)]"
+                        />
+                        <div className="flex-1">
+                          <span className="text-sm font-medium text-black dark:text-white">
+                            {label.name}
+                          </span>
+                          {label.description && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {label.description}
+                            </p>
+                          )}
+                        </div>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {!isEditing && selectedLabels.length === 0 && labelPortages.length > 0 && (
+                <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                  Aucun service de portage sélectionné
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-4.5">
+            {isEditing ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                  disabled={saving}
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="flex justify-center rounded bg-[var(--primary-color)] px-6 py-2 font-medium text-gray hover:bg-[var(--primary-hover)] disabled:opacity-50"
+                  disabled={saving}
+                >
+                  {saving ? 'Sauvegarde...' : 'Enregistrer'}
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsEditing(true)}
+                className="flex justify-center rounded bg-[var(--primary-color)] px-6 py-2 font-medium text-gray hover:bg-[var(--primary-hover)]"
+              >
+                Modifier
+              </button>
+            )}
           </div>
         </form>
       </div>

@@ -69,6 +69,32 @@ export class CompanyDAO {
       })),
     });
   }
+
+  static async deleteCompanyLabels(companyId: number) {
+    return prisma.companyLabel.deleteMany({
+      where: { company_id: companyId },
+    });
+  }
+
+  static async replaceCompanyLabels(companyId: number, portageIds: number[]) {
+    // Use transaction to ensure atomicity
+    return prisma.$transaction(async (tx) => {
+      // Delete existing labels
+      await tx.companyLabel.deleteMany({
+        where: { company_id: companyId },
+      });
+      
+      // Add new labels if any
+      if (portageIds.length > 0) {
+        await tx.companyLabel.createMany({
+          data: portageIds.map(portageId => ({
+            company_id: companyId,
+            label_syndicat_id: portageId,
+          })),
+        });
+      }
+    });
+  }
   static async getAllFreelanceRequests(
     page: number = 1,
     pageSize: number = 5,
