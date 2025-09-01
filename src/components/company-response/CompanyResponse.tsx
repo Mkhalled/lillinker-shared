@@ -319,10 +319,10 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         pourcentage_patronal?: number | null;
         pourcentage_salarial?: number | null;
       }) => {
-        if (cotisation.pourcentage_patronal) {
+        if (cotisation.pourcentage_patronal !== null && cotisation.pourcentage_patronal !== undefined) {
           totalPatronal += Number.parseFloat(cotisation.pourcentage_patronal.toString()) || 0;
         }
-        if (cotisation.pourcentage_salarial) {
+        if (cotisation.pourcentage_salarial !== null && cotisation.pourcentage_salarial !== undefined) {
           totalSalarial += Number.parseFloat(cotisation.pourcentage_salarial.toString()) || 0;
         }
       }
