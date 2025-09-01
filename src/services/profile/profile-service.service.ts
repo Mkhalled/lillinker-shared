@@ -1,7 +1,8 @@
+import type { Prisma } from '@prisma/client';
+
 import { CompanyDAO } from '@/dao/company.dao';
 import { FreelanceDao } from '@/dao/freelance.dao';
 import { UserDAO } from '@/dao/user.dao';
-import type { Prisma } from '@prisma/client';
 
 export class ProfileService {
   /**

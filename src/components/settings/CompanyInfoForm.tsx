@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
-import { ProfileData } from '@/types/company';
 import { StyledCheckbox } from '@/components/form/StyledCheckbox';
+import { ProfileData } from '@/types/company';
 
 interface LabelPortage {
   id: number;
@@ -9,14 +9,43 @@ interface LabelPortage {
   description?: string;
 }
 
+interface CompanyLabel {
+  label_syndicat_id: number;
+  labelSyndicat?: {
+    id: number;
+    name: string;
+  };
+}
+
+interface ExtendedCompanyData {
+  name?: string;
+  description?: string;
+  consultant_count?: number;
+  siret?: string;
+  management_min?: number;
+  management_max?: number;
+  is_portage?: boolean;
+  date_creation?: string | Date;
+  chiffre_affaires?: number;
+  adresse?: string;
+  site_web?: string;
+  convention_collective?: string;
+  code_naf_ape?: string;
+  labels?: CompanyLabel[];
+}
+
+interface ExtendedProfileData extends ProfileData {
+  roleData?: ExtendedCompanyData;
+}
+
 interface CompanyInfoFormProps {
-  profile: ProfileData;
+  profile: ExtendedProfileData;
   onUpdate?: () => void;
   onMessage?: (message: { type: 'success' | 'error'; text: string } | null) => void;
 }
 
 const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps) => {
-  const company = profile.roleData as any; // Using any for broader access to company fields
+  const company = profile.roleData as ExtendedCompanyData;
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -54,12 +83,12 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
     if (company?.is_portage) {
       fetchLabelPortages();
     }
-  }, []);
+  }, [company?.is_portage]);
 
   // Initialize selected portages from company data (using same logic as onboarding)
   useEffect(() => {
     if (company?.labels && Array.isArray(company.labels)) {
-      const portageIds = company.labels.map((label: any) => label.label_syndicat_id.toString());
+      const portageIds = company.labels.map((label: CompanyLabel) => label.label_syndicat_id.toString());
       setSelectedPortages(portageIds);
     }
   }, [company]);
@@ -167,7 +196,7 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
     });
     // Reset selected portages
     if (company?.labels && Array.isArray(company.labels)) {
-      const portageIds = company.labels.map((label: any) => label.label_syndicat_id.toString());
+      const portageIds = company.labels.map((label: CompanyLabel) => label.label_syndicat_id.toString());
       setSelectedPortages(portageIds);
     } else {
       setSelectedPortages([]);
@@ -461,9 +490,9 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
           {/* Label Portages Selection - Only show if company is portage */}
           {formData.is_portage && (
             <div className="mb-5.5">
-              <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+              <h2 className="mb-3 block text-sm font-medium text-black dark:text-white">
                 Services de portage proposés
-              </label>
+              </h2>
               {loadingLabels ? (
                 <div className="p-4 text-center text-gray-500">
                   Chargement des services de portage...

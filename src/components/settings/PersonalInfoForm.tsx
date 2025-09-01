@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
-import { ProfileData as company } from '@/types/company';
-import { ProfileData as freelance } from '@/types/freelance';
+import { ProfileData as CompanyProfileData } from '@/types/company';
+import { ProfileData as FreelanceProfileData } from '@/types/freelance';
 
 interface SecteurActivite {
   id: number;
@@ -9,8 +9,38 @@ interface SecteurActivite {
   name: string;
 }
 
+interface UserWithRole {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone_number?: string;
+  sex?: string;
+  role?: 'FREELANCE' | 'COMPANY';
+  status?: boolean;
+}
+
+interface FreelanceRoleData {
+  secteur_activite_id?: number;
+  metier?: {
+    name?: string;
+  };
+  secteurActivite?: {
+    name?: string;
+    code?: string;
+  };
+}
+
+interface ExtendedFreelanceProfileData extends FreelanceProfileData {
+  user: UserWithRole;
+  roleData?: FreelanceRoleData;
+}
+
+interface ExtendedCompanyProfileData extends CompanyProfileData {
+  user: UserWithRole;
+}
+
 interface PersonalInfoFormProps {
-  profile: company | freelance;
+  profile: ExtendedCompanyProfileData | ExtendedFreelanceProfileData;
   onUpdate?: () => void;
   onMessage?: (message: { type: 'success' | 'error'; text: string } | null) => void;
 }
@@ -34,16 +64,16 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
 
   // Freelance-specific form state
   const [freelanceData, setFreelanceData] = useState({
-    secteur_activite_id: (user as any)?.role === 'FREELANCE' ? 
-      ((profile as any).roleData?.secteur_activite_id || '') : ''
+    secteur_activite_id: user?.role === 'FREELANCE' ? 
+      (profile.roleData as FreelanceRoleData)?.secteur_activite_id || '' : ''
   });
 
   // Fetch secteur activities when component mounts or when editing starts
   useEffect(() => {
-    if ((user as any)?.role === 'FREELANCE' && isEditing && secteurActivites.length === 0) {
+    if (user?.role === 'FREELANCE' && isEditing && secteurActivites.length === 0) {
       fetchSecteurActivites();
     }
-  }, [isEditing, user]);
+  }, [isEditing, user?.role, secteurActivites.length]);
 
   const fetchSecteurActivites = async () => {
     setLoadingSecteurs(true);
@@ -91,7 +121,7 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
       }
 
       // If user is freelance and secteur_activite_id has changed, update freelance info
-      if ((user as any)?.role === 'FREELANCE' && freelanceData.secteur_activite_id) {
+      if (user?.role === 'FREELANCE' && freelanceData.secteur_activite_id) {
         const freelanceResponse = await fetch('/api/profile/freelance', {
           method: 'PATCH',
           headers: {
@@ -131,8 +161,8 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
       sex: user?.sex || '',
     });
     setFreelanceData({
-      secteur_activite_id: (user as any)?.role === 'FREELANCE' ? 
-        ((profile as any).roleData?.secteur_activite_id || '') : ''
+      secteur_activite_id: user?.role === 'FREELANCE' ? 
+        (profile.roleData as FreelanceRoleData)?.secteur_activite_id || '' : ''
     });
     setIsEditing(false);
     onMessage?.(null);
@@ -213,7 +243,7 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
                 />
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                L'adresse e-mail ne peut pas être modifiée
+                L&apos;adresse e-mail ne peut pas être modifiée
               </p>
             </div>
             <div className="w-full sm:w-1/2">
@@ -266,37 +296,40 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
           {/* Additional user information */}
           <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
             <div className="w-full sm:w-1/2">
-              <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+              <label htmlFor='role' className="mb-3 block text-sm font-medium text-black dark:text-white">
                 Rôle
               </label>
               <input
+              id='role'
                 className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
                 type="text"
-                value={(user as any)?.role || ''}
+                value={user?.role || ''}
                 readOnly
               />
             </div>
             <div className="w-full sm:w-1/2">
-              <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+              <label htmlFor='status' className="mb-3 block text-sm font-medium text-black dark:text-white">
                 Statut du compte
               </label>
               <input
+              id='status'
                 className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
                 type="text"
-                value={(user as any)?.status ? 'Actif' : 'Inactif'}
+                value={user?.status ? 'Actif' : 'Inactif'}
                 readOnly
               />
             </div>
           </div>
 
           {/* Show secteur d'activité for freelancers */}
-          {(user as any)?.role === 'FREELANCE' && (profile as any).roleData && (
+          {user?.role === 'FREELANCE' && profile.roleData && (
             <div className="mb-5.5">
-              <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+              <label htmlFor='secteur_activite_id' className="mb-3 block text-sm font-medium text-black dark:text-white">
                 Secteur d&apos;activité *
               </label>
               {isEditing ? (
                 <select
+                id='secteur_activite_id'
                   className="w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] bg-white dark:bg-meta-4"
                   name="secteur_activite_id"
                   value={freelanceData.secteur_activite_id}
@@ -315,13 +348,13 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
                 <input
                   className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
                   type="text"
-                  value={((profile as any).roleData as any)?.secteurActivite?.name || 'Non défini'}
+                  value={(profile.roleData as FreelanceRoleData)?.secteurActivite?.name || 'Non défini'}
                   readOnly
                 />
               )}
-              {!isEditing && ((profile as any).roleData as any)?.secteurActivite?.code && (
+              {!isEditing && (profile.roleData as FreelanceRoleData)?.secteurActivite?.code && (
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Code: {((profile as any).roleData as any).secteurActivite.code}
+                  Code: {(profile.roleData as FreelanceRoleData).secteurActivite?.code}
                 </p>
               )}
               {loadingSecteurs && isEditing && (
