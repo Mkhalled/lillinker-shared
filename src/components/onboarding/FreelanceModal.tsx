@@ -175,7 +175,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       case 1:
         return 'Renseignez vos informations de base';
       case 2:
-        return 'Avez-vous une mission actuellement ?';
+        return 'Avez-vous une mission ?';
       case 3:
         return 'Services de portage salarial';
       case 4:

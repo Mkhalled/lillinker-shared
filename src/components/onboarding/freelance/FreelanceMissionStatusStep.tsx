@@ -34,7 +34,7 @@ export const FreelanceMissionStatusStep = ({
                   hasMission: e.target.value,
                 }))
               }
-              label="Non, je suis en recherche"
+              label="Non, je n’ai pas encore de mission"
             />
             <StyledRadio
               name="hasMission"
@@ -46,7 +46,7 @@ export const FreelanceMissionStatusStep = ({
                   hasMission: e.target.value,
                 }))
               }
-              label="En cours de recherche"
+              label="Presque, je suis en cours de négociation"
             />
             <StyledRadio
               name="hasMission"
@@ -58,7 +58,7 @@ export const FreelanceMissionStatusStep = ({
                   hasMission: e.target.value,
                 }))
               }
-              label="Oui, j'ai une mission en cours"
+              label="J’ai déjà une mission"
             />
           </div>
         </div>
