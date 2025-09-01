@@ -1,5 +1,5 @@
 'use client';
-import { CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle, ChevronDown, ChevronUp, Info, X } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 
@@ -30,6 +30,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 }) => {
   const isPending = service.service.status === 'PENDING';
   const [showDetails, setShowDetails] = useState(false);
+  const [showServiceInfo, setShowServiceInfo] = useState(false);
 
   // Extract relevant response data for this specific service from the ServiceResponse
   // Provide fallback values if response is undefined
@@ -42,6 +43,59 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     requestedOption?.platformService?.dataFields &&
     requestedOption.platformService.dataFields.length > 0 &&
     requestedOption.response_data;
+
+  // Service Info Tooltip Component
+  const ServiceDescriptionTooltip = () => {
+    if (!service.service.description) return null;
+
+    return (
+      <div className="relative">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowServiceInfo(!showServiceInfo);
+          }}
+          className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+          type="button"
+          aria-label="Voir la description du service"
+        >
+          <Info className="h-3 w-3" />
+        </button>
+
+        {showServiceInfo && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black bg-opacity-25 z-40"
+              onClick={() => setShowServiceInfo(false)}
+            />
+
+            {/* Tooltip Content */}
+            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-4 max-w-md w-full">
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="font-medium text-gray-900 pr-4">{service.service.label}</h3>
+                <button
+                  onClick={() => setShowServiceInfo(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+                  type="button"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="text-sm">
+                <span className="font-medium text-gray-800">Description:</span>
+                <p className="text-gray-600 mt-1 leading-relaxed">
+                  {service.service.description}
+                </p>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
 
   // For bonus services, show simplified layout
   if (!isRequested) {
@@ -108,6 +162,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 >
                   {service.service.label}
                 </label>
+                <ServiceDescriptionTooltip />
                 {isPending && (
                   <span className="inline-flex items-center bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs px-2 py-1 rounded-full font-medium">
                     En attente
@@ -120,17 +175,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                   Bonus
                 </span>
               </div>
-              {service.service.description && (
-                <p
-                  className={`text-xs leading-relaxed ${
-                    isPending
-                      ? 'text-slate-400 dark:text-slate-500'
-                      : 'text-slate-600 dark:text-slate-400'
-                  }`}
-                >
-                  {service.service.description}
-                </p>
-              )}
             </div>
           </div>
         </td>
@@ -220,6 +264,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 >
                   {service.service.label}
                 </label>
+                <ServiceDescriptionTooltip />
                 {isPending && (
                   <span className="inline-flex items-center bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs px-2 py-1 rounded-full font-medium">
                     En attente
@@ -237,17 +282,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                   </span>
                 )}
               </div>
-              {service.service.description && (
-                <p
-                  className={`text-xs leading-relaxed ${
-                    isPending
-                      ? 'text-slate-400 dark:text-slate-500'
-                      : 'text-slate-600 dark:text-slate-400'
-                  }`}
-                >
-                  {service.service.description}
-                </p>
-              )}
             </div>
           </div>
         </td>
