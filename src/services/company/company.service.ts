@@ -99,14 +99,14 @@ export class CompanyService {
     };
 
     try {
-      logger.debug('Linking secteurs d\'activité to company', {
+      logger.debug("Linking secteurs d'activité to company", {
         ...logContext,
         metierIds,
       });
 
       await CompanyDAO.addCompanyMetiers(companyId, metierIds);
 
-      logger.info('Secteurs d\'activité linked successfully', {
+      logger.info("Secteurs d'activité linked successfully", {
         ...logContext,
         linkedMetiersCount: metierIds.length,
       });

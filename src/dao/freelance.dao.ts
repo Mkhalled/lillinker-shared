@@ -23,7 +23,7 @@ export class FreelanceDao {
     return prisma.freelance.update({
       where: { freelance_id: freelanceUserId },
       data: {
-        secteur_activite_id: data
+        secteur_activite_id: data,
       },
     });
   }
@@ -53,7 +53,10 @@ export class FreelanceDao {
     });
     return option;
   }
-  static async createFreelanceRequestLabelSelected(freelanceRequestId: number, portageIds: number[]) {
+  static async createFreelanceRequestLabelSelected(
+    freelanceRequestId: number,
+    portageIds: number[]
+  ) {
     return prisma.requestLabelSelected.createMany({
       data: portageIds.map(portageId => ({
         freelance_request_id: freelanceRequestId,

@@ -81,8 +81,11 @@ const NewServiceToolTip = ({ service }: NewServiceToolTipProps) => {
                         {field.description && <span>, {field.description}</span>}
                         <span> ({getDataTypeDescription(field.data_type)})</span>
                         {(field.data_type === 'SELECT' || field.data_type === 'RADIO') &&
-                          field.choices && field.choices.length > 0 && (
-                            <span>. Options: {field.choices.filter(c => c.trim() !== '').join(', ')}</span>
+                          field.choices &&
+                          field.choices.length > 0 && (
+                            <span>
+                              . Options: {field.choices.filter(c => c.trim() !== '').join(', ')}
+                            </span>
                           )}
                       </div>
                     ))}

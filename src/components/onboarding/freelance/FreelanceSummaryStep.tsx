@@ -199,7 +199,9 @@ export const FreelanceSummaryStep = ({
               const selectedService = formData.selectedServices.find(
                 s => s.serviceId === service.id
               );
-              const hasResponseData = selectedService?.responseData && Object.keys(selectedService.responseData).length > 0;
+              const hasResponseData =
+                selectedService?.responseData &&
+                Object.keys(selectedService.responseData).length > 0;
 
               const mockOption = {
                 id: service.id,

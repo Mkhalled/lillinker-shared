@@ -65,19 +65,18 @@ const Settings = () => {
   return (
     <div className="mx-auto max-w-270">
       <Breadcrumb pageName="Paramètres" />
-      
+
       {message && (
-        <div className={`mb-6 p-4 rounded-lg border ${
-          message.type === 'success' 
-            ? 'bg-green-50 text-green-800 border-green-200' 
-            : 'bg-red-50 text-red-800 border-red-200'
-        }`}>
+        <div
+          className={`mb-6 p-4 rounded-lg border ${
+            message.type === 'success'
+              ? 'bg-green-50 text-green-800 border-green-200'
+              : 'bg-red-50 text-red-800 border-red-200'
+          }`}
+        >
           <div className="flex items-center justify-between">
             <span>{message.text}</span>
-            <button
-              onClick={() => setMessage(null)}
-              className="ml-4 text-sm hover:opacity-70"
-            >
+            <button onClick={() => setMessage(null)} className="ml-4 text-sm hover:opacity-70">
               ✕
             </button>
           </div>
@@ -86,11 +85,19 @@ const Settings = () => {
 
       <div className="space-y-6">
         <CollapsibleRow title="Informations personnelles">
-          <PersonalInfoForm profile={profile} onUpdate={handleProfileUpdate} onMessage={handleMessage} />
+          <PersonalInfoForm
+            profile={profile}
+            onUpdate={handleProfileUpdate}
+            onMessage={handleMessage}
+          />
         </CollapsibleRow>
 
         <CollapsibleRow title="Informations de société">
-          <CompanyInfoForm profile={profile} onUpdate={handleProfileUpdate} onMessage={handleMessage} />
+          <CompanyInfoForm
+            profile={profile}
+            onUpdate={handleProfileUpdate}
+            onMessage={handleMessage}
+          />
         </CollapsibleRow>
 
         <CollapsibleRow title="Management des organismes">

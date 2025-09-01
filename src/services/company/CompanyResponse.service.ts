@@ -2,7 +2,7 @@ import { CompanyResponseDAO } from '@/dao/CompanyResponseDAO';
 import { logger } from '@/lib/logger';
 import { CompanyResponseRequest, CompanyResponseData } from '@/types/company-response';
 
-// Type for raw database field structure  
+// Type for raw database field structure
 interface RawDataField {
   id: number;
   label: string;
@@ -52,29 +52,29 @@ export class CompanyResponseService {
         freelance_request: {
           ...freelanceRequest,
           options: freelanceRequest.options.map(option => ({
-        ...option,
-        response_data: option.response_data as Record<string, string | number | boolean | null>,
-        platformService: {
-          ...option.platformService,
-          dataFields: Array.isArray(option.platformService.dataFields)
-            ? option.platformService.dataFields.map((field: RawDataField) => ({
-            id: field.id,
-            label: field.label,
-            description: field.description ?? null,
-            data_type: field.data_type,
-            choices: Array.isArray(field.choices) 
-              ? (field.choices as string[]) 
-              : field.choices === null || field.choices === undefined 
-              ? null 
-              : null, // fallback for unexpected types
-          }))
-            : [],
-          description: option.platformService.description as string | null | undefined,
-        },
+            ...option,
+            response_data: option.response_data as Record<string, string | number | boolean | null>,
+            platformService: {
+              ...option.platformService,
+              dataFields: Array.isArray(option.platformService.dataFields)
+                ? option.platformService.dataFields.map((field: RawDataField) => ({
+                    id: field.id,
+                    label: field.label,
+                    description: field.description ?? null,
+                    data_type: field.data_type,
+                    choices: Array.isArray(field.choices)
+                      ? (field.choices as string[])
+                      : field.choices === null || field.choices === undefined
+                        ? null
+                        : null, // fallback for unexpected types
+                  }))
+                : [],
+              description: option.platformService.description as string | null | undefined,
+            },
           })),
         },
         company_services: companyServices,
-        organismes: [], 
+        organismes: [],
       };
     } catch (error) {
       logger.warn('Error getting response data', {

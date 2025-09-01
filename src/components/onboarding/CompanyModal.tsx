@@ -116,13 +116,8 @@ const CompanyModal = ({ onClose }: CompanyModalProps) => {
             onSiretExistsChange={setSiretExists}
           />
         );
-      case 2: 
-        return (
-          <CompanyJuridiqueStep
-            formData={formData}
-            onFormDataChange={updateFormData}
-          />
-        );
+      case 2:
+        return <CompanyJuridiqueStep formData={formData} onFormDataChange={updateFormData} />;
       case 3:
         return (
           <CompanyPortageStep

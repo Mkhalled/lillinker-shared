@@ -4,9 +4,11 @@ export const InitialRegistrationSchema = z.object({
   email: z.string().email('Invalid email address'),
   first_name: z.string().min(2, 'First name must be at least 2 characters'),
   last_name: z.string().min(2, 'Last name must be at least 2 characters'),
-  sex: z.enum(['MALE', 'FEMALE'], {
-    required_error: 'Please select your sex',
-  }).optional(),
+  sex: z
+    .enum(['MALE', 'FEMALE'], {
+      required_error: 'Please select your sex',
+    })
+    .optional(),
   role: z.enum(['COMPANY', 'FREELANCE'], {
     required_error: 'Please select a role',
   }),
@@ -115,8 +117,9 @@ export const FreelanceOnboardingSchema = z.object({
       z.object({
         serviceId: z.number(),
         isRequired: z.boolean(),
-        responseData: z.record(z.string(), z.string())
-          .transform((data) => {
+        responseData: z
+          .record(z.string(), z.string())
+          .transform(data => {
             // Transform string keys to number keys
             const transformed: Record<number, string> = {};
             Object.entries(data).forEach(([key, value]) => {

@@ -15,7 +15,7 @@ export function generateFieldKey(fieldLabel: string, fieldId?: number): string {
     .replace(/[^a-z0-9\s]/g, '') // Remove special characters
     .replace(/\s+/g, '_') // Replace spaces with underscores
     .trim();
-  
+
   return cleanLabel || `field_${fieldId}`;
 }
 

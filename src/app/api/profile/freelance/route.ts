@@ -22,23 +22,23 @@ export async function PATCH(request: NextRequest) {
 
     // Validate required fields
     if (!secteur_activite_id) {
-      return NextResponse.json(
-        { error: 'Secteur d\'activité est obligatoire' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Secteur d'activité est obligatoire" }, { status: 400 });
     }
 
     // Update freelance information
-    const updatedFreelance = await ProfileService.updateFreelanceInfo(Number(session.user.id), secteur_activite_id);
+    const updatedFreelance = await ProfileService.updateFreelanceInfo(
+      Number(session.user.id),
+      secteur_activite_id
+    );
 
     return NextResponse.json({
-      message: 'Secteur d\'activité mis à jour avec succès',
+      message: "Secteur d'activité mis à jour avec succès",
       freelance: updatedFreelance,
     });
   } catch (error) {
     console.error('Error updating freelance info:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de la mise à jour du secteur d\'activité' },
+      { error: "Erreur lors de la mise à jour du secteur d'activité" },
       { status: 500 }
     );
   }

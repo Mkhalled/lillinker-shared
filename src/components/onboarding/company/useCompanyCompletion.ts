@@ -80,18 +80,25 @@ export const useCompanyCompletion = (
               ? currentFormData.selectedPortages.map((id: string) => parseInt(id))
               : [],
           new_services: currentFormData.newServices
-            .filter((service: NewServiceData) => service.service_label && service.service_label.trim() !== '')
+            .filter(
+              (service: NewServiceData) =>
+                service.service_label && service.service_label.trim() !== ''
+            )
             .map((service: NewServiceData) => ({
               service_label: service.service_label,
               service_description: service.service_description,
               requires_data: service.requires_data,
-              dataFields: service.requires_data && service.dataFields ?
-          service.dataFields.map(field => ({
-            label: field.label,
-            description: field.description,
-            data_type: field.data_type,
-            choices: field.choices?.filter((choice: string) => choice.trim() !== '') || undefined,
-          })) : undefined,
+              dataFields:
+                service.requires_data && service.dataFields
+                  ? service.dataFields.map(field => ({
+                      label: field.label,
+                      description: field.description,
+                      data_type: field.data_type,
+                      choices:
+                        field.choices?.filter((choice: string) => choice.trim() !== '') ||
+                        undefined,
+                    }))
+                  : undefined,
             })),
           // New fields from updated formData
           date_creation: currentFormData.date_creation,

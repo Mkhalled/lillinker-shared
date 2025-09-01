@@ -85,14 +85,17 @@ const ServiceInfoTooltip = ({ service }: { service: PlatformService }) => {
                   <span className="font-medium text-gray-800">Champs de données requis:</span>
                   <div className="text-gray-600 ml-1 space-y-2">
                     {(service.dataFields ?? []).length > 0 ? (
-                      (service.dataFields ?? []).map((field) => (
+                      (service.dataFields ?? []).map(field => (
                         <div key={field.id}>
                           <span>{field.label}</span>
                           {field.description && <span>, {field.description}</span>}
                           <span> ({getDataTypeDescription(field.data_type)})</span>
                           {(field.data_type === 'SELECT' || field.data_type === 'RADIO') &&
-                            field.choices && field.choices.length > 0 && (
-                              <span>. Options: {field.choices.filter(c => c.trim() !== '').join(', ')}</span>
+                            field.choices &&
+                            field.choices.length > 0 && (
+                              <span>
+                                . Options: {field.choices.filter(c => c.trim() !== '').join(', ')}
+                              </span>
                             )}
                         </div>
                       ))

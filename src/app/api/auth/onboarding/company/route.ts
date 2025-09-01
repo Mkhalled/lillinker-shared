@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         service_id: number;
         is_active: boolean;
       }> = [];
-      
+
       if (allServiceIds.length > 0) {
         logger.debug('Linking services to company', {
           ...enhancedLogContext,
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
           selectedServices: validatedData.selected_services?.length || 0,
           createdServices: createdServices.length,
         });
-        
+
         companyServices = await CompanyService.linkPlatformServices(company.id, allServiceIds);
       }
 
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
           ...enhancedLogContext,
           metierCount: validatedData.selected_metiers.length,
         });
-        
+
         await CompanyService.linkMetiers(company.id, validatedData.selected_metiers);
       }
 
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
           ...enhancedLogContext,
           portageCount: validatedData.selected_portages.length,
         });
-        
+
         await CompanyService.linkCompanyLabels(company.id, validatedData.selected_portages);
       }
 
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
       logger.debug('Linking all existing organismes to company', {
         ...enhancedLogContext,
       });
-      
+
       const linkedOrganismes = await CompanyService.linkExistingOrganismesToCompany(company.id);
 
       return {
@@ -151,7 +151,8 @@ export async function POST(request: NextRequest) {
       newServicesCreated: result.platformServices.length,
       organismes: {
         linked: result.linkedOrganismes?.length || 0,
-        totalCotisations: result.linkedOrganismes?.reduce((sum, org) => sum + org.cotisations.length, 0) || 0,
+        totalCotisations:
+          result.linkedOrganismes?.reduce((sum, org) => sum + org.cotisations.length, 0) || 0,
       },
     });
 

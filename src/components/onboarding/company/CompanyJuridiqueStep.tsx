@@ -8,10 +8,7 @@ interface CompanyJuridiqueStepProps {
   onFormDataChange: (updates: Partial<CompanyFormData>) => void;
 }
 
-export const CompanyJuridiqueStep = ({
-  formData,
-  onFormDataChange,
-}: CompanyJuridiqueStepProps) => {
+export const CompanyJuridiqueStep = ({ formData, onFormDataChange }: CompanyJuridiqueStepProps) => {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -26,7 +23,11 @@ export const CompanyJuridiqueStep = ({
                 : formData.date_creation.toISOString().slice(0, 10)
               : ''
           }
-          onChange={e => onFormDataChange({ date_creation: e.target.value ? new Date(e.target.value) : undefined })}
+          onChange={e =>
+            onFormDataChange({
+              date_creation: e.target.value ? new Date(e.target.value) : undefined,
+            })
+          }
           placeholder="YYYY-MM-DD"
         />
         <InputField
@@ -35,7 +36,9 @@ export const CompanyJuridiqueStep = ({
           type="number"
           step="0.01"
           value={formData.chiffre_affaires?.toString() || ''}
-          onChange={e => onFormDataChange({ chiffre_affaires: parseFloat(e.target.value) || undefined })}
+          onChange={e =>
+            onFormDataChange({ chiffre_affaires: parseFloat(e.target.value) || undefined })
+          }
           placeholder="100000.00"
         />
         <InputField

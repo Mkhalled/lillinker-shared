@@ -6,7 +6,11 @@ import { useState } from 'react';
 import InputField from '@/components/form/input/InputField';
 import TextAreaField from '@/components/form/input/TextAreaField';
 import { generateFieldKeyFromField } from '@/lib/utils';
-import type { CompanyService, ServiceResponse, FreelanceResponseData } from '@/types/company-response'; 
+import type {
+  CompanyService,
+  ServiceResponse,
+  FreelanceResponseData,
+} from '@/types/company-response';
 import type { OptionInfo } from '@/types/demande';
 
 interface ServiceCardProps {
@@ -15,13 +19,13 @@ interface ServiceCardProps {
   isRequested: boolean;
   requestedOption?: OptionInfo;
   onToggle: (platformServiceId: number, isActive: boolean) => void;
-  onFeeChange: (platformServiceId: number, fee: string) => void; 
-  onCommentChange: (platformServiceId: number, comment: string) => void; 
+  onFeeChange: (platformServiceId: number, fee: string) => void;
+  onCommentChange: (platformServiceId: number, comment: string) => void;
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
-  response, 
+  response,
   isRequested,
   requestedOption,
   onToggle,
@@ -35,7 +39,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   // Extract relevant response data for this specific service from the ServiceResponse
   // Provide fallback values if response is undefined
   const isServiceAvailable = response?.is_available || false;
-  const managementFee = response?.management_fee !== undefined && response?.management_fee !== null ? String(response.management_fee) : '';
+  const managementFee =
+    response?.management_fee !== undefined && response?.management_fee !== null
+      ? String(response.management_fee)
+      : '';
   const comment = response?.comment || '';
 
   const hasAdditionalData =
@@ -51,7 +58,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     return (
       <div className="relative">
         <button
-          onClick={(e) => {
+          onClick={e => {
             e.preventDefault();
             e.stopPropagation();
             setShowServiceInfo(!showServiceInfo);
@@ -86,9 +93,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
               <div className="text-sm">
                 <span className="font-medium text-gray-800">Description:</span>
-                <p className="text-gray-600 mt-1 leading-relaxed">
-                  {service.service.description}
-                </p>
+                <p className="text-gray-600 mt-1 leading-relaxed">{service.service.description}</p>
               </div>
             </div>
           </>
@@ -136,11 +141,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 }`}
               >
                 {isServiceAvailable && (
-                  <svg
-                    className="w-3 h-3 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -152,7 +153,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
-                <label 
+                <label
                   htmlFor={`bonus-service-${service.service.id}`}
                   className={`font-medium text-sm cursor-pointer ${
                     isPending
@@ -238,11 +239,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 }`}
               >
                 {isServiceAvailable && (
-                  <svg
-                    className="w-3 h-3 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -254,7 +251,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
-                <label 
+                <label
                   htmlFor={`requested-service-${service.service.id}`}
                   className={`font-medium text-sm cursor-pointer ${
                     isPending
@@ -292,8 +289,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             <div className="flex items-center space-x-2">
               <div className="flex-1">
                 <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-                  {requestedOption?.platformService?.dataFields?.length === 1 
-                    ? requestedOption.platformService.dataFields[0].label 
+                  {requestedOption?.platformService?.dataFields?.length === 1
+                    ? requestedOption.platformService.dataFields[0].label
                     : `${requestedOption?.platformService?.dataFields?.length || 0} champ(s) de données`}
                 </span>
                 <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -304,8 +301,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                         if (!requestedOption.response_data) return '-';
                         const firstDataField = requestedOption.platformService.dataFields[0];
                         const fieldKey = generateFieldKeyFromField(firstDataField);
-                        const value = (requestedOption.response_data as FreelanceResponseData)[fieldKey];
-                        
+                        const value = (requestedOption.response_data as FreelanceResponseData)[
+                          fieldKey
+                        ];
+
                         if (!value) return '-';
                         if (Array.isArray(value)) return value.join(', ');
                         return String(value);
@@ -385,7 +384,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               </div>
 
               {requestedOption?.platformService?.dataFields?.map(dataField => (
-                <div key={dataField.id} className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-600 p-3">
+                <div
+                  key={dataField.id}
+                  className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-600 p-3"
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {/* Data Label & Description */}
                     <div>
@@ -419,8 +421,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                           (() => {
                             // Generate consistent field key using utility function
                             const fieldKey = generateFieldKeyFromField(dataField);
-                            const value = (requestedOption.response_data as FreelanceResponseData)[fieldKey];
-                            
+                            const value = (requestedOption.response_data as FreelanceResponseData)[
+                              fieldKey
+                            ];
+
                             if (value === undefined || value === null || value === '') {
                               return (
                                 <p className="text-xs text-slate-400 dark:text-slate-500">

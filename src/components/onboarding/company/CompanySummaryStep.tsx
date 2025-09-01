@@ -40,10 +40,12 @@ export const CompanySummaryStep = ({
             <span className="font-medium">Consultants:</span> {formData.consultantCount}
           </div>
           <div>
-            <span className="font-medium">Date de création:</span> {formData.date_creation ? new Date(formData.date_creation).toLocaleDateString() : ''}
+            <span className="font-medium">Date de création:</span>{' '}
+            {formData.date_creation ? new Date(formData.date_creation).toLocaleDateString() : ''}
           </div>
           <div>
-            <span className="font-medium">Chiffre d&apos;affaires:</span> {formData.chiffre_affaires ?? ''}
+            <span className="font-medium">Chiffre d&apos;affaires:</span>{' '}
+            {formData.chiffre_affaires ?? ''}
           </div>
           <div>
             <span className="font-medium">Adresse:</span> {formData.adresse}
@@ -52,13 +54,15 @@ export const CompanySummaryStep = ({
             <span className="font-medium">Site web:</span> {formData.site_web}
           </div>
           <div>
-            <span className="font-medium">Convention collective:</span> {formData.convention_collective}
+            <span className="font-medium">Convention collective:</span>{' '}
+            {formData.convention_collective}
           </div>
           <div>
             <span className="font-medium">Code NAF/APE:</span> {formData.code_naf_ape}
           </div>
           <div className="lg:col-span-2">
-            <span className="font-medium">Frais de gestion:</span> entre: {formData.managementFeeRateMin}% et {formData.managementFeeRateMax}%
+            <span className="font-medium">Frais de gestion:</span> entre:{' '}
+            {formData.managementFeeRateMin}% et {formData.managementFeeRateMax}%
           </div>
           <div className="lg:col-span-2">
             <span className="font-medium">Description:</span> {formData.description}
@@ -161,17 +165,25 @@ export const CompanySummaryStep = ({
       )}
 
       {/* New Services */}
-      {formData.newServices.filter((s: NewServiceData) => s.service_label.trim() !== '').length > 0 && (
+      {formData.newServices.filter((s: NewServiceData) => s.service_label.trim() !== '').length >
+        0 && (
         <div className="border rounded-lg p-3 sm:p-4 bg-gray-50">
           <h4 className="font-medium text-gray-900 mb-3">
             Nouveaux services (
-            {formData.newServices.filter((s: NewServiceData) => s.service_label.trim() !== '').length})
+            {
+              formData.newServices.filter((s: NewServiceData) => s.service_label.trim() !== '')
+                .length
+            }
+            )
           </h4>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {formData.newServices
               .filter((s: NewServiceData) => s.service_label.trim() !== '')
               .map((service: NewServiceData) => (
-                <div key={service.service_label} className="border-l-4 border-blue-500 pl-4 flex items-start">
+                <div
+                  key={service.service_label}
+                  className="border-l-4 border-blue-500 pl-4 flex items-start"
+                >
                   <div className="flex-1">
                     <h5 className="font-medium text-gray-900">{service.service_label}</h5>
                   </div>

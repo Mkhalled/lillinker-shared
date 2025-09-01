@@ -57,10 +57,7 @@ export class CompanyDAO {
       },
     });
   }
-  static async addCompanyMetiers(
-    companyId: number,
-    metiers: number[]
-  ) {
+  static async addCompanyMetiers(companyId: number, metiers: number[]) {
     return prisma.secteurActiviteCompany.createMany({
       data: metiers.map(metier => ({
         company_id: companyId,
@@ -70,12 +67,12 @@ export class CompanyDAO {
   }
   static async addCompanyLabel(companyId: number, portageIds: number[]) {
     // Use transaction to ensure atomicity - delete old labels and add new ones
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async tx => {
       // Delete existing labels first
       await tx.companyLabel.deleteMany({
         where: { company_id: companyId },
       });
-      
+
       // Add new labels if any
       if (portageIds.length > 0) {
         await tx.companyLabel.createMany({
@@ -96,12 +93,12 @@ export class CompanyDAO {
 
   static async replaceCompanyLabels(companyId: number, portageIds: number[]) {
     // Use transaction to ensure atomicity
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async tx => {
       // Delete existing labels
       await tx.companyLabel.deleteMany({
         where: { company_id: companyId },
       });
-      
+
       // Add new labels if any
       if (portageIds.length > 0) {
         await tx.companyLabel.createMany({
@@ -341,7 +338,7 @@ export class CompanyDAO {
     });
 
     // Create copies of all existing organismes for this company
-    const organismePromises = existingOrganismes.map(async (originalOrganisme) => {
+    const organismePromises = existingOrganismes.map(async originalOrganisme => {
       return prisma.organisme.create({
         data: {
           company_id: companyId,

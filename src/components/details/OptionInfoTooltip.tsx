@@ -44,10 +44,7 @@ const OptionInfoTooltip = ({ option }: { option: OptionInfo }) => {
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black bg-opacity-25 z-40"
-            onClick={handleToggle}
-          />
+          <div className="fixed inset-0 bg-black bg-opacity-25 z-40" onClick={handleToggle} />
 
           {/* Modal Content */}
           <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-4 overflow-y-auto max-w-md w-full max-h-[70vh]">
@@ -86,30 +83,31 @@ const OptionInfoTooltip = ({ option }: { option: OptionInfo }) => {
               )}
 
               {/* Data Fields */}
-              {option.platformService.requires_data && option.platformService.dataFields && option.platformService.dataFields.length > 0 && (
-                <div>
-                  <span className="font-medium text-gray-800">Données requises:</span>
-                  <div className="text-gray-600 ml-1 space-y-1">
-                    {option.platformService.dataFields.map((field, _) => (
-                      <div key={field.id} className="pl-2 border-l-2 border-gray-200">
-                        <div className="font-medium">{field.label}</div>
-                        {field.description && (
-                          <div className="text-xs text-gray-500">{field.description}</div>
-                        )}
-                        <div className="text-xs">
-                          Type: {getDataTypeDescription(field.data_type)}
-                        </div>
-                        {(field.data_type === 'SELECT' || field.data_type === 'RADIO') &&
-                          field.choices && field.choices.length > 0 && (
-                            <div className="text-xs">
-                              Options: {field.choices.join(', ')}
-                            </div>
+              {option.platformService.requires_data &&
+                option.platformService.dataFields &&
+                option.platformService.dataFields.length > 0 && (
+                  <div>
+                    <span className="font-medium text-gray-800">Données requises:</span>
+                    <div className="text-gray-600 ml-1 space-y-1">
+                      {option.platformService.dataFields.map((field, _) => (
+                        <div key={field.id} className="pl-2 border-l-2 border-gray-200">
+                          <div className="font-medium">{field.label}</div>
+                          {field.description && (
+                            <div className="text-xs text-gray-500">{field.description}</div>
                           )}
-                      </div>
-                    ))}
+                          <div className="text-xs">
+                            Type: {getDataTypeDescription(field.data_type)}
+                          </div>
+                          {(field.data_type === 'SELECT' || field.data_type === 'RADIO') &&
+                            field.choices &&
+                            field.choices.length > 0 && (
+                              <div className="text-xs">Options: {field.choices.join(', ')}</div>
+                            )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Show what happens when no data is required */}
               {!option.platformService.requires_data && (
@@ -131,8 +129,10 @@ const OptionInfoTooltip = ({ option }: { option: OptionInfo }) => {
                       ? Object.entries(option.response_data).map(([key, value]) => {
                           // Find the corresponding field by ID (since response data uses field IDs as keys)
                           const fieldId = parseInt(key);
-                          const field = option.platformService.dataFields?.find(f => f.id === fieldId);
-                          
+                          const field = option.platformService.dataFields?.find(
+                            f => f.id === fieldId
+                          );
+
                           return (
                             <div key={key} className="text-xs">
                               <span className="font-medium">{field?.label || key}:</span>{' '}

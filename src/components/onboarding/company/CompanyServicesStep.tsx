@@ -123,11 +123,14 @@ export const CompanyServicesStep = ({
                     {service.service_description && (
                       <p className="text-sm text-gray-600 mb-2">{service.service_description}</p>
                     )}
-                    {service.requires_data && service.dataFields && service.dataFields.length > 0 && (
-                      <div className="text-xs text-gray-500">
-                        {service.dataFields.length} champ{service.dataFields.length > 1 ? 's' : ''} de données
-                      </div>
-                    )}
+                    {service.requires_data &&
+                      service.dataFields &&
+                      service.dataFields.length > 0 && (
+                        <div className="text-xs text-gray-500">
+                          {service.dataFields.length} champ
+                          {service.dataFields.length > 1 ? 's' : ''} de données
+                        </div>
+                      )}
                   </div>
                   <div className="flex items-center space-x-2 ml-4">
                     <button

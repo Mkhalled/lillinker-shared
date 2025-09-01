@@ -17,10 +17,7 @@ export async function PATCH(request: NextRequest) {
 
     // Validate required fields
     if (!first_name || !last_name) {
-      return NextResponse.json(
-        { error: 'Prénom et nom sont obligatoires' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Prénom et nom sont obligatoires' }, { status: 400 });
     }
 
     // Update user information

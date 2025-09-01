@@ -117,10 +117,16 @@ const CotisationContent = ({
           <InputField
             label="Taux patronal (%)"
             type="number"
-            value={cotisation.pourcentage_patronal !== null && cotisation.pourcentage_patronal !== undefined ? String(cotisation.pourcentage_patronal) : ''}
+            value={
+              cotisation.pourcentage_patronal !== null &&
+              cotisation.pourcentage_patronal !== undefined
+                ? String(cotisation.pourcentage_patronal)
+                : ''
+            }
             onChange={e =>
               updateSubCategory(category.id, cotisation.id, {
-                pourcentage_patronal: e.target.value.trim() === '' ? null : parseFloat(e.target.value),
+                pourcentage_patronal:
+                  e.target.value.trim() === '' ? null : parseFloat(e.target.value),
               })
             }
             placeholder="0.00"
@@ -146,10 +152,16 @@ const CotisationContent = ({
           <InputField
             label="Taux salarial (%)"
             type="number"
-            value={cotisation.pourcentage_salarial !== null && cotisation.pourcentage_salarial !== undefined ? String(cotisation.pourcentage_salarial) : ''}
+            value={
+              cotisation.pourcentage_salarial !== null &&
+              cotisation.pourcentage_salarial !== undefined
+                ? String(cotisation.pourcentage_salarial)
+                : ''
+            }
             onChange={e =>
               updateSubCategory(category.id, cotisation.id, {
-                pourcentage_salarial: e.target.value.trim() === '' ? null : parseFloat(e.target.value),
+                pourcentage_salarial:
+                  e.target.value.trim() === '' ? null : parseFloat(e.target.value),
               })
             }
             placeholder="0.00"

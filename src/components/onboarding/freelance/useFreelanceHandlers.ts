@@ -84,7 +84,12 @@ export const useFreelanceHandlers = (
   };
 
   // Handle multiple selections for SELECT type
-  const handleMultipleSelectChange = (serviceId: number, fieldId: number, option: string, isChecked: boolean) => {
+  const handleMultipleSelectChange = (
+    serviceId: number,
+    fieldId: number,
+    option: string,
+    isChecked: boolean
+  ) => {
     setFormData((prev: FreelanceFormData | FreelanceRequest) => {
       const service = prev.selectedServices.find((s: SelectedService) => s.serviceId === serviceId);
       if (!service) return prev;

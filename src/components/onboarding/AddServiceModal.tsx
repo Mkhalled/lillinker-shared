@@ -18,12 +18,12 @@ interface AddServiceModalProps {
   editingIndex?: number;
 }
 
-const AddServiceModal = ({ 
-  isOpen, 
-  onClose, 
-  onSave, 
+const AddServiceModal = ({
+  isOpen,
+  onClose,
+  onSave,
   editingService,
-  editingIndex 
+  editingIndex,
 }: AddServiceModalProps) => {
   const [serviceData, setServiceData] = useState<NewServiceData>({
     service_label: '',
@@ -64,7 +64,8 @@ const AddServiceModal = ({
     if (serviceData.requires_data) {
       const dataFields = serviceData.dataFields || [];
       if (dataFields.length === 0) {
-        newErrors.dataFields = 'Au moins un champ de données est requis lorsque des données sont nécessaires';
+        newErrors.dataFields =
+          'Au moins un champ de données est requis lorsque des données sont nécessaires';
       }
       dataFields.forEach((field, index) => {
         if (!field.label.trim()) {
@@ -89,7 +90,7 @@ const AddServiceModal = ({
           choices: field.choices?.filter(c => c.trim() !== '') || [],
         })),
       };
-      
+
       onSave(cleanedServiceData, isEditing ? editingIndex : undefined);
       handleClose();
     }
@@ -215,9 +216,7 @@ const AddServiceModal = ({
                 id="service-label"
                 label="Libellé du service"
                 value={serviceData.service_label}
-                onChange={e =>
-                  setServiceData(prev => ({ ...prev, service_label: e.target.value }))
-                }
+                onChange={e => setServiceData(prev => ({ ...prev, service_label: e.target.value }))}
                 placeholder="Ex: Assurance RC Pro"
                 error={!!errors.service_label}
                 hint={errors.service_label}
@@ -296,11 +295,7 @@ const AddServiceModal = ({
                             value={dataField.data_type}
                             onChange={e =>
                               updateDataField(dataFieldIndex, {
-                                data_type: e.target.value as
-                                  | 'TEXT'
-                                  | 'NUMBER'
-                                  | 'SELECT'
-                                  | 'RADIO',
+                                data_type: e.target.value as 'TEXT' | 'NUMBER' | 'SELECT' | 'RADIO',
                               })
                             }
                           >
@@ -390,9 +385,7 @@ const AddServiceModal = ({
                       )}
                     </div>
                   ))}
-                  {errors.dataFields && (
-                    <p className="text-sm text-red-600">{errors.dataFields}</p>
-                  )}
+                  {errors.dataFields && <p className="text-sm text-red-600">{errors.dataFields}</p>}
                 </div>
               )}
             </div>

@@ -25,7 +25,7 @@ interface CompanyCreateData {
   siret?: string;
   consultant_count: number;
   management_min?: number;
-  management_max?:  number;
+  management_max?: number;
   is_portage?: boolean;
   date_creation?: Date;
   chiffre_affaires?: number;
@@ -243,7 +243,7 @@ async function main(): Promise<void> {
       data: {
         user_id: adminPlateforme.id,
         label: 'Une avance sur salaire',
-        description: 'Paiement mensuel même si le client n\'a pas encore réglé la facture',
+        description: "Paiement mensuel même si le client n'a pas encore réglé la facture",
         requires_data: false,
         status: 'ACTIVE',
         dataFields: {
@@ -256,7 +256,7 @@ async function main(): Promise<void> {
         user_id: adminPlateforme.id,
         label: 'Une fin de contrat avec rupture conventionnelle',
         description:
-          'La rupture conventionnelle est une modalité de fin de contrat amiable entre le salarié porté et la société de portage. Elle permet de mettre fin au CDI de portage salarial (s\'il existe) d\'un commun accord, tout en donnant droit aux allocations chômage.',
+          "La rupture conventionnelle est une modalité de fin de contrat amiable entre le salarié porté et la société de portage. Elle permet de mettre fin au CDI de portage salarial (s'il existe) d'un commun accord, tout en donnant droit aux allocations chômage.",
         requires_data: false,
         status: 'ACTIVE',
         dataFields: {
@@ -269,7 +269,7 @@ async function main(): Promise<void> {
         user_id: adminPlateforme.id,
         label: 'Un interlocuteur unique dédié',
         description:
-          'Bénéficiez d\'un interlocuteur unique dédié qui connaît votre dossier et vous accompagne au quotidien. Vous gagnez en réactivité, en simplicité et en sérénité dans la gestion de vos missions et de votre rémunération.',
+          "Bénéficiez d'un interlocuteur unique dédié qui connaît votre dossier et vous accompagne au quotidien. Vous gagnez en réactivité, en simplicité et en sérénité dans la gestion de vos missions et de votre rémunération.",
         requires_data: false,
         status: 'ACTIVE',
         dataFields: {
@@ -339,7 +339,7 @@ async function main(): Promise<void> {
       data: {
         company_id: unitPortage.id,
         label: 'France Travail',
-        description: 'Gère l\'assurance chômage.',
+        description: "Gère l'assurance chômage.",
       },
     });
     const retraiteComplementaire = await prisma.organisme.create({
@@ -360,7 +360,8 @@ async function main(): Promise<void> {
       data: {
         company_id: unitPortage.id,
         label: 'RC Pro (Responsabilité civile professionnelle)',
-        description: 'Couvrir les risques liés à l\'activité du consultant (erreurs, litiges client).',
+        description:
+          "Couvrir les risques liés à l'activité du consultant (erreurs, litiges client).",
       },
     });
     // Create cotisations
@@ -370,7 +371,7 @@ async function main(): Promise<void> {
           organisme_id: urssafSecSoc.id,
           label: 'Maladie, maternité, invalidité, décès',
           description:
-            'Financement des soins de santé, arrêts maladie, maternité/paternité, indemnités en cas d\'invalidité ou décès.',
+            "Financement des soins de santé, arrêts maladie, maternité/paternité, indemnités en cas d'invalidité ou décès.",
           type: 'PATRONAL',
           pourcentage_salarial: 7,
         },
@@ -403,7 +404,7 @@ async function main(): Promise<void> {
           organisme_id: urssafSecSoc.id,
           label: 'Accident du travail',
           description:
-            'Financement des indemnités en cas d\'accidents professionnels ou maladies professionnelles.',
+            "Financement des indemnités en cas d'accidents professionnels ou maladies professionnelles.",
           type: 'PATRONAL',
           pourcentage_patronal: 0.9,
         },
@@ -432,15 +433,15 @@ async function main(): Promise<void> {
           organisme_id: franceTravail.id,
           label:
             'AGS (Association pour la Gestion du régime de garantie des créances des Salariés)',
-          description: 'Couvre les salaires impayés en cas de faillite de l\'employeur.',
+          description: "Couvre les salaires impayés en cas de faillite de l'employeur.",
           type: 'PATRONAL',
           pourcentage_patronal: 0.15,
         },
         {
           organisme_id: retraiteComplementaire.id,
-          label: 'Tranche 1 (jusqu\'à 1 PASS ~3 864 €/mois)',
+          label: "Tranche 1 (jusqu'à 1 PASS ~3 864 €/mois)",
           description:
-            'Retraite complémentaire pour les salaires jusqu\'à 1 PASS (Plafond Annuel de la Sécurité Sociale)',
+            "Retraite complémentaire pour les salaires jusqu'à 1 PASS (Plafond Annuel de la Sécurité Sociale)",
           type: 'DEUX',
           pourcentage_salarial: 3.15,
           pourcentage_patronal: 4.72,
@@ -456,9 +457,9 @@ async function main(): Promise<void> {
         },
         {
           organisme_id: retraiteComplementaire.id,
-          label: 'CEG (Contribution d\'Équilibre Général)',
+          label: "CEG (Contribution d'Équilibre Général)",
           description:
-            'Cotisation additionnelle pour assurer l\'équilibre financier du régime de retraite complémentaire.',
+            "Cotisation additionnelle pour assurer l'équilibre financier du régime de retraite complémentaire.",
           type: 'DEUX',
           pourcentage_salarial: 0.86,
           pourcentage_patronal: 1.29,
@@ -474,7 +475,7 @@ async function main(): Promise<void> {
         },
         {
           organisme_id: autresContributions.id,
-          label: 'FNAL (Fonds National d\'Aide au Logement)',
+          label: "FNAL (Fonds National d'Aide au Logement)",
           description: 'Financement des aides au logement pour les salariés.',
           type: 'PATRONAL',
           pourcentage_patronal: 0.1,
@@ -488,7 +489,7 @@ async function main(): Promise<void> {
         },
         {
           organisme_id: autresContributions.id,
-          label: 'Taxe d\'apprentissage',
+          label: "Taxe d'apprentissage",
           description: 'Financement des formations technologiques et professionnelles.',
           type: 'PATRONAL',
           pourcentage_patronal: 0.68,
@@ -512,7 +513,7 @@ async function main(): Promise<void> {
           organisme_id: rcPro.id,
           label: 'RC Pro (Responsabilité civile professionnelle)',
           description:
-            'Couvrir les risques liés à l\'activité du consultant (erreurs, litiges client).',
+            "Couvrir les risques liés à l'activité du consultant (erreurs, litiges client).",
           type: 'PATRONAL',
           pourcentage_patronal: 0,
         },

@@ -239,49 +239,49 @@ const CompanyDemandes = ({
                       </span>
                     </td>
                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        <div className="flex items-center space-x-3.5">
-                          {/* Archiver/Decliner Button */}
-                          <button
-                            className="group hover:bg-red-50 p-1.5 rounded-full transition-colors dark:hover:bg-red-900/20"
-                            title="Archiver / Décliner l'offre"
+                      <div className="flex items-center space-x-3.5">
+                        {/* Archiver/Decliner Button */}
+                        <button
+                          className="group hover:bg-red-50 p-1.5 rounded-full transition-colors dark:hover:bg-red-900/20"
+                          title="Archiver / Décliner l'offre"
+                        >
+                          <svg
+                            className="w-5 h-5 text-gray-500 group-hover:text-red-600 transition-colors"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
                           >
-                            <svg
-                              className="w-5 h-5 text-gray-500 group-hover:text-red-600 transition-colors"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                              />
-                            </svg>
-                          </button>
-                          {/* Reply Button */}
-                          <button
-                            className="group hover:bg-blue-50 p-1.5 rounded-full transition-colors dark:hover:bg-blue-900/20"
-                            title="Répondre à la demande"
-                            onClick={() => setResponseRequestId(demandeItem.id)}
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                        {/* Reply Button */}
+                        <button
+                          className="group hover:bg-blue-50 p-1.5 rounded-full transition-colors dark:hover:bg-blue-900/20"
+                          title="Répondre à la demande"
+                          onClick={() => setResponseRequestId(demandeItem.id)}
+                        >
+                          <svg
+                            className="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
                           >
-                            <svg
-                              className="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                              />
-                            </svg>
-                          </button>
-                        </div>
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                            />
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

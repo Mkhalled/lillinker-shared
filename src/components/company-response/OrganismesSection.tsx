@@ -58,7 +58,9 @@ const OrganismesSection: React.FC<OrganismesSectionProps> = ({
                           <StyledCheckbox
                             id={`organisme-${organisme.id}`}
                             checked={isSelected}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onOrganismeChange(organisme.id)(e)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                              onOrganismeChange(organisme.id)(e)
+                            }
                             label={organisme.label}
                             size="md"
                             className="flex-shrink-0"

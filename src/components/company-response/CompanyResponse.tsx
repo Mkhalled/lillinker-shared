@@ -203,10 +203,12 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
             };
           }
         );
-        
+
         // Initialize all organismes as selected by default
-        const allOrganismeIds = combinedData.organismes.map((organisme: { id: number }) => organisme.id);
-        
+        const allOrganismeIds = combinedData.organismes.map(
+          (organisme: { id: number }) => organisme.id
+        );
+
         setResponses(initialResponses);
         setSelectedOrganismes(allOrganismeIds);
         setIsUpdating(false);
@@ -225,13 +227,13 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
     setResponses(prev => {
       // Ensure we have a valid response object for this service
       const existingResponse = prev[serviceId];
-      
+
       if (!existingResponse) {
         // Find the service in responseData to get the name
         const companyService = responseData?.company_services.find(
           cs => cs.service.id === serviceId
         );
-        
+
         const newResponse = {
           service_id: serviceId,
           service_name: companyService?.service.label || '',
@@ -240,19 +242,19 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           management_fee: 0,
           comment: '',
         };
-        
+
         const updated = {
           ...prev,
           [serviceId]: newResponse,
         };
         return updated;
       }
-      
+
       const updated = {
         ...prev,
-        [serviceId]: { 
-          ...existingResponse, 
-          is_available: isAvailable 
+        [serviceId]: {
+          ...existingResponse,
+          is_available: isAvailable,
         },
       };
       return updated;
@@ -265,10 +267,10 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
       if (!existingResponse) {
         return prev;
       }
-      
+
       const parsedFee = Number.parseFloat(fee);
       const managementFee = isNaN(parsedFee) ? 0 : parsedFee;
-      
+
       return {
         ...prev,
         [serviceId]: { ...existingResponse, management_fee: managementFee },
@@ -282,7 +284,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
       if (!existingResponse) {
         return prev;
       }
-      
+
       return {
         ...prev,
         [serviceId]: { ...existingResponse, comment },
@@ -319,10 +321,16 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         pourcentage_patronal?: number | null;
         pourcentage_salarial?: number | null;
       }) => {
-        if (cotisation.pourcentage_patronal !== null && cotisation.pourcentage_patronal !== undefined) {
+        if (
+          cotisation.pourcentage_patronal !== null &&
+          cotisation.pourcentage_patronal !== undefined
+        ) {
           totalPatronal += Number.parseFloat(cotisation.pourcentage_patronal.toString()) || 0;
         }
-        if (cotisation.pourcentage_salarial !== null && cotisation.pourcentage_salarial !== undefined) {
+        if (
+          cotisation.pourcentage_salarial !== null &&
+          cotisation.pourcentage_salarial !== undefined
+        ) {
           totalSalarial += Number.parseFloat(cotisation.pourcentage_salarial.toString()) || 0;
         }
       }

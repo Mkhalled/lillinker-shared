@@ -63,7 +63,9 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
     management_min: company?.management_min || '',
     management_max: company?.management_max || '',
     is_portage: company?.is_portage || false,
-    date_creation: company?.date_creation ? new Date(company.date_creation).toISOString().split('T')[0] : '',
+    date_creation: company?.date_creation
+      ? new Date(company.date_creation).toISOString().split('T')[0]
+      : '',
     chiffre_affaires: company?.chiffre_affaires || '',
     adresse: company?.adresse || '',
     site_web: company?.site_web || '',
@@ -88,7 +90,9 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
   // Initialize selected portages from company data (using same logic as onboarding)
   useEffect(() => {
     if (company?.labels && Array.isArray(company.labels)) {
-      const portageIds = company.labels.map((label: CompanyLabel) => label.label_syndicat_id.toString());
+      const portageIds = company.labels.map((label: CompanyLabel) =>
+        label.label_syndicat_id.toString()
+      );
       setSelectedPortages(portageIds);
     }
   }, [company]);
@@ -121,7 +125,9 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
     togglePortageSelection(portageId);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
@@ -157,14 +163,14 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
       if (response.ok) {
         onMessage?.({
           type: 'success',
-          text: 'Informations de l\'entreprise mises à jour avec succès',
+          text: "Informations de l'entreprise mises à jour avec succès",
         });
         setIsEditing(false);
         onUpdate?.();
       } else {
         onMessage?.({
           type: 'error',
-          text: data.error || 'Erreur lors de la mise à jour des informations de l\'entreprise',
+          text: data.error || "Erreur lors de la mise à jour des informations de l'entreprise",
         });
       }
     } catch (error) {
@@ -187,7 +193,9 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
       management_min: company?.management_min || '',
       management_max: company?.management_max || '',
       is_portage: company?.is_portage || false,
-      date_creation: company?.date_creation ? new Date(company.date_creation).toISOString().split('T')[0] : '',
+      date_creation: company?.date_creation
+        ? new Date(company.date_creation).toISOString().split('T')[0]
+        : '',
       chiffre_affaires: company?.chiffre_affaires || '',
       adresse: company?.adresse || '',
       site_web: company?.site_web || '',
@@ -196,7 +204,9 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
     });
     // Reset selected portages
     if (company?.labels && Array.isArray(company.labels)) {
-      const portageIds = company.labels.map((label: CompanyLabel) => label.label_syndicat_id.toString());
+      const portageIds = company.labels.map((label: CompanyLabel) =>
+        label.label_syndicat_id.toString()
+      );
       setSelectedPortages(portageIds);
     } else {
       setSelectedPortages([]);
@@ -499,12 +509,12 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {labelPortages.map((label) => (
+                  {labelPortages.map(label => (
                     <div
                       key={label.id}
                       className={`p-3 border rounded-lg transition-all duration-200 ${
-                        selectedPortages.includes(label.id.toString()) 
-                          ? 'border-[var(--primary-color)] bg-blue-50' 
+                        selectedPortages.includes(label.id.toString())
+                          ? 'border-[var(--primary-color)] bg-blue-50'
                           : 'border-stroke'
                       }`}
                     >

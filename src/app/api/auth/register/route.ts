@@ -33,41 +33,44 @@ export async function POST(request: NextRequest) {
     });
 
     // Registration with transaction and email verification
-    const result = await prisma.$transaction(async (tx) => {
-      const { user } = await AuthService.createUser(validatedData, tx);
-      
-      logger.debug('User created in transaction', {
-        ...logContext,
-        userId: user.id,
-        email: user.email,
-      });
+    const result = await prisma.$transaction(
+      async tx => {
+        const { user } = await AuthService.createUser(validatedData, tx);
 
-      // Try to send email within transaction
-      try {
-        await AuthService.sendVerificationEmail(user.id, tx);
-        
-        logger.debug('Verification email sent successfully in transaction', {
+        logger.debug('User created in transaction', {
           ...logContext,
           userId: user.id,
           email: user.email,
         });
-        
-        return { user, emailSent: true, emailError: null };
-      } catch (emailError) {
-        logger.warn('Email failed during transaction, but keeping user', emailError as Error, {
-          ...logContext,
-          userId: user.id,
-          email: user.email,
-        });
-        
-        // Don't throw - handle gracefully by returning the error
-        return { user, emailSent: false, emailError: emailError as Error };
+
+        // Try to send email within transaction
+        try {
+          await AuthService.sendVerificationEmail(user.id, tx);
+
+          logger.debug('Verification email sent successfully in transaction', {
+            ...logContext,
+            userId: user.id,
+            email: user.email,
+          });
+
+          return { user, emailSent: true, emailError: null };
+        } catch (emailError) {
+          logger.warn('Email failed during transaction, but keeping user', emailError as Error, {
+            ...logContext,
+            userId: user.id,
+            email: user.email,
+          });
+
+          // Don't throw - handle gracefully by returning the error
+          return { user, emailSent: false, emailError: emailError as Error };
+        }
+      },
+      {
+        // Transaction options
+        maxWait: 10000,
+        timeout: 30000,
       }
-    }, {
-      // Transaction options
-      maxWait: 10000, 
-      timeout: 30000,
-    });
+    );
 
     // Handle email retry outside transaction if needed
     if (!result.emailSent) {
@@ -86,7 +89,7 @@ export async function POST(request: NextRequest) {
       const attemptRetry = async () => {
         try {
           await AuthService.sendVerificationEmail(result.user.id, prisma);
-          logger.info('Email sent successfully on retry', { 
+          logger.info('Email sent successfully on retry', {
             ...logContext,
             userId: result.user.id,
             email: result.user.email,
@@ -138,20 +141,23 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: result.emailSent 
+      message: result.emailSent
         ? 'Registration completed successfully. Please check your email for verification.'
         : 'Registration completed successfully. Verification email will be sent shortly (retry in progress).',
       userId: result.user.id,
       role: result.user.role,
       emailSent: result.emailSent,
-      ...(result.emailSent ? {} : {
-        emailRetry: true,
-        emailRetryMessage: 'Un problème temporaire a empêché l\'envoi immédiat de l\'email. Nous réessayons automatiquement. Si vous ne recevez pas d\'email dans les 5 minutes, vous pourrez demander un nouveau lien de vérification.',
-        retryInfo: {
-          maxRetries: 3,
-          retryDelays: [2, 4, 8], // seconds
-        }
-      })
+      ...(result.emailSent
+        ? {}
+        : {
+            emailRetry: true,
+            emailRetryMessage:
+              "Un problème temporaire a empêché l'envoi immédiat de l'email. Nous réessayons automatiquement. Si vous ne recevez pas d'email dans les 5 minutes, vous pourrez demander un nouveau lien de vérification.",
+            retryInfo: {
+              maxRetries: 3,
+              retryDelays: [2, 4, 8], // seconds
+            },
+          }),
     });
   } catch (error) {
     logger.error('Registration API failed', error as Error, logContext);

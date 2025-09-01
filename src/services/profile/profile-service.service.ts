@@ -35,21 +35,25 @@ export class ProfileService {
   /**
    * Update company information
    */
-  static async updateCompanyInfo(userId: number, data: Prisma.CompanyUpdateInput, selectedLabels?: number[]) {
+  static async updateCompanyInfo(
+    userId: number,
+    data: Prisma.CompanyUpdateInput,
+    selectedLabels?: number[]
+  ) {
     // First find the company by admin user id
     const company = await CompanyDAO.findByUserId(userId);
     if (!company) {
       throw new Error('Company not found');
     }
-    
+
     // Update company basic information
     const updatedCompany = await CompanyDAO.update(company.id, data);
-    
+
     // Update labels using the existing addCompanyLabel method (which deletes old and adds new)
     if (selectedLabels !== undefined) {
       await CompanyDAO.addCompanyLabel(company.id, selectedLabels);
     }
-    
+
     return updatedCompany;
   }
 
@@ -62,7 +66,7 @@ export class ProfileService {
     if (!freelance) {
       throw new Error('Freelance not found');
     }
-    
+
     return FreelanceDao.update(userId, data);
   }
 }

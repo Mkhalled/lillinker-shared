@@ -82,19 +82,19 @@ export const useCompanyValidation = (
       case 7: {
         // Services step
         const hasSelectedServices = formData.selectedPlatformServices.length > 0;
-        const hasValidNewServices = (formData.newServices as NewServiceData[]).some((service) => {
+        const hasValidNewServices = (formData.newServices as NewServiceData[]).some(service => {
           if (!service.service_label || service.service_label.trim() === '') return false;
 
           if (service.requires_data) {
             const dataFields = service.dataFields || [];
             return (
               dataFields.length > 0 &&
-              dataFields.every((field) => {
+              dataFields.every(field => {
                 return (
                   field.label &&
                   field.label.trim() !== '' &&
                   // RADIO/SELECT require at least 2 choices
-                  (field.data_type !== 'RADIO' && field.data_type !== 'SELECT' ||
+                  ((field.data_type !== 'RADIO' && field.data_type !== 'SELECT') ||
                     (field.choices && field.choices.filter(c => c.trim() !== '').length >= 2))
                 );
               })

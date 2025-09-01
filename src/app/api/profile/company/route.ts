@@ -38,14 +38,14 @@ export async function PATCH(request: NextRequest) {
     // Validate required fields
     if (!name || consultant_count === undefined) {
       return NextResponse.json(
-        { error: 'Nom de l\'entreprise et nombre de consultants sont obligatoires' },
+        { error: "Nom de l'entreprise et nombre de consultants sont obligatoires" },
         { status: 400 }
       );
     }
 
     // Update company information
     const updatedCompany = await ProfileService.updateCompanyInfo(
-      Number(session.user.id), 
+      Number(session.user.id),
       {
         name,
         description,
@@ -65,13 +65,13 @@ export async function PATCH(request: NextRequest) {
     );
 
     return NextResponse.json({
-      message: 'Informations de l\'entreprise mises à jour avec succès',
+      message: "Informations de l'entreprise mises à jour avec succès",
       company: updatedCompany,
     });
   } catch (error) {
     console.error('Error updating company info:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de la mise à jour des informations de l\'entreprise' },
+      { error: "Erreur lors de la mise à jour des informations de l'entreprise" },
       { status: 500 }
     );
   }

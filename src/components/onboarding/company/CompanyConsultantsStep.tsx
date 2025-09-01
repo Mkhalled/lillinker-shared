@@ -25,9 +25,7 @@ export const CompanyConsultantsStep = ({
         required
       />
       <div className="space-y-2">
-        <span className="text-sm font-medium text-gray-700">
-          Taux de frais de gestion (%)
-        </span>
+        <span className="text-sm font-medium text-gray-700">Taux de frais de gestion (%)</span>
         <div className="flex space-x-4">
           <InputField
             id="managementFeeRateMin"

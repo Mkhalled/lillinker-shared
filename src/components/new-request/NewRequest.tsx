@@ -77,7 +77,7 @@ const NewRequest = ({ onClose }: NewRequestProps) => {
 
       case 3:
         return <FreelanceTjmStep formData={formData} setFormData={setFormData} />;
-        
+
       case 4:
         return (
           <FreelanceServicesStep

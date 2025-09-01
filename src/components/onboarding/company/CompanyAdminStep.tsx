@@ -23,18 +23,9 @@ export const CompanyAdminStep = ({
 
   // Check overall form validity
   useEffect(() => {
-    const isFormValid = Boolean(
-      formData.adminFirstName &&
-        formData.adminLastName &&
-        isEmailValid
-    );
+    const isFormValid = Boolean(formData.adminFirstName && formData.adminLastName && isEmailValid);
     onValidityChange?.(isFormValid);
-  }, [
-    formData.adminFirstName,
-    formData.adminLastName,
-    isEmailValid,
-    onValidityChange,
-  ]);
+  }, [formData.adminFirstName, formData.adminLastName, isEmailValid, onValidityChange]);
 
   return (
     <div className="space-y-4 sm:space-y-6">

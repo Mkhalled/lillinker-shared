@@ -6,7 +6,7 @@ export class PlatformDAO {
       where: {
         status: 'ACTIVE',
       },
-      include: {dataFields:true},
+      include: { dataFields: true },
       orderBy: {
         label: 'asc',
       },
@@ -35,12 +35,13 @@ export class PlatformDAO {
         requires_data: serviceData.requires_data,
         status: 'PENDING',
         dataFields: {
-          create: serviceData.dataFields?.map(field => ({
-            label: field.label,
-            description: field.description || null,
-            data_type: field.data_type,
-            choices: field.choices !== undefined ? field.choices : undefined, // Ensure choices is JSON-compatible
-          })) || [],
+          create:
+            serviceData.dataFields?.map(field => ({
+              label: field.label,
+              description: field.description || null,
+              data_type: field.data_type,
+              choices: field.choices !== undefined ? field.choices : undefined, // Ensure choices is JSON-compatible
+            })) || [],
         },
       },
     });

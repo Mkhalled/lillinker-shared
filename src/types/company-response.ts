@@ -8,7 +8,7 @@ export interface CompanyResponse {
   id: number;
   request_id: number;
   company_id: number;
-  response_data: CompanyResponseContent; 
+  response_data: CompanyResponseContent;
   created_at: Date;
   updated_at: Date;
 }
@@ -44,7 +44,7 @@ export interface SelectedOrganisme {
   total_salarial: number;
 }
 
-// Keep legacy ServiceResponse for compatibility 
+// Keep legacy ServiceResponse for compatibility
 export interface ServiceResponse {
   service_id: number;
   service_name: string;

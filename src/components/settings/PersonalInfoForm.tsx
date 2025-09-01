@@ -49,11 +49,11 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
   const user = profile.user;
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  
+
   // Secteur activities state
   const [secteurActivites, setSecteurActivites] = useState<SecteurActivite[]>([]);
   const [loadingSecteurs, setLoadingSecteurs] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     first_name: user?.first_name || '',
@@ -64,8 +64,10 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
 
   // Freelance-specific form state
   const [freelanceData, setFreelanceData] = useState({
-    secteur_activite_id: user?.role === 'FREELANCE' ? 
-      (profile.roleData as FreelanceRoleData)?.secteur_activite_id || '' : ''
+    secteur_activite_id:
+      user?.role === 'FREELANCE'
+        ? (profile.roleData as FreelanceRoleData)?.secteur_activite_id || ''
+        : '',
   });
 
   // Fetch secteur activities when component mounts or when editing starts
@@ -117,7 +119,9 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
 
       if (!userResponse.ok) {
         const userData = await userResponse.json();
-        throw new Error(userData.error || 'Erreur lors de la mise à jour des informations utilisateur');
+        throw new Error(
+          userData.error || 'Erreur lors de la mise à jour des informations utilisateur'
+        );
       }
 
       // If user is freelance and secteur_activite_id has changed, update freelance info
@@ -132,7 +136,9 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
 
         if (!freelanceResponse.ok) {
           const freelanceResponseData = await freelanceResponse.json();
-          throw new Error(freelanceResponseData.error || 'Erreur lors de la mise à jour du secteur d\'activité');
+          throw new Error(
+            freelanceResponseData.error || "Erreur lors de la mise à jour du secteur d'activité"
+          );
         }
       }
 
@@ -161,8 +167,10 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
       sex: user?.sex || '',
     });
     setFreelanceData({
-      secteur_activite_id: user?.role === 'FREELANCE' ? 
-        (profile.roleData as FreelanceRoleData)?.secteur_activite_id || '' : ''
+      secteur_activite_id:
+        user?.role === 'FREELANCE'
+          ? (profile.roleData as FreelanceRoleData)?.secteur_activite_id || ''
+          : '',
     });
     setIsEditing(false);
     onMessage?.(null);
@@ -296,11 +304,14 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
           {/* Additional user information */}
           <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
             <div className="w-full sm:w-1/2">
-              <label htmlFor='role' className="mb-3 block text-sm font-medium text-black dark:text-white">
+              <label
+                htmlFor="role"
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+              >
                 Rôle
               </label>
               <input
-              id='role'
+                id="role"
                 className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
                 type="text"
                 value={user?.role || ''}
@@ -308,11 +319,14 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
               />
             </div>
             <div className="w-full sm:w-1/2">
-              <label htmlFor='status' className="mb-3 block text-sm font-medium text-black dark:text-white">
+              <label
+                htmlFor="status"
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+              >
                 Statut du compte
               </label>
               <input
-              id='status'
+                id="status"
                 className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
                 type="text"
                 value={user?.status ? 'Actif' : 'Inactif'}
@@ -324,12 +338,15 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
           {/* Show secteur d'activité for freelancers */}
           {user?.role === 'FREELANCE' && profile.roleData && (
             <div className="mb-5.5">
-              <label htmlFor='secteur_activite_id' className="mb-3 block text-sm font-medium text-black dark:text-white">
+              <label
+                htmlFor="secteur_activite_id"
+                className="mb-3 block text-sm font-medium text-black dark:text-white"
+              >
                 Secteur d&apos;activité *
               </label>
               {isEditing ? (
                 <select
-                id='secteur_activite_id'
+                  id="secteur_activite_id"
                   className="w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] bg-white dark:bg-meta-4"
                   name="secteur_activite_id"
                   value={freelanceData.secteur_activite_id}
@@ -338,7 +355,7 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
                   required
                 >
                   <option value="">Sélectionner un secteur d&apos;activité</option>
-                  {secteurActivites.map((secteur) => (
+                  {secteurActivites.map(secteur => (
                     <option key={secteur.id} value={secteur.id}>
                       {secteur.name}
                     </option>
@@ -348,7 +365,9 @@ const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProp
                 <input
                   className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
                   type="text"
-                  value={(profile.roleData as FreelanceRoleData)?.secteurActivite?.name || 'Non défini'}
+                  value={
+                    (profile.roleData as FreelanceRoleData)?.secteurActivite?.name || 'Non défini'
+                  }
                   readOnly
                 />
               )}
