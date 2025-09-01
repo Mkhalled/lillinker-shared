@@ -18,6 +18,13 @@ export class CompanyDAO {
   static async findByUserId(id: number) {
     return prisma.company.findUnique({
       where: { admin_user_id: id },
+      include: {
+        labels: {
+          include: {
+            labelSyndicat: true,
+          },
+        },
+      },
     });
   }
 
@@ -62,11 +69,22 @@ export class CompanyDAO {
     });
   }
   static async addCompanyLabel(companyId: number, portageIds: number[]) {
-    return prisma.companyLabel.createMany({
-      data: portageIds.map(portageId => ({
-        company_id: companyId,
-        label_syndicat_id: portageId,
-      })),
+    // Use transaction to ensure atomicity - delete old labels and add new ones
+    return prisma.$transaction(async (tx) => {
+      // Delete existing labels first
+      await tx.companyLabel.deleteMany({
+        where: { company_id: companyId },
+      });
+      
+      // Add new labels if any
+      if (portageIds.length > 0) {
+        await tx.companyLabel.createMany({
+          data: portageIds.map(portageId => ({
+            company_id: companyId,
+            label_syndicat_id: portageId,
+          })),
+        });
+      }
     });
   }
 

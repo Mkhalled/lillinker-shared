@@ -44,12 +44,9 @@ export class ProfileService {
     // Update company basic information
     const updatedCompany = await CompanyDAO.update(company.id, data);
     
-    // Update labels if company is portage and selectedLabels is provided
-    if (data.is_portage && selectedLabels !== undefined) {
-      await CompanyDAO.replaceCompanyLabels(company.id, selectedLabels);
-    } else if (!data.is_portage) {
-      // If no longer a portage company, remove all labels
-      await CompanyDAO.deleteCompanyLabels(company.id);
+    // Update labels using the existing addCompanyLabel method (which deletes old and adds new)
+    if (selectedLabels !== undefined) {
+      await CompanyDAO.addCompanyLabel(company.id, selectedLabels);
     }
     
     return updatedCompany;

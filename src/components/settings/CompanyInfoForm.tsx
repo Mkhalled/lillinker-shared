@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { ProfileData } from '@/types/company';
+import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 
 interface LabelPortage {
   id: number;
@@ -22,10 +23,10 @@ const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
     text: string;
   } | null>(null);
 
-  // Label portages state
+  // Label portages state (using same logic as onboarding)
   const [labelPortages, setLabelPortages] = useState<LabelPortage[]>([]);
   const [loadingLabels, setLoadingLabels] = useState(false);
-  const [selectedLabels, setSelectedLabels] = useState<number[]>([]);
+  const [selectedPortages, setSelectedPortages] = useState<string[]>([]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -46,15 +47,23 @@ const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
 
   // Fetch label portages when component mounts or when is_portage changes to true
   useEffect(() => {
-    if (formData.is_portage && labelPortages.length === 0) {
+    if (formData.is_portage) {
       fetchLabelPortages();
     }
   }, [formData.is_portage]);
 
-  // Initialize selected labels from company data
+  // Fetch labels on component mount if company is already a portage company
+  useEffect(() => {
+    if (company?.is_portage) {
+      fetchLabelPortages();
+    }
+  }, []);
+
+  // Initialize selected portages from company data (using same logic as onboarding)
   useEffect(() => {
     if (company?.labels && Array.isArray(company.labels)) {
-      setSelectedLabels(company.labels.map((label: any) => label.label_syndicat_id || label.id));
+      const portageIds = company.labels.map((label: any) => label.label_syndicat_id.toString());
+      setSelectedPortages(portageIds);
     }
   }, [company]);
 
@@ -73,12 +82,17 @@ const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
     }
   };
 
-  const toggleLabelSelection = (labelId: number) => {
-    setSelectedLabels(prev => 
-      prev.includes(labelId) 
-        ? prev.filter(id => id !== labelId)
-        : [...prev, labelId]
-    );
+  const togglePortageSelection = (portageId: number) => {
+    const portageIdStr = portageId.toString();
+    const newSelectedPortages = selectedPortages.includes(portageIdStr)
+      ? selectedPortages.filter((id: string) => id !== portageIdStr)
+      : [...selectedPortages, portageIdStr];
+
+    setSelectedPortages(newSelectedPortages);
+  };
+
+  const handlePortageChange = (portageId: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    togglePortageSelection(portageId);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -100,8 +114,8 @@ const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
       // Prepare the data to send
       const submitData = {
         ...formData,
-        // Include selected labels if the company is a portage company
-        ...(formData.is_portage && { selected_labels: selectedLabels }),
+        // Include selected portages if the company is a portage company (convert strings to numbers)
+        ...(formData.is_portage && { selected_labels: selectedPortages.map(id => parseInt(id)) }),
       };
 
       const response = await fetch('/api/profile/company', {
@@ -154,11 +168,12 @@ const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
       convention_collective: company?.convention_collective || '',
       code_naf_ape: company?.code_naf_ape || '',
     });
-    // Reset selected labels
+    // Reset selected portages
     if (company?.labels && Array.isArray(company.labels)) {
-      setSelectedLabels(company.labels.map((label: any) => label.label_syndicat_id || label.id));
+      const portageIds = company.labels.map((label: any) => label.label_syndicat_id.toString());
+      setSelectedPortages(portageIds);
     } else {
-      setSelectedLabels([]);
+      setSelectedPortages([]);
     }
     setIsEditing(false);
     setMessage(null);
@@ -447,19 +462,13 @@ const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
           </div>
 
           <div className="mb-5.5">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="is_portage"
-                checked={formData.is_portage}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                className="mr-2"
-              />
-              <span className="text-sm font-medium text-black dark:text-white">
-                Société de portage salarial
-              </span>
-            </label>
+            <StyledCheckbox
+              name="is_portage"
+              checked={formData.is_portage}
+              onChange={handleInputChange}
+              disabled={!isEditing}
+              label="Société de portage salarial"
+            />
           </div>
 
           {/* Label Portages Selection - Only show if company is portage */}
@@ -478,37 +487,22 @@ const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
                     <div
                       key={label.id}
                       className={`p-3 border rounded-lg transition-all duration-200 ${
-                        isEditing ? 'hover:bg-gray-50' : ''
-                      } ${
-                        selectedLabels.includes(label.id) 
+                        selectedPortages.includes(label.id.toString()) 
                           ? 'border-[var(--primary-color)] bg-blue-50' 
                           : 'border-stroke'
                       }`}
                     >
-                      <label className="flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedLabels.includes(label.id)}
-                          onChange={() => toggleLabelSelection(label.id)}
-                          disabled={!isEditing}
-                          className="mr-3 h-4 w-4 text-[var(--primary-color)] border-gray-300 rounded focus:ring-[var(--primary-color)]"
-                        />
-                        <div className="flex-1">
-                          <span className="text-sm font-medium text-black dark:text-white">
-                            {label.name}
-                          </span>
-                          {label.description && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                              {label.description}
-                            </p>
-                          )}
-                        </div>
-                      </label>
+                      <StyledCheckbox
+                        checked={selectedPortages.includes(label.id.toString())}
+                        onChange={handlePortageChange(label.id)}
+                        disabled={!isEditing}
+                        label={label.name}
+                      />
                     </div>
                   ))}
                 </div>
               )}
-              {!isEditing && selectedLabels.length === 0 && labelPortages.length > 0 && (
+              {!isEditing && selectedPortages.length === 0 && labelPortages.length > 0 && (
                 <p className="text-sm text-gray-500 dark:text-gray-400 italic">
                   Aucun service de portage sélectionné
                 </p>
