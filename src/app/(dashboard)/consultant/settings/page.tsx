@@ -10,6 +10,10 @@ import { ProfileData } from '@/types/freelance';
 const Settings = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
   const fetchProfile = async () => {
     try {
@@ -33,6 +37,14 @@ const Settings = () => {
     fetchProfile();
   };
 
+  const handleMessage = (newMessage: { type: 'success' | 'error'; text: string } | null) => {
+    setMessage(newMessage);
+    // Auto clear success messages after 5 seconds
+    if (newMessage?.type === 'success') {
+      setTimeout(() => setMessage(null), 5000);
+    }
+  };
+
   if (loading) {
     return <Loader />;
   }
@@ -51,9 +63,28 @@ const Settings = () => {
   return (
     <div className="mx-auto max-w-270">
       <Breadcrumb pageName="Paramètres" />
+      
+      {message && (
+        <div className={`mb-6 p-4 rounded-lg border ${
+          message.type === 'success' 
+            ? 'bg-green-50 text-green-800 border-green-200' 
+            : 'bg-red-50 text-red-800 border-red-200'
+        }`}>
+          <div className="flex items-center justify-between">
+            <span>{message.text}</span>
+            <button
+              onClick={() => setMessage(null)}
+              className="ml-4 text-sm hover:opacity-70"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-6">
         <CollapsibleRow title="Informations personnelles" defaultOpen={true}>
-          <PersonalInfoForm profile={profile} onUpdate={handleProfileUpdate} />
+          <PersonalInfoForm profile={profile} onUpdate={handleProfileUpdate} onMessage={handleMessage} />
         </CollapsibleRow>
       </div>
     </div>

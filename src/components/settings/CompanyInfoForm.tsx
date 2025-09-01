@@ -12,16 +12,13 @@ interface LabelPortage {
 interface CompanyInfoFormProps {
   profile: ProfileData;
   onUpdate?: () => void;
+  onMessage?: (message: { type: 'success' | 'error'; text: string } | null) => void;
 }
 
-const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
+const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps) => {
   const company = profile.roleData as any; // Using any for broader access to company fields
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{
-    type: 'success' | 'error';
-    text: string;
-  } | null>(null);
 
   // Label portages state (using same logic as onboarding)
   const [labelPortages, setLabelPortages] = useState<LabelPortage[]>([]);
@@ -91,7 +88,7 @@ const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
     setSelectedPortages(newSelectedPortages);
   };
 
-  const handlePortageChange = (portageId: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePortageChange = (portageId: number) => (_e: React.ChangeEvent<HTMLInputElement>) => {
     togglePortageSelection(portageId);
   };
 
@@ -108,7 +105,7 @@ const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setMessage(null);
+    onMessage?.(null);
 
     try {
       // Prepare the data to send
@@ -129,20 +126,20 @@ const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({
+        onMessage?.({
           type: 'success',
           text: 'Informations de l\'entreprise mises à jour avec succès',
         });
         setIsEditing(false);
         onUpdate?.();
       } else {
-        setMessage({
+        onMessage?.({
           type: 'error',
           text: data.error || 'Erreur lors de la mise à jour des informations de l\'entreprise',
         });
       }
     } catch (error) {
-      setMessage({
+      onMessage?.({
         type: 'error',
         text: error instanceof Error ? error.message : 'Erreur de connexion lors de la mise à jour',
       });
@@ -176,22 +173,12 @@ const CompanyInfoForm = ({ profile, onUpdate }: CompanyInfoFormProps) => {
       setSelectedPortages([]);
     }
     setIsEditing(false);
-    setMessage(null);
+    onMessage?.(null);
   };
 
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="p-7">
-        {message && (
-          <div className={`mb-4 p-3 rounded ${
-            message.type === 'success' 
-              ? 'bg-green-100 text-green-700 border border-green-300' 
-              : 'bg-red-100 text-red-700 border border-red-300'
-          }`}>
-            {message.text}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit}>
           {/* Informations principales */}
           <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">

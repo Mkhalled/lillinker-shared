@@ -12,16 +12,13 @@ interface SecteurActivite {
 interface PersonalInfoFormProps {
   profile: company | freelance;
   onUpdate?: () => void;
+  onMessage?: (message: { type: 'success' | 'error'; text: string } | null) => void;
 }
 
-const PersonalInfoForm = ({ profile, onUpdate }: PersonalInfoFormProps) => {
+const PersonalInfoForm = ({ profile, onUpdate, onMessage }: PersonalInfoFormProps) => {
   const user = profile.user;
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{
-    type: 'success' | 'error';
-    text: string;
-  } | null>(null);
   
   // Secteur activities state
   const [secteurActivites, setSecteurActivites] = useState<SecteurActivite[]>([]);
@@ -76,7 +73,7 @@ const PersonalInfoForm = ({ profile, onUpdate }: PersonalInfoFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setMessage(null);
+    onMessage?.(null);
 
     try {
       // Update user information
@@ -109,14 +106,14 @@ const PersonalInfoForm = ({ profile, onUpdate }: PersonalInfoFormProps) => {
         }
       }
 
-      setMessage({
+      onMessage?.({
         type: 'success',
         text: 'Informations mises à jour avec succès',
       });
       setIsEditing(false);
       onUpdate?.();
     } catch (error) {
-      setMessage({
+      onMessage?.({
         type: 'error',
         text: error instanceof Error ? error.message : 'Erreur lors de la mise à jour',
       });
@@ -138,22 +135,12 @@ const PersonalInfoForm = ({ profile, onUpdate }: PersonalInfoFormProps) => {
         ((profile as any).roleData?.secteur_activite_id || '') : ''
     });
     setIsEditing(false);
-    setMessage(null);
+    onMessage?.(null);
   };
 
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="p-7">
-        {message && (
-          <div className={`mb-4 p-3 rounded ${
-            message.type === 'success' 
-              ? 'bg-green-100 text-green-700 border border-green-300' 
-              : 'bg-red-100 text-red-700 border border-red-300'
-          }`}>
-            {message.text}
-          </div>
-        )}
-        
         <form onSubmit={handleSubmit}>
           {/* Informations de base */}
           <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
