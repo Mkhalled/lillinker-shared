@@ -139,17 +139,6 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
           <h4 className="text-xl font-semibold text-black dark:text-white">
             Mes Réponses ({totalResponses})
           </h4>
-          {requestData && (
-            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 sm:mt-0">
-              <span className="font-medium">Chiffre d&apos;Affaires:</span>{' '}
-              <span className="font-semibold text-blue-600 dark:text-blue-400">
-                {(
-                  (parseInt(requestData.tjm) || 0) * (parseInt(requestData.days) || 0)
-                ).toLocaleString('fr-FR')}{' '}
-                €
-              </span>
-            </div>
-          )}
         </div>
         <button className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-6 xl:px-8">
           <svg
