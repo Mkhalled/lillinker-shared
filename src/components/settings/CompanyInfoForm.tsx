@@ -275,16 +275,13 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
                 SIRET
               </label>
               <input
-                className={`w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:text-white dark:focus:border-[var(--primary-color)] ${
-                  isEditing ? 'bg-white dark:bg-meta-4' : 'bg-gray dark:bg-meta-4'
-                }`}
+                className={`w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-[var(--primary-color)] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[var(--primary-color)]`}
                 type="text"
                 name="siret"
                 id="siret"
                 placeholder="Numéro SIRET"
                 value={formData.siret}
-                onChange={handleInputChange}
-                readOnly={!isEditing}
+                readOnly
               />
             </div>
             <div className="w-full sm:w-1/2">
