@@ -82,7 +82,7 @@ export class CompanyResponseDAO {
           service_name: service.service_name,
           service_description: service.service_description,
           is_available: service.is_available,
-          management_fee: service.management_fee,
+          charge_pro: service.charge_pro,
           comment: service.comment || '',
         }));
 
@@ -189,7 +189,7 @@ export class CompanyResponseDAO {
           service_name: service.service_name,
           service_description: service.service_description,
           is_available: service.is_available,
-          management_fee: service.management_fee,
+          charge_pro: service.charge_pro,
           comment: service.comment || '',
         }));
 

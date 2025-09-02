@@ -53,15 +53,14 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
         0
       ) || 0;
     const totalSalarialAmount = (chiffreAffaires * totalSalarialPercent) / 100;
-    const totalChargesProPercent =
-      response.response_data.services?.reduce((sum, service) => sum + service.management_fee, 0) ||
+    const totalChargesProAmount =
+      response.response_data.services?.reduce((sum, service) => sum + service.charge_pro, 0) ||
       0;
-    const totalChargesProAmount = (chiffreAffaires * totalChargesProPercent) / 100;
     const restChiffreAffaires =
       chiffreAffaires -
       fraisGestionAmount -
-      totalChargesProAmount -
-      (totalPatronalAmount + totalSalarialAmount);
+      (totalPatronalAmount + totalSalarialAmount) +
+      totalChargesProAmount;
     const percentageRecu = chiffreAffaires > 0 ? (restChiffreAffaires / chiffreAffaires) * 100 : 0;
 
     return {
@@ -69,7 +68,6 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
       fraisGestionPercent,
       totalPatronalPercent,
       totalSalarialPercent,
-      totalChargesProPercent,
       fraisGestionAmount,
       totalPatronalAmount,
       totalSalarialAmount,

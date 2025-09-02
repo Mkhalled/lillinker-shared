@@ -25,7 +25,7 @@ export interface ServiceResponseData {
   service_name: string;
   service_description?: string;
   is_available: boolean;
-  management_fee: number;
+  charge_pro: number;
   comment?: string;
 }
 
@@ -50,7 +50,7 @@ export interface ServiceResponse {
   service_name: string;
   service_description: string;
   is_available: boolean;
-  management_fee: number;
+  charge_pro: number;
   comment: string;
   requirements?: Record<string, unknown>;
 }

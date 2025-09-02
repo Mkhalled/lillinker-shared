@@ -169,7 +169,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
               service_name: service.service_name,
               service_description: service.service_description || '',
               is_available: service.is_available,
-              management_fee: service.management_fee ?? 0,
+              charge_pro: service.charge_pro ?? 0,
               comment: service.comment || '',
             };
           });
@@ -193,7 +193,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
                 service_name: service.service.label,
                 service_description: service.service.description || '',
                 is_available: false,
-                management_fee: 0,
+                charge_pro: 0,
                 comment: '',
               };
             }
@@ -212,7 +212,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
               service_name: service.service.label,
               service_description: service.service.description || '',
               is_available: false, // Start unchecked - company decides what to offer
-              management_fee: 0, // Default fee
+              charge_pro: 0, // Default fee
               comment: '',
             };
           }
@@ -253,7 +253,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           service_name: companyService?.service.label || '',
           service_description: companyService?.service.description || '',
           is_available: isAvailable,
-          management_fee: 0,
+          charge_pro: 0,
           comment: '',
         };
 
@@ -287,7 +287,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
 
       return {
         ...prev,
-        [serviceId]: { ...existingResponse, management_fee: managementFee },
+        [serviceId]: { ...existingResponse, charge_pro: managementFee },
       };
     });
   };

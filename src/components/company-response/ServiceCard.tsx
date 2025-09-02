@@ -39,9 +39,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   // Extract relevant response data for this specific service from the ServiceResponse
   // Provide fallback values if response is undefined
   const isServiceAvailable = response?.is_available || false;
-  const managementFee =
-    response?.management_fee !== undefined && response?.management_fee !== null
-      ? String(response.management_fee)
+  const chargePro =
+    response?.charge_pro !== undefined && response?.charge_pro !== null
+      ? String(response.charge_pro)
       : '';
   const comment = response?.comment || '';
 
@@ -340,7 +340,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             <div className="w-20">
               <InputField
                 type="number"
-                value={managementFee}
+                value={chargePro}
                 onChange={e => onFeeChange(service.service.id, e.target.value)} // Use service.service.id
                 placeholder="150"
                 className="text-center text-xs"
