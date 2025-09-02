@@ -3,7 +3,6 @@ import type React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
 import InputField from '@/components/form/input/InputField';
-import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 import SimpleModal from '@/components/modals/SimpleModal';
 import type {
   CompanyResponseData,
@@ -41,9 +40,9 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
   });
   const [modalLoading, setModalLoading] = useState(false);
 
-  // State for manual management fee
-  const [manualFee, setManualFee] = useState(false);
-  const [manualFeeValue, setManualFeeValue] = useState('');
+  // State for management fee
+  const [managementFeeValue, setManagementFeeValue] = useState('');
+  const [managementFeeError, setManagementFeeError] = useState('');
 
   const showModal = (
     type: 'success' | 'error' | 'info',
@@ -90,6 +89,33 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
   const closeModal = () => {
     setModal({ isOpen: false, type: 'info', title: '', message: '' });
   };
+
+  // Simple validation function
+  const isFormValid = managementFeeValue.trim() !== '' && !managementFeeError;
+
+  // Fetch default management fee once
+  useEffect(() => {
+    const fetchDefaultFee = async () => {
+      try {
+        const response = await fetch('/api/profile');
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Company profile data:', data); // Debug log
+
+          // Set default management fee if we have management_min
+          if (data.roleData?.management_min) {
+            setManagementFeeValue(prev =>
+              prev === '' ? String(data.roleData.management_min) : prev
+            );
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching company data:', error);
+      }
+    };
+
+    fetchDefaultFee();
+  }, []); // Run only once on mount
   // fetch data
   const fetchResponseData = useCallback(async () => {
     try {
@@ -128,23 +154,11 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         const existingResp = data.existing_response;
         const responseData = existingResp.response_data;
 
-        // Pre-populate manual management fee if present
-        if (existingResp.frais_de_gestion) {
-          setManualFee(!!existingResp.frais_de_gestion.manual);
-          setManualFeeValue(
-            existingResp.frais_de_gestion.value !== undefined &&
-              existingResp.frais_de_gestion.value !== null
-              ? String(existingResp.frais_de_gestion.value)
-              : ''
-          );
-        } else if (responseData?.frais_de_gestion) {
-          setManualFee(!!responseData.frais_de_gestion.manual);
-          setManualFeeValue(
-            responseData.frais_de_gestion.value !== undefined &&
-              responseData.frais_de_gestion.value !== null
-              ? String(responseData.frais_de_gestion.value)
-              : ''
-          );
+        // Pre-populate management fee if present in existing response
+        if (existingResp.frais_de_gestion && existingResp.frais_de_gestion.value !== null) {
+          setManagementFeeValue(String(existingResp.frais_de_gestion.value));
+        } else if (responseData?.frais_de_gestion && responseData.frais_de_gestion.value !== null) {
+          setManagementFeeValue(String(responseData.frais_de_gestion.value));
         }
 
         // Process services from response_data
@@ -341,6 +355,18 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
 
   const handleSubmit = async () => {
     try {
+      // Simple validation - just check if value exists
+      if (!managementFeeValue.trim()) {
+        setManagementFeeError('Les frais de gestion sont requis');
+        return;
+      }
+
+      const numValue = parseFloat(managementFeeValue);
+      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
+        setManagementFeeError('Veuillez saisir un pourcentage valide entre 0 et 100');
+        return;
+      }
+
       setSubmitting(true);
 
       // Prepare cotisation details for selected organismes - only save totals
@@ -362,8 +388,8 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         services: Object.values(responses),
         selected_organismes: selectedOrganismeDetails,
         frais_de_gestion: {
-          manual: manualFee,
-          value: manualFeeValue.trim() === '' ? 0 : parseFloat(manualFeeValue),
+          manual: true,
+          value: parseFloat(managementFeeValue),
         },
       };
 
@@ -588,23 +614,35 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
             calculateOrganismeTotals={calculateOrganismeTotals}
           />
 
-          {/* Manual Management Fee Section */}
-          <div className="flex items-center gap-4 mb-4">
-            <StyledCheckbox
-              checked={manualFee}
-              onChange={e => setManualFee(e.target.checked)}
-              label="Frais de gestion manuel"
-            />
-            <InputField
-              type="number"
-              min={0}
-              step={0.1}
-              value={manualFeeValue}
-              onChange={e => setManualFeeValue(e.target.value)}
-              placeholder="Montant (€)"
-              disabled={!manualFee}
-              className="w-32"
-            />
+          {/* Management Fee Section */}
+          <div className="space-y-2">
+            <label
+              htmlFor="management-fee-input"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            >
+              Frais de gestion (%) *
+            </label>
+            <div className="w-48">
+              <InputField
+                id="management-fee-input"
+                type="number"
+                value={managementFeeValue}
+                onChange={e => {
+                  setManagementFeeValue(e.target.value);
+                  // Clear error when user starts typing
+                  if (managementFeeError) {
+                    setManagementFeeError('');
+                  }
+                }}
+                placeholder="Pourcentage des frais de gestion"
+                min="0"
+                max="100"
+                step="0.1"
+              />
+            </div>
+            {managementFeeError && (
+              <div className="text-red-500 text-sm mt-1">{managementFeeError}</div>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -615,6 +653,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
             onSubmit={handleSubmit}
             onDelete={handleDelete}
             onClose={onClose}
+            isFormValid={isFormValid}
           />
         </div>
       </div>

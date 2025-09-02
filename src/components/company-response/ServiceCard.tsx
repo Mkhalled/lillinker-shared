@@ -334,18 +334,15 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           )}
         </td>
 
-        {/* Frais de gestion */}
+        {/* charge professionelle */}
         <td className="py-2 px-3">
           {isServiceAvailable && !isPending ? (
             <div className="w-20">
               <InputField
                 type="number"
-                step="0.1"
-                min="0"
-                max="100"
                 value={managementFee}
                 onChange={e => onFeeChange(service.service.id, e.target.value)} // Use service.service.id
-                placeholder="8.5"
+                placeholder="150"
                 className="text-center text-xs"
               />
             </div>

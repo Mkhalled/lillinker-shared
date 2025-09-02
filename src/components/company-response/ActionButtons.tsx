@@ -8,6 +8,7 @@ interface ActionButtonsProps {
   onSubmit: () => void;
   onDelete: () => void;
   onClose: () => void;
+  isFormValid?: boolean;
 }
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({
@@ -17,6 +18,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   onSubmit,
   onDelete,
   onClose,
+  isFormValid = true,
 }) => {
   return (
     <div className="flex justify-between items-center pt-6 border-t border-slate-200 dark:border-slate-700">
@@ -53,9 +55,11 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         </button>
         <button
           onClick={onSubmit}
-          disabled={submitting}
-          className="inline-flex items-center px-6 py-3 text-white rounded-lg transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
-          style={{ backgroundColor: 'var(--primary-color)' }}
+          disabled={submitting || !isFormValid}
+          className={`inline-flex items-center px-6 py-3 text-white rounded-lg transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed font-semibold ${
+            !isFormValid ? 'bg-slate-400' : ''
+          }`}
+          style={{ backgroundColor: isFormValid ? 'var(--primary-color)' : undefined }}
         >
           {submitting ? (
             <>
