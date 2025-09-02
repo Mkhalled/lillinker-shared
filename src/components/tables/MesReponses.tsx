@@ -54,14 +54,12 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
       ) || 0;
     const totalSalarialAmount = (chiffreAffaires * totalSalarialPercent) / 100;
     const totalChargesProAmount =
-      response.response_data.services?.reduce((sum, service) => sum + service.charge_pro, 0) ||
-      0;
-    const restChiffreAffaires =
-      chiffreAffaires -
-      fraisGestionAmount -
-      (totalPatronalAmount + totalSalarialAmount) +
-      totalChargesProAmount;
-    const percentageRecu = chiffreAffaires > 0 ? (restChiffreAffaires / chiffreAffaires) * 100 : 0;
+      response.response_data.services?.reduce((sum, service) => sum + service.charge_pro, 0) || 0;
+
+    // Combined calculations
+    const totalCharges = totalPatronalAmount + totalSalarialAmount;
+    const restCANet = chiffreAffaires - fraisGestionAmount - totalCharges + totalChargesProAmount;
+    const percentageRecu = chiffreAffaires > 0 ? (restCANet / chiffreAffaires) * 100 : 0;
 
     return {
       chiffreAffaires,
@@ -72,7 +70,8 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
       totalPatronalAmount,
       totalSalarialAmount,
       totalChargesProAmount,
-      restChiffreAffaires,
+      totalCharges,
+      restCANet,
       percentageRecu,
     };
   };
@@ -91,8 +90,8 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
           parseInt(requestData!.days)
         );
         return sortOrder === 'desc'
-          ? metricsB.restChiffreAffaires - metricsA.restChiffreAffaires
-          : metricsA.restChiffreAffaires - metricsB.restChiffreAffaires;
+          ? metricsB.restCANet - metricsA.restCANet
+          : metricsA.restCANet - metricsB.restCANet;
       })
     : [];
 
@@ -135,8 +134,23 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       {/* Header with New Request Button */}
-      <div className="flex justify-between items-center px-5 pt-6 pb-2 sm:px-7.5">
-        <h4 className="text-xl font-semibold text-black dark:text-white">Mes Réponses</h4>
+      <div className="flex flex-col space-y-3 px-5 pt-6 pb-2 sm:px-7.5 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+          <h4 className="text-xl font-semibold text-black dark:text-white">
+            Mes Réponses ({totalResponses})
+          </h4>
+          {requestData && (
+            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 sm:mt-0">
+              <span className="font-medium">Chiffre d&apos;Affaires:</span>{' '}
+              <span className="font-semibold text-blue-600 dark:text-blue-400">
+                {(
+                  (parseInt(requestData.tjm) || 0) * (parseInt(requestData.days) || 0)
+                ).toLocaleString('fr-FR')}{' '}
+                €
+              </span>
+            </div>
+          )}
+        </div>
         <button className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-6 xl:px-8">
           <svg
             className="mr-2 h-4 w-4"
@@ -160,24 +174,15 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                 <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
                   Pseudonyme
                 </th>
-                <th className="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white">
-                  Chiffre d&apos;Affaires
-                </th>
                 <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
                   Frais de Gestion
                 </th>
-                <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
-                  Total Patronal
-                </th>
-                <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
-                  Total Salarial
-                </th>
                 <th className="min-w-[140px] px-4 py-4 font-medium text-black dark:text-white">
-                  Charges Pro.
+                  Total Charges
                 </th>
                 <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
                   <button onClick={handleSort} className="flex items-center gap-1">
-                    Reste CA
+                    Reste CA + <br /> Charges Pro
                     <svg
                       className={`w-4 h-4 transform ${sortOrder === 'asc' ? 'rotate-180' : ''}`}
                       fill="none"
@@ -215,25 +220,16 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                         {response.company?.name.slice(0, 3).toUpperCase()}
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.chiffreAffaires.toFixed(2)} €
-                      </td>
-                      <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                         {metrics.fraisGestionAmount.toFixed(2)} €
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.totalPatronalAmount.toFixed(2)} €
-                      </td>
-                      <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.totalSalarialAmount.toFixed(2)} €
-                      </td>
-                      <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                        {metrics.totalChargesProAmount.toFixed(2)} €
+                        {metrics.totalCharges.toFixed(2)} €
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                         <span
-                          className={`font-medium ${metrics.restChiffreAffaires > 0 ? 'text-green-600' : 'text-red-600'}`}
+                          className={`font-medium ${metrics.restCANet > 0 ? 'text-green-600' : 'text-red-600'}`}
                         >
-                          {metrics.restChiffreAffaires.toFixed(2)} €
+                          {metrics.restCANet.toFixed(2)} €
                         </span>
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -271,7 +267,7 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                 })
               ) : (
                 <tr>
-                  <td colSpan={9} className="text-center py-4 text-gray-500 dark:text-gray-400">
+                  <td colSpan={6} className="text-center py-4 text-gray-500 dark:text-gray-400">
                     {requestData ? 'Aucune réponse trouvée.' : 'Aucune donnée disponible.'}
                   </td>
                 </tr>
