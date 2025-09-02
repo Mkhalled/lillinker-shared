@@ -104,7 +104,7 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
               {/* Total CA Card */}
               <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-100 dark:border-purple-800/30 text-center">
                 <span className="block text-sm font-medium text-purple-600 dark:text-purple-400 mb-2">
-                  Chiffre d'Affaires Total
+                  Chiffre d&apos;Affaires Total
                 </span>
                 <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">
                   {(selectedRequest.tjm * selectedRequest.days).toLocaleString('fr-FR')}€
