@@ -556,7 +556,7 @@ async function main(): Promise<void> {
         },
       ],
     });
-    // Create company responses
+    // Create company responses following the CompanyResponseDAO format
     const response1UnitPortage = await prisma.companyResponse.create({
       data: {
         request_id: freelanceRequest1.id,
@@ -565,67 +565,134 @@ async function main(): Promise<void> {
           services: [
             {
               service_id: platformService1.id,
-              service_name: 'Taux de Gestion',
-              service_description: 'Pourcentage prélevé par la société de portage',
+              service_name: 'Une avance sur salaire',
+              service_description: "Paiement mensuel même si le client n'a pas encore réglé la facture",
               is_available: true,
-              management_fee: 8.5,
-              comment: 'Taux compétitif avec expertise de 15 ans dans le secteur',
+              charge_pro: 0,
+              comment: 'Service inclus dans notre offre de portage',
             },
             {
               service_id: platformService2.id,
-              service_name: 'Services Inclus',
-              service_description: 'Services additionnels proposés',
+              service_name: 'Une fin de contrat avec rupture conventionnelle',
+              service_description: 'La rupture conventionnelle permet de mettre fin au CDI de portage salarial',
               is_available: true,
-              management_fee: 0,
-              comment:
-                'Assurance RC Pro, Formation continue, Gestion administrative, Mutuelle collective',
+              charge_pro: 0,
+              comment: 'Procédure de rupture conventionnelle disponible',
             },
             {
               service_id: platformService3.id,
-              service_name: 'Délai de Paiement',
-              service_description: 'Délai de versement du salaire après facturation',
+              service_name: 'Un interlocuteur unique dédié',
+              service_description: 'Bénéficiez d\'un interlocuteur unique qui connaît votre dossier',
               is_available: true,
-              management_fee: 0,
-              comment: '30 jours',
+              charge_pro: 0,
+              comment: 'Interlocuteur dédié pour un suivi personnalisé',
             },
             {
               service_id: platformService4.id,
-              service_name: 'Frais de Dossier',
-              service_description: "Frais d'ouverture et de gestion du dossier",
+              service_name: 'Rétrocession de la TVA sur frais professionnels',
+              service_description: 'Possibilité de récupérer la TVA payée sur vos dépenses professionnelles',
               is_available: true,
-              management_fee: 150,
-              comment: "Frais d'ouverture unique",
+              charge_pro: 0,
+              comment: 'TVA récupérable sur tous vos frais professionnels',
+            },
+            {
+              service_id: platformService5.id,
+              service_name: 'Prise en charge des indemnités kilométriques',
+              service_description: 'Remboursement de vos déplacements professionnels',
+              is_available: true,
+              charge_pro: 50,
+              comment: 'Remboursement selon le barème fiscal officiel',
             },
           ],
           selected_organismes: [
             {
               organisme_id: urssafSecSoc.id,
-              label: 'URSSAF',
-              total_patronal: 1850.5,
-              total_salarial: 1200.75,
+              label: 'URSSAF – Sécurité sociale',
+              total_patronal: 45.5,
+              total_salarial: 22.5,
+            },
+            {
+              organisme_id: csgCrds.id,
+              label: 'CSG / CRDS',
+              total_patronal: 0,
+              total_salarial: 9.7,
             },
             {
               organisme_id: franceTravail.id,
-              label: 'Pôle Emploi',
-              total_patronal: 420.0,
-              total_salarial: 285.5,
+              label: 'France Travail',
+              total_patronal: 4.05,
+              total_salarial: 2.4,
             },
             {
               organisme_id: retraiteComplementaire.id,
-              label: 'Caisse de Retraite',
-              total_patronal: 650.25,
-              total_salarial: 485.75,
+              label: 'AGIRC-ARRCO',
+              total_patronal: 6.01,
+              total_salarial: 3.15,
+            },
+            {
+              organisme_id: autresContributions.id,
+              label: 'Autres contributions',
+              total_patronal: 1.5,
+              total_salarial: 0,
             },
           ],
+          frais_de_gestion: {
+            label: 'Frais de gestion UNIT PORTAGE',
+            description: 'Taux de gestion appliqué sur le chiffre d\'affaires',
+            value: 7,
+            comment: 'Taux compétitif avec accompagnement personnalisé',
+          },
         },
       },
     });
-    // Link company responses to organismes
+    // Link company responses to organismes with proper additional_data
     await prisma.companyResponseOrganisme.createMany({
       data: [
-        { company_response_id: response1UnitPortage.id, organisme_id: urssafSecSoc.id },
-        { company_response_id: response1UnitPortage.id, organisme_id: franceTravail.id },
-        { company_response_id: response1UnitPortage.id, organisme_id: retraiteComplementaire.id },
+        { 
+          company_response_id: response1UnitPortage.id, 
+          organisme_id: urssafSecSoc.id,
+          additional_data: {
+            organisme_label: 'URSSAF – Sécurité sociale',
+            total_patronal: 45.5,
+            total_salarial: 22.5,
+          }
+        },
+        { 
+          company_response_id: response1UnitPortage.id, 
+          organisme_id: csgCrds.id,
+          additional_data: {
+            organisme_label: 'CSG / CRDS',
+            total_patronal: 0,
+            total_salarial: 9.7,
+          }
+        },
+        { 
+          company_response_id: response1UnitPortage.id, 
+          organisme_id: franceTravail.id,
+          additional_data: {
+            organisme_label: 'France Travail',
+            total_patronal: 4.05,
+            total_salarial: 2.4,
+          }
+        },
+        { 
+          company_response_id: response1UnitPortage.id, 
+          organisme_id: retraiteComplementaire.id,
+          additional_data: {
+            organisme_label: 'AGIRC-ARRCO',
+            total_patronal: 6.01,
+            total_salarial: 3.15,
+          }
+        },
+        { 
+          company_response_id: response1UnitPortage.id, 
+          organisme_id: autresContributions.id,
+          additional_data: {
+            organisme_label: 'Autres contributions',
+            total_patronal: 1.5,
+            total_salarial: 0,
+          }
+        },
       ],
     });
     logger.info('Database seeded successfully with updated schema!');
