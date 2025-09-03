@@ -355,3 +355,18 @@ model Cotisation {
 
   @@map("cotisations")
 }
+
+// Frais Kilométriques Reference Table
+model FraisKilometriquesReference {
+  id                    Int     @id @default(autoincrement())
+  puissance_fiscale     String  
+  distance_min          Int     
+  distance_max          Int?   
+  taux_par_km           Float  
+  formule_fixe          Float?  
+  taux_variable         Float?  
+  created_at            DateTime @default(now())
+  
+  @@unique([puissance_fiscale, distance_min])
+  @@map("frais_kilometriques_references")
+}

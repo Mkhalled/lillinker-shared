@@ -1,7 +1,10 @@
 /**
  * Utility functions for calculating "frais kilométriques" (mileage allowances)
- * Based on French tax regulations (barème fiscal officiel)
+ * Based on French tax regulations (barème fiscal officiel) stored in database
  */
+
+import { prisma } from '@/lib/prisma';
+import { logger } from './logger';
 
 export interface FraisKilometriquesData {
   puissanceFiscale: string;
@@ -10,75 +13,65 @@ export interface FraisKilometriquesData {
 }
 
 /**
- * Calculate mileage allowances and return only the final amount
+ * Calculate mileage allowances using database reference table
  * @param puissanceFiscale - Vehicle power category
  * @param distanceParcourue - Distance in kilometers (as string)
  * @param typeVehicule - Vehicle type (thermique or électrique)
  * @returns Calculated amount as number
  */
-export function calculateFraisKilometriquesAmount(
+export async function calculateFraisKilometriquesAmount(
   puissanceFiscale: string,
   distanceParcourue: string,
   typeVehicule: string
-): number {
+): Promise<number> {
   const distance = parseFloat(distanceParcourue);
   
   if (isNaN(distance) || distance <= 0) {
     return 0;
   }
 
-  const d = distance;
-  let montantCalcule = 0;
+  try {
+    // Find the appropriate rate from the database
+    const rateRecord = await prisma.fraisKilometriquesReference.findFirst({
+      where: {
+        puissance_fiscale: puissanceFiscale,
+        distance_min: { lte: distance },
+        OR: [
+          { distance_max: null }, // For unlimited range (> 20000)
+          { distance_max: { gte: distance } }, // For limited ranges
+        ],
+      },
+      orderBy: [
+        { distance_min: 'desc' }, // Get the highest matching minimum distance
+      ],
+    });
 
-  // Define rates based on tax power and distance ranges
-  const rates = {
-    '3 cv et moins': {
-      upTo5000: (d: number) => d * 0.529,
-      from5001To20000: (d: number) => d * 0.316 + 1065,
-      above20000: (d: number) => d * 0.370,
-    },
-    '4 cv': {
-      upTo5000: (d: number) => d * 0.606,
-      from5001To20000: (d: number) => d * 0.340 + 1330,
-      above20000: (d: number) => d * 0.407,
-    },
-    '5 cv': {
-      upTo5000: (d: number) => d * 0.636,
-      from5001To20000: (d: number) => d * 0.357 + 1395,
-      above20000: (d: number) => d * 0.427,
-    },
-    '6 cv': {
-      upTo5000: (d: number) => d * 0.665,
-      from5001To20000: (d: number) => d * 0.374 + 1457,
-      above20000: (d: number) => d * 0.447,
-    },
-    '7 cv et plus': {
-      upTo5000: (d: number) => d * 0.697,
-      from5001To20000: (d: number) => d * 0.394 + 1515,
-      above20000: (d: number) => d * 0.470,
-    },
-  };
+    if (!rateRecord) {
+      logger.warn(`No rate found for ${puissanceFiscale} and ${distance} km`);
+      return 0;
+    }
 
-  const powerRates = rates[puissanceFiscale as keyof typeof rates];
-  
-  if (!powerRates) {
+    let montantCalcule = 0;
+
+    // Calculate based on the formula type
+    if (rateRecord.formule_fixe && rateRecord.taux_variable) {
+      // Middle range formula: (d × taux_variable) + formule_fixe
+      montantCalcule = (distance * rateRecord.taux_variable) + rateRecord.formule_fixe;
+    } else {
+      // Simple multiplication: d × taux_par_km
+      montantCalcule = distance * rateRecord.taux_par_km;
+    }
+
+    // Apply 20% bonus for electric vehicles
+    if (typeVehicule === 'Véhicule électrique') {
+      montantCalcule = montantCalcule * 1.2;
+    }
+
+    // Round to 2 decimal places
+    return Math.round(montantCalcule * 100) / 100;
+    
+  } catch (error) {
+    logger.error('Error calculating frais kilométriques:', error);
     return 0;
   }
-
-  // Calculate base amount based on distance range
-  if (d <= 5000) {
-    montantCalcule = powerRates.upTo5000(d);
-  } else if (d <= 20000) {
-    montantCalcule = powerRates.from5001To20000(d);
-  } else {
-    montantCalcule = powerRates.above20000(d);
-  }
-
-  // Apply 20% bonus for electric vehicles
-  if (typeVehicule === 'Véhicule électrique') {
-    montantCalcule = montantCalcule * 1.2;
-  }
-
-  // Round to 2 decimal places
-  return Math.round(montantCalcule * 100) / 100;
 }

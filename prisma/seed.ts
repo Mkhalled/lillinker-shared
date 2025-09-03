@@ -340,10 +340,84 @@ async function main(): Promise<void> {
     const urssafSecSoc = await prisma.organisme.create({
       data: {
         company_id: unitPortage.id,
-        label: 'URSSAF – Sécurité sociale',
-        description: 'Cotisations sociales pour financer la Sécurité sociale.',
+        label: 'URSSAF - Sécurité Sociale',
+        description: 'Cotisations sociales obligatoires',
+        cotisations: {
+          create: [
+            {
+              label: 'Assurance maladie',
+              description: 'Couverture maladie obligatoire',
+              type: 'DEUX',
+              pourcentage_salarial: 0.75,
+              pourcentage_patronal: 7.0,
+            },
+            {
+              label: 'Assurance chômage',
+              description: 'Couverture perte d\'emploi',
+              type: 'PATRONAL',
+              pourcentage_patronal: 4.05,
+            },
+            {
+              label: 'Retraite de base',
+              description: 'Cotisation retraite sécurité sociale',
+              type: 'DEUX',
+              pourcentage_salarial: 6.9,
+              pourcentage_patronal: 8.55,
+            },
+            {
+              label: 'Retraite complémentaire',
+              description: 'AGIRC-ARRCO',
+              type: 'DEUX',
+              pourcentage_salarial: 3.15,
+              pourcentage_patronal: 4.72,
+            },
+          ],
+        },
       },
     });
+
+    // Create Frais Kilométriques Reference Table Data
+    logger.info('Creating frais kilométriques reference data...');
+    
+    const fraisKilometriquesRates = [
+      // 3 cv et moins
+      { puissance: '3 cv et moins', distanceMin: 0, distanceMax: 5000, tauxParKm: 0.529, formuleFixe: null, tauxVariable: null },
+      { puissance: '3 cv et moins', distanceMin: 5001, distanceMax: 20000, tauxParKm: 0.316, formuleFixe: 1065, tauxVariable: 0.316 },
+      { puissance: '3 cv et moins', distanceMin: 20001, distanceMax: null, tauxParKm: 0.370, formuleFixe: null, tauxVariable: null },
+      
+      // 4 cv
+      { puissance: '4 cv', distanceMin: 0, distanceMax: 5000, tauxParKm: 0.606, formuleFixe: null, tauxVariable: null },
+      { puissance: '4 cv', distanceMin: 5001, distanceMax: 20000, tauxParKm: 0.340, formuleFixe: 1330, tauxVariable: 0.340 },
+      { puissance: '4 cv', distanceMin: 20001, distanceMax: null, tauxParKm: 0.407, formuleFixe: null, tauxVariable: null },
+      
+      // 5 cv
+      { puissance: '5 cv', distanceMin: 0, distanceMax: 5000, tauxParKm: 0.636, formuleFixe: null, tauxVariable: null },
+      { puissance: '5 cv', distanceMin: 5001, distanceMax: 20000, tauxParKm: 0.357, formuleFixe: 1395, tauxVariable: 0.357 },
+      { puissance: '5 cv', distanceMin: 20001, distanceMax: null, tauxParKm: 0.427, formuleFixe: null, tauxVariable: null },
+      
+      // 6 cv
+      { puissance: '6 cv', distanceMin: 0, distanceMax: 5000, tauxParKm: 0.665, formuleFixe: null, tauxVariable: null },
+      { puissance: '6 cv', distanceMin: 5001, distanceMax: 20000, tauxParKm: 0.374, formuleFixe: 1457, tauxVariable: 0.374 },
+      { puissance: '6 cv', distanceMin: 20001, distanceMax: null, tauxParKm: 0.447, formuleFixe: null, tauxVariable: null },
+      
+      // 7 cv et plus
+      { puissance: '7 cv et plus', distanceMin: 0, distanceMax: 5000, tauxParKm: 0.697, formuleFixe: null, tauxVariable: null },
+      { puissance: '7 cv et plus', distanceMin: 5001, distanceMax: 20000, tauxParKm: 0.394, formuleFixe: 1515, tauxVariable: 0.394 },
+      { puissance: '7 cv et plus', distanceMin: 20001, distanceMax: null, tauxParKm: 0.470, formuleFixe: null, tauxVariable: null },
+    ];
+
+    await prisma.fraisKilometriquesReference.createMany({
+      data: fraisKilometriquesRates.map(rate => ({
+        puissance_fiscale: rate.puissance,
+        distance_min: rate.distanceMin,
+        distance_max: rate.distanceMax,
+        taux_par_km: rate.tauxParKm,
+        formule_fixe: rate.formuleFixe,
+        taux_variable: rate.tauxVariable,
+      })),
+    });
+
+    logger.info('Frais kilométriques reference data created successfully');
     const csgCrds = await prisma.organisme.create({
       data: {
         company_id: unitPortage.id,

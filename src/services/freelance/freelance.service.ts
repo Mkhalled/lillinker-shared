@@ -103,7 +103,7 @@ export class FreelanceService {
             // Handle frais kilométriques calculation on the server side
             let processedSelectedService = selectedService;
             if (platformService.label === 'Frais kilométriques' && selectedService.responseData) {
-              processedSelectedService = this.calculateFraisKilometriques(selectedService, platformService);
+              processedSelectedService = await this.calculateFraisKilometriques(selectedService, platformService);
             }
 
             // Convert responseData object to appropriate JSON structure based on dataFields
@@ -236,10 +236,10 @@ export class FreelanceService {
   /**
    * Calculate frais kilométriques amount for the given selected service
    */
-  private static calculateFraisKilometriques(
+  private static async calculateFraisKilometriques(
     selectedService: SelectedService,
     platformService: { dataFields: Array<{ id: number; label: string }> }
-  ): SelectedService {
+  ): Promise<SelectedService> {
     const logContext = {
       operation: 'calculateFraisKilometriques',
       serviceId: selectedService.serviceId,
@@ -275,7 +275,7 @@ export class FreelanceService {
 
       // Calculate if all required fields are filled
       if (puissanceFiscale && distance && typeVehicule) {
-        const calculatedAmount = calculateFraisKilometriquesAmount(puissanceFiscale, distance, typeVehicule);
+        const calculatedAmount = await calculateFraisKilometriquesAmount(puissanceFiscale, distance, typeVehicule);
 
         logger.info('Frais kilométriques calculated successfully', {
           ...logContext,
