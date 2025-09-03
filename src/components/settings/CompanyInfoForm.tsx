@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 import { ProfileData } from '@/types/company';
+
 import DescriptionToolTip from '../DescriptionToolTip';
 
 interface LabelPortage {

@@ -1,8 +1,8 @@
 import { FreelanceDao } from '@/dao/freelance.dao';
+import { calculateFraisKilometriquesAmount } from '@/lib/frais-kilometriques';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { generateFieldKeyFromField } from '@/lib/utils';
-import { calculateFraisKilometriquesAmount } from '@/lib/frais-kilometriques';
 import type { FreelanceOnboarding } from '@/lib/validations/auth.validation';
 import type { SelectedService } from '@/types/user';
 
