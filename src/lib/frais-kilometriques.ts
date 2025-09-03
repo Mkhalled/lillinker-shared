@@ -32,35 +32,40 @@ export async function calculateFraisKilometriquesAmount(
   }
 
   try {
-    // Find the appropriate rate from the database
-    const rateRecord = await prisma.fraisKilometriquesReference.findFirst({
+    // Find the formula record for the given vehicle power
+    const formulaRecord = await prisma.fraisKilometriquesReference.findUnique({
       where: {
         puissance_fiscale: puissanceFiscale,
-        distance_min: { lte: distance },
-        OR: [
-          { distance_max: null }, // For unlimited range (> 20000)
-          { distance_max: { gte: distance } }, // For limited ranges
-        ],
       },
-      orderBy: [
-        { distance_min: 'desc' }, // Get the highest matching minimum distance
-      ],
     });
 
-    if (!rateRecord) {
-      logger.warn(`No rate found for ${puissanceFiscale} and ${distance} km`);
+    if (!formulaRecord) {
+      logger.warn(`No formula found for puissance fiscale: ${puissanceFiscale}`);
       return 0;
     }
 
-    let montantCalcule = 0;
+    let selectedFormula = '';
 
-    // Calculate based on the formula type
-    if (rateRecord.formule_fixe && rateRecord.taux_variable) {
-      // Middle range formula: (d × taux_variable) + formule_fixe
-      montantCalcule = (distance * rateRecord.taux_variable) + rateRecord.formule_fixe;
+    // Select the appropriate formula based on distance
+    if (distance <= 5000) {
+      selectedFormula = formulaRecord.formule_jusqu_5000;
+    } else if (distance <= 20000) {
+      selectedFormula = formulaRecord.formule_entre_5001_20000;
     } else {
-      // Simple multiplication: d × taux_par_km
-      montantCalcule = distance * rateRecord.taux_par_km;
+      selectedFormula = formulaRecord.formule_au_dela_20000;
+    }
+
+    // Replace 'd' with the actual distance and evaluate the formula
+    const formulaWithDistance = selectedFormula.replace(/d/g, distance.toString());
+    
+    // Safely evaluate the mathematical expression
+    let montantCalcule = 0;
+    try {
+      // Simple evaluation for expressions like "3000*0.665" or "15000*0.374+1457"
+      montantCalcule = Function('"use strict"; return (' + formulaWithDistance + ')')();
+    } catch (evalError) {
+      logger.error('Error evaluating formula:', { formula: formulaWithDistance, error: evalError });
+      return 0;
     }
 
     // Apply 20% bonus for electric vehicles
@@ -69,7 +74,20 @@ export async function calculateFraisKilometriquesAmount(
     }
 
     // Round to 2 decimal places
-    return Math.round(montantCalcule * 100) / 100;
+    const finalAmount = Math.round(montantCalcule * 100) / 100;
+
+    logger.info('Frais kilométriques calculated successfully', {
+      puissanceFiscale,
+      distance,
+      typeVehicule,
+      selectedFormula,
+      formulaWithDistance,
+      baseAmount: Math.round(montantCalcule * 100) / 100,
+      finalAmount,
+      isElectric: typeVehicule === 'Véhicule électrique',
+    });
+
+    return finalAmount;
     
   } catch (error) {
     logger.error('Error calculating frais kilométriques:', error);

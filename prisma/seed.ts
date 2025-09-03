@@ -376,44 +376,48 @@ async function main(): Promise<void> {
       },
     });
 
-    // Create Frais Kilométriques Reference Table Data
+    // Create Frais Kilométriques Reference Table Data with Formula Structure
     logger.info('Creating frais kilométriques reference data...');
     
-    const fraisKilometriquesRates = [
-      // 3 cv et moins
-      { puissance: '3 cv et moins', distanceMin: 0, distanceMax: 5000, tauxParKm: 0.529, formuleFixe: null, tauxVariable: null },
-      { puissance: '3 cv et moins', distanceMin: 5001, distanceMax: 20000, tauxParKm: 0.316, formuleFixe: 1065, tauxVariable: 0.316 },
-      { puissance: '3 cv et moins', distanceMin: 20001, distanceMax: null, tauxParKm: 0.370, formuleFixe: null, tauxVariable: null },
-      
-      // 4 cv
-      { puissance: '4 cv', distanceMin: 0, distanceMax: 5000, tauxParKm: 0.606, formuleFixe: null, tauxVariable: null },
-      { puissance: '4 cv', distanceMin: 5001, distanceMax: 20000, tauxParKm: 0.340, formuleFixe: 1330, tauxVariable: 0.340 },
-      { puissance: '4 cv', distanceMin: 20001, distanceMax: null, tauxParKm: 0.407, formuleFixe: null, tauxVariable: null },
-      
-      // 5 cv
-      { puissance: '5 cv', distanceMin: 0, distanceMax: 5000, tauxParKm: 0.636, formuleFixe: null, tauxVariable: null },
-      { puissance: '5 cv', distanceMin: 5001, distanceMax: 20000, tauxParKm: 0.357, formuleFixe: 1395, tauxVariable: 0.357 },
-      { puissance: '5 cv', distanceMin: 20001, distanceMax: null, tauxParKm: 0.427, formuleFixe: null, tauxVariable: null },
-      
-      // 6 cv
-      { puissance: '6 cv', distanceMin: 0, distanceMax: 5000, tauxParKm: 0.665, formuleFixe: null, tauxVariable: null },
-      { puissance: '6 cv', distanceMin: 5001, distanceMax: 20000, tauxParKm: 0.374, formuleFixe: 1457, tauxVariable: 0.374 },
-      { puissance: '6 cv', distanceMin: 20001, distanceMax: null, tauxParKm: 0.447, formuleFixe: null, tauxVariable: null },
-      
-      // 7 cv et plus
-      { puissance: '7 cv et plus', distanceMin: 0, distanceMax: 5000, tauxParKm: 0.697, formuleFixe: null, tauxVariable: null },
-      { puissance: '7 cv et plus', distanceMin: 5001, distanceMax: 20000, tauxParKm: 0.394, formuleFixe: 1515, tauxVariable: 0.394 },
-      { puissance: '7 cv et plus', distanceMin: 20001, distanceMax: null, tauxParKm: 0.470, formuleFixe: null, tauxVariable: null },
+    const fraisKilometriquesFormulas = [
+      {
+        puissance: '3 cv et moins',
+        formuleJusqu5000: 'd*0.529',
+        formuleEntre5001_20000: 'd*0.316+1065',
+        formuleAuDela20000: 'd*0.370',
+      },
+      {
+        puissance: '4 cv',
+        formuleJusqu5000: 'd*0.606',
+        formuleEntre5001_20000: 'd*0.340+1330',
+        formuleAuDela20000: 'd*0.407',
+      },
+      {
+        puissance: '5 cv',
+        formuleJusqu5000: 'd*0.636',
+        formuleEntre5001_20000: 'd*0.357+1395',
+        formuleAuDela20000: 'd*0.427',
+      },
+      {
+        puissance: '6 cv',
+        formuleJusqu5000: 'd*0.665',
+        formuleEntre5001_20000: 'd*0.374+1457',
+        formuleAuDela20000: 'd*0.447',
+      },
+      {
+        puissance: '7 cv et plus',
+        formuleJusqu5000: 'd*0.697',
+        formuleEntre5001_20000: 'd*0.394+1515',
+        formuleAuDela20000: 'd*0.470',
+      },
     ];
 
     await prisma.fraisKilometriquesReference.createMany({
-      data: fraisKilometriquesRates.map(rate => ({
-        puissance_fiscale: rate.puissance,
-        distance_min: rate.distanceMin,
-        distance_max: rate.distanceMax,
-        taux_par_km: rate.tauxParKm,
-        formule_fixe: rate.formuleFixe,
-        taux_variable: rate.tauxVariable,
+      data: fraisKilometriquesFormulas.map(formula => ({
+        puissance_fiscale: formula.puissance,
+        formule_jusqu_5000: formula.formuleJusqu5000,
+        formule_entre_5001_20000: formula.formuleEntre5001_20000,
+        formule_au_dela_20000: formula.formuleAuDela20000,
       })),
     });
 

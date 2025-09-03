@@ -197,7 +197,7 @@ model FreelanceRequest {
   days            Float
   wants_portage   Boolean                @default(false)
   created_at     DateTime         @default(now())
-  freelance       Freelance              @relation(fields: [freelance_id], references: [id])
+  freelance       Freelance              @relation(fields: [freelance_id], references: [id],onDelete: Cascade)
   options         FreelanceRequestOption[]
   responses       CompanyResponse[]
   requestLabelsSelected RequestLabelSelected[]
@@ -358,15 +358,12 @@ model Cotisation {
 
 // Frais Kilométriques Reference Table
 model FraisKilometriquesReference {
-  id                    Int     @id @default(autoincrement())
-  puissance_fiscale     String  
-  distance_min          Int     
-  distance_max          Int?   
-  taux_par_km           Float  
-  formule_fixe          Float?  
-  taux_variable         Float?  
-  created_at            DateTime @default(now())
+  id                        Int     @id @default(autoincrement())
+  puissance_fiscale         String  @unique // "3 cv et moins", "4 cv", "5 cv", "6 cv", "7 cv et plus"
+  formule_jusqu_5000        String  // Formula for up to 5000 km (e.g., "d*0.529")
+  formule_entre_5001_20000  String  // Formula for 5001-20000 km (e.g., "d*0.340+1330")
+  formule_au_dela_20000     String  // Formula for above 20000 km (e.g., "d*0.407")
+  created_at                DateTime @default(now())
   
-  @@unique([puissance_fiscale, distance_min])
   @@map("frais_kilometriques_references")
 }
