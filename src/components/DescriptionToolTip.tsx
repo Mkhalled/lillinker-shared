@@ -123,7 +123,7 @@ const DescriptionToolTip: React.FC<DescriptionToolTipProps> = ({
       {/* Info Button */}
       <button
         onClick={handleToggle}
-        className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded"
+        className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors focus:outline-none rounded"
         type="button"
         aria-label={`Voir la description: ${title}`}
       >

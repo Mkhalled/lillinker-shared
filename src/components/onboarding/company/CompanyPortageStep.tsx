@@ -1,5 +1,6 @@
 'use client';
 
+import DescriptionToolTip from '@/components/DescriptionToolTip';
 import { CompanyFormData } from '@/types/company';
 
 import type { Portage } from '../../../hooks/useModalData';
@@ -25,11 +26,9 @@ export const CompanyPortageStep = ({
     onFormDataChange({ selectedPortages: newSelectedPortages });
   };
   return (
-    <div className="space-y-6 pb-5">
+  <div className="space-y-6 pb-5">
       <div className="space-y-4">
-        {/* Portage Company Question */}
         <div className="space-y-3">
-          <div className="p-4 border-2 rounded-xl hover:bg-gray-50 transition-all duration-200">
             <StyledCheckbox
               checked={formData.isPortage === 'yes'}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -38,24 +37,24 @@ export const CompanyPortageStep = ({
               label="Nous sommes une société de portage salarial"
             />
           </div>
-        </div>
-
         {/* Portages Selection - Only show if company is portage */}
         {formData.isPortage === 'yes' && (
           <div className="space-y-3">
-            <h1 className="text-sm font-medium text-gray-700">Services de portage proposés</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {portages.map(portage => (
-                <div
-                  key={portage.id}
-                  className="p-3 border rounded-lg hover:bg-gray-50 transition-all duration-200"
-                >
+                  <div key={portage.id} className="flex items-center space-x-2">
                   <StyledCheckbox
                     checked={formData.selectedPortages.includes(portage.id.toString())}
                     onChange={() => togglePortageSelection(portage.id)}
                     label={portage.name}
                     size="sm"
                   />
+                  {portage.description && (
+                    <DescriptionToolTip
+                      title={portage.name}
+                      description={portage.description}
+                    />
+                  )}
                 </div>
               ))}
             </div>

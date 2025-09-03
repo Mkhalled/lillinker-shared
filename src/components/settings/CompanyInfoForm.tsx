@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { StyledCheckbox } from '@/components/form/StyledCheckbox';
 import { ProfileData } from '@/types/company';
+import DescriptionToolTip from '../DescriptionToolTip';
 
 interface LabelPortage {
   id: number;
@@ -521,6 +522,12 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
                         disabled={!isEditing}
                         label={label.name}
                       />
+                      {label.description && (
+                        <DescriptionToolTip
+                          title={label.name}
+                          description={label.description}
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
