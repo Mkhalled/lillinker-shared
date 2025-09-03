@@ -2,6 +2,7 @@ import { FreelanceDao } from '@/dao/freelance.dao';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { generateFieldKeyFromField } from '@/lib/utils';
+import { calculateFraisKilometriquesAmount } from '@/lib/frais-kilometriques';
 import type { FreelanceOnboarding } from '@/lib/validations/auth.validation';
 import type { SelectedService } from '@/types/user';
 
@@ -99,9 +100,15 @@ export class FreelanceService {
           });
 
           if (platformService) {
+            // Handle frais kilométriques calculation on the server side
+            let processedSelectedService = selectedService;
+            if (platformService.label === 'Frais kilométriques' && selectedService.responseData) {
+              processedSelectedService = this.calculateFraisKilometriques(selectedService, platformService);
+            }
+
             // Convert responseData object to appropriate JSON structure based on dataFields
             const responseDataJson = this.convertResponseData(
-              selectedService.responseData,
+              processedSelectedService.responseData,
               platformService.dataFields
             );
 
@@ -224,6 +231,82 @@ export class FreelanceService {
     });
 
     return convertedData;
+  }
+
+  /**
+   * Calculate frais kilométriques amount for the given selected service
+   */
+  private static calculateFraisKilometriques(
+    selectedService: SelectedService,
+    platformService: { dataFields: Array<{ id: number; label: string }> }
+  ): SelectedService {
+    const logContext = {
+      operation: 'calculateFraisKilometriques',
+      serviceId: selectedService.serviceId,
+    };
+
+    try {
+      const responseData = selectedService.responseData || {};
+
+      // Find the relevant data fields
+      const puissanceFiscaleField = platformService.dataFields.find(
+        field => field.label === 'Puissance fiscale du véhicule'
+      );
+      const distanceField = platformService.dataFields.find(field => field.label === 'Distance parcourue');
+      const typeVehiculeField = platformService.dataFields.find(field => field.label === 'Type de véhicule');
+      const montantCalculeField = platformService.dataFields.find(field => field.label === 'Montant calculé');
+
+      if (!puissanceFiscaleField || !distanceField || !typeVehiculeField || !montantCalculeField) {
+        logger.warn('Missing required fields for frais kilométriques calculation', {
+          ...logContext,
+          hasProduktFields: {
+            puissanceFiscale: !!puissanceFiscaleField,
+            distance: !!distanceField,
+            typeVehicule: !!typeVehiculeField,
+            montantCalcule: !!montantCalculeField,
+          },
+        });
+        return selectedService;
+      }
+
+      const puissanceFiscale = responseData[puissanceFiscaleField.id];
+      const distance = responseData[distanceField.id];
+      const typeVehicule = responseData[typeVehiculeField.id];
+
+      // Calculate if all required fields are filled
+      if (puissanceFiscale && distance && typeVehicule) {
+        const calculatedAmount = calculateFraisKilometriquesAmount(puissanceFiscale, distance, typeVehicule);
+
+        logger.info('Frais kilométriques calculated successfully', {
+          ...logContext,
+          inputs: { puissanceFiscale, distance, typeVehicule },
+          calculatedAmount,
+        });
+
+        // Create a new selectedService object with the calculated amount
+        return {
+          ...selectedService,
+          responseData: {
+            ...responseData,
+            [montantCalculeField.id]: calculatedAmount.toString(),
+          },
+        };
+      } else {
+        logger.debug('Insufficient data for frais kilométriques calculation', {
+          ...logContext,
+          receivedData: {
+            puissanceFiscale: puissanceFiscale ? 'present' : 'missing',
+            distance: distance ? 'present' : 'missing',
+            typeVehicule: typeVehicule ? 'present' : 'missing',
+          },
+        });
+      }
+
+      return selectedService;
+    } catch (error) {
+      logger.error('Frais kilométriques calculation failed', error as Error, logContext);
+      return selectedService;
+    }
   }
 
   /**

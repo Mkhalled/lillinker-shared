@@ -100,6 +100,11 @@ export const useFreelanceValidation = (
           if (service?.requires_data && service.dataFields && service.dataFields.length > 0) {
             // For services that require data, check if all required fields have responseData
             for (const field of service.dataFields) {
+              // Skip validation for "Montant calculé" field as it's handled by the backend
+              if (field.label === 'Montant calculé') {
+                continue;
+              }
+              
               const fieldResponseData = selectedService.responseData?.[field.id];
               if (!fieldResponseData || fieldResponseData.trim() === '') {
                 return false; // Data is required but not provided for this field

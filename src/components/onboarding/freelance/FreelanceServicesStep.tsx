@@ -41,6 +41,7 @@ export const FreelanceServicesStep = ({
   parseChoices,
   error,
 }: FreelanceServicesStepProps) => {
+  
   return (
     <div className="space-y-6">
       <div>
@@ -132,6 +133,11 @@ export const FreelanceServicesStep = ({
                         service.dataFields.length > 0 && (
                           <div className="space-y-4 mt-3">
                             {service.dataFields.map(field => {
+                              // Hide "Montant calculé" field completely from the frontend
+                              if (field.label === 'Montant calculé') {
+                                return null;
+                              }
+
                               const choices = parseChoices(field.choices);
                               const fieldResponseData =
                                 selectedService?.responseData?.[field.id] || '';
@@ -170,21 +176,23 @@ export const FreelanceServicesStep = ({
 
                                   {/* NUMBER input */}
                                   {field.data_type === 'NUMBER' && (
-                                    <InputField
-                                      id={`service-number-${service.id}-${field.id}`}
-                                      type="number"
-                                      value={fieldResponseData}
-                                      onChange={e =>
-                                        handleServiceDataChange(
-                                          service.id,
-                                          field.id,
-                                          e.target.value
-                                        )
-                                      }
-                                      placeholder="Entrez un nombre... (obligatoire)"
-                                      error={!fieldResponseData || fieldResponseData.trim() === ''}
-                                      required
-                                    />
+                                    <div>
+                                      <InputField
+                                        id={`service-number-${service.id}-${field.id}`}
+                                        type="number"
+                                        value={fieldResponseData}
+                                        onChange={e => {
+                                          handleServiceDataChange(
+                                            service.id,
+                                            field.id,
+                                            e.target.value
+                                          );
+                                        }}
+                                        placeholder="Entrez un nombre... (obligatoire)"
+                                        error={!fieldResponseData || fieldResponseData.trim() === ''}
+                                        required
+                                      />
+                                    </div>
                                   )}
 
                                   {/* SELECT (multiple choice) */}
@@ -206,14 +214,14 @@ export const FreelanceServicesStep = ({
                                           <StyledCheckbox
                                             key={index}
                                             checked={isChecked}
-                                            onChange={e =>
+                                            onChange={e => {
                                               handleMultipleSelectChange(
                                                 service.id,
                                                 field.id,
                                                 choice,
                                                 e.target.checked
-                                              )
-                                            }
+                                              );
+                                            }}
                                             label={choice}
                                             size="sm"
                                           />
@@ -240,13 +248,13 @@ export const FreelanceServicesStep = ({
                                           name={`service-${service.id}-${field.id}-radio`}
                                           value={choice}
                                           checked={fieldResponseData === choice}
-                                          onChange={e =>
+                                          onChange={e => {
                                             handleServiceDataChange(
                                               service.id,
                                               field.id,
                                               e.target.value
-                                            )
-                                          }
+                                            );
+                                          }}
                                           label={choice}
                                           size="sm"
                                         />

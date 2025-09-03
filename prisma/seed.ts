@@ -293,16 +293,33 @@ async function main(): Promise<void> {
     const platformService5 = await prisma.platformService.create({
       data: {
         user_id: adminPlateforme.id,
-        label: 'Prise en charge des indemnités kilométriques',
+        label: 'Frais kilométriques',
         description:
-          'Remboursement de vos déplacements professionnels avec véhicule personnel, calculé selon le barème fiscal officiel (nombre de kilomètres et puissance fiscale du véhicule).',
+          'Remboursement de vos déplacements professionnels avec véhicule personnel, calculé selon le barème fiscal officiel. Le montant est calculé automatiquement en fonction de la puissance fiscale, de la distance parcourue et du type de véhicule (majoration de 20% pour les véhicules électriques).',
         requires_data: true,
         status: 'ACTIVE',
         dataFields: {
           create: [
             {
-              label: 'Nombre de kilomètres',
-              description: 'Nombre de kilomètres effectués pour la mission',
+              label: 'Puissance fiscale du véhicule',
+              description: 'Puissance fiscale de votre véhicule (en chevaux fiscaux)',
+              data_type: 'RADIO',
+              choices: ['3 cv et moins', '4 cv', '5 cv', '6 cv', '7 cv et plus'],
+            },
+            {
+              label: 'Distance parcourue',
+              description: 'Nombre de kilomètres parcourus à titre professionnel',
+              data_type: 'NUMBER',
+            },
+            {
+              label: 'Type de véhicule',
+              description: 'Sélectionnez le type de motorisation de votre véhicule',
+              data_type: 'RADIO',
+              choices: ['Véhicule thermique', 'Véhicule électrique'],
+            },
+            {
+              label: 'Montant calculé',
+              description: 'Montant des frais kilométriques calculé automatiquement selon le barème fiscal',
               data_type: 'NUMBER',
             },
           ],

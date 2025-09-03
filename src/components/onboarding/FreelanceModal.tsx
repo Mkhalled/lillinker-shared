@@ -54,13 +54,56 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   };
 
   const {
-    handleServiceToggle,
+    handleServiceToggle: baseHandleServiceToggle,
     handleServiceRequiredChange,
     handleServiceDataChange,
     handlePortageToggle,
     parseChoices,
     handleMultipleSelectChange,
   } = useFreelanceHandlers(setFormDataWrapper);
+
+  // Enhanced handleServiceToggle that automatically sets "Montant calculé" to "0" for Frais kilométriques
+  const handleServiceToggle = (serviceId: number) => {
+    // First, call the base toggle logic
+    baseHandleServiceToggle(serviceId);
+
+    // Then, if this is the "Frais kilométriques" service and it's being added, set default "Montant calculé" value
+    setFormData((prev: FreelanceFormData) => {
+      const existingServiceIndex = prev.selectedServices.findIndex(
+        s => s.serviceId === serviceId
+      );
+
+      // If service is being added (not removed)
+      if (existingServiceIndex < 0) {
+        const service = platformServices.find(s => s.id === serviceId);
+        if (service && service.label === 'Frais kilométriques') {
+          const montantCalculeField = service.dataFields?.find(
+            field => field.label === 'Montant calculé'
+          );
+          
+          if (montantCalculeField) {
+            // Set default value of "0" for the "Montant calculé" field
+            return {
+              ...prev,
+              selectedServices: prev.selectedServices.map(s => 
+                s.serviceId === serviceId 
+                  ? {
+                      ...s,
+                      responseData: {
+                        ...s.responseData,
+                        [montantCalculeField.id]: '0'
+                      }
+                    }
+                  : s
+              )
+            };
+          }
+        }
+      }
+
+      return prev;
+    });
+  };
   const { isLoading, error, setError, handleComplete } = useFreelanceCompletion(
     formData,
     clearFormData,
