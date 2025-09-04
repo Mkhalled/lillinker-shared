@@ -36,7 +36,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 }) => {
   const isPending = service.service.status === 'PENDING';
   const [showDetails, setShowDetails] = useState(false);
-  const [calculatedmontant,setCalculatedMontant] = useState("");
   // Extract relevant response data for this specific service from the ServiceResponse
   // Provide fallback values if response is undefined
   const isServiceAvailable = response?.is_available || false;
@@ -294,30 +293,31 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         {/* charge professionelle */}
         <td className="py-2 px-3">
           {isServiceAvailable && !isPending ? (
-           service.service.label === "Frais kilométriques" ? (
-            setCalculatedMontant(requestedOption?.response_data?.montant_calcul ? String(requestedOption.response_data.montant_calcul) : '0'),
-            onFeeChange(service.service.id, calculatedmontant),
-             <div className="w-20">
-              <InputField
-                type="number"
-                value={calculatedmontant}
-                onChange={e => onFeeChange(service.service.id, e.target.value)} // Use service.service.id
-                placeholder="150"
-                className="text-center text-xs"
-                disabled
-              />
-            </div>
-           ) : (
-             <div className="w-20">
-              <InputField
-                type="number"
-                value={chargePro}
-                onChange={e => onFeeChange(service.service.id, e.target.value)} // Use service.service.id
-                placeholder="150"
-                className="text-center text-xs"
-              />
-            </div>
-           )
+            service.service.label === "Frais kilométriques" ? (
+              <div className="w-20">
+                <InputField
+                  type="number"
+                  value={
+                    requestedOption?.response_data?.montant_calcul
+                      ? String(requestedOption.response_data.montant_calcul)
+                      : '0'
+                  }
+                  placeholder="150"
+                  className="text-center text-xs"
+                  disabled
+                />
+              </div>
+            ) : (
+              <div className="w-20">
+                <InputField
+                  type="number"
+                  value={chargePro}
+                  onChange={e => onFeeChange(service.service.id, e.target.value)}
+                  placeholder="150"
+                  className="text-center text-xs"
+                />
+              </div>
+            )
           ) : (
             <span className="text-slate-400 dark:text-slate-500 text-xs">-</span>
           )}

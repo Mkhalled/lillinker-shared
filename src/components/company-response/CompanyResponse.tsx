@@ -12,6 +12,7 @@ import type {
   ServiceResponseData,
   SelectedOrganisme,
 } from '@/types/company-response';
+import type { OptionInfo } from '@/types/demande';
 
 import Loader from '../common/Loader';
 
@@ -188,12 +189,24 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         data.company_services.forEach(
           (service: { service: { id: number; label: string; description?: string | null } }) => {
             if (!existingResponses[service.service.id]) {
+              // For "Frais kilométriques", get the calculated amount from freelance request
+              let defaultChargePro = 0;
+              if (service.service.label === "Frais kilométriques") {
+                const freelanceOption = data.freelance_request.options?.find(
+                  (option: OptionInfo) => option.platformService.id === service.service.id
+                );
+                if (freelanceOption?.response_data?.montant_calcul) {
+                  defaultChargePro = Number(freelanceOption.response_data.montant_calcul);
+                  console.log('DEBUG: Setting default charge_pro for existing Frais kilométriques:', defaultChargePro);
+                }
+              }
+
               existingResponses[service.service.id] = {
                 service_id: service.service.id,
                 service_name: service.service.label,
                 service_description: service.service.description || '',
                 is_available: false,
-                charge_pro: 0,
+                charge_pro: defaultChargePro,
                 comment: '',
               };
             }
@@ -207,12 +220,24 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         const initialResponses: Record<number, ServiceResponse> = {};
         data.company_services.forEach(
           (service: { service: { id: number; label: string; description?: string | null } }) => {
+            // For "Frais kilométriques", get the calculated amount from freelance request
+            let defaultChargePro = 0;
+            if (service.service.label === "Frais kilométriques") {
+              const freelanceOption = data.freelance_request.options?.find(
+                (option: OptionInfo) => option.platformService.id === service.service.id
+              );
+              if (freelanceOption?.response_data?.montant_calcul) {
+                defaultChargePro = Number(freelanceOption.response_data.montant_calcul);
+                console.log('DEBUG: Setting initial charge_pro for new Frais kilométriques:', defaultChargePro);
+              }
+            }
+
             initialResponses[service.service.id] = {
               service_id: service.service.id,
               service_name: service.service.label,
               service_description: service.service.description || '',
               is_available: false, // Start unchecked - company decides what to offer
-              charge_pro: 0, // Default fee
+              charge_pro: defaultChargePro, // Default fee, but calculated for Frais kilométriques
               comment: '',
             };
           }
@@ -248,12 +273,24 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           cs => cs.service.id === serviceId
         );
 
+        // For "Frais kilométriques", get the calculated amount from freelance request
+        let initialChargePro = 0;
+        if (isAvailable && companyService?.service.label === "Frais kilométriques") {
+          const freelanceOption = responseData?.freelance_request.options?.find(
+            option => option.platformService.id === serviceId
+          );
+          if (freelanceOption?.response_data?.montant_calcul) {
+            initialChargePro = Number(freelanceOption.response_data.montant_calcul);
+          }
+          console.log('DEBUG: Setting initial charge_pro for Frais kilométriques:', initialChargePro);
+        }
+
         const newResponse = {
           service_id: serviceId,
           service_name: companyService?.service.label || '',
           service_description: companyService?.service.description || '',
           is_available: isAvailable,
-          charge_pro: 0,
+          charge_pro: initialChargePro,
           comment: '',
         };
 
@@ -264,11 +301,29 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         return updated;
       }
 
+      // For existing responses, handle "Frais kilométriques" specially
+      let updatedChargePro = existingResponse.charge_pro;
+      if (isAvailable) {
+        const companyService = responseData?.company_services.find(
+          cs => cs.service.id === serviceId
+        );
+        if (companyService?.service.label === "Frais kilométriques") {
+          const freelanceOption = responseData?.freelance_request.options?.find(
+            option => option.platformService.id === serviceId
+          );
+          if (freelanceOption?.response_data?.montant_calcul) {
+            updatedChargePro = Number(freelanceOption.response_data.montant_calcul);
+            console.log('DEBUG: Updating charge_pro for Frais kilométriques:', updatedChargePro);
+          }
+        }
+      }
+
       const updated = {
         ...prev,
         [serviceId]: {
           ...existingResponse,
           is_available: isAvailable,
+          charge_pro: updatedChargePro,
         },
       };
       return updated;
@@ -392,6 +447,11 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           value: parseFloat(managementFeeValue),
         },
       };
+
+      console.log('DEBUG: Submitting company response data:', {
+        services: Object.values(responses),
+        fraisKilometriques: Object.values(responses).find(s => s.service_name === "Frais kilométriques")
+      });
 
       // Use PUT for updates, POST for new responses
       const method = isUpdating ? 'PUT' : 'POST';
