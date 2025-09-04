@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, CheckCircle, Clock, FileText, PlusCircle, StarIcon, XCircle } from 'lucide-react';
+import { BarChart3, CheckCircle, Clock, PlusCircle, StarIcon, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
@@ -153,55 +153,116 @@ const ConsultantDashboard = () => {
           </ul>
         </div>
 
-        {/* Documents & Invoices Section */}
+        {/* Latest Request Response Stats */}
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white">Recent Documents</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white">Latest Request Response Analysis</h2>
           </div>
-          <div className="p-6 space-y-4">
-            <div className="flex items-center p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-              <div className="flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 p-2 rounded-md">
-                <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <div className="p-6">
+            {/* Request Summary */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Request #REQ-2025-092</h3>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                  Portage Salarial
+                </span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                  Frais kilométriques
+                </span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                  Mutuelle Santé
+                </span>
               </div>
-              <div className="ml-4 flex-1">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">Invoice #INV-2025-087</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Tech Solutions • Aug 28, 2025</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Submitted on Aug 30, 2025 • <span className="font-medium">16 companies received your request</span>
+              </p>
+            </div>
+
+            {/* Response Stats Chart */}
+            <div className="relative mb-4">
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Response Distribution</h4>
+              
+              {/* Chart Legend */}
+              <div className="flex flex-wrap gap-4 mb-4 text-xs">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[#f59e0b] mr-1"></div>
+                  <span className="text-gray-600 dark:text-gray-400">Accepted (31%)</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[#f97316] mr-1"></div>
+                  <span className="text-gray-600 dark:text-gray-400">Pending (44%)</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[#2563eb] mr-1"></div>
+                  <span className="text-gray-600 dark:text-gray-400">Counter-Offers (19%)</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[#16a34a] mr-1"></div>
+                  <span className="text-gray-600 dark:text-gray-400">Declined (6%)</span>
+                </div>
               </div>
-              <div className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 px-2 py-1 rounded-full">
-                Paid
+              
+              {/* Chart Visualization */}
+              <div className="relative h-48 flex justify-center items-center">
+                <svg viewBox="0 0 100 100" className="w-48 h-48">
+                  {/* Define a proper circular pie chart using circle segments */}
+                  {/* These calculations create proper circle segments based on percentages */}
+                  {/* Green segment - 6% */}
+                  <circle cx="50" cy="50" r="25" fill="transparent"
+                    stroke="#16a34a"
+                    strokeWidth="50"
+                    strokeDasharray="6 94"
+                    strokeDashoffset="0"
+                    transform="rotate(-90) translate(-100 0)"/>
+                  {/* Blue segment - 19% */}
+                  <circle cx="50" cy="50" r="25" fill="transparent"
+                    stroke="#2563eb"
+                    strokeWidth="50"
+                    strokeDasharray="19 81"
+                    strokeDashoffset="-6"
+                    transform="rotate(-90) translate(-100 0)"/>
+                  {/* Yellow segment - 31% */}
+                  <circle cx="50" cy="50" r="25" fill="transparent"
+                    stroke="#f59e0b"
+                    strokeWidth="50"
+                    strokeDasharray="31 69"
+                    strokeDashoffset="-25"
+                    transform="rotate(-90) translate(-100 0)"/>
+                  {/* Orange segment - 44% */}
+                  <circle cx="50" cy="50" r="25" fill="transparent"
+                    stroke="#f97316"
+                    strokeWidth="50"
+                    strokeDasharray="44 56"
+                    strokeDashoffset="-56"
+                    transform="rotate(-90) translate(-100 0)"/>
+                </svg>
               </div>
             </div>
-            
-            <div className="flex items-center p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-              <div className="flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 p-2 rounded-md">
-                <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+
+            {/* Response Summary Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+              <div className="bg-gray-50 dark:bg-gray-700/50 p-2 rounded-lg">
+                <p className="text-xs text-gray-500 dark:text-gray-400">Total Responses</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">16</p>
               </div>
-              <div className="ml-4 flex-1">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">Contract - Creative Agency</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Signed on Sep 1, 2025</p>
+              <div className="bg-emerald-50 dark:bg-emerald-900/10 p-2 rounded-lg">
+                <p className="text-xs text-emerald-700 dark:text-emerald-300">Accepted</p>
+                <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">5</p>
               </div>
-              <div className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-1 rounded-full">
-                Contract
+              <div className="bg-amber-50 dark:bg-amber-900/10 p-2 rounded-lg">
+                <p className="text-xs text-amber-700 dark:text-amber-300">Pending</p>
+                <p className="text-lg font-semibold text-amber-600 dark:text-amber-400">7</p>
               </div>
-            </div>
-            
-            <div className="flex items-center p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-              <div className="flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 p-2 rounded-md">
-                <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div className="ml-4 flex-1">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">Invoice #INV-2025-073</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Digital Innovations • Aug 15, 2025</p>
-              </div>
-              <div className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 px-2 py-1 rounded-full">
-                Paid
+              <div className="bg-blue-50 dark:bg-blue-900/10 p-2 rounded-lg">
+                <p className="text-xs text-blue-700 dark:text-blue-300">Counter-Offers</p>
+                <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">3</p>
               </div>
             </div>
-            
-            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <Link href="/consultant/documents" 
+
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <Link href="/consultant/requests/REQ-2025-092" 
                 className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium">
-                View all documents →
+                View complete request details →
               </Link>
             </div>
           </div>
