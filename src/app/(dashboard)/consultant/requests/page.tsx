@@ -60,7 +60,6 @@ const Societies = () => {
   if (loading) {
     return <TableSkeleton />;
   }
-  console.log('Responses:', responses);
   return (
     <div key={routeKey} className="mx-auto min-h-screen max-w-270">
       <Breadcrumb pageName="Demandes" />

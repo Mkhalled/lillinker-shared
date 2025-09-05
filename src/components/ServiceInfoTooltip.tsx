@@ -7,15 +7,6 @@ import type { PlatformService } from '@/types/platform';
 const ServiceInfoTooltip = ({ service }: { service: PlatformService }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Debug log to inspect service data
-  console.log('ServiceInfoTooltip - Service:', {
-    id: service.id,
-    label: service.label,
-    requires_data: service.requires_data,
-    dataFields: service.dataFields,
-    dataFieldsLength: service.dataFields?.length,
-  });
-
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();

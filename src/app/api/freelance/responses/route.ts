@@ -3,7 +3,6 @@ import { getServerSession } from 'next-auth/next';
 
 import { authOptions } from '@/lib/auth';
 import { FreelanceService } from '@/services';
-
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
 
@@ -17,5 +16,8 @@ export async function GET(req: Request) {
 
   // Get freelance request by request ID
   const result = await FreelanceService.getFreelanceRequestByRequestId(id);
+  if (result?.freelance?.user.id !== parseInt(session.user.id)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   return NextResponse.json(result);
 }

@@ -101,8 +101,6 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         const response = await fetch('/api/profile');
         if (response.ok) {
           const data = await response.json();
-          console.log('Company profile data:', data); // Debug log
-
           // Set default management fee if we have management_min
           if (data.roleData?.management_min) {
             setManagementFeeValue(prev =>
@@ -197,7 +195,6 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
                 );
                 if (freelanceOption?.response_data?.montant_calcul) {
                   defaultChargePro = Number(freelanceOption.response_data.montant_calcul);
-                  console.log('DEBUG: Setting default charge_pro for existing Frais kilométriques:', defaultChargePro);
                 }
               }
 
@@ -228,7 +225,6 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
               );
               if (freelanceOption?.response_data?.montant_calcul) {
                 defaultChargePro = Number(freelanceOption.response_data.montant_calcul);
-                console.log('DEBUG: Setting initial charge_pro for new Frais kilométriques:', defaultChargePro);
               }
             }
 
@@ -282,7 +278,6 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           if (freelanceOption?.response_data?.montant_calcul) {
             initialChargePro = Number(freelanceOption.response_data.montant_calcul);
           }
-          console.log('DEBUG: Setting initial charge_pro for Frais kilométriques:', initialChargePro);
         }
 
         const newResponse = {
@@ -313,7 +308,6 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           );
           if (freelanceOption?.response_data?.montant_calcul) {
             updatedChargePro = Number(freelanceOption.response_data.montant_calcul);
-            console.log('DEBUG: Updating charge_pro for Frais kilométriques:', updatedChargePro);
           }
         }
       }
@@ -447,12 +441,6 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           value: parseFloat(managementFeeValue),
         },
       };
-
-      console.log('DEBUG: Submitting company response data:', {
-        services: Object.values(responses),
-        fraisKilometriques: Object.values(responses).find(s => s.service_name === "Frais kilométriques")
-      });
-
       // Use PUT for updates, POST for new responses
       const method = isUpdating ? 'PUT' : 'POST';
       const response = await fetch(`/api/company/response/${requestId}`, {
