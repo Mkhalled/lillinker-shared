@@ -39,8 +39,14 @@ const RequestOverview: React.FC<RequestOverviewProps> = ({ freelanceRequest }) =
             Freelancer
           </span>
           <p className="text-sm font-bold text-blue-700 dark:text-blue-400">
-            {freelanceRequest.freelance?.user.first_name}{' '}
-            {freelanceRequest.freelance?.user.last_name}
+            {freelanceRequest.freelance?.user ? (
+              <span className="font-medium">
+                {freelanceRequest.freelance.user.first_name.charAt(0).toUpperCase()}
+                {freelanceRequest.freelance.user.last_name.charAt(0).toUpperCase()}
+              </span>
+            ) : (
+              <span className="text-gray-400">--</span>
+            )}
           </p>
         </div>
 

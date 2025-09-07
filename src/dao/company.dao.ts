@@ -133,7 +133,17 @@ export class CompanyDAO {
         orderBy: { created_at: sort === 'newest' ? 'desc' : 'asc' },
         where: whereClause,
         include: {
-          freelance: true,
+          freelance: {
+            include: {
+              user: {
+                select: {
+                  first_name: true,
+                  last_name: true,
+                  id: true,
+                },
+              },
+            },
+          },
           options: {
             include: {
               platformService: true,

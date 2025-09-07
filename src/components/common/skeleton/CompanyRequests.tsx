@@ -15,6 +15,9 @@ const CompanySkeleton: React.FC = () => (
               <thead>
                 <tr className="bg-gray-2 text-left dark:bg-meta-4">
                   <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
+                    Pseudonyme
+                  </th>
+                  <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
                     TJM
                   </th>
                   <th className="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white">
@@ -30,8 +33,11 @@ const CompanySkeleton: React.FC = () => (
                 </tr>
               </thead>
               <tbody>
-                {[...Array(5)].map((_, index) => (
+                {[...Array(6)].map((_, index) => (
                   <tr key={index}>
+                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                      <Skeleton variant="text" width={40} height={20} />
+                    </td>
                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                       <Skeleton variant="text" width={40} height={20} />
                     </td>
