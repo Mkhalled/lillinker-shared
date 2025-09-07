@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
@@ -24,7 +24,6 @@
     "prisma:format": "prisma format",
     "prisma:seed": "NODE_ENV=development tsx prisma/seed.ts",
     "db:push": "prisma db push",
-    "db:seed": "NODE_ENV=development prisma db seed",
     "db:reset": "NODE_ENV=development prisma migrate reset"
   },
   "prisma": {
