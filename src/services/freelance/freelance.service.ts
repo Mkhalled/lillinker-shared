@@ -102,7 +102,7 @@ export class FreelanceService {
           if (platformService) {
             // Handle frais kilométriques calculation on the server side
             let processedSelectedService = selectedService;
-            if (platformService.label === 'Frais kilométriques' && selectedService.responseData) {
+            if (platformService.id === 5 && selectedService.responseData) {
               processedSelectedService = await this.calculateFraisKilometriques(
                 selectedService,
                 platformService

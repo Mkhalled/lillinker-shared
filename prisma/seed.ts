@@ -292,6 +292,7 @@ async function main(): Promise<void> {
     });
     const platformService5 = await prisma.platformService.create({
       data: {
+        id: 5,
         user_id: adminPlateforme.id,
         label: 'Frais kilométriques',
         description:

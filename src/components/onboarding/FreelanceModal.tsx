@@ -74,7 +74,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       // If service is being added (not removed)
       if (existingServiceIndex < 0) {
         const service = platformServices.find(s => s.id === serviceId);
-        if (service && service.label === 'Frais kilométriques') {
+        if (service && service.id === 5) {
           const montantCalculeField = service.dataFields?.find(
             field => field.label === 'Montant calculé'
           );

@@ -295,7 +295,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         {/* charge professionelle */}
         <td className="py-2 px-3">
           {isServiceAvailable && !isPending ? (
-            service.service.label === 'Frais kilométriques' ? (
+            service.service.id === 5 ? (
               <div className="w-20">
                 <InputField
                   type="number"
