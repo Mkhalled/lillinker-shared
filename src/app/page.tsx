@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import DefaultLayout from '@/components/Layouts/DefaultLayout';
 import 'jsvectormap/dist/jsvectormap.css';
 import 'flatpickr/dist/flatpickr.min.css';
 import '../css/satoshi.css';
