@@ -169,7 +169,6 @@ const OrganismesForm = () => {
 
       const result = await response.json();
       if (result.success) {
-        await fetchOrganismes(); // Refresh the list
         return { success: true };
       } else {
         console.error('Failed to save organisme:', result.error);
@@ -189,7 +188,6 @@ const OrganismesForm = () => {
 
       const result = await response.json();
       if (result.success) {
-        await fetchOrganismes(); // Refresh the list
         return true;
       } else {
         console.error('Failed to delete organisme:', result.error);
