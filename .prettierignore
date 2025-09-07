@@ -29,3 +29,9 @@ build
 # OS
 .DS_Store
 Thumbs.db 
+
+# ignorer tous les fichiers Markdown
+*.md
+
+# ou ignorer seulement le dossier docs/
+docs/**
