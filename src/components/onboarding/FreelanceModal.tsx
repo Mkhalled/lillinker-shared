@@ -69,9 +69,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
 
     // Then, if this is the "Frais kilométriques" service and it's being added, set default "Montant calculé" value
     setFormData((prev: FreelanceFormData) => {
-      const existingServiceIndex = prev.selectedServices.findIndex(
-        s => s.serviceId === serviceId
-      );
+      const existingServiceIndex = prev.selectedServices.findIndex(s => s.serviceId === serviceId);
 
       // If service is being added (not removed)
       if (existingServiceIndex < 0) {
@@ -80,22 +78,22 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
           const montantCalculeField = service.dataFields?.find(
             field => field.label === 'Montant calculé'
           );
-          
+
           if (montantCalculeField) {
             // Set default value of "0" for the "Montant calculé" field
             return {
               ...prev,
-              selectedServices: prev.selectedServices.map(s => 
-                s.serviceId === serviceId 
+              selectedServices: prev.selectedServices.map(s =>
+                s.serviceId === serviceId
                   ? {
                       ...s,
                       responseData: {
                         ...s.responseData,
-                        [montantCalculeField.id]: '0'
-                      }
+                        [montantCalculeField.id]: '0',
+                      },
                     }
                   : s
-              )
+              ),
             };
           }
         }

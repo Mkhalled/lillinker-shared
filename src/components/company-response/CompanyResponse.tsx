@@ -189,7 +189,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
             if (!existingResponses[service.service.id]) {
               // For "Frais kilométriques", get the calculated amount from freelance request
               let defaultChargePro = 0;
-              if (service.service.label === "Frais kilométriques") {
+              if (service.service.label === 'Frais kilométriques') {
                 const freelanceOption = data.freelance_request.options?.find(
                   (option: OptionInfo) => option.platformService.id === service.service.id
                 );
@@ -219,7 +219,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
           (service: { service: { id: number; label: string; description?: string | null } }) => {
             // For "Frais kilométriques", get the calculated amount from freelance request
             let defaultChargePro = 0;
-            if (service.service.label === "Frais kilométriques") {
+            if (service.service.label === 'Frais kilométriques') {
               const freelanceOption = data.freelance_request.options?.find(
                 (option: OptionInfo) => option.platformService.id === service.service.id
               );
@@ -271,7 +271,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
 
         // For "Frais kilométriques", get the calculated amount from freelance request
         let initialChargePro = 0;
-        if (isAvailable && companyService?.service.label === "Frais kilométriques") {
+        if (isAvailable && companyService?.service.label === 'Frais kilométriques') {
           const freelanceOption = responseData?.freelance_request.options?.find(
             option => option.platformService.id === serviceId
           );
@@ -302,7 +302,7 @@ const CompanyResponse: React.FC<CompanyResponseProps> = ({ requestId, onClose })
         const companyService = responseData?.company_services.find(
           cs => cs.service.id === serviceId
         );
-        if (companyService?.service.label === "Frais kilométriques") {
+        if (companyService?.service.label === 'Frais kilométriques') {
           const freelanceOption = responseData?.freelance_request.options?.find(
             option => option.platformService.id === serviceId
           );

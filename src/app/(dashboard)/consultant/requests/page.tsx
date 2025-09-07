@@ -17,7 +17,7 @@ type RequestsResponse = {
 
 const Societies = () => {
   const pathname = usePathname();
-  const searchParams = useSearchParams(); 
+  const searchParams = useSearchParams();
   const routeKey = pathname + searchParams.toString();
   const [responses, setResponses] = useState<RequestsResponse>({
     page: 1,

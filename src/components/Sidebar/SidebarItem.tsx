@@ -12,30 +12,28 @@ interface SidebarItemProps {
 }
 
 const SidebarItem = ({ item, pageName, setPageName }: SidebarItemProps) => {
-const router = useRouter();
-const pathname = usePathname();
+  const router = useRouter();
+  const pathname = usePathname();
 
-const handleClick = (e: React.MouseEvent) => {
-  e.preventDefault();
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
 
-  // Update page name state (your existing logic)
-  const updatedPageName =
-    pageName !== item.label.toLowerCase() ? item.label.toLowerCase() : "";
-  setPageName(updatedPageName);
+    // Update page name state (your existing logic)
+    const updatedPageName = pageName !== item.label.toLowerCase() ? item.label.toLowerCase() : '';
+    setPageName(updatedPageName);
 
-  if (item.route) {
-    const isCurrentRoute =
-      pathname === item.route || pathname.startsWith(`${item.route}?`);
+    if (item.route) {
+      const isCurrentRoute = pathname === item.route || pathname.startsWith(`${item.route}?`);
 
-    if (isCurrentRoute) {
-      // Force remount without refreshing the whole app
-      const resetUrl = `${item.route}?reset=${Date.now()}`;
-      router.push(resetUrl); // ✅ use push, not replace
-    } else {
-      router.push(item.route);
+      if (isCurrentRoute) {
+        // Force remount without refreshing the whole app
+        const resetUrl = `${item.route}?reset=${Date.now()}`;
+        router.push(resetUrl); // ✅ use push, not replace
+      } else {
+        router.push(item.route);
+      }
     }
-  }
-};
+  };
 
   const isActive = (menuItem: MenuItem): boolean => {
     if (menuItem.route === pathname) return true;

@@ -71,7 +71,7 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
   if (selectedResponse !== -1) {
     // Find the selected request data
     const selectedRequest = demandeData.find(demande => demande.id === selectedResponse);
-    
+
     return (
       <div className="space-y-4">
         {/* Request Info Cards */}
@@ -79,55 +79,58 @@ const MesDemandes = ({ demandeData, pagination, onPageChange }: MesDemandesProps
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark p-5">
             {/* Header with Back Button */}
             <div className="flex justify-between">
-                          {/* Cards with more width */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* TJM Card */}
-              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-100 dark:border-green-800/30 text-center">
-                <span className="block text-sm font-medium text-green-600 dark:text-green-400 mb-2">
-                  Taux Journalier Moyen (TJM)
-                </span>
-                <p className="text-2xl font-bold text-green-700 dark:text-green-400">
-                  {selectedRequest.tjm}€
-                </p>
-              </div>
+              {/* Cards with more width */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* TJM Card */}
+                <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-100 dark:border-green-800/30 text-center">
+                  <span className="block text-sm font-medium text-green-600 dark:text-green-400 mb-2">
+                    Taux Journalier Moyen (TJM)
+                  </span>
+                  <p className="text-2xl font-bold text-green-700 dark:text-green-400">
+                    {selectedRequest.tjm}€
+                  </p>
+                </div>
 
-              {/* Days Card */}
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800/30 text-center">
-                <span className="block text-sm font-medium text-blue-600 dark:text-blue-400 mb-2">
-                  Jours travaillés
-                </span>
-                <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">
-                  {selectedRequest.days}
-                </p>
-              </div>
+                {/* Days Card */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800/30 text-center">
+                  <span className="block text-sm font-medium text-blue-600 dark:text-blue-400 mb-2">
+                    Jours travaillés
+                  </span>
+                  <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">
+                    {selectedRequest.days}
+                  </p>
+                </div>
 
-              {/* Total CA Card */}
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-100 dark:border-purple-800/30 text-center">
-                <span className="block text-sm font-medium text-purple-600 dark:text-purple-400 mb-2">
-                  Chiffre d&apos;Affaires Total
-                </span>
-                <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">
-                  {(selectedRequest.tjm * selectedRequest.days).toLocaleString('fr-FR')}€
-                </p>
+                {/* Total CA Card */}
+                <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-100 dark:border-purple-800/30 text-center">
+                  <span className="block text-sm font-medium text-purple-600 dark:text-purple-400 mb-2">
+                    Chiffre d&apos;Affaires Total
+                  </span>
+                  <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">
+                    {(selectedRequest.tjm * selectedRequest.days).toLocaleString('fr-FR')}€
+                  </p>
+                </div>
               </div>
-            </div>
               <button
                 onClick={() => setSelectedResponse(-1)}
                 className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 h-10 "
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
                 </svg>
                 Retour aux demandes
               </button>
             </div>
           </div>
         )}
-        
+
         {/* Responses Table */}
-        <MesReponses
-          requestId={selectedResponse}
-        />
+        <MesReponses requestId={selectedResponse} />
       </div>
     );
   }

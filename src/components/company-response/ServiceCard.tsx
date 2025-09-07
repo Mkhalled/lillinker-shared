@@ -1,5 +1,5 @@
 'use client';
-import { CheckCircle, ChevronDown, ChevronUp} from 'lucide-react';
+import { CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 
@@ -111,11 +111,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 >
                   {service.service.label}
                 </label>
-              {service.service.description && (
-                 <DescriptionToolTip
-                  title={service.service.label}
-                  description={service.service.description}
-                />)}
+                {service.service.description && (
+                  <DescriptionToolTip
+                    title={service.service.label}
+                    description={service.service.description}
+                  />
+                )}
                 {isPending && (
                   <span className="inline-flex items-center bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs px-2 py-1 rounded-full font-medium">
                     En attente
@@ -213,11 +214,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 >
                   {service.service.label}
                 </label>
-                 {service.service.description && (
-                 <DescriptionToolTip
-                  title={service.service.label}
-                  description={service.service.description}
-                />)}
+                {service.service.description && (
+                  <DescriptionToolTip
+                    title={service.service.label}
+                    description={service.service.description}
+                  />
+                )}
                 {isPending && (
                   <span className="inline-flex items-center bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs px-2 py-1 rounded-full font-medium">
                     En attente
@@ -293,7 +295,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         {/* charge professionelle */}
         <td className="py-2 px-3">
           {isServiceAvailable && !isPending ? (
-            service.service.label === "Frais kilométriques" ? (
+            service.service.label === 'Frais kilométriques' ? (
               <div className="w-20">
                 <InputField
                   type="number"

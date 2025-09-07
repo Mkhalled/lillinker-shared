@@ -103,7 +103,10 @@ export class FreelanceService {
             // Handle frais kilométriques calculation on the server side
             let processedSelectedService = selectedService;
             if (platformService.label === 'Frais kilométriques' && selectedService.responseData) {
-              processedSelectedService = await this.calculateFraisKilometriques(selectedService, platformService);
+              processedSelectedService = await this.calculateFraisKilometriques(
+                selectedService,
+                platformService
+              );
             }
 
             // Convert responseData object to appropriate JSON structure based on dataFields
@@ -252,9 +255,15 @@ export class FreelanceService {
       const puissanceFiscaleField = platformService.dataFields.find(
         field => field.label === 'Puissance fiscale du véhicule'
       );
-      const distanceField = platformService.dataFields.find(field => field.label === 'Distance parcourue');
-      const typeVehiculeField = platformService.dataFields.find(field => field.label === 'Type de véhicule');
-      const montantCalculeField = platformService.dataFields.find(field => field.label === 'Montant calculé');
+      const distanceField = platformService.dataFields.find(
+        field => field.label === 'Distance parcourue'
+      );
+      const typeVehiculeField = platformService.dataFields.find(
+        field => field.label === 'Type de véhicule'
+      );
+      const montantCalculeField = platformService.dataFields.find(
+        field => field.label === 'Montant calculé'
+      );
 
       if (!puissanceFiscaleField || !distanceField || !typeVehiculeField || !montantCalculeField) {
         logger.warn('Missing required fields for frais kilométriques calculation', {
@@ -275,7 +284,11 @@ export class FreelanceService {
 
       // Calculate if all required fields are filled
       if (puissanceFiscale && distance && typeVehicule) {
-        const calculatedAmount = await calculateFraisKilometriquesAmount(puissanceFiscale, distance, typeVehicule);
+        const calculatedAmount = await calculateFraisKilometriquesAmount(
+          puissanceFiscale,
+          distance,
+          typeVehicule
+        );
 
         logger.info('Frais kilométriques calculated successfully', {
           ...logContext,

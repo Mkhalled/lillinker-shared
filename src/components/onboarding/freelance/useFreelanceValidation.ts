@@ -104,7 +104,7 @@ export const useFreelanceValidation = (
               if (field.label === 'Montant calculé') {
                 continue;
               }
-              
+
               const fieldResponseData = selectedService.responseData?.[field.id];
               if (!fieldResponseData || fieldResponseData.trim() === '') {
                 return false; // Data is required but not provided for this field

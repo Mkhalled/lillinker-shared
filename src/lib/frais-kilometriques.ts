@@ -26,7 +26,7 @@ export async function calculateFraisKilometriquesAmount(
   typeVehicule: string
 ): Promise<number> {
   const distance = parseFloat(distanceParcourue);
-  
+
   if (isNaN(distance) || distance <= 0) {
     return 0;
   }
@@ -57,7 +57,7 @@ export async function calculateFraisKilometriquesAmount(
 
     // Replace 'd' with the actual distance and evaluate the formula
     const formulaWithDistance = selectedFormula.replace(/d/g, distance.toString());
-    
+
     // Safely evaluate the mathematical expression
     let montantCalcule = 0;
     try {
@@ -88,7 +88,6 @@ export async function calculateFraisKilometriquesAmount(
     });
 
     return finalAmount;
-    
   } catch (error) {
     logger.error('Error calculating frais kilométriques:', error);
     return 0;

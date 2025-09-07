@@ -524,10 +524,7 @@ const CompanyInfoForm = ({ profile, onUpdate, onMessage }: CompanyInfoFormProps)
                         label={label.name}
                       />
                       {label.description && (
-                        <DescriptionToolTip
-                          title={label.name}
-                          description={label.description}
-                        />
+                        <DescriptionToolTip title={label.name} description={label.description} />
                       )}
                     </div>
                   ))}

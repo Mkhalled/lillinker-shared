@@ -120,7 +120,7 @@ export class FreelanceDao {
               select: {
                 first_name: true,
                 last_name: true,
-                id: true
+                id: true,
               },
             },
           },

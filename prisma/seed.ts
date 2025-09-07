@@ -319,7 +319,8 @@ async function main(): Promise<void> {
             },
             {
               label: 'Montant calculé',
-              description: 'Montant des frais kilométriques calculé automatiquement selon le barème fiscal',
+              description:
+                'Montant des frais kilométriques calculé automatiquement selon le barème fiscal',
               data_type: 'NUMBER',
             },
           ],
@@ -353,7 +354,7 @@ async function main(): Promise<void> {
             },
             {
               label: 'Assurance chômage',
-              description: 'Couverture perte d\'emploi',
+              description: "Couverture perte d'emploi",
               type: 'PATRONAL',
               pourcentage_patronal: 4.05,
             },
@@ -378,7 +379,7 @@ async function main(): Promise<void> {
 
     // Create Frais Kilométriques Reference Table Data with Formula Structure
     logger.info('Creating frais kilométriques reference data...');
-    
+
     const fraisKilometriquesFormulas = [
       {
         puissance: '3 cv et moins',
@@ -661,7 +662,8 @@ async function main(): Promise<void> {
             {
               service_id: platformService1.id,
               service_name: 'Une avance sur salaire',
-              service_description: "Paiement mensuel même si le client n'a pas encore réglé la facture",
+              service_description:
+                "Paiement mensuel même si le client n'a pas encore réglé la facture",
               is_available: true,
               charge_pro: 0,
               comment: 'Service inclus dans notre offre de portage',
@@ -669,7 +671,8 @@ async function main(): Promise<void> {
             {
               service_id: platformService2.id,
               service_name: 'Une fin de contrat avec rupture conventionnelle',
-              service_description: 'La rupture conventionnelle permet de mettre fin au CDI de portage salarial',
+              service_description:
+                'La rupture conventionnelle permet de mettre fin au CDI de portage salarial',
               is_available: true,
               charge_pro: 0,
               comment: 'Procédure de rupture conventionnelle disponible',
@@ -677,7 +680,7 @@ async function main(): Promise<void> {
             {
               service_id: platformService3.id,
               service_name: 'Un interlocuteur unique dédié',
-              service_description: 'Bénéficiez d\'un interlocuteur unique qui connaît votre dossier',
+              service_description: "Bénéficiez d'un interlocuteur unique qui connaît votre dossier",
               is_available: true,
               charge_pro: 0,
               comment: 'Interlocuteur dédié pour un suivi personnalisé',
@@ -685,7 +688,8 @@ async function main(): Promise<void> {
             {
               service_id: platformService4.id,
               service_name: 'Rétrocession de la TVA sur frais professionnels',
-              service_description: 'Possibilité de récupérer la TVA payée sur vos dépenses professionnelles',
+              service_description:
+                'Possibilité de récupérer la TVA payée sur vos dépenses professionnelles',
               is_available: true,
               charge_pro: 0,
               comment: 'TVA récupérable sur tous vos frais professionnels',
@@ -733,7 +737,7 @@ async function main(): Promise<void> {
           ],
           frais_de_gestion: {
             label: 'Frais de gestion UNIT PORTAGE',
-            description: 'Taux de gestion appliqué sur le chiffre d\'affaires',
+            description: "Taux de gestion appliqué sur le chiffre d'affaires",
             value: 7,
             comment: 'Taux compétitif avec accompagnement personnalisé',
           },
@@ -743,50 +747,50 @@ async function main(): Promise<void> {
     // Link company responses to organismes with proper additional_data
     await prisma.companyResponseOrganisme.createMany({
       data: [
-        { 
-          company_response_id: response1UnitPortage.id, 
+        {
+          company_response_id: response1UnitPortage.id,
           organisme_id: urssafSecSoc.id,
           additional_data: {
             organisme_label: 'URSSAF – Sécurité sociale',
             total_patronal: 45.5,
             total_salarial: 22.5,
-          }
+          },
         },
-        { 
-          company_response_id: response1UnitPortage.id, 
+        {
+          company_response_id: response1UnitPortage.id,
           organisme_id: csgCrds.id,
           additional_data: {
             organisme_label: 'CSG / CRDS',
             total_patronal: 0,
             total_salarial: 9.7,
-          }
+          },
         },
-        { 
-          company_response_id: response1UnitPortage.id, 
+        {
+          company_response_id: response1UnitPortage.id,
           organisme_id: franceTravail.id,
           additional_data: {
             organisme_label: 'France Travail',
             total_patronal: 4.05,
             total_salarial: 2.4,
-          }
+          },
         },
-        { 
-          company_response_id: response1UnitPortage.id, 
+        {
+          company_response_id: response1UnitPortage.id,
           organisme_id: retraiteComplementaire.id,
           additional_data: {
             organisme_label: 'AGIRC-ARRCO',
             total_patronal: 6.01,
             total_salarial: 3.15,
-          }
+          },
         },
-        { 
-          company_response_id: response1UnitPortage.id, 
+        {
+          company_response_id: response1UnitPortage.id,
           organisme_id: autresContributions.id,
           additional_data: {
             organisme_label: 'Autres contributions',
             total_patronal: 1.5,
             total_salarial: 0,
-          }
+          },
         },
       ],
     });

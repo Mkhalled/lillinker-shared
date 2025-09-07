@@ -84,7 +84,7 @@ const DescriptionToolTip: React.FC<DescriptionToolTipProps> = ({
       />
 
       {/* Tooltip Content */}
-      <div 
+      <div
         className={`fixed ${getPositionClass()} z-[9999] bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-xl p-4 ${getMaxWidthClass()} w-full mx-4 max-h-[70vh] overflow-y-auto`}
       >
         <div className="flex items-start justify-between mb-3">
@@ -106,7 +106,7 @@ const DescriptionToolTip: React.FC<DescriptionToolTipProps> = ({
           <div className="text-gray-600 dark:text-slate-300 mt-1 leading-relaxed whitespace-pre-wrap">
             {description}
           </div>
-          
+
           {/* Additional content if provided */}
           {children && (
             <div className="mt-3 pt-3 border-t border-gray-200 dark:border-slate-600">

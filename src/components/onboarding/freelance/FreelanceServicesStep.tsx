@@ -41,7 +41,6 @@ export const FreelanceServicesStep = ({
   parseChoices,
   error,
 }: FreelanceServicesStepProps) => {
-  
   return (
     <div className="space-y-6">
       <div>
@@ -189,7 +188,9 @@ export const FreelanceServicesStep = ({
                                           );
                                         }}
                                         placeholder="Entrez un nombre... (obligatoire)"
-                                        error={!fieldResponseData || fieldResponseData.trim() === ''}
+                                        error={
+                                          !fieldResponseData || fieldResponseData.trim() === ''
+                                        }
                                         required
                                       />
                                     </div>

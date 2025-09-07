@@ -51,10 +51,7 @@ export const FreelancePortageStep = ({
                     size="sm"
                   />
                   {portage.description && (
-                    <DescriptionToolTip
-                      title={portage.name}
-                      description={portage.description}
-                    />
+                    <DescriptionToolTip title={portage.name} description={portage.description} />
                   )}
                 </div>
               ))}
