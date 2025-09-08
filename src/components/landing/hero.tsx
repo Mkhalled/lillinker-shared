@@ -45,7 +45,7 @@ const Hero = () => {
         return (
           <div
             id="home"
-            className="min-h-screen flex items-center py-16 md:pt-20 bg-gradient-to-br from-blue-50 to-blue-100"
+            className="min-h-screen flex items-center py-16 pt-20 bg-gradient-to-br from-blue-50 to-blue-100"
           >
             <motion.div
               initial={{ opacity: 0, y: 50 }}
