@@ -5,8 +5,8 @@ import { Button } from '../ui/button/Button';
 
 export const About = () => {
   return (
-    <section className="py-20 bg-white">
-      <div className="container mx-auto px-6 sm:px-8 lg:px-12">
+    <section className="py-20 bg-white overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-full">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: 50 }}

@@ -13,11 +13,18 @@ import { Button } from '../ui/button/Button';
 interface HeaderProps {
   onHomeClick?: () => void;
   onAboutClick?: () => void;
+  onHowItWorksClick?: () => void;
   onServicesClick?: () => void;
   onContactClick?: () => void;
 }
 
-const Header = ({ onHomeClick, onAboutClick, onServicesClick, onContactClick }: HeaderProps) => {
+const Header = ({
+  onHomeClick,
+  onAboutClick,
+  onHowItWorksClick,
+  onServicesClick,
+  onContactClick,
+}: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, status } = useSession();
   const { setLoading } = useLoading();
@@ -50,44 +57,50 @@ const Header = ({ onHomeClick, onAboutClick, onServicesClick, onContactClick }: 
     router.push(targetRoute);
   };
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
-      <div className="container mx-auto px-6 sm:px-8 lg:px-12">
+    <header className=" bg-white/95 backdrop-blur-sm border-b border-gray-100">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-full">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-gray-900">
+          <div className="flex items-center min-w-0">
+            <Link href="/" className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
               LILLINKER
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
             <button
               onClick={onHomeClick}
-              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer whitespace-nowrap"
             >
               Home
             </button>
             <button
+              onClick={onHowItWorksClick}
+              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer whitespace-nowrap"
+            >
+              How it works
+            </button>
+            <button
               onClick={onAboutClick}
-              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer whitespace-nowrap"
             >
               About
             </button>
             <button
               onClick={onServicesClick}
-              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer whitespace-nowrap"
             >
               Services
             </button>
             <button
               onClick={onContactClick}
-              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+              className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer whitespace-nowrap"
             >
               Contact
             </button>
           </nav>
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-3 lg:space-x-4 flex-shrink-0">
             {status === 'authenticated' ? (
               <Button
                 onClick={getDashboardHref}
@@ -105,9 +118,9 @@ const Header = ({ onHomeClick, onAboutClick, onServicesClick, onContactClick }: 
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button variant="ghost" size="sm" onClick={toggleMenu}>
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <div className="md:hidden flex-shrink-0">
+            <Button variant="ghost" size="sm" onClick={toggleMenu} className="p-2">
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
@@ -133,6 +146,15 @@ const Header = ({ onHomeClick, onAboutClick, onServicesClick, onContactClick }: 
                 className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2 text-left"
               >
                 About
+              </button>
+              <button
+                onClick={() => {
+                  onHowItWorksClick?.();
+                  closeMenu();
+                }}
+                className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2 text-left"
+              >
+                How it works
               </button>
               <button
                 onClick={() => {
