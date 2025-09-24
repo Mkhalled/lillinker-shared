@@ -17,39 +17,11 @@ const ReponseSkeleton: React.FC = () => (
                   <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
                     Pseudonyme
                   </th>
-                  <th className="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white">
-                    Chiffre d&apos;Affaires
+                  <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
+                    Total Charges
                   </th>
                   <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
-                    Frais de Gestion
-                  </th>
-                  <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
-                    Total Patronal
-                  </th>
-                  <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
-                    Total Salarial
-                  </th>
-                  <th className="min-w-[140px] px-4 py-4 font-medium text-black dark:text-white">
-                    Charges Pro.
-                  </th>
-                  <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
-                    <span className="flex items-center gap-1">
-                      Reste CA
-                      <svg
-                        className="w-4 h-4 opacity-50"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                        />
-                      </svg>
-                    </span>
+                    Reste CA + Charges Pro
                   </th>
                   <th className="min-w-[100px] px-4 py-4 font-medium text-black dark:text-white">
                     % Reçu

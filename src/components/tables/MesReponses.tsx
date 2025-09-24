@@ -5,6 +5,7 @@ import { ExistingCompanyResponse } from '@/types/company-response';
 import { FreelanceRequest } from '@/types/freelance';
 
 import ReponseSkeleton from '../common/skeleton/Reponses';
+import ResponseDetailsFullPage from '@/components/details/ResponseDetailsFullPage';
 
 type MesReponsesProps = {
   requestId: number;
@@ -15,7 +16,19 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedResponse, setSelectedResponse] = useState<ExistingCompanyResponse | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
   const pageSize = 5; // 5 responses per page
+
+  const handleViewDetails = (response: ExistingCompanyResponse) => {
+    setSelectedResponse(response);
+    setShowDetails(true);
+  };
+
+  const handleBackToList = () => {
+    setShowDetails(false);
+    setSelectedResponse(null);
+  };
 
   useEffect(() => {
     const fetchRequestData = async () => {
@@ -41,24 +54,44 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
     const chiffreAffaires = tjm * days;
     const fraisGestionPercent = response.response_data.frais_de_gestion.value || 0;
     const fraisGestionAmount = (chiffreAffaires * fraisGestionPercent) / 100;
+    
+    // Get social contribution rates
     const totalPatronalPercent =
       response.response_data.selected_organismes?.reduce(
         (sum, org) => sum + org.total_patronal,
         0
       ) || 0;
-    const totalPatronalAmount = (chiffreAffaires * totalPatronalPercent) / 100;
     const totalSalarialPercent =
       response.response_data.selected_organismes?.reduce(
         (sum, org) => sum + org.total_salarial,
         0
       ) || 0;
-    const totalSalarialAmount = (chiffreAffaires * totalSalarialPercent) / 100;
+    
+    // Professional charges
     const totalChargesProAmount =
       response.response_data.services?.reduce((sum, service) => sum + service.charge_pro, 0) || 0;
 
-    // Combined calculations
+    // French portage calculation: CA - Management fees = remaining amount
+    const remainingAfterManagement = chiffreAffaires - fraisGestionAmount;
+    
+    // Calculate gross salary: remaining / (1 + employer rate%)
+    const employerRateDecimal = totalPatronalPercent / 100;
+    const grossSalary = remainingAfterManagement / (1 + employerRateDecimal);
+    
+    // Calculate actual patronal charges from gross salary
+    const totalPatronalAmount = grossSalary * employerRateDecimal;
+    
+    // Calculate employee social contributions from gross salary
+    const totalSalarialAmount = (grossSalary * totalSalarialPercent) / 100;
+    
+    // Net salary after employee contributions
+    const netSalary = grossSalary - totalSalarialAmount;
+    
+    // Total charges (employer + employee)
     const totalCharges = totalPatronalAmount + totalSalarialAmount;
-    const restCANet = chiffreAffaires - fraisGestionAmount - totalCharges + totalChargesProAmount;
+    
+    // Final amount received (net salary + professional services)
+    const restCANet = netSalary + totalChargesProAmount;
     const percentageRecu = chiffreAffaires > 0 ? (restCANet / chiffreAffaires) * 100 : 0;
 
     return {
@@ -73,6 +106,15 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
       totalCharges,
       restCANet,
       percentageRecu,
+      grossSalary,
+      netSalary,
+      // Additional properties for ResponseDetails modal
+      brutSalary: grossSalary,
+      chargesPatronales: totalPatronalAmount,
+      chargesSalariales: totalSalarialAmount,
+      netBeforeServices: netSalary,
+      selectedServicesTotal: totalChargesProAmount,
+      netFinal: restCANet,
     };
   };
 
@@ -129,6 +171,25 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
 
   if (loading) {
     return <ReponseSkeleton />;
+  }
+
+  // Show details page if a response is selected
+  if (showDetails && selectedResponse && requestData) {
+    return (
+      <ResponseDetailsFullPage
+        response={selectedResponse}
+        metrics={calculateMetrics(
+          selectedResponse,
+          parseFloat(requestData.tjm),
+          parseInt(requestData.days)
+        )}
+        requestData={{
+          tjm: parseFloat(requestData.tjm),
+          days: parseInt(requestData.days),
+        }}
+        onBack={handleBackToList}
+      />
+    );
   }
 
   return (
@@ -230,6 +291,29 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
                       </td>
                       <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                         <div className="flex items-center space-x-3.5">
+                            <button
+                          className="group"
+                          title="Voir les détails"
+                          onClick={() => handleViewDetails(response)}
+                        >
+                          <svg
+                            className="fill-current group-hover:text-blue-500"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M8.99981 14.8219C3.43106 14.8219 0.674805 9.50624 0.562305 9.28124C0.47793 9.11249 0.47793 8.88749 0.562305 8.71874C0.674805 8.49374 3.43106 3.20624 8.99981 3.20624C14.5686 3.20624 17.3248 8.49374 17.4373 8.71874C17.5217 8.88749 17.5217 9.11249 17.4373 9.28124C17.3248 9.50624 14.5686 14.8219 8.99981 14.8219ZM1.85605 8.99999C2.4748 10.0406 4.89356 13.5562 8.99981 13.5562C13.1061 13.5562 15.5248 10.0406 16.1436 8.99999C15.5248 7.95936 13.1061 4.44374 8.99981 4.44374C4.89356 4.44374 2.4748 7.95936 1.85605 8.99999Z"
+                              fill=""
+                            />
+                            <path
+                              d="M9 11.3906C7.67812 11.3906 6.60938 10.3219 6.60938 9C6.60938 7.67813 7.67812 6.60938 9 6.60938C10.3219 6.60938 11.3906 7.67813 11.3906 9C11.3906 10.3219 10.3219 11.3906 9 11.3906ZM9 7.875C8.38125 7.875 7.875 8.38125 7.875 9C7.875 9.61875 8.38125 10.125 9 10.125C9.61875 10.125 10.125 9.61875 10.125 9C10.125 8.38125 9.61875 7.875 9 7.875Z"
+                              fill=""
+                            />
+                          </svg>
+                        </button>
                           <button className="group" title="Télécharger PDF">
                             <svg
                               className="fill-current group-hover:text-green-500"
@@ -368,6 +452,8 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
           </div>
         </div>
       )}
+
+
     </div>
   );
 };
