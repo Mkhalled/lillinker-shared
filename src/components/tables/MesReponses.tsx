@@ -9,9 +9,10 @@ import ResponseDetails from '../details/ResponseDetails';
 
 type MesReponsesProps = {
   requestId: number;
+  onShowDetails?: (response: ExistingCompanyResponse, requestData: { tjm: number; days: number }) => void;
 };
 
-const MesReponses = ({ requestId }: MesReponsesProps) => {
+const MesReponses = ({ requestId, onShowDetails }: MesReponsesProps) => {
   const [requestData, setRequestData] = useState<FreelanceRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,8 +22,17 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
   const pageSize = 5; // 5 responses per page
 
   const handleViewDetails = (response: ExistingCompanyResponse) => {
-    setSelectedResponse(response);
-    setShowDetails(true);
+    if (onShowDetails && requestData) {
+      // Pass control to parent component
+      onShowDetails(response, {
+        tjm: parseFloat(requestData.tjm),
+        days: parseInt(requestData.days),
+      });
+    } else {
+      // Fallback to internal handling
+      setSelectedResponse(response);
+      setShowDetails(true);
+    }
   };
 
   const handleBackToList = () => {
