@@ -5,7 +5,7 @@ import { ExistingCompanyResponse } from '@/types/company-response';
 import { FreelanceRequest } from '@/types/freelance';
 
 import ReponseSkeleton from '../common/skeleton/Reponses';
-import ResponseDetailsFullPage from '@/components/details/ResponseDetailsFullPage';
+import ResponseDetails from '../details/ResponseDetails';
 
 type MesReponsesProps = {
   requestId: number;
@@ -176,7 +176,7 @@ const MesReponses = ({ requestId }: MesReponsesProps) => {
   // Show details page if a response is selected
   if (showDetails && selectedResponse && requestData) {
     return (
-      <ResponseDetailsFullPage
+      <ResponseDetails
         response={selectedResponse}
         metrics={calculateMetrics(
           selectedResponse,
