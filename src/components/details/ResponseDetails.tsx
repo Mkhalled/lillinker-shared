@@ -192,14 +192,38 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({ response, metrics, re
                     <td className="p-3 text-right">{((metrics.chiffreAffaires || 0) - (metrics.fraisGestionAmount || 0)).toFixed(2)} €</td>
                     <td className="p-3 text-right">{(((metrics.chiffreAffaires || 0) - (metrics.fraisGestionAmount || 0)) / (metrics.chiffreAffaires || 1) * 100).toFixed(2)} %</td>
                   </tr>
-                  
-                  {/* Gross Salary */}
-                  <tr className="border-b">
-                    <td className="p-3">Salaire brut</td>
-                    <td className="p-3 text-right">{(metrics.brutSalary || 0).toFixed(2)} €</td>
-                    <td className="p-3 text-right">{((metrics.brutSalary || 0) / (metrics.chiffreAffaires || 1) * 100).toFixed(2)} %</td>
+                   {/* Detailed Employer Social Contributions (for information) */}
+                  <tr className="border-b bg-gray-100">
+                    <td className="p-3 text-sm font-semibold italic text-gray-700" colSpan={3}>
+                      Charges sociales patronales (payées par l&apos;employeur - à titre informatif)
+                    </td>
                   </tr>
+                  {response.response_data?.selected_organismes?.map((organisme: SelectedOrganisme, index: number) => (
+                    <tr key={`patronal-${index}`} className="border-b bg-gray-50">
+                      <td className="p-3 pl-6 text-sm italic">• {organisme.label} (Patronal)</td>
+                      <td className="p-3 text-right text-sm italic">{((metrics.brutSalary || 0) * (organisme.total_patronal || 0) / 100).toFixed(2)} €</td>
+                      <td className="p-3 text-right text-sm italic">{(organisme.total_patronal || 0).toFixed(3)} %</td>
+                    </tr>
+                  ))}
                   
+                  {/* Total Employer Contributions */}
+                  <tr className="border-b bg-gray-100">
+                    <td className="p-3 text-sm font-semibold italic">Total charges patronales</td>
+                    <td className="p-3 text-right text-sm font-semibold italic">{(metrics.chargesPatronales || 0).toFixed(2)} €</td>
+                    <td className="p-3 text-right text-sm font-semibold italic">{((metrics.chargesPatronales || 0) / (metrics.brutSalary || 1) * 100).toFixed(2)} %</td>
+                  </tr>
+                  {/* Gross Salary */}
+                  <tr className="border-b bg-blue-50">
+                    <td className="p-3 font-semibold">Salaire brut</td>
+                    <td className="p-3 text-right font-semibold">{(metrics.brutSalary || 0).toFixed(2)} €</td>
+                    <td className="p-3 text-right font-semibold">{((metrics.brutSalary || 0) / (metrics.chiffreAffaires || 1) * 100).toFixed(2)} %</td>
+                  </tr>
+                  {/* Detailed Employer Social Contributions (for information) */}
+                    <tr className="border-b bg-gray-100">
+                    <td className="p-3 text-sm font-semibold italic text-gray-700" colSpan={3}>
+                      Charges sociales salariales (payées par le salarié)
+                    </td>
+                  </tr>
                   {/* Detailed Employee Social Contributions */}
                   {response.response_data?.selected_organismes?.map((organisme: SelectedOrganisme, index: number) => (
                     <tr key={`salarial-${index}`} className="border-b">
@@ -240,34 +264,13 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({ response, metrics, re
                       <td className="p-3 text-right font-semibold">{((metrics.selectedServicesTotal || 0) / (metrics.chiffreAffaires || 1) * 100).toFixed(2)} %</td>
                     </tr>
                   )}
-                  
-                  {/* Final Net Amount */}
+                   {/* Final Net Amount */}
                   <tr className="border-b font-bold bg-yellow-50">
                     <td className="p-3">Net final reçu</td>
                     <td className="p-3 text-right">{(metrics.netFinal || 0).toFixed(2)} €</td>
                     <td className="p-3 text-right">{(metrics.percentageRecu || 0).toFixed(2)} %</td>
                   </tr>
                   
-                  {/* Detailed Employer Social Contributions (for information) */}
-                  <tr className="border-b bg-gray-100">
-                    <td className="p-3 text-sm font-semibold italic text-gray-700" colSpan={3}>
-                      Charges sociales patronales (payées par l&apos;employeur - à titre informatif)
-                    </td>
-                  </tr>
-                  {response.response_data?.selected_organismes?.map((organisme: SelectedOrganisme, index: number) => (
-                    <tr key={`patronal-${index}`} className="border-b bg-gray-50">
-                      <td className="p-3 pl-6 text-sm italic">• {organisme.label} (Patronal)</td>
-                      <td className="p-3 text-right text-sm italic">{((metrics.brutSalary || 0) * (organisme.total_patronal || 0) / 100).toFixed(2)} €</td>
-                      <td className="p-3 text-right text-sm italic">{(organisme.total_patronal || 0).toFixed(3)} %</td>
-                    </tr>
-                  ))}
-                  
-                  {/* Total Employer Contributions */}
-                  <tr className="border-b bg-gray-100">
-                    <td className="p-3 text-sm font-semibold italic">Total charges patronales</td>
-                    <td className="p-3 text-right text-sm font-semibold italic">{(metrics.chargesPatronales || 0).toFixed(2)} €</td>
-                    <td className="p-3 text-right text-sm font-semibold italic">{((metrics.chargesPatronales || 0) / (metrics.brutSalary || 1) * 100).toFixed(2)} %</td>
-                  </tr>
                 </tbody>
               </table>
               
