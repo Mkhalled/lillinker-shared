@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 
+import { calculateMetrics } from '@/lib/payroll-calculations';
 import { ExistingCompanyResponse } from '@/types/company-response';
 import { FreelanceRequest } from '@/types/freelance';
 
@@ -10,9 +11,10 @@ import ResponseDetails from '../details/ResponseDetails';
 type MesReponsesProps = {
   requestId: number;
   onShowDetails?: (response: ExistingCompanyResponse, requestData: { tjm: number; days: number }) => void;
+  onBack?: () => void;
 };
 
-const MesReponses = ({ requestId, onShowDetails }: MesReponsesProps) => {
+const MesReponses = ({ requestId, onShowDetails, onBack }: MesReponsesProps) => {
   const [requestData, setRequestData] = useState<FreelanceRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,73 +62,7 @@ const MesReponses = ({ requestId, onShowDetails }: MesReponsesProps) => {
     }
   }, [requestId]);
 
-  const calculateMetrics = (response: ExistingCompanyResponse, tjm: number, days: number) => {
-    const chiffreAffaires = tjm * days;
-    const fraisGestionPercent = response.response_data.frais_de_gestion.value || 0;
-    const fraisGestionAmount = (chiffreAffaires * fraisGestionPercent) / 100;
-    
-    // Get social contribution rates
-    const totalPatronalPercent =
-      response.response_data.selected_organismes?.reduce(
-        (sum, org) => sum + org.total_patronal,
-        0
-      ) || 0;
-    const totalSalarialPercent =
-      response.response_data.selected_organismes?.reduce(
-        (sum, org) => sum + org.total_salarial,
-        0
-      ) || 0;
-    
-    // Professional charges
-    const totalChargesProAmount =
-      response.response_data.services?.reduce((sum, service) => sum + service.charge_pro, 0) || 0;
 
-    // French portage calculation: CA - Management fees = remaining amount
-    const remainingAfterManagement = chiffreAffaires - fraisGestionAmount;
-    
-    // Calculate gross salary: remaining / (1 + employer rate%)
-    const employerRateDecimal = totalPatronalPercent / 100;
-    const grossSalary = remainingAfterManagement / (1 + employerRateDecimal);
-    
-    // Calculate actual patronal charges from gross salary
-    const totalPatronalAmount = grossSalary * employerRateDecimal;
-    
-    // Calculate employee social contributions from gross salary
-    const totalSalarialAmount = (grossSalary * totalSalarialPercent) / 100;
-    
-    // Net salary after employee contributions
-    const netSalary = grossSalary - totalSalarialAmount;
-    
-    // Total charges (employer + employee)
-    const totalCharges = totalPatronalAmount + totalSalarialAmount;
-    
-    // Final amount received (net salary + professional services)
-    const restCANet = netSalary + totalChargesProAmount;
-    const percentageRecu = chiffreAffaires > 0 ? (restCANet / chiffreAffaires) * 100 : 0;
-
-    return {
-      chiffreAffaires,
-      fraisGestionPercent,
-      totalPatronalPercent,
-      totalSalarialPercent,
-      fraisGestionAmount,
-      totalPatronalAmount,
-      totalSalarialAmount,
-      totalChargesProAmount,
-      totalCharges,
-      restCANet,
-      percentageRecu,
-      grossSalary,
-      netSalary,
-      // Additional properties for ResponseDetails modal
-      brutSalary: grossSalary,
-      chargesPatronales: totalPatronalAmount,
-      chargesSalariales: totalSalarialAmount,
-      netBeforeServices: netSalary,
-      selectedServicesTotal: totalChargesProAmount,
-      netFinal: restCANet,
-    };
-  };
 
   // Sorting and Pagination
   const sortedResponses = requestData?.responses
@@ -203,9 +139,68 @@ const MesReponses = ({ requestId, onShowDetails }: MesReponsesProps) => {
   }
 
   return (
-    <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      {/* Header with New Request Button */}
-      <div className="flex flex-col space-y-3 px-5 pt-6 pb-2 sm:px-7.5 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
+    <div className="space-y-4">
+      {/* Request Info Cards */}
+      {requestData && (
+        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark p-5">
+          {/* Header with Back Button */}
+          <div className="flex justify-between">
+            {/* Cards with more width */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* TJM Card */}
+              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-100 dark:border-green-800/30 text-center">
+                <span className="block text-sm font-medium text-green-600 dark:text-green-400 mb-2">
+                  Taux Journalier Moyen (TJM)
+                </span>
+                <p className="text-2xl font-bold text-green-700 dark:text-green-400">
+                  {requestData.tjm}€
+                </p>
+              </div>
+
+              {/* Days Card */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800/30 text-center">
+                <span className="block text-sm font-medium text-blue-600 dark:text-blue-400 mb-2">
+                  Jours travaillés
+                </span>
+                <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">
+                  {requestData.days}
+                </p>
+              </div>
+
+              {/* Total CA Card */}
+              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-100 dark:border-purple-800/30 text-center">
+                <span className="block text-sm font-medium text-purple-600 dark:text-purple-400 mb-2">
+                  Chiffre d&apos;Affaires Total
+                </span>
+                <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">
+                  {(parseFloat(requestData.tjm) * parseInt(requestData.days)).toLocaleString('fr-FR')}€
+                </p>
+              </div>
+            </div>
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 h-10"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
+                </svg>
+                Retour aux demandes
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Responses Table */}
+      <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+        {/* Header with New Request Button */}
+        <div className="flex flex-col space-y-3 px-5 pt-6 pb-2 sm:px-7.5 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
           <h4 className="text-xl font-semibold text-black dark:text-white">
             Mes Réponses ({totalResponses})
@@ -462,8 +457,7 @@ const MesReponses = ({ requestId, onShowDetails }: MesReponsesProps) => {
           </div>
         </div>
       )}
-
-
+      </div>
     </div>
   );
 };
