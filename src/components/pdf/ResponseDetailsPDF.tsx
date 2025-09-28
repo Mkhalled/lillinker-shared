@@ -164,6 +164,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#EFF6FF',
   },
 
+  tableRowBlueTotal: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+    borderBottomStyle: 'solid',
+    padding: 3,
+    backgroundColor: '#b3d0f5',
+  },
+
   tableRowGray: {
     flexDirection: 'row',
     borderBottomWidth: 1,
@@ -388,25 +397,25 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
     {
       label: 'Salaire net versé',
       value: metrics.netFinal || 0,
-      color: '#F9F6B8', // Lightest yellow - matches your image
+      color: '#10b981', 
       percentage: ((metrics.netFinal || 0) / (metrics.chiffreAffaires || 1)) * 100,
     },
     {
       label: 'Frais de gestion',
       value: metrics.fraisGestionAmount || 0,
-      color: '#F4D03F', // Medium light yellow - matches your image
+      color: '#f59e0b', 
       percentage: ((metrics.fraisGestionAmount || 0) / (metrics.chiffreAffaires || 1)) * 100,
     },
     {
       label: 'Cotisations patronales',
       value: metrics.chargesPatronales || 0,
-      color: '#F1C40F', // Medium yellow - matches your image
+      color: '#3b82f6',
       percentage: ((metrics.chargesPatronales || 0) / (metrics.chiffreAffaires || 1)) * 100,
     },
     {
       label: 'Cotisations salariales',
       value: metrics.chargesSalariales || 0,
-      color: '#D4AC0D', // Darker yellow - matches your image
+      color: '#ef4444', 
       percentage: ((metrics.chargesSalariales || 0) / (metrics.chiffreAffaires || 1)) * 100,
     },
   ];
@@ -432,7 +441,7 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
         <View style={styles.header}>
           {/* Left: Company Title */}
           <View style={styles.headerLeft}>
-            <Text style={styles.headerTitle}>SIMULATION DE PORTAGE SALARIAL</Text>
+            <Text style={styles.headerTitle}>SIMULATION DE PORTAGE SALARIAL ({response.company?.name.slice(0, 3).toUpperCase()})</Text>
             <Text style={styles.headerDate}>DATE : {formatDate(new Date())}</Text>
           </View>
 
@@ -491,8 +500,8 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
               {/* Table Header */}
               <View style={styles.tableHeader}>
                 <Text style={styles.tableHeaderCell}>Éléments de la simulation</Text>
-                <Text style={styles.tableHeaderCell}>Montant</Text>
                 <Text style={styles.tableHeaderCell}>Taux</Text>
+                <Text style={styles.tableHeaderCell}>Montant</Text>
               </View>
 
               {/* Table Body - Match ResponseDetails structure exactly */}
@@ -500,18 +509,15 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
               {/* Chiffre d'affaires */}
               <View style={styles.tableRowBlue}>
                 <Text style={styles.tableCellBold}>Chiffre d&apos;affaires HT</Text>
+                <Text style={styles.tableCellAmountBold}>100.00 %</Text>
                 <Text style={styles.tableCellAmountBold}>
                   {(metrics.chiffreAffaires || 0).toFixed(2)} €
                 </Text>
-                <Text style={styles.tableCellAmountBold}>100.00 %</Text>
               </View>
 
               {/* Management Fees */}
               <View style={styles.tableRow}>
                 <Text style={styles.tableCell}>Frais de gestion</Text>
-                <Text style={styles.tableCellAmount}>
-                  -{(metrics.fraisGestionAmount || 0).toFixed(2)} €
-                </Text>
                 <Text style={styles.tableCellAmount}>
                   {(
                     ((metrics.fraisGestionAmount || 0) / (metrics.chiffreAffaires || 1)) *
@@ -519,15 +525,14 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
                   ).toFixed(2)}{' '}
                   %
                 </Text>
+                <Text style={styles.tableCellAmount}>
+                  -{(metrics.fraisGestionAmount || 0).toFixed(2)} €
+                </Text>
               </View>
 
               {/* Remaining after management fees */}
               <View style={styles.tableRowGray}>
                 <Text style={styles.tableCellBold}>Montant restant après frais de gestion</Text>
-                <Text style={styles.tableCellAmountBold}>
-                  {((metrics.chiffreAffaires || 0) - (metrics.fraisGestionAmount || 0)).toFixed(2)}{' '}
-                  €
-                </Text>
                 <Text style={styles.tableCellAmountBold}>
                   {(
                     (((metrics.chiffreAffaires || 0) - (metrics.fraisGestionAmount || 0)) /
@@ -535,6 +540,10 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
                     100
                   ).toFixed(2)}{' '}
                   %
+                </Text>
+                <Text style={styles.tableCellAmountBold}>
+                  {((metrics.chiffreAffaires || 0) - (metrics.fraisGestionAmount || 0)).toFixed(2)}{' '}
+                  €
                 </Text>
               </View>
 
@@ -553,30 +562,30 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
                   <View key={`patronal-${index}`} style={styles.tableRowGray}>
                     <Text style={styles.tableCell}>• {organisme.label} (Patronal)</Text>
                     <Text style={styles.tableCellAmount}>
+                      {(organisme.total_patronal || 0).toFixed(3)} %
+                    </Text>
+                    <Text style={styles.tableCellAmount}>
                       {(
                         ((metrics.brutSalary || 0) * (organisme.total_patronal || 0)) /
                         100
                       ).toFixed(2)}{' '}
                       €
                     </Text>
-                    <Text style={styles.tableCellAmount}>
-                      {(organisme.total_patronal || 0).toFixed(3)} %
-                    </Text>
                   </View>
                 )
               )}
 
               {/* Total Employer Contributions */}
-              <View style={styles.tableRowGray}>
+              <View style={styles.tableRowBlueTotal}>
                 <Text style={styles.tableCellBold}>Total charges patronales</Text>
-                <Text style={styles.tableCellAmountBold}>
-                  {(metrics.chargesPatronales || 0).toFixed(2)} €
-                </Text>
                 <Text style={styles.tableCellAmountBold}>
                   {(((metrics.chargesPatronales || 0) / (metrics.brutSalary || 1)) * 100).toFixed(
                     2
                   )}{' '}
                   %
+                </Text>
+                <Text style={styles.tableCellAmountBold}>
+                  {(metrics.chargesPatronales || 0).toFixed(2)} €
                 </Text>
               </View>
 
@@ -584,11 +593,11 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
               <View style={styles.tableRowBlue}>
                 <Text style={styles.tableCellBold}>Salaire brut</Text>
                 <Text style={styles.tableCellAmountBold}>
-                  {(metrics.brutSalary || 0).toFixed(2)} €
-                </Text>
-                <Text style={styles.tableCellAmountBold}>
                   {(((metrics.brutSalary || 0) / (metrics.chiffreAffaires || 1)) * 100).toFixed(2)}{' '}
                   %
+                </Text>
+                <Text style={styles.tableCellAmountBold}>
+                  {(metrics.brutSalary || 0).toFixed(2)} €
                 </Text>
               </View>
 
@@ -607,6 +616,9 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
                   <View key={`salarial-${index}`} style={styles.tableRow}>
                     <Text style={styles.tableCell}>• {organisme.label} (Salarié)</Text>
                     <Text style={styles.tableCellAmount}>
+                      {(organisme.total_salarial || 0).toFixed(3)} %
+                    </Text>
+                    <Text style={styles.tableCellAmount}>
                       -
                       {(
                         ((metrics.brutSalary || 0) * (organisme.total_salarial || 0)) /
@@ -614,39 +626,36 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
                       ).toFixed(2)}{' '}
                       €
                     </Text>
-                    <Text style={styles.tableCellAmount}>
-                      {(organisme.total_salarial || 0).toFixed(3)} %
-                    </Text>
                   </View>
                 )
               )}
 
               {/* Total Employee Contributions */}
-              <View style={styles.tableRow}>
+              <View style={styles.tableRowBlueTotal}>
                 <Text style={styles.tableCellBold}>Total charges sociales salariales</Text>
-                <Text style={styles.tableCellAmountBold}>
-                  -{(metrics.chargesSalariales || 0).toFixed(2)} €
-                </Text>
                 <Text style={styles.tableCellAmountBold}>
                   {(((metrics.chargesSalariales || 0) / (metrics.brutSalary || 1)) * 100).toFixed(
                     2
                   )}{' '}
                   %
                 </Text>
+                <Text style={styles.tableCellAmountBold}>
+                  -{(metrics.chargesSalariales || 0).toFixed(2)} €
+                </Text>
               </View>
 
               {/* Net Salary */}
-              <View style={styles.tableRow}>
+              <View style={styles.tableRowBlue}>
                 <Text style={styles.tableCellBold}>Net à payer (imposable)</Text>
-                <Text style={styles.tableCellAmountBold}>
-                  {(metrics.netBeforeServices || 0).toFixed(2)} €
-                </Text>
                 <Text style={styles.tableCellAmountBold}>
                   {(
                     ((metrics.netBeforeServices || 0) / (metrics.chiffreAffaires || 1)) *
                     100
                   ).toFixed(2)}{' '}
                   %
+                </Text>
+                <Text style={styles.tableCellAmountBold}>
+                  {(metrics.netBeforeServices || 0).toFixed(2)} €
                 </Text>
               </View>
 
@@ -657,24 +666,21 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
                   <View key={`service-${index}`} style={styles.tableRow}>
                     <Text style={styles.tableCell}>• {service.service_name}</Text>
                     <Text style={styles.tableCellAmount}>
-                      +{(service.charge_pro || 0).toFixed(2)} €
-                    </Text>
-                    <Text style={styles.tableCellAmount}>
                       {(((service.charge_pro || 0) / (metrics.chiffreAffaires || 1)) * 100).toFixed(
                         2
                       )}{' '}
                       %
+                    </Text>
+                    <Text style={styles.tableCellAmount}>
+                      +{(service.charge_pro || 0).toFixed(2)} €
                     </Text>
                   </View>
                 ))}
 
               {/* Total Services */}
               {(metrics.selectedServicesTotal || 0) > 0 && (
-                <View style={styles.tableRowBlue}>
+                <View style={styles.tableRowBlueTotal}>
                   <Text style={styles.tableCellBold}>Total services professionnels</Text>
-                  <Text style={styles.tableCellAmountBold}>
-                    +{(metrics.selectedServicesTotal || 0).toFixed(2)} €
-                  </Text>
                   <Text style={styles.tableCellAmountBold}>
                     {(
                       ((metrics.selectedServicesTotal || 0) / (metrics.chiffreAffaires || 1)) *
@@ -682,17 +688,20 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
                     ).toFixed(2)}{' '}
                     %
                   </Text>
+                  <Text style={styles.tableCellAmountBold}>
+                    +{(metrics.selectedServicesTotal || 0).toFixed(2)} €
+                  </Text>
                 </View>
               )}
 
               {/* Final Net Amount */}
-              <View style={styles.tableRow}>
+              <View style={styles.tableRowBlue}>
                 <Text style={styles.tableCellBold}>Net final reçu</Text>
                 <Text style={styles.tableCellAmountBold}>
-                  {(metrics.netFinal || 0).toFixed(2)} €
+                  {(metrics.percentageRecu || 0).toFixed(2)} %
                 </Text>
                 <Text style={styles.tableCellAmountBold}>
-                  {(metrics.percentageRecu || 0).toFixed(2)} %
+                  {(metrics.netFinal || 0).toFixed(2)} €
                 </Text>
               </View>
             </View>
