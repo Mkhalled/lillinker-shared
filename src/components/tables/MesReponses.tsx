@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { calculateMetrics } from '@/lib/payroll-calculations';
 import { ExistingCompanyResponse } from '@/types/company-response';
 import { FreelanceRequest } from '@/types/freelance';
+import { pdf } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
+import ResponseDetailsPDF from '@/components/pdf/ResponseDetailsPDF';
 
 import ReponseSkeleton from '../common/skeleton/Reponses';
 import ResponseDetails from '../details/ResponseDetails';
@@ -99,6 +102,48 @@ const MesReponses = ({ requestId, onShowDetails, onBack }: MesReponsesProps) => 
   const handleSort = () => {
     setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
     setCurrentPage(1); // Reset to first page when sorting changes
+  };
+
+  // State for managing PDF download
+  const [downloadingPDF, setDownloadingPDF] = useState<number | null>(null);
+
+  const handleDownloadPDF = async (response: ExistingCompanyResponse) => {
+    if (!requestData) return;
+    
+    const metrics = calculateMetrics(
+      response,
+      parseFloat(requestData.tjm),
+      parseInt(requestData.days)
+    );
+
+    try {
+      setDownloadingPDF(response.id);
+
+      // Generate PDF blob directly
+      const pdfDocument = ResponseDetailsPDF({
+        response,
+        metrics,
+        requestData: {
+          tjm: parseFloat(requestData.tjm),
+          days: parseInt(requestData.days)
+        }
+      });
+
+      const blob = await pdf(pdfDocument as any).toBlob();
+
+      // Generate filename with company name and date  
+      const companyName = response.company?.name.slice(0, 3).toUpperCase() || 'simulation';
+      const date = new Date().toISOString().split('T')[0];
+      const filename = `simulation-portage-${companyName}-${date}.pdf`;
+
+      // Download the file
+      saveAs(blob, filename);
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      alert('Erreur lors du téléchargement du PDF');
+    } finally {
+      setDownloadingPDF(null);
+    }
   };
 
   const generatePageNumbers = () => {
@@ -319,24 +364,47 @@ const MesReponses = ({ requestId, onShowDetails, onBack }: MesReponsesProps) => 
                             />
                           </svg>
                         </button>
-                          <button className="group" title="Télécharger PDF">
-                            <svg
-                              className="fill-current group-hover:text-green-500"
-                              width="18"
-                              height="18"
-                              viewBox="0 0 18 18"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M9 1.5v9m0 0L6 7.5m3 3.5 3-3.5M2.25 12.75v2.25c0 1.24 1.01 2.25 2.25 2.25h9c1.24 0 2.25-1.01 2.25-2.25v-2.25"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
+                          <button 
+                            className={`group ${downloadingPDF === response.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            title="Télécharger PDF"
+                            onClick={() => handleDownloadPDF(response)}
+                            disabled={downloadingPDF === response.id}
+                          >
+                            {downloadingPDF === response.id ? (
+                              <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                />
+                              </svg>
+                            ) : (
+                              <svg
+                                className="fill-current group-hover:text-green-500"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 18 18"
                                 fill="none"
-                              />
-                            </svg>
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M9 1.5v9m0 0L6 7.5m3 3.5 3-3.5M2.25 12.75v2.25c0 1.24 1.01 2.25 2.25 2.25h9c1.24 0 2.25-1.01 2.25-2.25v-2.25"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  fill="none"
+                                />
+                              </svg>
+                            )}
                           </button>
                         </div>
                       </td>
