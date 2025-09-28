@@ -397,13 +397,13 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
     {
       label: 'Salaire net versé',
       value: metrics.netFinal || 0,
-      color: '#10b981', 
+      color: '#10b981',
       percentage: ((metrics.netFinal || 0) / (metrics.chiffreAffaires || 1)) * 100,
     },
     {
       label: 'Frais de gestion',
       value: metrics.fraisGestionAmount || 0,
-      color: '#f59e0b', 
+      color: '#f59e0b',
       percentage: ((metrics.fraisGestionAmount || 0) / (metrics.chiffreAffaires || 1)) * 100,
     },
     {
@@ -415,7 +415,7 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
     {
       label: 'Cotisations salariales',
       value: metrics.chargesSalariales || 0,
-      color: '#ef4444', 
+      color: '#ef4444',
       percentage: ((metrics.chargesSalariales || 0) / (metrics.chiffreAffaires || 1)) * 100,
     },
   ];
@@ -441,7 +441,9 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
         <View style={styles.header}>
           {/* Left: Company Title */}
           <View style={styles.headerLeft}>
-            <Text style={styles.headerTitle}>SIMULATION DE PORTAGE SALARIAL ({response.company?.name.slice(0, 3).toUpperCase()})</Text>
+            <Text style={styles.headerTitle}>
+              SIMULATION DE PORTAGE SALARIAL ({response.company?.name.slice(0, 3).toUpperCase()})
+            </Text>
             <Text style={styles.headerDate}>DATE : {formatDate(new Date())}</Text>
           </View>
 

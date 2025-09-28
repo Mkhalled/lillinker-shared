@@ -108,7 +108,9 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
           {/* Left: Company Title */}
           <div>
-            <h1 className="text-2xl font-bold text-white mb-2">SIMULATION DE PORTAGE SALARIAL</h1>
+            <h1 className="text-2xl font-bold text-white mb-2">
+              SIMULATION DE PORTAGE SALARIAL ({response.company?.name.slice(0, 3).toUpperCase()})
+            </h1>
             <p className="text-sm text-white">DATE : {formatDate(new Date())}</p>
           </div>
 
@@ -178,26 +180,23 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
                 <thead>
                   <tr className="bg-gray-50 border-b">
                     <th className="text-left p-3 font-semibold">Éléments de la simulation</th>
-                    <th className="text-right p-3 font-semibold">Montant</th>
                     <th className="text-right p-3 font-semibold">Taux</th>
+                    <th className="text-right p-3 font-semibold">Montant</th>
                   </tr>
                 </thead>
                 <tbody>
                   {/* Chiffre d'affaires */}
-                  <tr className="border-b bg-blue-50">
+                  <tr className="border-b" style={{ backgroundColor: '#EFF6FF' }}>
                     <td className="p-3 font-semibold">Chiffre d&apos;affaires HT</td>
+                    <td className="p-3 text-right font-semibold">100.00 %</td>
                     <td className="p-3 text-right font-semibold">
                       {(metrics.chiffreAffaires || 0).toFixed(2)} €
                     </td>
-                    <td className="p-3 text-right font-semibold">100.00 %</td>
                   </tr>
 
                   {/* Management Fees */}
                   <tr className="border-b">
                     <td className="p-3">Frais de gestion</td>
-                    <td className="p-3 text-right">
-                      -{(metrics.fraisGestionAmount || 0).toFixed(2)} €
-                    </td>
                     <td className="p-3 text-right">
                       {(
                         ((metrics.fraisGestionAmount || 0) / (metrics.chiffreAffaires || 1)) *
@@ -205,17 +204,14 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
                       ).toFixed(2)}{' '}
                       %
                     </td>
+                    <td className="p-3 text-right">
+                      -{(metrics.fraisGestionAmount || 0).toFixed(2)} €
+                    </td>
                   </tr>
 
                   {/* Remaining after management fees */}
-                  <tr className="border-b font-medium bg-gray-50">
+                  <tr className="border-b font-medium" style={{ backgroundColor: '#F9FAFB' }}>
                     <td className="p-3">Montant restant après frais de gestion</td>
-                    <td className="p-3 text-right">
-                      {((metrics.chiffreAffaires || 0) - (metrics.fraisGestionAmount || 0)).toFixed(
-                        2
-                      )}{' '}
-                      €
-                    </td>
                     <td className="p-3 text-right">
                       {(
                         (((metrics.chiffreAffaires || 0) - (metrics.fraisGestionAmount || 0)) /
@@ -224,17 +220,30 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
                       ).toFixed(2)}{' '}
                       %
                     </td>
+                    <td className="p-3 text-right">
+                      {((metrics.chiffreAffaires || 0) - (metrics.fraisGestionAmount || 0)).toFixed(
+                        2
+                      )}{' '}
+                      €
+                    </td>
                   </tr>
                   {/* Detailed Employer Social Contributions (for information) */}
-                  <tr className="border-b bg-gray-100">
+                  <tr className="border-b" style={{ backgroundColor: '#F9FAFB' }}>
                     <td className="p-3 text-sm font-semibold italic text-gray-700" colSpan={3}>
                       Charges sociales patronales (payées par l&apos;employeur - à titre informatif)
                     </td>
                   </tr>
                   {response.response_data?.selected_organismes?.map(
                     (organisme: SelectedOrganisme, index: number) => (
-                      <tr key={`patronal-${index}`} className="border-b bg-gray-50">
+                      <tr
+                        key={`patronal-${index}`}
+                        className="border-b"
+                        style={{ backgroundColor: '#F9FAFB' }}
+                      >
                         <td className="p-3 pl-6 text-sm italic">• {organisme.label} (Patronal)</td>
+                        <td className="p-3 text-right text-sm italic">
+                          {(organisme.total_patronal || 0).toFixed(3)} %
+                        </td>
                         <td className="p-3 text-right text-sm italic">
                           {(
                             ((metrics.brutSalary || 0) * (organisme.total_patronal || 0)) /
@@ -242,19 +251,13 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
                           ).toFixed(2)}{' '}
                           €
                         </td>
-                        <td className="p-3 text-right text-sm italic">
-                          {(organisme.total_patronal || 0).toFixed(3)} %
-                        </td>
                       </tr>
                     )
                   )}
 
                   {/* Total Employer Contributions */}
-                  <tr className="border-b bg-gray-100">
+                  <tr className="border-b" style={{ backgroundColor: '#b3d0f5' }}>
                     <td className="p-3 text-sm font-semibold italic">Total charges patronales</td>
-                    <td className="p-3 text-right text-sm font-semibold italic">
-                      {(metrics.chargesPatronales || 0).toFixed(2)} €
-                    </td>
                     <td className="p-3 text-right text-sm font-semibold italic">
                       {(
                         ((metrics.chargesPatronales || 0) / (metrics.brutSalary || 1)) *
@@ -262,22 +265,25 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
                       ).toFixed(2)}{' '}
                       %
                     </td>
+                    <td className="p-3 text-right text-sm font-semibold italic">
+                      {(metrics.chargesPatronales || 0).toFixed(2)} €
+                    </td>
                   </tr>
                   {/* Gross Salary */}
-                  <tr className="border-b bg-blue-50">
+                  <tr className="border-b" style={{ backgroundColor: '#EFF6FF' }}>
                     <td className="p-3 font-semibold">Salaire brut</td>
-                    <td className="p-3 text-right font-semibold">
-                      {(metrics.brutSalary || 0).toFixed(2)} €
-                    </td>
                     <td className="p-3 text-right font-semibold">
                       {(((metrics.brutSalary || 0) / (metrics.chiffreAffaires || 1)) * 100).toFixed(
                         2
                       )}{' '}
                       %
                     </td>
+                    <td className="p-3 text-right font-semibold">
+                      {(metrics.brutSalary || 0).toFixed(2)} €
+                    </td>
                   </tr>
                   {/* Detailed Employer Social Contributions (for information) */}
-                  <tr className="border-b bg-gray-100">
+                  <tr className="border-b" style={{ backgroundColor: '#F9FAFB' }}>
                     <td className="p-3 text-sm font-semibold italic text-gray-700" colSpan={3}>
                       Charges sociales salariales (payées par le salarié)
                     </td>
@@ -288,6 +294,9 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
                       <tr key={`salarial-${index}`} className="border-b">
                         <td className="p-3 pl-6">• {organisme.label} (Salarial)</td>
                         <td className="p-3 text-right">
+                          {(organisme.total_salarial || 0).toFixed(3)} %
+                        </td>
+                        <td className="p-3 text-right">
                           -
                           {(
                             ((metrics.brutSalary || 0) * (organisme.total_salarial || 0)) /
@@ -295,19 +304,13 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
                           ).toFixed(2)}{' '}
                           €
                         </td>
-                        <td className="p-3 text-right">
-                          {(organisme.total_salarial || 0).toFixed(3)} %
-                        </td>
                       </tr>
                     )
                   )}
 
                   {/* Total Employee Contributions */}
-                  <tr className="border-b font-medium bg-red-50">
+                  <tr className="border-b font-medium" style={{ backgroundColor: '#b3d0f5' }}>
                     <td className="p-3">Total charges sociales salariales</td>
-                    <td className="p-3 text-right font-semibold">
-                      -{(metrics.chargesSalariales || 0).toFixed(2)} €
-                    </td>
                     <td className="p-3 text-right font-semibold">
                       {(
                         ((metrics.chargesSalariales || 0) / (metrics.brutSalary || 1)) *
@@ -315,20 +318,23 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
                       ).toFixed(2)}{' '}
                       %
                     </td>
+                    <td className="p-3 text-right font-semibold">
+                      -{(metrics.chargesSalariales || 0).toFixed(2)} €
+                    </td>
                   </tr>
 
                   {/* Net Salary */}
-                  <tr className="border-b font-semibold bg-green-50">
+                  <tr className="border-b font-semibold" style={{ backgroundColor: '#EFF6FF' }}>
                     <td className="p-3">Net à payer (imposable)</td>
-                    <td className="p-3 text-right">
-                      {(metrics.netBeforeServices || 0).toFixed(2)} €
-                    </td>
                     <td className="p-3 text-right">
                       {(
                         ((metrics.netBeforeServices || 0) / (metrics.chiffreAffaires || 1)) *
                         100
                       ).toFixed(2)}{' '}
                       %
+                    </td>
+                    <td className="p-3 text-right">
+                      {(metrics.netBeforeServices || 0).toFixed(2)} €
                     </td>
                   </tr>
 
@@ -339,25 +345,22 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
                       <tr key={`service-${index}`} className="border-b">
                         <td className="p-3 pl-6">• {service.service_name}</td>
                         <td className="p-3 text-right">
-                          +{(service.charge_pro || 0).toFixed(2)} €
-                        </td>
-                        <td className="p-3 text-right">
                           {(
                             ((service.charge_pro || 0) / (metrics.chiffreAffaires || 1)) *
                             100
                           ).toFixed(2)}{' '}
                           %
                         </td>
+                        <td className="p-3 text-right">
+                          +{(service.charge_pro || 0).toFixed(2)} €
+                        </td>
                       </tr>
                     ))}
 
                   {/* Total Services */}
                   {(metrics.selectedServicesTotal || 0) > 0 && (
-                    <tr className="border-b font-medium bg-blue-50">
+                    <tr className="border-b font-medium" style={{ backgroundColor: '#b3d0f5' }}>
                       <td className="p-3">Total services professionnels</td>
-                      <td className="p-3 text-right font-semibold">
-                        +{(metrics.selectedServicesTotal || 0).toFixed(2)} €
-                      </td>
                       <td className="p-3 text-right font-semibold">
                         {(
                           ((metrics.selectedServicesTotal || 0) / (metrics.chiffreAffaires || 1)) *
@@ -365,13 +368,16 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
                         ).toFixed(2)}{' '}
                         %
                       </td>
+                      <td className="p-3 text-right font-semibold">
+                        +{(metrics.selectedServicesTotal || 0).toFixed(2)} €
+                      </td>
                     </tr>
                   )}
                   {/* Final Net Amount */}
-                  <tr className="border-b font-bold bg-yellow-50">
+                  <tr className="border-b font-bold" style={{ backgroundColor: '#EFF6FF' }}>
                     <td className="p-3">Net final reçu</td>
-                    <td className="p-3 text-right">{(metrics.netFinal || 0).toFixed(2)} €</td>
                     <td className="p-3 text-right">{(metrics.percentageRecu || 0).toFixed(2)} %</td>
+                    <td className="p-3 text-right">{(metrics.netFinal || 0).toFixed(2)} €</td>
                   </tr>
                 </tbody>
               </table>
