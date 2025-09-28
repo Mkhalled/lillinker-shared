@@ -28,12 +28,7 @@ const ReponseSkeleton: React.FC = () => (
         </div>
 
         {/* Back Button Skeleton */}
-        <Skeleton
-          variant="rectangular"
-          width={160}
-          height={40}
-          sx={{ borderRadius: '6px' }}
-        />
+        <Skeleton variant="rectangular" width={160} height={40} sx={{ borderRadius: '6px' }} />
       </div>
     </div>
 
@@ -44,12 +39,7 @@ const ReponseSkeleton: React.FC = () => (
         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
           <Skeleton variant="text" width={150} height={24} />
         </div>
-        <Skeleton
-          variant="rectangular"
-          width={180}
-          height={40}
-          sx={{ borderRadius: '6px' }}
-        />
+        <Skeleton variant="rectangular" width={180} height={40} sx={{ borderRadius: '6px' }} />
       </div>
 
       {/* Table Container */}

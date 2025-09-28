@@ -1,6 +1,7 @@
-import { useState } from 'react';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
+import { useState } from 'react';
+
 import ResponseDetailsPDF from '@/components/pdf/ResponseDetailsPDF';
 import { ExistingCompanyResponse } from '@/types/company-response';
 import { CalculatedMetrics } from '@/types/metrics';
@@ -18,12 +19,12 @@ export const usePDFDownload = ({ response, metrics, requestData }: UsePDFDownloa
     try {
       setIsGenerating(true);
 
-      // Generate PDF blob 
+      // Generate PDF blob
       const blob = await pdf(
-        ResponseDetailsPDF({ response, metrics, requestData }) as any
+        ResponseDetailsPDF({ response, metrics, requestData }) as React.ReactElement
       ).toBlob();
 
-      // Generate filename with company name and date  
+      // Generate filename with company name and date
       const companyName = response.company?.name.slice(0, 3).toUpperCase() || 'simulation';
       const date = new Date().toISOString().split('T')[0];
       const filename = `simulation-portage-${companyName}-${date}.pdf`;
@@ -40,6 +41,6 @@ export const usePDFDownload = ({ response, metrics, requestData }: UsePDFDownloa
 
   return {
     downloadPDF,
-    isGenerating
+    isGenerating,
   };
 };
