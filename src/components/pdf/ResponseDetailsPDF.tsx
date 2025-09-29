@@ -392,13 +392,19 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
     });
   };
 
-  // Pie chart data
-  const chartData = [
+  // Pie chart data - filter out zero values for cleaner display
+  const allChartData = [
     {
       label: 'Salaire net versé',
-      value: metrics.netFinal || 0,
+      value: metrics.netBeforeServices || 0,
       color: '#10b981',
-      percentage: ((metrics.netFinal || 0) / (metrics.chiffreAffaires || 1)) * 100,
+      percentage: ((metrics.netBeforeServices || 0) / (metrics.chiffreAffaires || 1)) * 100,
+    },
+    {
+      label: 'Services professionnels',
+      value: metrics.selectedServicesTotal || 0,
+      color: '#8b5cf6',
+      percentage: ((metrics.selectedServicesTotal || 0) / (metrics.chiffreAffaires || 1)) * 100,
     },
     {
       label: 'Frais de gestion',
@@ -420,10 +426,21 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
     },
   ];
 
-  // Calculate angles for pie slices
+  // Filter out zero values to show only actual costs
+  const chartData = allChartData.filter(item => item.value > 0);
+
+  // Calculate angles for pie slices with minimum angle for visibility
   let currentAngle = 0;
+  const minAngle = 15; // Minimum 15 degrees for small slices to be visible
+
   const pieSlices = chartData.map(item => {
-    const sliceAngle = (item.percentage / 100) * 360;
+    let sliceAngle = (item.percentage / 100) * 360;
+
+    // Ensure very small slices have minimum visibility (but only if they have actual value)
+    if (item.value > 0 && sliceAngle < minAngle) {
+      sliceAngle = minAngle;
+    }
+
     const slice = {
       ...item,
       startAngle: currentAngle,

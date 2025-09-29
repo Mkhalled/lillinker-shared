@@ -26,6 +26,9 @@ export interface CalculatedMetrics {
   /** Total professional services charges amount in euros */
   totalChargesProAmount: number;
 
+  /** Total professional services charges percentage */
+  totalChargesProPercent: number;
+
   /** Total charges (employer + employee) in euros */
   totalCharges: number;
 

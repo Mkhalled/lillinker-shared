@@ -36,23 +36,44 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
     });
   };
 
-  // Chart.js configuration for pie chart
+  // Chart.js configuration for pie chart - filter out zero values for cleaner display
+  const allChartData = [
+    {
+      label: 'Net Imposable',
+      value: metrics.netBeforeServices || 0,
+      color: '#10B981',
+    },
+    {
+      label: 'Services Professionnels',
+      value: metrics.selectedServicesTotal || 0,
+      color: '#8B5CF6',
+    },
+    {
+      label: 'Charges Salariales',
+      value: metrics.chargesSalariales || 0,
+      color: '#EF4444',
+    },
+    {
+      label: 'Charges Patronales',
+      value: metrics.chargesPatronales || 0,
+      color: '#3B82F6',
+    },
+    {
+      label: 'Frais de Gestion',
+      value: metrics.fraisGestionAmount || 0,
+      color: '#F59E0B',
+    },
+  ];
+
+  // Filter out zero values to show only actual costs
+  const filteredChartData = allChartData.filter(item => item.value > 0);
+
   const chartData = {
-    labels: ['Net Final', 'Charges Salariales', 'Charges Patronales', 'Frais de Gestion'],
+    labels: filteredChartData.map(item => item.label),
     datasets: [
       {
-        data: [
-          metrics.netFinal || 0,
-          metrics.chargesSalariales || 0,
-          metrics.chargesPatronales || 0,
-          metrics.fraisGestionAmount || 0,
-        ],
-        backgroundColor: [
-          '#10B981', // Green for net final
-          '#EF4444', // Red for salarial charges
-          '#3B82F6', // Blue for patronal charges
-          '#F59E0B', // Orange for management fees
-        ],
+        data: filteredChartData.map(item => item.value),
+        backgroundColor: filteredChartData.map(item => item.color),
         borderWidth: 2,
         borderColor: '#ffffff',
       },
@@ -75,10 +96,18 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
           label: function (context: { label?: string; parsed: number }) {
             const label = context.label || '';
             const value = context.parsed || 0;
-            const percentage = ((value / metrics.chiffreAffaires) * 100).toFixed(1);
+            const percentage = ((value / metrics.chiffreAffaires) * 100).toFixed(2);
             return `${label}: ${value.toFixed(2)} € (${percentage}%)`;
           },
         },
+      },
+    },
+    // Ensure small slices are visible
+    cutout: 0,
+    borderWidth: 2,
+    elements: {
+      arc: {
+        borderWidth: 2,
       },
     },
   };

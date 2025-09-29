@@ -28,6 +28,9 @@ export const calculateMetrics = (
   // Professional charges
   const totalChargesProAmount =
     response.response_data.services?.reduce((sum, service) => sum + service.charge_pro, 0) || 0;
+  // Professional charges pourcentage
+  const totalChargesProPercent =
+    totalChargesProAmount > 0 ? (totalChargesProAmount / chiffreAffaires) * 100 : 0;
 
   // French portage calculation: CA - Management fees = remaining amount
   const remainingAfterManagement = chiffreAffaires - fraisGestionAmount;
@@ -61,6 +64,7 @@ export const calculateMetrics = (
     totalPatronalAmount,
     totalSalarialAmount,
     totalChargesProAmount,
+    totalChargesProPercent,
     totalCharges,
     restCANet,
     percentageRecu,
