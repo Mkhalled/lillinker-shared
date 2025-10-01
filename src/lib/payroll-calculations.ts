@@ -1,13 +1,6 @@
 import { ExistingCompanyResponse } from '@/types/company-response';
 import { CalculatedMetrics } from '@/types/metrics';
 
-/**
- * Calculates French portage salarial metrics based on company response data
- * @param response - The company response data containing rates and services
- * @param tjm - Daily rate (Taux Journalier Moyen)
- * @param days - Number of working days
- * @returns Calculated metrics for payroll simulation
- */
 export const calculateMetrics = (
   response: ExistingCompanyResponse,
   tjm: number,

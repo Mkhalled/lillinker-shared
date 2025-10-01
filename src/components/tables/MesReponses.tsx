@@ -4,6 +4,7 @@ import { saveAs } from 'file-saver';
 import { useState, useEffect } from 'react';
 
 import ResponseDetailsPDF from '@/components/pdf/ResponseDetailsPDF';
+import { exportResponsesToXLSX } from '@/lib/export-responses';
 import { calculateMetrics } from '@/lib/payroll-calculations';
 import { ExistingCompanyResponse } from '@/types/company-response';
 import { FreelanceRequest } from '@/types/freelance';
@@ -147,6 +148,25 @@ const MesReponses = ({ requestId, onShowDetails, onBack }: MesReponsesProps) => 
     }
   };
 
+  const handleDownloadAllResponses = () => {
+    if (!requestData || !requestData.responses || requestData.responses.length === 0) {
+      alert('Aucune réponse à télécharger');
+      return;
+    }
+
+    try {
+      exportResponsesToXLSX(
+        requestData.responses,
+        parseFloat(requestData.tjm),
+        parseInt(requestData.days),
+        'reponses-portage-salarial'
+      );
+    } catch (error) {
+      console.error('Error downloading XLSX:', error);
+      alert('Erreur lors du téléchargement du fichier Excel');
+    }
+  };
+
   const generatePageNumbers = () => {
     const pages = [];
     if (totalPages > 0) pages.push(1);
@@ -255,7 +275,11 @@ const MesReponses = ({ requestId, onShowDetails, onBack }: MesReponsesProps) => 
               Mes Réponses ({totalResponses})
             </h4>
           </div>
-          <button className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-6 xl:px-8">
+          <button
+            onClick={handleDownloadAllResponses}
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-6 xl:px-8"
+            disabled={!requestData?.responses || requestData.responses.length === 0}
+          >
             <svg
               className="mr-2 h-4 w-4"
               fill="none"
@@ -267,7 +291,7 @@ const MesReponses = ({ requestId, onShowDetails, onBack }: MesReponsesProps) => 
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M12 4v16m8-8H4"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
             Télécharger les réponses
