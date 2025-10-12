@@ -52,6 +52,7 @@ export interface CompanyPayload {
   site_web?: string;
   convention_collective?: string;
   code_naf_ape?: string;
+  created_at?: Date;
 }
 
 export interface CompanyWithOrganismes extends CompanyPayload {

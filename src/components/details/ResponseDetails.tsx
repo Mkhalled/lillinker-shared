@@ -140,7 +140,12 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({
             <h1 className="text-2xl font-bold text-white mb-2">
               SIMULATION DE PORTAGE SALARIAL ({response.company?.name.slice(0, 3).toUpperCase()})
             </h1>
-            <p className="text-sm text-white">DATE : {formatDate(new Date())}</p>
+            <p className="text-sm text-white">
+              Response date : {formatDate(response.company?.created_at || new Date())}
+            </p>
+            <p className="text-sm text-white">
+              Request date : {formatDate(response.created_at || new Date())}
+            </p>
           </div>
 
           {/* Center: Revenue Info */}

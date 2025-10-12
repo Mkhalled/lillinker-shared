@@ -55,7 +55,7 @@ export const exportResponsesToXLSX = (
 
     worksheetData.push([
       index + 1,
-      response.company?.name || 'N/A',
+      response.company?.name.slice(0, 3).toUpperCase() || 'N/A',
       new Date(response.created_at).toLocaleDateString('fr-FR'),
       tjm,
       days,

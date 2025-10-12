@@ -461,7 +461,12 @@ const ResponseDetailsPDF: React.FC<ResponseDetailsPDFProps> = ({
             <Text style={styles.headerTitle}>
               SIMULATION DE PORTAGE SALARIAL ({response.company?.name.slice(0, 3).toUpperCase()})
             </Text>
-            <Text style={styles.headerDate}>DATE : {formatDate(new Date())}</Text>
+            <Text style={styles.headerDate}>
+              Response Date : {formatDate(response.company?.created_at || new Date())}
+            </Text>
+            <Text style={styles.headerDate}>
+              Request Date : {formatDate(response.created_at || new Date())}
+            </Text>
           </View>
 
           {/* Center: Revenue Info */}

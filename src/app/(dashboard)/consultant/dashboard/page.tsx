@@ -1,11 +1,51 @@
 'use client';
 
-import { BarChart3, CheckCircle, Clock, PlusCircle, StarIcon, XCircle } from 'lucide-react';
+import {
+  BarChart3,
+  CheckCircle,
+  Clock,
+  PlusCircle,
+  StarIcon,
+  XCircle,
+  Construction,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
+import { featureFlags } from '@/lib/feature-flags';
+
 const ConsultantDashboard = () => {
   const { data: session } = useSession();
+
+  // Check if dashboard is enabled
+  if (!featureFlags.enableDashboard) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <div className="bg-amber-100 dark:bg-amber-900/30 p-6 rounded-full">
+              <Construction className="h-16 w-16 text-amber-600 dark:text-amber-400" />
+            </div>
+          </div>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+            Dashboard Under Development
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+            We&apos;re working hard to bring you an amazing dashboard experience. This feature will
+            be available soon!
+          </p>
+          <div className="pt-4">
+            <Link
+              href="/consultant/requests"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              View My Requests
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Static dashboard data for freelancer
   const dashboardStats = {
