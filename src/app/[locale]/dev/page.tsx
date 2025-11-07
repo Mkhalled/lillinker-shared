@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 
+import ClientLayout from '@/app/CientLayout';
 import { About } from '@/components/landing/about';
 import { BrandLogos } from '@/components/landing/brand-logos';
 import Features from '@/components/landing/features';
@@ -11,6 +12,7 @@ import Hero from '@/components/landing/hero';
 import HowItWorks from '@/components/landing/HowItWorks';
 import { Services } from '@/components/landing/services';
 import { Stats } from '@/components/landing/stats';
+import { useTranslations } from 'next-intl';
 
 const Home = () => {
   // Create refs for each section
@@ -19,7 +21,7 @@ const Home = () => {
   const howItWorksRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
   const contactRef = useRef<HTMLDivElement>(null);
-
+  const t = useTranslations('comingSoon');
   // Scroll handler function with offset for fixed header
   const scrollToSection = (sectionRef: React.RefObject<HTMLDivElement>) => {
     if (sectionRef.current) {
@@ -35,7 +37,8 @@ const Home = () => {
   };
 
   return (
-    <main className="min-h-screen bg-white overflow-x-hidden">
+    <ClientLayout>
+      <main className="min-h-screen bg-white overflow-x-hidden">
       <Header
         onHomeClick={() => scrollToSection(heroRef)}
         onAboutClick={() => scrollToSection(aboutRef)}
@@ -62,6 +65,7 @@ const Home = () => {
         <Footer />
       </div>
     </main>
+    </ClientLayout>
   );
 };
 

@@ -2,13 +2,11 @@ import { Metadata } from 'next';
 import React from 'react';
 import 'jsvectormap/dist/jsvectormap.css';
 import 'flatpickr/dist/flatpickr.min.css';
+import './globals.css';
 import '../css/satoshi.css';
 import '../css/style.css';
-import './globals.css';
 
 import { Providers } from '@/components/providers';
-
-import ClientLayout from './CientLayout';
 
 export const metadata: Metadata = {
   title: {
@@ -35,11 +33,9 @@ const RootLayout = ({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body suppressHydrationWarning={true}>
-        <div className="dark:bg-boxdark-2 dark:text-bodydark">
-          <Providers>
-            <ClientLayout>{children}</ClientLayout>
-          </Providers>
-        </div>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

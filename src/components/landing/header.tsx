@@ -29,6 +29,7 @@ const Header = ({
   const { data: session, status } = useSession();
   const { setLoading } = useLoading();
   const router = useRouter();
+  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };

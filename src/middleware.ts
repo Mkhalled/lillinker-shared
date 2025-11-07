@@ -1,10 +1,12 @@
+import createMiddleware from "next-intl/middleware";
+import { locales } from "./i18n";
 import { withAuth } from 'next-auth/middleware';
 import type { NextAuthMiddlewareOptions } from 'next-auth/middleware';
+import { NextRequest } from 'next/server';
 
 // Define role types
 type Role = 'ADMIN' | 'COMPANY' | 'MANAGER' | 'FREELANCE';
 
-// Define protected routes and their allowed roles
 const protectedRoutes: Record<string, Role[]> = {
   '/admin': ['ADMIN'],
   '/company/admin': ['COMPANY'],
@@ -12,16 +14,28 @@ const protectedRoutes: Record<string, Role[]> = {
   '/consultant': ['FREELANCE'],
 };
 
+const intlMiddleware = createMiddleware({
+  locales,
+  defaultLocale: "en", 
+  localeDetection: true 
+});
+
 const authOptions: NextAuthMiddlewareOptions = {
   callbacks: {
     authorized: ({ token, req }) => {
+      const currentPath = req.nextUrl.pathname;
+      
+      // Allow access to localized routes (e.g., /en, /fr)
+      if (currentPath.match(/^\/(en|fr)(\/.*)?$/)) {
+        return true;
+      }
+
       // If no token, user is not authenticated
       if (!token) {
         return false;
       }
 
       const role = token.role as Role;
-      const currentPath = req.nextUrl.pathname;
 
       // Check if route requires specific role
       for (const [route, allowedRoles] of Object.entries(protectedRoutes)) {
@@ -40,21 +54,23 @@ const authOptions: NextAuthMiddlewareOptions = {
   },
 };
 
-export default withAuth(authOptions);
+export default function middleware(req: NextRequest) {
+  const pathname = req.nextUrl.pathname;
+  
+  if (pathname === '/') {
+    return;
+  }
+  const protectedPaths = ['/admin', '/company', '/consultant', '/auth'];
+  const isProtectedRoute = protectedPaths.some(path => pathname.startsWith(path));
+  
+  if (isProtectedRoute) {
+    return (withAuth(authOptions) as any)(req);
+  }
+  
+  return intlMiddleware(req);
+}
 
 // Configure which routes to run middleware on
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - images
-     * - public folder
-     * - auth routes
-     * - public API routes
-     */
-    '/((?!_next/static|_next/image|favicon.ico|images|public|auth|api/auth|api/platform-services|$|api/metiers|api/check-email|api/portages|api/check-siret|dev).*)',
-  ],
+  matcher: ["/((?!_next|api|favicon.ico|images|public).*)",],
 };
