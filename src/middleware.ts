@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from 'next-auth/middleware';
 import type { NextAuthMiddlewareOptions } from 'next-auth/middleware';
 import createMiddleware from 'next-intl/middleware';
@@ -8,7 +8,13 @@ import { locales } from './i18n';
 // Define role types
 type Role = 'ADMIN' | 'COMPANY' | 'MANAGER' | 'FREELANCE';
 
-// Routes that require authentication and role-based access
+// Routes that need internationalization (locale prefix: /en or /fr)
+const i18nRoutes = ['/'];
+
+// Public routes
+const publicRoutes = ['/auth/login', '/auth/register', '/auth/verify-email', '/auth/error'];
+
+// Protected routes with role-based access control
 const protectedRoutes: Record<string, Role[]> = {
   '/admin': ['ADMIN'],
   '/company/admin': ['COMPANY'],
@@ -16,11 +22,7 @@ const protectedRoutes: Record<string, Role[]> = {
   '/consultant': ['FREELANCE'],
 };
 
-// Public routes that don't require authentication or i18n
-const publicRoutes = ['/auth/login', '/auth/register', '/auth/verify-email', '/auth/error'];
-
-// Routes that should have i18n (locale prefix) support
-const i18nRoutes = ['/dev'];
+// MIDDLEWARE CONFIGURATION
 
 const intlMiddleware = createMiddleware({
   locales,
@@ -33,8 +35,9 @@ const authOptions: NextAuthMiddlewareOptions = {
     authorized: ({ token, req }) => {
       const currentPath = req.nextUrl.pathname;
 
-      // Allow access to localized routes (e.g., /en, /fr)
-      if (currentPath.match(/^\/(en|fr)(\/.*)?$/)) {
+      // Allow access to localized routes (they're public)
+      const localePattern = new RegExp(`^/(${locales.join('|')})(/|$)`);
+      if (localePattern.test(currentPath)) {
         return true;
       }
 
@@ -65,29 +68,35 @@ const authOptions: NextAuthMiddlewareOptions = {
 export default function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
-  // Skip root path
-  if (pathname === '/') {
-    return;
-  }
+  // Handle Internationalization Routes
+  // Check if route is already localized (starts with /en or /fr)
+  const localePattern = new RegExp(`^/(${locales.join('|')})(/|$)`);
+  const isLocalizedRoute = localePattern.test(pathname);
 
-  // Check if it's a public route (no auth, no i18n)
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
-  if (isPublicRoute) {
-    return;
-  }
-
-  // Check if it's an i18n route (with or without locale prefix)
-  const localePattern = new RegExp(`^/(${locales.join('|')})/`);
-  const pathnameWithoutLocale = pathname.replace(localePattern, '/');
-  const isI18nRoute = i18nRoutes.some(
-    route => pathname.startsWith(route) || pathnameWithoutLocale.startsWith(route)
-  );
-
-  if (isI18nRoute) {
+  if (isLocalizedRoute) {
     return intlMiddleware(req);
   }
 
-  // Check if it's a protected route (requires auth)
+  // Check if route needs internationalization
+  const needsI18n = i18nRoutes.some(route => {
+    if (route === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(route);
+  });
+
+  if (needsI18n) {
+    return intlMiddleware(req);
+  }
+  // Handle Public Routes (no auth)
+  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+
+  if (isPublicRoute) {
+    return NextResponse.next();
+  }
+
+  // Handle Protected Routes (auth + roles)
+
   const protectedPaths = Object.keys(protectedRoutes);
   const isProtectedRoute = protectedPaths.some(path => pathname.startsWith(path));
 
@@ -98,8 +107,7 @@ export default function middleware(req: NextRequest) {
       {} as Parameters<typeof authMiddleware>[1]
     );
   }
-
-  return;
+  return NextResponse.next();
 }
 
 // Configure which routes to run middleware on
