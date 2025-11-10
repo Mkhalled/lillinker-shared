@@ -1,44 +1,44 @@
 'use client';
 
 import { motion } from 'motion/react';
+import { useTranslations } from 'next-intl';
 
 const HowItWorks = () => {
+  const t = useTranslations('landing.howItWorks');
+
   const freelancerSteps = [
     {
       number: '1',
-      title: 'Describe Your Needs',
-      description:
-        'Fill out our form in just a few minutes to describe your profile and requirements.',
+      title: t('freelancers.step1Title'),
+      description: t('freelancers.step1Description'),
     },
     {
       number: '2',
-      title: 'Compare Offers',
-      description:
-        'Receive personalized payroll portage offers tailored to your specific situation.',
+      title: t('freelancers.step2Title'),
+      description: t('freelancers.step2Description'),
     },
     {
       number: '3',
-      title: 'Get Connected',
-      description: 'Connect directly with the payroll portage company of your choice.',
+      title: t('freelancers.step3Title'),
+      description: t('freelancers.step3Description'),
     },
   ];
 
   const companySteps = [
     {
       number: '1',
-      title: 'Create Your Profile',
-      description: 'Present your payroll portage company and services on our platform.',
+      title: t('companies.step1Title'),
+      description: t('companies.step1Description'),
     },
     {
       number: '2',
-      title: 'Receive Requests',
-      description:
-        'Our algorithm sends you qualified freelancer requests that match your criteria.',
+      title: t('companies.step2Title'),
+      description: t('companies.step2Description'),
     },
     {
       number: '3',
-      title: 'Grow Your Business',
-      description: 'Respond to requests and develop your client portfolio effectively.',
+      title: t('companies.step3Title'),
+      description: t('companies.step3Description'),
     },
   ];
 
@@ -52,13 +52,10 @@ const HowItWorks = () => {
           className="text-center mb-16"
         >
           <div className="space-y-6">
-            <p className="text-[var(--primary-color)] font-semibold text-lg">HOW IT WORKS</p>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
-              Simple Payroll Management
-            </h2>
+            <p className="text-[var(--primary-color)] font-semibold text-lg">{t('tag')}</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900">{t('title')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Our platform streamlines the connection between freelancers and payroll portage
-              companies, making it easier than ever to find the perfect match for your needs.
+              {t('description')}
             </p>
           </div>
         </motion.div>
@@ -72,8 +69,8 @@ const HowItWorks = () => {
             className="bg-white rounded-xl p-6 shadow-sm"
           >
             <div className="text-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-1">For Freelancers</h3>
-              <p className="text-sm text-gray-600">Find your perfect payroll portage partner</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-1">{t('freelancers.title')}</h3>
+              <p className="text-sm text-gray-600">{t('freelancers.subtitle')}</p>
             </div>
             <div className="space-y-4">
               {freelancerSteps.map((step, index) => (
@@ -98,8 +95,8 @@ const HowItWorks = () => {
             className="bg-white rounded-xl p-6 shadow-sm"
           >
             <div className="text-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-1">For Companies</h3>
-              <p className="text-sm text-gray-600">Expand your business reach</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-1">{t('companies.title')}</h3>
+              <p className="text-sm text-gray-600">{t('companies.subtitle')}</p>
             </div>
             <div className="space-y-4">
               {companySteps.map((step, index) => (

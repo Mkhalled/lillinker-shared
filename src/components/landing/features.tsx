@@ -1,43 +1,40 @@
 import { Shield, Zap, Users, Award, Clock, Star } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useTranslations } from 'next-intl';
 
 const Features = () => {
+  const t = useTranslations('landing.features');
+
   const features = [
     {
       icon: Shield,
-      title: 'Secure',
-      description:
-        'Sécurité maximale pour vos données avec des protocoles de chiffrement avancés et une protection complète.',
+      title: t('secure.title'),
+      description: t('secure.description'),
     },
     {
       icon: Users,
-      title: '24/7 Support',
-      description:
-        'Support client disponible 24h/24 et 7j/7 pour répondre à toutes vos questions et préoccupations.',
+      title: t('support.title'),
+      description: t('support.description'),
     },
     {
       icon: Star,
-      title: 'Customizable',
-      description:
-        'Interface entièrement personnalisable selon vos besoins spécifiques et votre identité de marque.',
+      title: t('customizable.title'),
+      description: t('customizable.description'),
     },
     {
       icon: Zap,
-      title: 'Reliable',
-      description:
-        'Plateforme fiable avec une disponibilité de 99.9% et des performances optimales en permanence.',
+      title: t('reliable.title'),
+      description: t('reliable.description'),
     },
     {
       icon: Clock,
-      title: 'Fast',
-      description:
-        'Traitement ultra-rapide de vos demandes avec des temps de réponse optimisés pour votre efficacité.',
+      title: t('fast.title'),
+      description: t('fast.description'),
     },
     {
       icon: Award,
-      title: 'Easy',
-      description:
-        'Interface intuitive et facile à utiliser, conçue pour simplifier votre expérience utilisateur.',
+      title: t('easy.title'),
+      description: t('easy.description'),
     },
   ];
 
@@ -50,14 +47,11 @@ const Features = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <p className="text-[var(--primary-color)] font-semibold text-lg mb-4">FEATURES</p>
+          <p className="text-[var(--primary-color)] font-semibold text-lg mb-4">{t('tag')}</p>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            We have Amazing <span className="text-[var(--primary-color)]">Service.</span>
+            {t('title')} <span className="text-[var(--primary-color)]">{t('titleHighlight')}</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Découvrez nos fonctionnalités exceptionnelles conçues pour optimiser votre expérience et
-            maximiser votre efficacité dans la gestion du portage salarial.
-          </p>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">{t('description')}</p>
         </motion.div>
 
         <motion.div

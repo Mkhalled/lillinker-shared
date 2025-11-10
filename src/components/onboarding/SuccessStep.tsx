@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface SuccessStepProps {
   email?: string;
@@ -9,30 +10,21 @@ interface SuccessStepProps {
   steps?: string[];
 }
 
-export const SuccessStep = ({
-  email,
-  title = 'Vérifiez votre adresse email !',
-  message,
-  steps = [
-    'Vérifiez votre boîte email (y compris les spams)',
-    'Cliquez sur le lien de vérification',
-    'Définissez votre mot de passe',
-    'Attendez la validation par notre équipe (2-3 jours ouvrés)',
-    'Accès complet à la plateforme après validation',
-  ],
-}: SuccessStepProps) => {
-  const defaultMessage = `Un email de vérification a été envoyé à ${email}. Cliquez sur le lien dans l'email pour vérifier votre adresse et définir votre mot de passe.`;
+export const SuccessStep = ({ email, title, message, steps }: SuccessStepProps) => {
+  const t = useTranslations('onboarding.success');
+
+  const defaultSteps = [t('step1'), t('step2'), t('step3'), t('step4'), t('step5')];
 
   return (
     <div className="space-y-6 text-center">
       <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
       <div>
-        <h3 className="text-xl font-semibold mb-2 text-gray-900">{title}</h3>
-        <p className="text-gray-600 mb-4">{message || defaultMessage}</p>
+        <h3 className="text-xl font-semibold mb-2 text-gray-900">{title || t('title')}</h3>
+        <p className="text-gray-600 mb-4">{message || t('message', { email: email || '' })}</p>
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
-          <h4 className="font-medium text-blue-900 mb-2">Prochaines étapes :</h4>
+          <h4 className="font-medium text-blue-900 mb-2">{t('nextSteps')}</h4>
           <ul className="text-sm text-blue-800 space-y-1">
-            {steps.map((step, index) => (
+            {(steps || defaultSteps).map((step, index) => (
               <li key={index}>• {step}</li>
             ))}
           </ul>

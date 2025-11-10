@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 
 import { useModalData } from '../../hooks/useModalData';
@@ -30,6 +31,7 @@ import { SuccessStep } from './SuccessStep';
 interface FreelanceModalProps extends BaseModalProps {}
 
 const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
+  const t = useTranslations('onboarding.freelance');
   const { platformServices, metiers, portages, error: dataError } = useModalData();
 
   // Use custom hooks
@@ -191,21 +193,21 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const getStepTitle = () => {
     switch (currentStep) {
       case 1:
-        return 'Informations personnelles';
+        return t('steps.personalInfo.title');
       case 2:
-        return 'Situation actuelle';
+        return t('steps.missionStatus.title');
       case 3:
-        return 'Société de portage';
+        return t('steps.portage.title');
       case 4:
-        return 'TJM et disponibilité';
+        return t('steps.tjm.title');
       case 5:
-        return 'Services souhaités';
+        return t('steps.services.title');
       case 6:
-        return 'Priorité de la demande';
+        return t('steps.priority.title');
       case 7:
-        return 'Récapitulatif';
+        return t('steps.summary.title');
       case 8:
-        return 'Demande envoyée';
+        return t('steps.success.title');
       default:
         return '';
     }
@@ -214,21 +216,21 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
   const getStepDescription = () => {
     switch (currentStep) {
       case 1:
-        return 'Renseignez vos informations de base';
+        return t('steps.personalInfo.description');
       case 2:
-        return 'Avez-vous une mission ?';
+        return t('steps.missionStatus.description');
       case 3:
-        return 'Services de portage salarial';
+        return t('steps.portage.description');
       case 4:
-        return 'Définissez votre tarif et disponibilité';
+        return t('steps.tjm.description');
       case 5:
-        return 'Choisissez les services qui vous intéressent (données obligatoires si sélectionnés)';
+        return t('steps.services.description');
       case 6:
-        return "Définissez l'urgence de votre demande";
+        return t('steps.priority.description');
       case 7:
-        return "Vérifiez vos informations avant l'envoi";
+        return t('steps.summary.description');
       case 8:
-        return 'Votre demande a été transmise';
+        return t('steps.success.description');
       default:
         return '';
     }
@@ -249,8 +251,7 @@ const FreelanceModal = ({ onClose }: FreelanceModalProps) => {
       isLoading={isLoading}
       error={error}
       showNavigation={true}
-      completeButtonText="Envoyer ma demande"
-      nextButtonText="Suivant"
+      completeButtonText={t('completeButton')}
       completionStep={7} // Specify that completion happens on step 7
       onClearProgress={() => {
         clearFormData();

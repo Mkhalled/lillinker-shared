@@ -1,6 +1,6 @@
 'use client';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
 import TableSkeleton from '@/components/common/skeleton/Demandes';
@@ -15,7 +15,7 @@ type RequestsResponse = {
   data: demande[];
 };
 
-const Societies = () => {
+const SocietiesContent = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const routeKey = pathname + searchParams.toString();
@@ -76,6 +76,14 @@ const Societies = () => {
         />
       </div>
     </div>
+  );
+};
+
+const Societies = () => {
+  return (
+    <Suspense fallback={<TableSkeleton />}>
+      <SocietiesContent />
+    </Suspense>
   );
 };
 

@@ -1,0 +1,141 @@
+{
+  "common": {
+    "restart": "Restart",
+    "restartTitle": "Restart from the beginning",
+    "previous": "Previous",
+    "next": "Next",
+    "complete": "Complete",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "required": "required",
+    "optional": "optional"
+  },
+  "success": {
+    "title": "Check your email address!",
+    "message": "A verification email has been sent to {email}. Click on the link in the email to verify your address and set your password.",
+    "nextSteps": "Next steps:",
+    "step1": "Check your email inbox (including spam)",
+    "step2": "Click on the verification link",
+    "step3": "Set your password",
+    "step4": "Wait for validation by our team (2-3 business days)",
+    "step5": "Full access to the platform after validation"
+  },
+  "freelance": {
+    "title": "Freelance Registration",
+    "completeButton": "Send my request",
+    "steps": {
+      "personalInfo": {
+        "title": "Personal Information",
+        "description": "Fill in your basic information"
+      },
+      "missionStatus": {
+        "title": "Current Situation",
+        "description": "Do you have a mission?"
+      },
+      "portage": {
+        "title": "Payroll Portage Company",
+        "description": "Payroll portage services"
+      },
+      "tjm": {
+        "title": "Daily Rate & Availability",
+        "description": "Set your rate and availability"
+      },
+      "services": {
+        "title": "Desired Services",
+        "description": "Choose the services you're interested in (required data if selected)"
+      },
+      "priority": {
+        "title": "Request Priority",
+        "description": "Define the urgency of your request"
+      },
+      "summary": {
+        "title": "Summary",
+        "description": "Review your information before sending"
+      },
+      "success": {
+        "title": "Request Sent",
+        "description": "Your request has been transmitted"
+      }
+    },
+    "personalInfo": {
+      "sex": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "sexPlaceholder": "Gender *",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "John",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Doe",
+      "email": "Email *",
+      "emailPlaceholder": "john.doe@email.com",
+      "phone": "Phone",
+      "phonePlaceholder": "06 12 34 56 78",
+      "profession": "Profession",
+      "professionPlaceholder": ""
+    },
+    "missionStatus": {
+      "title": "Mission Status",
+      "noMission": "No, I don't have a mission yet",
+      "negotiating": "Almost, I'm in negotiation",
+      "hasMission": "I already have a mission",
+      "companyName": "Company name (optional)",
+      "companyAddress": "Full address (optional)"
+    },
+    "portage": {
+      "title": "Payroll Portage",
+      "wantPortage": "I want to use a payroll portage company"
+    },
+    "tjm": {
+      "title": "Daily Rate & Salary",
+      "dailyRate": "Desired daily rate (€)",
+      "dailyRatePlaceholder": "500",
+      "daysPerMonth": "Days per month",
+      "daysPerMonthPlaceholder": "5",
+      "wantSalary": "I also want a salaried position",
+      "grossSalary": "Desired gross salary (€/month)",
+      "grossSalaryPlaceholder": "4000",
+      "startDate": "Desired start date (optional)",
+      "startDatePlaceholder": ""
+    },
+    "services": {
+      "title": "Services",
+      "required": "Required",
+      "notRequired": "Not required",
+      "enterResponse": "Enter your response... (required)",
+      "enterNumber": "Enter a number... (required)"
+    },
+    "priority": {
+      "title": "Your Priorities"
+    },
+    "summary": {
+      "title": "Summary"
+    }
+  },
+  "company": {
+    "title": "Company Registration",
+    "generalInfo": {
+      "title": "General Information"
+    },
+    "juridique": {
+      "title": "Legal Information"
+    },
+    "admin": {
+      "title": "Administrator"
+    },
+    "consultants": {
+      "title": "Consultants"
+    },
+    "metiers": {
+      "title": "Professions"
+    },
+    "portage": {
+      "title": "Portage"
+    },
+    "services": {
+      "title": "Services"
+    },
+    "summary": {
+      "title": "Summary"
+    }
+  }
+}

@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import CompanyModal from '../onboarding/CompanyModal';
@@ -12,6 +13,7 @@ type ModalType = 'none' | 'freelance' | 'company';
 
 const Hero = () => {
   const [activeModal, setActiveModal] = useState<ModalType>('none');
+  const t = useTranslations('landing.hero');
 
   const renderContent = () => {
     switch (activeModal) {
@@ -62,16 +64,12 @@ const Hero = () => {
                 >
                   <div className="space-y-4">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                      La Voie <span className="text-[var(--primary-color)] ">Rapide</span>
+                      {t('title')}{' '}
+                      <span className="text-[var(--primary-color)] ">{t('subtitle')}</span>
                       <br />
-                      vers la Société de
-                      <br />
-                      Portage Parfaite..
+                      {t('subtitle2')}
                     </h1>
-                    <p className="text-xl text-gray-600 max-w-lg">
-                      Découvrez notre plateforme innovante qui révolutionne la gestion du portage
-                      salarial avec des solutions modernes et efficaces.
-                    </p>
+                    <p className="text-xl text-gray-600 max-w-lg">{t('description')}</p>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <Button
@@ -79,7 +77,7 @@ const Hero = () => {
                       className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-full"
                       onClick={() => setActiveModal('freelance')}
                     >
-                      Demande de simulation
+                      {t('simulationButton')}
                     </Button>
                     <Button
                       variant="outline"
@@ -87,7 +85,7 @@ const Hero = () => {
                       className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-3 rounded-full bg-transparent"
                       onClick={() => setActiveModal('company')}
                     >
-                      Repondre a les demandes
+                      {t('respondButton')}
                     </Button>
                   </div>
                 </motion.div>

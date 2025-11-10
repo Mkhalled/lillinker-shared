@@ -12,7 +12,6 @@ import Hero from '@/components/landing/hero';
 import HowItWorks from '@/components/landing/HowItWorks';
 import { Services } from '@/components/landing/services';
 import { Stats } from '@/components/landing/stats';
-import { useTranslations } from 'next-intl';
 
 const Home = () => {
   // Create refs for each section
@@ -21,7 +20,7 @@ const Home = () => {
   const howItWorksRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
   const contactRef = useRef<HTMLDivElement>(null);
-  const t = useTranslations('comingSoon');
+
   // Scroll handler function with offset for fixed header
   const scrollToSection = (sectionRef: React.RefObject<HTMLDivElement>) => {
     if (sectionRef.current) {
@@ -39,32 +38,32 @@ const Home = () => {
   return (
     <ClientLayout>
       <main className="min-h-screen bg-white overflow-x-hidden">
-      <Header
-        onHomeClick={() => scrollToSection(heroRef)}
-        onAboutClick={() => scrollToSection(aboutRef)}
-        onHowItWorksClick={() => scrollToSection(howItWorksRef)}
-        onServicesClick={() => scrollToSection(servicesRef)}
-        onContactClick={() => scrollToSection(contactRef)}
-      />
-      <div ref={heroRef} id="home">
-        <Hero />
-      </div>
-      <BrandLogos />
-      <div ref={howItWorksRef} id="how-it-works" className="scroll-mt-20">
-        <HowItWorks />
-      </div>
-      <Features />
-      <div ref={aboutRef} id="about" className="scroll-mt-20">
-        <About />
-      </div>
-      <div ref={servicesRef} id="services" className="scroll-mt-20">
-        <Services />
-      </div>
-      <Stats />
-      <div ref={contactRef} id="contact" className="scroll-mt-20">
-        <Footer />
-      </div>
-    </main>
+        <Header
+          onHomeClick={() => scrollToSection(heroRef)}
+          onAboutClick={() => scrollToSection(aboutRef)}
+          onHowItWorksClick={() => scrollToSection(howItWorksRef)}
+          onServicesClick={() => scrollToSection(servicesRef)}
+          onContactClick={() => scrollToSection(contactRef)}
+        />
+        <div ref={heroRef} id="home">
+          <Hero />
+        </div>
+        <BrandLogos />
+        <div ref={howItWorksRef} id="how-it-works" className="scroll-mt-20">
+          <HowItWorks />
+        </div>
+        <Features />
+        <div ref={aboutRef} id="about" className="scroll-mt-20">
+          <About />
+        </div>
+        <div ref={servicesRef} id="services" className="scroll-mt-20">
+          <Services />
+        </div>
+        <Stats />
+        <div ref={contactRef} id="contact" className="scroll-mt-20">
+          <Footer />
+        </div>
+      </main>
     </ClientLayout>
   );
 };

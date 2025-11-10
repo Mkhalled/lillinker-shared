@@ -1,11 +1,14 @@
 import { motion } from 'motion/react';
+import { useTranslations } from 'next-intl';
 
 export const Stats = () => {
+  const t = useTranslations('landing.stats');
+
   const stats = [
-    { number: '1200+', label: 'Projects done' },
-    { number: '2354+', label: 'Happy Clients' },
-    { number: '3299+', label: 'Cup Coffee' },
-    { number: '101+', label: 'Award Wins' },
+    { number: '1200+', label: t('projects') },
+    { number: '2354+', label: t('clients') },
+    { number: '3299+', label: t('coffee') },
+    { number: '101+', label: t('awards') },
   ];
 
   return (

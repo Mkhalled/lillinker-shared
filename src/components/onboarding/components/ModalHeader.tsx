@@ -1,6 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ModalHeaderProps {
   title: string;
@@ -19,6 +20,7 @@ export const ModalHeader = ({
   onClearProgress,
   showRestartButton = true,
 }: ModalHeaderProps) => {
+  const t = useTranslations('onboarding.common');
   const canRestart = showRestartButton && onClearProgress && currentStep > 1;
 
   return (
@@ -39,10 +41,10 @@ export const ModalHeader = ({
           <button
             onClick={onClearProgress}
             className="hidden sm:block text-xs text-red-600 hover:text-red-700 px-2 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
-            title="Recommencer depuis le début"
-            aria-label="Recommencer le processus d'inscription"
+            title={t('restartTitle')}
+            aria-label={t('restartTitle')}
           >
-            Recommencer
+            {t('restart')}
           </button>
         )}
 

@@ -1,8 +1,11 @@
 import { Compass, Eye, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 export const Services = () => {
+  const t = useTranslations('landing.services');
+
   return (
     <section className="py-20 bg-gradient-to-br from-[var(--primary-light)] to-blue-50 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-full">
@@ -31,11 +34,13 @@ export const Services = () => {
             className="space-y-8"
           >
             <div className="space-y-6">
-              <p className="text-[var(--primary-color)] font-semibold text-lg">SERVICES</p>
+              <p className="text-[var(--primary-color)] font-semibold text-lg">{t('tag')}</p>
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                Explorez les vrais <span className="text-[var(--primary-color)]">Obstacles</span>{' '}
-                des indépendants, <span className="text-[var(--primary-color)]">pas seulement</span>{' '}
-                notre discours.
+                {t('title')}{' '}
+                <span className="text-[var(--primary-color)]">{t('titleHighlight')}</span>{' '}
+                {t('title2')}{' '}
+                <span className="text-[var(--primary-color)]">{t('titleHighlight2')}</span>{' '}
+                {t('title3')}
               </h2>
             </div>
 
@@ -46,12 +51,9 @@ export const Services = () => {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Un Canal Unique Et Unifié
+                    {t('unifiedChannel.title')}
                   </h3>
-                  <p className="text-gray-600">
-                    Centralisez toutes vos communications et gérez vos projets de portage en toute
-                    simplicité grâce à notre plateforme unifiée.
-                  </p>
+                  <p className="text-gray-600">{t('unifiedChannel.description')}</p>
                 </div>
               </div>
 
@@ -60,11 +62,10 @@ export const Services = () => {
                   <Eye className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Transparence Totale</h3>
-                  <p className="text-gray-600">
-                    Bénéficiez d&apos;une transparence complète sur les tarifs, les services et les
-                    conditions de chaque société de portage.
-                  </p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    {t('transparency.title')}
+                  </h3>
+                  <p className="text-gray-600">{t('transparency.description')}</p>
                 </div>
               </div>
 
@@ -73,27 +74,21 @@ export const Services = () => {
                   <Users className="w-6 h-6 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Best Service</h3>
-                  <p className="text-gray-600">
-                    Profitez d&apos;un service client exceptionnel avec des conseillers experts
-                    disponibles pour vous accompagner.
-                  </p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{t('bestService.title')}</h3>
+                  <p className="text-gray-600">{t('bestService.description')}</p>
                 </div>
               </div>
             </div>
 
             <div className="pt-4">
-              <p className="text-gray-600 mb-4">
-                Bienvenue à tous, Je cherche une boite pour faire une mission en freelance.
-                Avez-vous des pistes svp ? Merci
-              </p>
+              <p className="text-gray-600 mb-4">{t('testimonial')}</p>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-[var(--primary-color)] rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-sm">JL</span>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">John Lead</p>
-                  <p className="text-sm text-gray-600">CEO Lead</p>
+                  <p className="font-semibold text-gray-900">{t('testimonialAuthor')}</p>
+                  <p className="text-sm text-gray-600">{t('testimonialRole')}</p>
                 </div>
               </div>
             </div>

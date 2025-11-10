@@ -1,9 +1,12 @@
 import { motion } from 'motion/react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '../ui/button/Button';
 
 export const About = () => {
+  const t = useTranslations('landing.about');
+
   return (
     <section className="py-20 bg-white overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-full">
@@ -15,32 +18,26 @@ export const About = () => {
             className="space-y-8"
           >
             <div className="space-y-6">
-              <p className="text-[var(--primary-color)] font-semibold text-lg">À PROPOS DE NOUS</p>
+              <p className="text-[var(--primary-color)] font-semibold text-lg">{t('tag')}</p>
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                Votre Boussole <span className="text-[var(--primary-color)]">pour</span>
+                {t('title')}{' '}
+                <span className="text-[var(--primary-color)]">{t('titleHighlight')}</span>
                 <br />
-                le Portage Parfait.
+                {t('title2')}
               </h2>
               <div className="space-y-4">
                 <p className="text-gray-600 text-lg leading-relaxed">
-                  <span className="font-semibold text-gray-900">Depuis 2023</span>
+                  <span className="font-semibold text-gray-900">{t('since')}</span>
                 </p>
-                <p className="text-gray-600 leading-relaxed">
-                  Lillinker, votre partenaire dévoué pour simplifier le processus de sélection
-                  d&apos;une société de portage en tant que freelance. En tant qu&apos;agrégateur de
-                  plateformes de portage, nous identifions et nous vous proposons les meilleures
-                  sociétés qui correspondent à vos besoins spécifiques.
-                </p>
-                <p className="text-gray-600 leading-relaxed">
-                  Rejoignez-nous, rejoignez l&apos;avenir du portage salarial ensemble !
-                </p>
+                <p className="text-gray-600 leading-relaxed">{t('description1')}</p>
+                <p className="text-gray-600 leading-relaxed">{t('description2')}</p>
               </div>
             </div>
             <Button
               size="lg"
               className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-full"
             >
-              En Savoir Plus
+              {t('learnMoreButton')}
             </Button>
           </motion.div>
 

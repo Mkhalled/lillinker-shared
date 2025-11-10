@@ -3,14 +3,14 @@
 import { ChevronLeftIcon, EyeIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import { Button } from '@/components/ui/button/Button';
 import { EyeCloseIcon } from '@/icons';
 
-const SetPasswordPage = () => {
+const SetPasswordContent = () => {
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: '',
@@ -234,6 +234,16 @@ const SetPasswordPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const SetPasswordPage = () => {
+  return (
+    <Suspense
+      fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}
+    >
+      <SetPasswordContent />
+    </Suspense>
   );
 };
 

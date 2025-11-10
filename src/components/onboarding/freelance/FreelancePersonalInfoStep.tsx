@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import type { Metier } from '../../../hooks/useModalData';
 import type { FreelanceFormData } from '../../../types/freelance';
 import { BasicEmailInput } from '../../form/BasicEmailInput';
@@ -17,11 +19,13 @@ export const FreelancePersonalInfoStep = ({
   setFormData,
   metiers,
 }: FreelancePersonalInfoStepProps) => {
+  const t = useTranslations('onboarding.freelance.personalInfo');
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <StyledSelect
-          label="Sexe"
+          label={t('sex')}
           id="sex"
           value={formData.sex || ''}
           onChange={e =>
@@ -31,19 +35,19 @@ export const FreelancePersonalInfoStep = ({
             }))
           }
           options={[
-            { value: 'MALE', label: 'Homme' },
-            { value: 'FEMALE', label: 'Femme' },
+            { value: 'MALE', label: t('male') },
+            { value: 'FEMALE', label: t('female') },
           ]}
-          placeholder="Sexe *"
+          placeholder={t('sexPlaceholder')}
         />
         <InputField
           id="prenom"
-          label="Prénom"
+          label={t('firstName')}
           value={formData.firstName}
           onChange={e =>
             setFormData((prev: FreelanceFormData) => ({ ...prev, firstName: e.target.value }))
           }
-          placeholder="Jean"
+          placeholder={t('firstNamePlaceholder')}
           required
         />
       </div>
@@ -51,12 +55,12 @@ export const FreelancePersonalInfoStep = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <InputField
           id="nom"
-          label="Nom"
+          label={t('lastName')}
           value={formData.lastName}
           onChange={e =>
             setFormData((prev: FreelanceFormData) => ({ ...prev, lastName: e.target.value }))
           }
-          placeholder="Dupont"
+          placeholder={t('lastNamePlaceholder')}
           required
         />
         <BasicEmailInput
@@ -64,8 +68,8 @@ export const FreelancePersonalInfoStep = ({
           onEmailChange={(email: string) =>
             setFormData((prev: FreelanceFormData) => ({ ...prev, email: email }))
           }
-          label="Email *"
-          placeholder="jean.dupont@email.com"
+          label={t('email')}
+          placeholder={t('emailPlaceholder')}
           id="freelance-email"
         />
       </div>
@@ -73,16 +77,16 @@ export const FreelancePersonalInfoStep = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <InputField
           id="phone"
-          label="Téléphone"
+          label={t('phone')}
           value={formData.phone}
           onChange={e =>
             setFormData((prev: FreelanceFormData) => ({ ...prev, phone: e.target.value }))
           }
-          placeholder="06 12 34 56 78"
+          placeholder={t('phonePlaceholder')}
         />
         <StyledSelect
           id="metier"
-          label="Métier"
+          label={t('profession')}
           value={formData.metierId}
           onChange={e =>
             setFormData((prev: FreelanceFormData) => ({
@@ -94,7 +98,7 @@ export const FreelancePersonalInfoStep = ({
             { value: 0, label: 'Sélectionnez votre métier' },
             ...metiers.map(metier => ({ value: metier.id, label: metier.name })),
           ]}
-          placeholder=""
+          placeholder={t('professionPlaceholder')}
           required
         />
       </div>

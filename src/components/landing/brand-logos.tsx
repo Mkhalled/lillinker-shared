@@ -1,6 +1,9 @@
 import { motion } from 'motion/react';
+import { useTranslations } from 'next-intl';
 
 export const BrandLogos = () => {
+  const t = useTranslations('landing.brandLogos');
+
   const brands = [
     { name: 'Brand One', color: 'bg-blue-500' },
     { name: 'Brand Two', color: 'bg-[var(--primary-color)]' },
@@ -17,7 +20,7 @@ export const BrandLogos = () => {
         className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-full"
       >
         <div className="text-center mb-12">
-          <p className="text-gray-600 text-lg">Trusted by leading companies</p>
+          <p className="text-gray-600 text-lg">{t('trustedBy')}</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center">
           {brands.map((brand, index) => (

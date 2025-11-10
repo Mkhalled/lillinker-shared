@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '../../ui/button/Button';
 
@@ -15,8 +16,8 @@ interface NavigationButtonsProps {
   onPrevious?: () => void;
   onComplete?: () => void;
   onClose: () => void;
-  completeButtonText: string;
-  nextButtonText: string;
+  completeButtonText?: string;
+  nextButtonText?: string;
 }
 
 export const NavigationButtons = ({
@@ -33,6 +34,8 @@ export const NavigationButtons = ({
   completeButtonText,
   nextButtonText,
 }: NavigationButtonsProps) => {
+  const t = useTranslations('onboarding.common');
+
   const handleNextClick = () => {
     if (isCompleteStep && onComplete) {
       onComplete();
@@ -68,10 +71,10 @@ export const NavigationButtons = ({
         onClick={onPrevious}
         disabled={isFirstStep || isLoading}
         className="flex items-center justify-center space-x-2 w-full sm:w-auto order-2 sm:order-1"
-        aria-label="Étape précédente"
+        aria-label={t('previous')}
       >
         <ChevronLeft className="h-4 w-4" />
-        <span>Précédent</span>
+        <span>{t('previous')}</span>
       </Button>
 
       {/* Next/Complete Button */}
@@ -81,8 +84,8 @@ export const NavigationButtons = ({
           disabled={isDisabled}
           isLoading={isLoading}
           isCompleteStep={isCompleteStep}
-          completeButtonText={completeButtonText}
-          nextButtonText={nextButtonText}
+          completeButtonText={completeButtonText || t('complete')}
+          nextButtonText={nextButtonText || t('next')}
         />
       ) : null}
     </div>
@@ -106,8 +109,9 @@ const NextButton = ({
   completeButtonText,
   nextButtonText,
 }: NextButtonProps) => {
+  const t = useTranslations('onboarding.common');
   const buttonText = isCompleteStep ? completeButtonText : nextButtonText;
-  const ariaLabel = isCompleteStep ? "Finaliser l'inscription" : 'Étape suivante';
+  const ariaLabel = isCompleteStep ? completeButtonText : nextButtonText;
 
   return (
     <Button
@@ -119,7 +123,7 @@ const NextButton = ({
       {isLoading ? (
         <>
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-          <span>En cours...</span>
+          <span>{t('loading')}</span>
         </>
       ) : (
         <>

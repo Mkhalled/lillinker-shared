@@ -1,8 +1,11 @@
 import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 const Footer = () => {
+  const t = useTranslations('landing.footer');
+
   return (
     <footer className="bg-gray-900 text-white py-16 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-full">
@@ -14,11 +17,7 @@ const Footer = () => {
         >
           <div className="space-y-4">
             <h3 className="text-2xl font-bold">LILLINKER</h3>
-            <p className="text-gray-400 leading-relaxed">
-              Rejoignez-Nous Nous sommes ravis de vous accueillir au sein de notre communauté
-              grandissante. Ensemble, nous redéfinissons l&apos;avenir du portage salarial en
-              offrant des solutions innovantes et personnalisées.
-            </p>
+            <p className="text-gray-400 leading-relaxed">{t('description')}</p>
             <div className="flex space-x-4">
               <Link href="#" className="text-gray-400 hover:text-white transition-colors">
                 <Facebook className="w-5 h-5" />
@@ -36,61 +35,61 @@ const Footer = () => {
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Quick Link</h4>
+            <h4 className="text-lg font-semibold">{t('quickLink')}</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-                  Home
+                  {t('home')}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-                  About
+                  {t('about')}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-                  Services
+                  {t('services')}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-                  Contact us
+                  {t('contactUs')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Services</h4>
+            <h4 className="text-lg font-semibold">{t('servicesSection')}</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-                  Portage Salarial
+                  {t('payrollPortage')}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-                  Consulting
+                  {t('consulting')}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-                  Support
+                  {t('support')}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-                  Formation
+                  {t('training')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Contact Info</h4>
+            <h4 className="text-lg font-semibold">{t('contactInfo')}</h4>
             <div className="space-y-2 text-gray-400">
-              <p>France, Paris</p>
+              <p>{t('location')}</p>
               <p>+33 6 XX XX XX XX</p>
               <p>+33 1 XX XX XX XX</p>
               <p>contact@lillinker.com</p>
@@ -104,7 +103,7 @@ const Footer = () => {
           transition={{ duration: 0.8 }}
           className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400"
         >
-          <p>© 2024 Lillinker. All rights reserved.</p>
+          <p>{t('copyright')}</p>
         </motion.div>
       </div>
     </footer>

@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { useLoading } from '@/app/context/LoadingContext';
@@ -29,7 +30,8 @@ const Header = ({
   const { data: session, status } = useSession();
   const { setLoading } = useLoading();
   const router = useRouter();
-  
+  const t = useTranslations('landing.header');
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -73,31 +75,31 @@ const Header = ({
               onClick={onHomeClick}
               className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer whitespace-nowrap"
             >
-              Home
+              {t('home')}
             </button>
             <button
               onClick={onHowItWorksClick}
               className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer whitespace-nowrap"
             >
-              How it works
+              {t('howItWorks')}
             </button>
             <button
               onClick={onAboutClick}
               className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer whitespace-nowrap"
             >
-              About
+              {t('about')}
             </button>
             <button
               onClick={onServicesClick}
               className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer whitespace-nowrap"
             >
-              Services
+              {t('services')}
             </button>
             <button
               onClick={onContactClick}
               className="text-gray-700 hover:text-[var(--primary-color)] transition-colors cursor-pointer whitespace-nowrap"
             >
-              Contact
+              {t('contact')}
             </button>
           </nav>
 
@@ -107,12 +109,12 @@ const Header = ({
                 onClick={getDashboardHref}
                 className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white"
               >
-                Dashboard
+                {t('dashboard')}
               </Button>
             ) : (
               <Link href="/auth/login">
                 <Button className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white">
-                  Login
+                  {t('login')}
                 </Button>
               </Link>
             )}
@@ -137,7 +139,7 @@ const Header = ({
                 }}
                 className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2 text-left"
               >
-                Home
+                {t('home')}
               </button>
               <button
                 onClick={() => {
@@ -146,7 +148,7 @@ const Header = ({
                 }}
                 className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2 text-left"
               >
-                About
+                {t('about')}
               </button>
               <button
                 onClick={() => {
@@ -155,7 +157,7 @@ const Header = ({
                 }}
                 className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2 text-left"
               >
-                How it works
+                {t('howItWorks')}
               </button>
               <button
                 onClick={() => {
@@ -164,7 +166,7 @@ const Header = ({
                 }}
                 className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2 text-left"
               >
-                Services
+                {t('services')}
               </button>
               <button
                 onClick={() => {
@@ -173,7 +175,7 @@ const Header = ({
                 }}
                 className="text-gray-700 hover:text-[var(--primary-color)] transition-colors py-2 text-left"
               >
-                Contact
+                {t('contact')}
               </button>
               <div className="flex flex-col space-y-3 pt-4 border-t border-gray-100">
                 {status === 'authenticated' ? (
@@ -184,7 +186,7 @@ const Header = ({
                     }}
                     className="bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white"
                   >
-                    Dashboard
+                    {t('dashboard')}
                   </Button>
                 ) : (
                   <>
@@ -193,7 +195,7 @@ const Header = ({
                         variant="outline"
                         className="w-full border-[var(--primary-color)] text-[var(--primary-color)] hover:bg-[var(--primary-light)] bg-transparent"
                       >
-                        Login
+                        {t('login')}
                       </Button>
                     </Link>
                   </>
