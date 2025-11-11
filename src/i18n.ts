@@ -8,9 +8,10 @@ export default getRequestConfig(async ({ locale }) => {
   const currentLocale = locale || 'en';
 
   // Load all translation files and merge them
-  const [landingMessages, onboardingMessages] = await Promise.all([
+  const [landingMessages, onboardingMessages, metadataMessages] = await Promise.all([
     import(`./messages/landing/${currentLocale}.json`).then(module => module.default),
     import(`./messages/onboarding/${currentLocale}.json`).then(module => module.default),
+    import(`./messages/metadata/${currentLocale}.json`).then(module => module.default),
   ]);
 
   return {
@@ -18,6 +19,7 @@ export default getRequestConfig(async ({ locale }) => {
     messages: {
       landing: landingMessages,
       onboarding: onboardingMessages,
+      metadata: metadataMessages,
     },
   };
 });
