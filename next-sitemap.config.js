@@ -2,15 +2,9 @@
 module.exports = {
   siteUrl: process.env.SITE_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000',
   generateRobotsTxt: true,
-  generateIndexSitemap: false, 
+  generateIndexSitemap: false,
 
-  exclude: [
-    '/auth/*',
-    '/admin/*',
-    '/company/*',
-    '/consultant/*',
-    '/api/*',
-  ],
+  exclude: ['/auth/*', '/admin/*', '/company/*', '/consultant/*', '/api/*'],
 
   // Alternate language pages configuration for internationalization
   alternateRefs: [
