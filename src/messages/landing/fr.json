@@ -10,12 +10,12 @@
     "signup": "S'inscrire"
   },
   "hero": {
-    "title": "La Voie",
-    "subtitle": "Rapide",
-    "subtitle2": "vers la Société de Portage Parfaite..",
-    "description": "Découvrez notre plateforme innovante qui révolutionne la gestion du portage salarial avec des solutions modernes et efficaces.",
-    "simulationButton": "Demande de simulation",
-    "respondButton": "Répondre aux demandes"
+    "title": "Portage Salarial en France :",
+    "subtitle": "Trouvez la Meilleure",
+    "subtitle2": "Société de Portage pour Freelances",
+    "description": "Plateforme #1 de portage salarial en France. Simulez votre TJM, comparez les offres et trouvez la société de portage parfaite pour votre activité freelance.",
+    "simulationButton": "Simulation Portage Gratuite",
+    "respondButton": "Sociétés : Répondre aux Demandes"
   },
   "brandLogos": {
     "trustedBy": "Approuvé par les entreprises leaders"
@@ -107,6 +107,26 @@
     "testimonial": "Bienvenue à tous, Je cherche une boite pour faire une mission en freelance. Avez-vous des pistes svp ? Merci",
     "testimonialAuthor": "Jean Dupont",
     "testimonialRole": "Directeur Général"
+  },
+  "faq": {
+    "tag": "FAQ",
+    "title": "Questions",
+    "titleHighlight": "Fréquentes",
+    "subtitle": "Tout ce que vous devez savoir sur le portage salarial",
+    "question1": "Qu'est-ce que le portage salarial ?",
+    "answer1": "Le portage salarial est une relation contractuelle tripartite entre un freelance (salarié porté), une société de portage et une entreprise cliente. Il permet aux consultants indépendants de bénéficier du statut de salarié tout en conservant leur autonomie professionnelle.",
+    "question2": "Comment fonctionne le portage salarial ?",
+    "answer2": "Le freelance trouve sa mission, négocie son TJM (Taux Journalier Moyen) avec l'entreprise cliente. La société de portage s'occupe de toute la gestion administrative : facturation, cotisations sociales, bulletin de paie, et reverse un salaire au consultant après déduction des frais de gestion (généralement 5-10%).",
+    "question3": "Quels sont les avantages du portage salarial ?",
+    "answer3": "Le portage salarial offre de nombreux avantages : couverture sociale complète (sécurité sociale, retraite, chômage), simplification administrative, pas de création d'entreprise nécessaire, accompagnement professionnel, et la possibilité de se concentrer sur son cœur de métier sans gérer la comptabilité.",
+    "question4": "Comment calculer mon TJM en portage salarial ?",
+    "answer4": "Le TJM (Taux Journalier Moyen) se calcule en fonction de votre salaire souhaité, des charges sociales (environ 45%), des frais de gestion de la société de portage (5-10%), et des frais professionnels. Notre simulateur gratuit vous permet de calculer précisément votre TJM en quelques clics.",
+    "question5": "Quelle est la différence entre portage salarial et auto-entrepreneur ?",
+    "answer5": "En portage salarial, vous êtes salarié avec tous les avantages sociaux (chômage, retraite complète, prévoyance). En auto-entrepreneur, vous êtes indépendant avec une protection sociale minimale. Le portage convient mieux aux missions longues et aux TJM élevés, tandis que l'auto-entrepreneur est adapté aux petites activités avec un CA limité.",
+    "question6": "Comment choisir la meilleure société de portage ?",
+    "answer6": "Comparez les frais de gestion (généralement 5-10%), les services inclus (accompagnement, RC Pro, mutuelle), la réactivité du support, les avis clients, et la solidité financière. Notre plateforme vous permet de comparer gratuitement plusieurs offres personnalisées selon votre profil.",
+    "moreQuestions": "Vous avez d'autres questions ?",
+    "contactUs": "Contactez-nous"
   },
   "stats": {
     "projects": "Projets réalisés",

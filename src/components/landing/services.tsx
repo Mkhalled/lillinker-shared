@@ -19,10 +19,11 @@ export const Services = () => {
             <div className="bg-white rounded-2xl shadow-2xl p-8">
               <Image
                 src="/images/landing/3.png"
-                alt="Communication platform interface"
+                alt="Plateforme portage salarial - Gestion administrative freelance simplifiée"
                 width={500}
                 height={400}
                 className="w-full h-auto rounded-xl"
+                loading="lazy"
               />
             </div>
           </motion.div>

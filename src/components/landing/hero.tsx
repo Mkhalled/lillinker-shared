@@ -99,7 +99,7 @@ const Hero = () => {
                   <div className="relative bg-white rounded-2xl shadow-2xl p-8">
                     <Image
                       src="/images/landing/1.png"
-                      alt="Team collaboration illustration"
+                      alt="Portage salarial France - Plateforme de mise en relation freelances et sociétés de portage"
                       width={500}
                       height={400}
                       className="w-full h-auto"

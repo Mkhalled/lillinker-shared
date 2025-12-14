@@ -10,12 +10,12 @@
     "signup": "Sign Up"
   },
   "hero": {
-    "title": "The Fast Track",
-    "subtitle": "to the Perfect Payroll",
-    "subtitle2": "Portage Company..",
-    "description": "Discover our innovative platform that revolutionizes payroll portage management with modern and efficient solutions.",
-    "simulationButton": "Request a Simulation",
-    "respondButton": "Respond to Requests"
+    "title": "Payroll Portage in France:",
+    "subtitle": "Find the Best",
+    "subtitle2": "Portage Company for Freelancers",
+    "description": "#1 payroll portage platform in France. Simulate your daily rate, compare offers and find the perfect portage company for your freelance business.",
+    "simulationButton": "Free Portage Simulation",
+    "respondButton": "Companies: Respond to Requests"
   },
   "brandLogos": {
     "trustedBy": "Trusted by leading companies"
@@ -107,6 +107,26 @@
     "testimonial": "Welcome everyone, I'm looking for a company to do a freelance mission. Do you have any leads please? Thanks",
     "testimonialAuthor": "John Lead",
     "testimonialRole": "CEO Lead"
+  },
+  "faq": {
+    "tag": "FAQ",
+    "title": "Frequently Asked",
+    "titleHighlight": "Questions",
+    "subtitle": "Everything you need to know about payroll portage",
+    "question1": "What is payroll portage?",
+    "answer1": "Payroll portage is a three-way contractual relationship between a freelancer (ported employee), a portage company, and a client company. It allows independent consultants to benefit from employee status while maintaining their professional autonomy.",
+    "question2": "How does payroll portage work?",
+    "answer2": "The freelancer finds their mission, negotiates their daily rate with the client company. The portage company handles all administrative management: invoicing, social contributions, payslips, and pays a salary to the consultant after deducting management fees (typically 5-10%).",
+    "question3": "What are the advantages of payroll portage?",
+    "answer3": "Payroll portage offers many advantages: complete social coverage (social security, retirement, unemployment), administrative simplification, no need to create a company, professional support, and the ability to focus on your core business without managing accounting.",
+    "question4": "How to calculate my daily rate in payroll portage?",
+    "answer4": "The daily rate is calculated based on your desired salary, social charges (approximately 45%), portage company management fees (5-10%), and professional expenses. Our free simulator allows you to accurately calculate your daily rate in just a few clicks.",
+    "question5": "What is the difference between payroll portage and self-employed?",
+    "answer5": "In payroll portage, you are an employee with all social benefits (unemployment, full retirement, insurance). As self-employed, you are independent with minimal social protection. Portage is better suited for long missions and high daily rates, while self-employed status is suitable for small activities with limited revenue.",
+    "question6": "How to choose the best portage company?",
+    "answer6": "Compare management fees (typically 5-10%), included services (support, professional liability insurance, health insurance), support responsiveness, customer reviews, and financial stability. Our platform allows you to compare several personalized offers for free according to your profile.",
+    "moreQuestions": "Have more questions?",
+    "contactUs": "Contact us"
   },
   "stats": {
     "projects": "Projects done",

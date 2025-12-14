@@ -50,10 +50,11 @@ export const About = () => {
             <div className="relative">
               <Image
                 src="/images/landing/2.png"
-                alt="Growth and success illustration"
+                alt="Simulation portage salarial - Calculez votre TJM et revenus freelance"
                 width={600}
                 height={500}
                 className="w-full h-auto rounded-2xl"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--primary-color)]/20 to-transparent rounded-2xl"></div>
             </div>
