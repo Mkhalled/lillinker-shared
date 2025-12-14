@@ -1,9 +1,8 @@
 'use client';
 
-
 import Header from './header';
 
-export default function HeaderWithNavigation() {
+const HeaderWithNavigation = () => {
   // Create refs for smooth scrolling to sections
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -28,4 +27,6 @@ export default function HeaderWithNavigation() {
       onContactClick={() => scrollToSection('contact')}
     />
   );
-}
+};
+
+export default HeaderWithNavigation;
