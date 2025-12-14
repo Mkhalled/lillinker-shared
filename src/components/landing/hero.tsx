@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import CompanyModal from '../onboarding/CompanyModal';
 import FreelanceModal from '../onboarding/FreelanceModal';
@@ -15,12 +15,35 @@ const Hero = () => {
   const [activeModal, setActiveModal] = useState<ModalType>('none');
   const t = useTranslations('landing.hero');
 
+  // Prevent scrolling when modal is active
+  useEffect(() => {
+    if (activeModal !== 'none') {
+      // Prevent scrolling on both html and body
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+
+    return () => {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [activeModal]);
+
   const renderContent = () => {
     switch (activeModal) {
       case 'freelance':
         return (
-          <div className="min-h-screen py-16 md:pt-20 bg-gradient-to-br from-blue-50 to-blue-100">
-            <div className="container mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="fixed top-0 left-0 right-0 bottom-0 z-40 pt-20 bg-gradient-to-br from-blue-50 to-blue-100 overflow-y-auto">
+            <div className="container mx-auto px-6 sm:px-8 lg:px-12 py-8">
               <div className="max-w-4xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
                   <FreelanceModal onClose={() => setActiveModal('none')} />
@@ -32,8 +55,8 @@ const Hero = () => {
 
       case 'company':
         return (
-          <div className="min-h-screen py-16 md:pt-20 bg-gradient-to-br from-blue-50 to-blue-100">
-            <div className="container mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="fixed top-0 left-0 right-0 bottom-0 z-40 pt-20 bg-gradient-to-br from-blue-50 to-blue-100 overflow-y-auto">
+            <div className="container mx-auto px-6 sm:px-8 lg:px-12 py-8">
               <div className="max-w-4xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
                   <CompanyModal onClose={() => setActiveModal('none')} />

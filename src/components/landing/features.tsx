@@ -1,3 +1,5 @@
+'use client';
+
 import { Shield, Zap, Users, Award, Clock, Star } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';

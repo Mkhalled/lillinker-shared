@@ -10,9 +10,9 @@
     "signup": "S'inscrire"
   },
   "hero": {
-    "title": "Portage Salarial en France :",
-    "subtitle": "Trouvez la Meilleure",
-    "subtitle2": "Société de Portage pour Freelances",
+    "title": "Portage Salarial en France",
+    "subtitle": "pour Freelances",
+    "subtitle2": "",
     "description": "Plateforme #1 de portage salarial en France. Simulez votre TJM, comparez les offres et trouvez la société de portage parfaite pour votre activité freelance.",
     "simulationButton": "Simulation Portage Gratuite",
     "respondButton": "Sociétés : Répondre aux Demandes"

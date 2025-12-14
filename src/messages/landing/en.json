@@ -10,9 +10,9 @@
     "signup": "Sign Up"
   },
   "hero": {
-    "title": "Payroll Portage in France:",
-    "subtitle": "Find the Best",
-    "subtitle2": "Portage Company for Freelancers",
+    "title": "Payroll Portage in France",
+    "subtitle": "for Freelancers",
+    "subtitle2": "",
     "description": "#1 payroll portage platform in France. Simulate your daily rate, compare offers and find the perfect portage company for your freelance business.",
     "simulationButton": "Free Portage Simulation",
     "respondButton": "Companies: Respond to Requests"
