@@ -19,7 +19,6 @@ export async function generateMetadata({
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lillinker.com';
   const canonicalUrl = `${baseUrl}/${locale}`;
 
-  // SEO-optimized metadata for portage salarial
   return {
     title: t('title'),
     description: t('description'),
@@ -99,7 +98,6 @@ const LocaleLayout = async ({
   const t = await getTranslations({ locale, namespace: 'metadata' });
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lillinker.com';
 
-  // Structured Data (JSON-LD) for SEO
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',

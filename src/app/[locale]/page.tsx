@@ -10,8 +10,7 @@ import HowItWorks from '@/components/landing/HowItWorks';
 import { Services } from '@/components/landing/services';
 import { Stats } from '@/components/landing/stats';
 
-// Server Component for better SEO
-export default function Home() {
+const Home = () => {
   return (
     <ClientLayout>
       <main className="min-h-screen bg-white overflow-x-hidden">
@@ -38,4 +37,6 @@ export default function Home() {
       </main>
     </ClientLayout>
   );
-}
+};
+
+export default Home;
