@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && next-sitemap",
+    "postinstall": "prisma generate",
     "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "next lint",
@@ -27,6 +28,7 @@
     "db:push": "prisma db push",
     "db:seed": "NODE_ENV=development prisma db seed",
     "db:reset": "NODE_ENV=development prisma migrate reset"
+  
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
