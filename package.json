@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && next-sitemap",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "postinstall": "prisma generate",
     "postbuild": "next-sitemap",
     "start": "next start",
