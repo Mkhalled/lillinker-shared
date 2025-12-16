@@ -7,13 +7,14 @@ import { CompanyService } from '@/services/company/company.service';
 import { UpdateOrganismeRequest } from '@/types/organisme';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export async function GET(_request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, context: RouteParams) {
   try {
+    const params = await context.params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -47,8 +48,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(request: NextRequest, context: RouteParams) {
   try {
+    const params = await context.params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -104,8 +106,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, context: RouteParams) {
   try {
+    const params = await context.params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {

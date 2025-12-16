@@ -1,5 +1,4 @@
 import { CotisationType } from '@prisma/client';
-import React from 'react';
 
 import InputField from '@/components/form/input/InputField';
 import TextAreaField from '@/components/form/input/TextAreaField';

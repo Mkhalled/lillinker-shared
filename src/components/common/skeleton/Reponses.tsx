@@ -1,5 +1,4 @@
 import Skeleton from '@mui/material/Skeleton';
-import React from 'react';
 
 const ReponseSkeleton: React.FC = () => (
   <div className="space-y-4">

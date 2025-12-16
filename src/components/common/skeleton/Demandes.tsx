@@ -1,5 +1,4 @@
 import Skeleton from '@mui/material/Skeleton';
-import React from 'react';
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
 

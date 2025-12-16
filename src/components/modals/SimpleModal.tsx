@@ -1,7 +1,6 @@
 'use client';
 
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
-import React from 'react';
 
 interface SimpleModalProps {
   isOpen: boolean;

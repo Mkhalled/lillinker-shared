@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
-import { logger } from '@/lib/logger';
+
 import { POST as VerifyEmailPOST } from '@/app/api/auth/verify-email/route';
-import { AuthService } from '@/services';
+import { logger } from '@/lib/logger';
 import { SetPasswordSchema } from '@/lib/validations/auth.validation';
+import { AuthService } from '@/services';
 
 // Mock dependencies
 jest.mock('@/lib/logger', () => ({

@@ -1,9 +1,10 @@
 import { NextRequest } from 'next/server';
+
+import { POST as CompanyOnboardingPOST } from '@/app/api/auth/onboarding/company/route';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
-import { POST as CompanyOnboardingPOST } from '@/app/api/auth/onboarding/company/route';
-import { CompanyService, AuthService, PlatformServiceService } from '@/services';
 import { CompanyOnboardingSchema } from '@/lib/validations/auth.validation';
+import { CompanyService, AuthService, PlatformServiceService } from '@/services';
 
 // Mock dependencies
 jest.mock('@/lib/logger', () => ({

@@ -7,8 +7,12 @@ import { prisma } from '@/lib/prisma';
 import { CompanyResponseService } from '@/services/company/CompanyResponse.service';
 
 // GET - Get response data for a specific request
-export async function GET(_request: NextRequest, { params }: { params: { requestId: string } }) {
+export async function GET(
+  _request: NextRequest,
+  context: { params: Promise<{ requestId: string }> }
+) {
   try {
+    const params = await context.params;
     logger.info('Fetching company response data', {
       operation: 'getCompanyResponseData',
       requestId: params.requestId,
@@ -107,8 +111,12 @@ export async function GET(_request: NextRequest, { params }: { params: { request
 }
 
 // POST - Create a new company response
-export async function POST(request: NextRequest, { params }: { params: { requestId: string } }) {
+export async function POST(
+  request: NextRequest,
+  context: { params: Promise<{ requestId: string }> }
+) {
   try {
+    const params = await context.params;
     logger.info('Creating company response', {
       operation: 'createCompanyResponse',
       requestId: params.requestId,
@@ -233,8 +241,12 @@ export async function POST(request: NextRequest, { params }: { params: { request
 }
 
 // PUT - Update existing company response
-export async function PUT(request: NextRequest, { params }: { params: { requestId: string } }) {
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ requestId: string }> }
+) {
   try {
+    const params = await context.params;
     logger.info('Updating company response', {
       operation: 'updateCompanyResponse',
       requestId: params.requestId,
@@ -363,8 +375,12 @@ export async function PUT(request: NextRequest, { params }: { params: { requestI
 }
 
 // DELETE - Delete existing company response
-export async function DELETE(_request: NextRequest, { params }: { params: { requestId: string } }) {
+export async function DELETE(
+  _request: NextRequest,
+  context: { params: Promise<{ requestId: string }> }
+) {
   try {
+    const params = await context.params;
     logger.info('Deleting company response', {
       operation: 'deleteCompanyResponse',
       requestId: params.requestId,

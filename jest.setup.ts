@@ -14,13 +14,12 @@ const prisma = new PrismaClient();
 
 // Make prisma available globally
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace jest {
     interface Matchers<R> {
       toBeValidCuid(): R;
     }
   }
-  // eslint-disable-next-line no-var
+
   var prisma: PrismaClient;
 }
 

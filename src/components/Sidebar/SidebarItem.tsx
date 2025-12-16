@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import React from 'react';
 
 import SidebarDropdown from '@/components/Sidebar/SidebarDropdown';
 import type { MenuItem } from '@/types/menu';

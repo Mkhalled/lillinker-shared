@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
 
 import ClickOutside from '@/components/ClickOutside';
 import SidebarItem from '@/components/Sidebar/SidebarItem';

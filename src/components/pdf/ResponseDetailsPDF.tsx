@@ -1,5 +1,4 @@
 import { Document, Page, Text, View, StyleSheet, Font, Svg, Path } from '@react-pdf/renderer';
-import React from 'react';
 
 import {
   ExistingCompanyResponse,

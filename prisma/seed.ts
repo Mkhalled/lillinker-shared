@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
+
 import { logger } from '../src/lib/logger';
 const prisma = new PrismaClient();
 // Constants for better maintainability

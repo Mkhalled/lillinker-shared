@@ -1,16 +1,15 @@
 'use client';
 
-import { ChevronLeftIcon, EyeIcon } from 'lucide-react';
+import { ChevronLeftIcon, EyeIcon, EyeOffIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { useLoading } from '@/app/context/LoadingContext';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import { Button } from '@/components/ui/button/Button';
-import { EyeCloseIcon } from '@/icons';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -151,7 +150,7 @@ const LoginPage = () => {
                         {showPassword ? (
                           <EyeIcon className="w-4 h-4 text-gray-500" />
                         ) : (
-                          <EyeCloseIcon className="w-4 h-4 fill-gray-500" />
+                          <EyeOffIcon className="w-4 h-4 text-gray-500" />
                         )}
                       </span>
                     </div>

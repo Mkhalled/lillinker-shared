@@ -7,13 +7,14 @@ import { CompanyService } from '@/services/company/company.service';
 import { CotisationPayload } from '@/types/organisme';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export async function POST(request: NextRequest, { params }: RouteParams) {
+export async function POST(request: NextRequest, context: RouteParams) {
   try {
+    const params = await context.params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {

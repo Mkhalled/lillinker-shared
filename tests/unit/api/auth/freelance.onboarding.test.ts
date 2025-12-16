@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server';
+
+import { POST as FreelanceOnboardingPOST } from '@/app/api/auth/onboarding/freelance/route';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
-import { POST as FreelanceOnboardingPOST } from '@/app/api/auth/onboarding/freelance/route';
 import { FreelanceService, AuthService } from '@/services';
 
 // Mock dependencies

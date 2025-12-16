@@ -7,14 +7,15 @@ import { CompanyService } from '@/services/company/company.service';
 import { CotisationPayload } from '@/types/organisme';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
     cotisationId: string;
-  };
+  }>;
 }
 
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(request: NextRequest, context: RouteParams) {
   try {
+    const params = await context.params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -50,8 +51,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, context: RouteParams) {
   try {
+    const params = await context.params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
