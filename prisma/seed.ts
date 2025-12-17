@@ -40,7 +40,13 @@ interface CompanyCreateData {
  * @param userData - User data without password (password will be auto-generated)
  * @returns Promise resolving to created user
  */
-async function createUser(userData: Omit<UserCreateData, 'password'>): Promise<any> {
+async function createUser(userData: Omit<UserCreateData, 'password'>): Promise<{
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+}> {
   return prisma.user.create({
     data: {
       ...userData,

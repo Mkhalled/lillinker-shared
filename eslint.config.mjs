@@ -65,8 +65,15 @@ export default [
       // TypeScript rules
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-non-null-assertion': 'off',
 
       // Import rules
@@ -98,7 +105,7 @@ export default [
       'jsx-a11y/aria-props': 'error',
       'jsx-a11y/aria-role': 'error',
       'jsx-a11y/aria-unsupported-elements': 'error',
-      'jsx-a11y/click-events-have-key-events': 'warn',
+      'jsx-a11y/click-events-have-key-events': 'off',
       'jsx-a11y/heading-has-content': 'error',
       'jsx-a11y/html-has-lang': 'error',
       'jsx-a11y/img-redundant-alt': 'error',

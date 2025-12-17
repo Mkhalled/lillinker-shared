@@ -37,8 +37,8 @@ const logger = createLogger({
   ],
 });
 
-// Add file transports in production
-if (isProduction) {
+// Add file transports in production (only if not in serverless environment like Vercel)
+if (isProduction && !process.env.VERCEL) {
   logger.add(
     new transports.File({
       filename: 'logs/error.log',
