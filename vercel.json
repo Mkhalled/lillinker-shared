@@ -1,6 +1,5 @@
 {
   "buildCommand": "pnpm vercel-build",
-  "installCommand": "pnpm install --frozen-lockfile",
   "build": {
     "env": {
       "VERCEL_FORCE_NO_BUILD_CACHE": "1"
