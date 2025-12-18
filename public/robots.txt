@@ -17,7 +17,7 @@ Disallow: /consultant/
 Disallow: /api/
 
 # Host
-Host: http://localhost:3000
+Host: https://www.lillinker.com
 
 # Sitemaps
-Sitemap: http://localhost:3000/sitemap.xml
+Sitemap: https://www.lillinker.com/sitemap.xml
