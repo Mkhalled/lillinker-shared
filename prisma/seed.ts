@@ -98,9 +98,12 @@ async function main(): Promise<void> {
     await prisma.company.deleteMany();
     await prisma.secteurActivite.deleteMany();
     await prisma.labelSyndicat.deleteMany();
+    await prisma.fraisKilometriquesReference.deleteMany();
     await prisma.session.deleteMany();
     await prisma.account.deleteMany();
     await prisma.user.deleteMany();
+    
+    logger.info('✅ All existing data cleared successfully');
     // Secteur d'activité
     const IT = await prisma.secteurActivite.create({
       data: { code: 'IT', name: 'IT - Digital' },
@@ -299,7 +302,6 @@ async function main(): Promise<void> {
     });
     const platformService5 = await prisma.platformService.create({
       data: {
-        id: 5,
         user_id: adminPlateforme.id,
         label: 'Frais kilométriques',
         description:
