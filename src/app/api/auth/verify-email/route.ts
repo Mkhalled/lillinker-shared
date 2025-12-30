@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Redirect to set password page with token
-    return NextResponse.redirect(new URL(`/auth/set-password?token=${token}`, request.url));
+    return NextResponse.redirect(new URL(`/auth/verify-email?token=${token}`, request.url));
   } catch (error) {
     logger.error('Email verification redirect failed', error as Error, logContext);
     return NextResponse.redirect(new URL('/auth/error?error=invalid-token', request.url));

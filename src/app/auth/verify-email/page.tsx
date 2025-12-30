@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronLeftIcon, EyeIcon } from 'lucide-react';
+import { ChevronLeftIcon, EyeIcon, EyeOffIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
@@ -8,7 +8,6 @@ import { useState, useEffect, Suspense } from 'react';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import { Button } from '@/components/ui/button/Button';
-import { EyeCloseIcon } from '@/icons';
 
 const SetPasswordContent = () => {
   const [formData, setFormData] = useState({
@@ -153,7 +152,7 @@ const SetPasswordContent = () => {
                           {showPassword ? (
                             <EyeIcon className="w-4 h-4 text-gray-500" />
                           ) : (
-                            <EyeCloseIcon className="w-4 h-4 fill-gray-500" />
+                            <EyeOffIcon className="w-4 h-4 text-gray-500" />
                           )}
                         </span>
                       </div>
@@ -180,7 +179,7 @@ const SetPasswordContent = () => {
                           {showConfirmPassword ? (
                             <EyeIcon className="w-4 h-4 text-gray-500" />
                           ) : (
-                            <EyeCloseIcon className="w-4 h-4 fill-gray-500" />
+                            <EyeOffIcon className="w-4 h-4 text-gray-500" />
                           )}
                         </span>
                       </div>
